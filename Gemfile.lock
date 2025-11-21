@@ -80,8 +80,6 @@ GEM
     ast (2.4.3)
     base64 (0.3.0)
     bcrypt_pbkdf (1.1.1)
-    bcrypt_pbkdf (1.1.1-arm64-darwin)
-    bcrypt_pbkdf (1.1.1-x86_64-darwin)
     bigdecimal (3.3.1)
     bindex (0.8.1)
     bootsnap (1.19.0)
@@ -137,6 +135,8 @@ GEM
       actionpack (>= 6.0.0)
       activesupport (>= 6.0.0)
       railties (>= 6.0.0)
+    inertia_rails (3.13.0)
+      railties (>= 6)
     io-console (0.8.1)
     irb (1.15.3)
       pp (>= 0.6.0)
@@ -401,6 +401,7 @@ DEPENDENCIES
   debug
   image_processing (~> 1.2)
   importmap-rails
+  inertia_rails (~> 3.13)
   jbuilder
   kamal
   propshaft
