@@ -4,9 +4,9 @@
 
 ### Prerequisites
 
-* Ruby 3.4.7
-* Node.js 22+
-* PostgreSQL (via Docker)
+- Ruby 3.4.7
+- Node.js 22+
+- PostgreSQL (via Docker)
 
 ### Database Setup
 
@@ -22,6 +22,10 @@ docker run -d \
 ```
 
 This matches the `DATABASE_URL` in `.env`.
+
+```
+DATABASE_URL="postgres://postgres:password@localhost:5432/game_development"
+```
 
 To setup the database:
 
@@ -39,6 +43,5 @@ bin/dev
 
 ### Services
 
-* **Job Queue**: Development uses `:async` (in-process). Production uses Sidekiq (Redis).
-* **Cache**: Development uses `:memory_store`. Production uses Redis.
-
+- **Job Queue**: Development uses `:async` (in-process). Production uses Sidekiq (Redis).
+- **Cache**: Development uses `:memory_store`. Production uses Redis.
