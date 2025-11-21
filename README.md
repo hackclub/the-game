@@ -1,24 +1,44 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Getting Started
 
-Things you may want to cover:
+### Prerequisites
 
-* Ruby version
+* Ruby 3.4.7
+* Node.js 22+
+* PostgreSQL (via Docker)
 
-* System dependencies
+### Database Setup
 
-* Configuration
+Run Postgres in a Docker container:
 
-* Database creation
+```bash
+docker run -d \
+  --name game-postgres \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=password \
+  -p 5432:5432 \
+  postgres:16
+```
 
-* Database initialization
+This matches the `DATABASE_URL` in `.env`.
 
-* How to run the test suite
+To setup the database:
 
-* Services (job queues, cache servers, search engines, etc.)
+```bash
+bin/rails db:prepare
+```
 
-* Deployment instructions
+### Development
 
-* ...
+Start the dev server:
+
+```bash
+bin/dev
+```
+
+### Services
+
+* **Job Queue**: Development uses `:async` (in-process). Production uses Sidekiq (Redis).
+* **Cache**: Development uses `:memory_store`. Production uses Redis.
+

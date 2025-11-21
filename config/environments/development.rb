@@ -6,6 +6,9 @@ Rails.application.configure do
   # Make code changes take effect immediately without server restart.
   config.enable_reloading = true
 
+  # Use Async adapter for development
+  config.active_job.queue_adapter = :async
+
   # Do not eager load code on boot.
   config.eager_load = false
 
