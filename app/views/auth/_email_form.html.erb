@@ -1,0 +1,7 @@
+<%= form_with url: login_email_path, method: :post do |f| %>
+  <%= hidden_field_tag :redirect_to, params[:redirect_to] if params[:redirect_to].present? %>
+  <div class="flex flex-col space-y-4 w-full" data-controller="login" data-login-email-value="<%= params[:email] %>">
+    <%= f.email_field :email, required: true, class: "input placeholder-white/75 text-lg md:text-xl", placeholder: "Your email", value: params[:email] %>
+    <%= f.submit "Send login code", class: "btn btn-outline w-full text-lg md:text-xl", data: { login_target: "submit" } %>
+  </div>
+<% end %>

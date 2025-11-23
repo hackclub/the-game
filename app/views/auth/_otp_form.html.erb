@@ -1,0 +1,9 @@
+<%= form_with url: login_email_path, method: :post do |f| %>
+  <%= f.hidden_field :email, value: @email || (defined?(email) ? email : nil) %>
+  <%= hidden_field_tag :redirect_to, params[:redirect_to] if params[:redirect_to].present? %>
+
+  <div class="flex flex-col space-y-4">
+    <%= f.text_field :otp, required: true, autofocus: true, autocomplete: "one-time-code", class: "input placeholder-white/75 text-lg md:text-xl", placeholder: "Check your email for a code!" %>
+    <%= f.submit "Log in", class: "btn btn-outline w-full text-lg md:text-xl" %>
+  </div>
+<% end %>

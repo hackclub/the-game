@@ -1,0 +1,22 @@
+<div class="flex items-center justify-center min-h-screen">
+  <%= render "shared/card", class: "flex flex-col items-center justify-center min-h-screen px-4 space-y-12 md:p-12 md:min-h-auto" do %>
+    <div class="text-center">
+      <h1 class="text-4xl pb-2">Hey! Welcome to Hack Club: The Game!</h1>
+      <% if params[:email].present? %>
+        <p>Join to get free stickers! (if you are aged 13-18)<p>
+      <% else %>
+        <p>If you don't already have an account, we'll make one for you<p>
+      <% end %>
+    </div>
+    <div class="flex flex-col items-center space-y-4 w-full">
+      <% unless params[:email].present? %>
+        <%= render "shared/button", url: slack_login_path(redirect_to: params[:redirect_to]), text: "Log in with Hack Club", class: "text-lg md:text-xl w-full", html_options: { data: { turbo: false } } %>
+        <div class="w-full flex items-center before:p-[1px] before:mr-2 before:bg-white before:grow after:p-[1px] after:ml-2 after:bg-white after:grow uppercase">or</div>
+      <% end %>
+    <div class="w-full">
+      <%= turbo_frame_tag "login_form" do %>
+        <%= render partial: "email_form" %>
+      <% end %>
+    </div>
+  <% end %>
+</div>
