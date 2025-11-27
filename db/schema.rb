@@ -30,14 +30,12 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_23_081314) do
     t.integer "ban_type"
     t.date "birthday"
     t.string "email", null: false
-    t.string "github_username"
+    t.string "hackatime_id"
     t.text "internal_notes"
     t.boolean "is_banned", default: false, null: false
-    t.boolean "is_pro", default: false
     t.datetime "last_active"
     t.bigint "referrer_id"
     t.string "slack_id"
-    t.string "timezone_raw"
     t.string "username"
     t.boolean "ysws_verified"
     t.index ["referrer_id"], name: "index_users_on_referrer_id"

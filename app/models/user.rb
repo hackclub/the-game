@@ -9,15 +9,13 @@
 #  ban_type             :integer
 #  birthday             :date
 #  email                :string           not null
-#  github_username      :string
 #  internal_notes       :text
 #  is_banned            :boolean          default(FALSE), not null
-#  is_pro               :boolean          default(FALSE)
 #  last_active          :datetime
-#  timezone_raw         :string
 #  username             :string
 #  ysws_verified        :boolean
 #  account_id           :string
+#  hackatime_id         :string
 #  referrer_id          :bigint
 #  slack_id             :string
 #
@@ -36,8 +34,7 @@ class User < ApplicationRecord
 
   enum :ban_type, { hackatime: 0, blueprint: 1, previous: 2, slack: 3, age: 4 }
 
-  validates :is_banned, inclusion: { in: [ true, false ] }
-  after_commit :advance_projects_after_idv!, on: :update, if: -> { previous_changes.key?("ysws_verified") && ysws_verified? }
+  after_save_commit :link_hackatime, if: -> { slack_id_previously_changed? && hackatime_id.nil? }
 
   has_paper_trail
 
@@ -55,14 +52,42 @@ class User < ApplicationRecord
   def self.account_user_info(access_token)
     response = account_client(access_token).get("me")
 
-    if response.status == 200
-      JSON.parse(response.body)["identity"]
+    if response.success?
+      response.body["identity"]
     else
       nil
     end
   end
 
+  private
+
   def self.account_client(access_token)
-    Faraday.new(url: "https://account.hackclub.com/api/v1", headers: { "Authorization" => "Bearer #{access_token}" })
+    Faraday.new(url: "https://account.hackclub.com/api/v1", headers: { "Authorization" => "Bearer #{access_token}" }) do |conn|
+      conn.response :json, content_type: /\bjson$/
+    end
+  end
+
+  def self.hackatime_client
+    Faraday.new(url: "https://hackatime.hackclub.com/api/v1", headers: { "Authorization" => "Bearer #{ENV["HACKATIME_API_KEY"]}" }) do |conn|
+      conn.response :json, content_type: /\bjson$/
+    end
+  end
+
+  def link_hackatime
+    response = if slack_id.present?
+      User.hackatime_client.get("users/#{slack_id}/stats")
+      # Use when we have an admin hackatime key
+      # User.hackatime_client.get("users/lookup_slack_uid/#{slack_id}")
+    else
+      # Don't have an admin hackatime key yet, so we can't lookup by email.
+      # User.hackatime_client.get("users/lookup_email/#{URI.encode_uri_component(user.email)}")
+      nil
+    end
+
+    if response&.success?
+      update!(hackatime_id: response.body["data"]["user_id"])
+    else
+      nil
+    end
   end
 end
