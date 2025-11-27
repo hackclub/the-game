@@ -7,7 +7,7 @@ class LandingController < ApplicationController
       return
     end
 
-    render layout: false
+    render inertia: {}
   end
 
   def authed
