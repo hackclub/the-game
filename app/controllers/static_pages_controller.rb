@@ -16,6 +16,6 @@ class StaticPagesController < ApplicationController
       return
     end
 
-    render inertia: {}
+    render inertia: { account_linked: current_user.account_id.present? }
   end
 end

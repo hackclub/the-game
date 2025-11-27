@@ -80,9 +80,14 @@ class AuthController < ApplicationController
       end
 
       user_info = User.account_user_info(access_token)
+
       user = User.find_by(account_id: user_info["id"])
       if user.nil?
-        user = User.create!(account_id: user_info["id"], account_access_token: access_token, email: user_info["primary_email"], slack_id: user_info["slack_id"])
+        if current_user.present?
+          current_user.update!(account_id: user_info["id"], account_access_token: access_token, slack_id: user_info["slack_id"])
+        else
+          user = User.create!(account_id: user_info["id"], account_access_token: access_token, email: user_info["primary_email"], slack_id: user_info["slack_id"])
+        end
       end
 
       session[:user_id] = user.id
