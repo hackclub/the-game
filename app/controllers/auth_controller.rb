@@ -1,5 +1,5 @@
 class AuthController < ApplicationController
-  allow_unauthenticated_access only: %i[ create_email start account_callback ]
+  allow_unauthenticated_access only: %i[ create_email start account_callback validate sent ]
   skip_before_action :redirect_adults, only: %i[ logout ]
 
   layout false
@@ -7,81 +7,45 @@ class AuthController < ApplicationController
   before_action :set_after_login_redirect, only: %i[ create_email ]
   before_action :redirect_if_logged_in, only: %i[ create_email ]
 
-  # email login
   def create_email
     email = params[:email]
-    otp = params[:otp]
 
     if email.blank? || !(email =~ URI::MailTo::EMAIL_REGEXP)
       flash.now[:alert] = "Invalid email address."
-      respond_to do |format|
-        format.turbo_stream do
-          render turbo_stream: [
-            turbo_stream.replace(
-              "flash",
-              partial: "shared/notice"
-            )
-          ]
-        end
-      end
-      return
-    end
-
-    if otp.present?
-      if validate_otp(email, otp)
-        referrer_id = cookies[:referrer_id]&.to_i
-        user = User.find_or_create_from_email(email, referrer_id: referrer_id)
-        reset_session
-        session[:user_id] = user.id
-
-        # Clear the referrer cookie after successful signup
-        cookies.delete(:referrer_id) if referrer_id
-
-        Rails.logger.info("OTP validated for email: #{email}")
-        redirect_target = post_login_redirect_path
-        redirect_to(redirect_target || home_path)
-      else
-        flash.now[:alert] = "Invalid OTP. Please try again."
-        respond_to do |format|
-          format.turbo_stream do
-            render turbo_stream: [
-              turbo_stream.replace(
-                "flash",
-                partial: "shared/notice"
-              )
-            ]
-          end
-        end
-      end
       return
     end
 
     if send_otp(email)
-      respond_to do |format|
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.replace(
-            "login_form",
-            partial: "auth/otp_form",
-            locals: { email: email }
-          )
-        end
-      end
+      redirect_to sent_path(email:)
     else
       flash.now[:alert] = "Failed to send OTP. Please try again."
-      respond_to do |format|
-        format.turbo_stream do
-          render turbo_stream: [
-            turbo_stream.replace(
-              "flash",
-              partial: "shared/notice",
-            ),
-            turbo_stream.replace(
-              "login_form",
-              partial: "auth/email_form"
-            )
-          ]
-        end
-      end
+    end
+  end
+
+  def sent
+    email = params[:email]
+
+    render inertia: { email: }
+  end
+
+  def validate
+    email = params[:email]
+    otp = params[:otp]
+
+    if validate_otp(email, otp)
+      referrer_id = cookies[:referrer_id]&.to_i
+      user = User.find_or_create_by(email:)
+
+      reset_session
+      session[:user_id] = user.id
+
+      # Clear the referrer cookie after successful signup
+      cookies.delete(:referrer_id) if referrer_id
+
+      redirect_to home_path
+    else
+      flash.now[:alert] = "Invalid OTP. Please try again."
+      redirect_to root_path
     end
   end
 

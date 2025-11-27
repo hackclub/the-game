@@ -5,6 +5,8 @@ Rails.application.routes.draw do
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
+  mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
+
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
@@ -21,5 +23,8 @@ Rails.application.routes.draw do
     get "account_callback", to: "auth#account_callback"
     get "start", to: "auth#start"
     post "logout", to: "auth#logout"
+    post "create_email", to: "auth#create_email"
+    get "sent", to: "auth#sent"
+    post "validate", to: "auth#validate"
   end
 end
