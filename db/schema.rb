@@ -25,14 +25,14 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_23_081314) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.string "account_access_token"
+    t.string "account_id"
     t.boolean "admin", default: false, null: false
     t.string "avatar"
     t.integer "ban_type"
     t.date "birthday"
     t.string "email", null: false
     t.string "github_username"
-    t.string "identity_vault_access_token"
-    t.string "identity_vault_id"
     t.text "internal_notes"
     t.boolean "is_banned", default: false, null: false
     t.boolean "is_pro", default: false

@@ -1,23 +1,11 @@
 class AuthController < ApplicationController
-  allow_unauthenticated_access only: %i[ index new create create_email submit_age ]
-  rate_limit to: 10, within: 3.minutes, only: :create, with: -> { redirect_to "TODO", alert: "Try again later." }
-  skip_forgery_protection only: %i[ track ]
-  skip_before_action :redirect_to_age, only: %i[ age submit_age destroy ]
-  skip_before_action :redirect_adults, only: %i[ destroy ]
+  allow_unauthenticated_access only: %i[ create_email start account_callback ]
+  skip_before_action :redirect_adults, only: %i[ logout ]
 
   layout false
 
-  before_action :set_after_login_redirect, only: %i[ index new create_email ]
-  before_action :redirect_if_logged_in, only: %i[ index new create create_email ]
-
-  def index
-    render "auth/index", layout: false
-  end
-
-  # HCA auth start
-  def new
-    # TODO: implement HCA auth
-  end
+  before_action :set_after_login_redirect, only: %i[ create_email ]
+  before_action :redirect_if_logged_in, only: %i[ create_email ]
 
   # email login
   def create_email
@@ -43,7 +31,6 @@ class AuthController < ApplicationController
       if validate_otp(email, otp)
         referrer_id = cookies[:referrer_id]&.to_i
         user = User.find_or_create_from_email(email, referrer_id: referrer_id)
-        ahoy.track("email_login", user_id: user&.id)
         reset_session
         session[:user_id] = user.id
 
@@ -70,8 +57,6 @@ class AuthController < ApplicationController
     end
 
     if send_otp(email)
-      ahoy.track "email_login_start"
-
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace(
@@ -100,85 +85,49 @@ class AuthController < ApplicationController
     end
   end
 
-  # HCA auth callback
-  def create
-    # TODO: implement HCA auth
-  end
-
-  # Logout
-  def destroy
+  def logout
     session.delete(:original_id) if session[:original_id]
     terminate_session
-
-    # clear Ahoy cookies
-    cookies.delete(:ahoy_visit)
-    cookies.delete(:ahoy_visitor)
 
     redirect_to root_path, notice: "Signed out successfully. Cya!"
   end
 
-  def idv
-    render "projects/ship_idv", layout: "application"
-  end
-
-  def idv_start
+  def start
     state = SecureRandom.hex(24)
-    session[:idv_state] = state
-    idv_link = current_user.identity_vault_oauth_link(idv_callback_url, state: state)
-    redirect_to idv_link, allow_other_host: true
+    session[:auth_state] = state
+    account_link = "https://account.hackclub.com/oauth/authorize?client_id=#{ENV["ACCOUNT_CLIENT_ID"]}&redirect_uri=#{account_callback_url}&response_type=code&scope=email name slack_id verification_status&state=#{state}"
+    redirect_to account_link, allow_other_host: true
   end
 
-  def idv_callback
+  def account_callback
     begin
-      unless params[:state].present? && params[:state] == session[:idv_state]
-        redirect_to home_path, alert: "Invalid identity verification session. Please try again."
+      unless params[:state].present? && params[:state] == session[:auth_state]
+        redirect_to root_path, alert: "Invalid account session. Please try again."
         return
       end
 
-      session.delete(:idv_state)
-      current_user.link_identity_vault_callback(idv_callback_url, params[:code])
+      session.delete(:auth_state)
+
+      access_token = User.exchange_authorization_code(params[:code])
+
+      if access_token.nil?
+        redirect_to root_path, alert: "Failed to log in. Please try again."
+        return
+      end
+
+      user_info = User.account_user_info(access_token)
+      user = User.find_by(account_id: user_info["id"])
+      if user.nil?
+        user = User.create!(account_id: user_info["id"], account_access_token: access_token, email: user_info["primary_email"], slack_id: user_info["slack_id"])
+      end
+
+      session[:user_id] = user.id
     rescue StandardError => e
-      return redirect_to home_path, alert: "Couldn't link identity: #{e.message} (ask support about error ID #{event_id}?)"
+      Rails.logger.error(e)
+      return redirect_to root_path, alert: "Couldn't log in: #{e.message}"
     end
 
-    redirect_to home_path, notice: "Successfully linked your identity."
-  end
-
-  def age
-    render "age", layout: false
-  end
-
-  def submit_age
-    unless current_user
-      redirect_to login_path, alert: "Please log in first"
-      return
-    end
-
-    birthday = params[:birthday]
-    if birthday.blank?
-      redirect_to age_verification_path, alert: "Please enter your birthday"
-      return
-    end
-
-    begin
-      birthday_date = Date.parse(birthday)
-    rescue ArgumentError
-      redirect_to age_verification_path, alert: "Invalid date format"
-      return
-    end
-
-    age = ((Time.zone.now - birthday_date.to_time) / 1.year.seconds).floor
-
-    if age < 13
-      current_user.update!(birthday: birthday_date, is_banned: true, ban_type: :age)
-      redirect_to sorry_path, alert: "You must be at least 13 years old for Hack Club: The Game"
-    elsif age > 18
-      current_user.update!(birthday: birthday_date)
-      redirect_to home_path, notice: "Thanks! You can still refer teens to Hack Club: The Game for rewards"
-    else
-      current_user.update!(birthday: birthday_date)
-      redirect_to home_path, notice: "Welcome to Hack Club: The Game!"
-    end
+    redirect_to home_path, notice: "Successfully logged in!"
   end
 
   private
