@@ -16,8 +16,9 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
-  root "static_pages#index"
+  root "static_pages#rsvp"
   get "/home", to: "static_pages#home"
+  post "/rsvp", to: "static_pages#create_rsvp"
 
   scope "/auth" do
     get "account_callback", to: "auth#account_callback"
