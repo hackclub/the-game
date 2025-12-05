@@ -79,10 +79,10 @@ export default function DynamicBackgroundLines({ stepCircleRefs }: Props) {
   }, [layout]);
 
   useEffect(() => {
-    if (typeof window === 'undefined' || !layout) return;
+    if (typeof window === 'undefined') return;
 
-    const handleScroll = () => {
-      if (!containerRef.current) return;
+    const updateTargetsFromScroll = () => {
+      if (!containerRef.current || !animationState.initialized) return;
 
       const rect = containerRef.current.getBoundingClientRect();
       const viewportHeight = window.innerHeight;
@@ -95,36 +95,35 @@ export default function DynamicBackgroundLines({ stepCircleRefs }: Props) {
         const staggeredProgress = Math.min(1, totalProgress + i * STAGGER_OFFSET);
         animationState.targetOffsets[i] = len * (1 - staggeredProgress);
       });
-
-      if (!animationState.animationFrame) {
-        const animate = () => {
-          const paths = pathRefs.current.filter(Boolean) as SVGPathElement[];
-          let needsUpdate = false;
-
-          paths.forEach((path, i) => {
-            const diff = animationState.targetOffsets[i] - animationState.currentOffsets[i];
-            if (Math.abs(diff) > 0.5) {
-              animationState.currentOffsets[i] += diff * SMOOTHING;
-              needsUpdate = true;
-            } else {
-              animationState.currentOffsets[i] = animationState.targetOffsets[i];
-            }
-            path.style.strokeDashoffset = `${Math.max(0, animationState.currentOffsets[i])}`;
-          });
-
-          if (needsUpdate) {
-            animationState.animationFrame = requestAnimationFrame(animate);
-          } else {
-            animationState.animationFrame = null;
-          }
-        };
-        animationState.animationFrame = requestAnimationFrame(animate);
-      }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [layout]);
+    const animate = () => {
+      updateTargetsFromScroll();
+
+      const paths = pathRefs.current.filter(Boolean) as SVGPathElement[];
+
+      paths.forEach((path, i) => {
+        const diff = animationState.targetOffsets[i] - animationState.currentOffsets[i];
+        if (Math.abs(diff) > 0.5) {
+          animationState.currentOffsets[i] += diff * SMOOTHING;
+        } else {
+          animationState.currentOffsets[i] = animationState.targetOffsets[i];
+        }
+        path.style.strokeDashoffset = `${Math.max(0, animationState.currentOffsets[i])}`;
+      });
+
+      animationState.animationFrame = requestAnimationFrame(animate);
+    };
+
+    animationState.animationFrame = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationState.animationFrame) {
+        cancelAnimationFrame(animationState.animationFrame);
+        animationState.animationFrame = null;
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
