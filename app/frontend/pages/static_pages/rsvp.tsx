@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { useForm } from '@inertiajs/react';
+import { useForm, Head } from '@inertiajs/react';
 import Step from '../../components/Step';
 import QuestionAnswer from '../../components/QuestionAnswer';
 import DynamicBackgroundLines from '../../components/DynamicBackgroundLines';
@@ -41,6 +41,7 @@ export default function RsvpPage() {
 
   return (
     <div className="bg-white flex flex-col items-start relative w-full min-h-screen">
+      <Head title="Hack Club: The Game" />
       {/* Background Lines */}
       <DynamicBackgroundLines stepCircleRefs={[step1CircleRef, step2CircleRef, step3CircleRef]} />
 
