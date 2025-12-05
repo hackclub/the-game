@@ -79,7 +79,7 @@ export default function RsvpPage() {
                 value={data.email}
                 onChange={(e) => setData('email', e.target.value)}
                 placeholder="your@email.com"
-                className="w-full text-lg lg:text-3xl tracking-[-0.04em] text-gray-600 bg-transparent border-none outline-none placeholder-gray-400 focus:ring-0 font-[Arial]"
+                className="w-full text-lg lg:text-3xl tracking-[-0.04em] text-black bg-transparent border-none outline-none placeholder-gray-400 focus:ring-0 font-[Arial]"
               />
             </div>
             
