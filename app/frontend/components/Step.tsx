@@ -1,5 +1,4 @@
 type StepProps = {
-  className?: string;
   stepNumber?: string;
   title?: string;
   circleRef?: React.Ref<HTMLDivElement>;
@@ -7,14 +6,13 @@ type StepProps = {
 };
 
 export default function Step({ 
-  className, 
   stepNumber = "1", 
   title = "Code online.",
   circleRef,
   children,
 }: StepProps) {
   return (
-    <div className={className}>
+    <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 items-start w-full">
       <div
         ref={circleRef}
         className="bg-black flex flex-col items-center justify-center rounded-full w-24 h-24 lg:w-32 lg:h-32 shrink-0"

@@ -192,7 +192,6 @@ export default function DynamicBackgroundLines({ stepCircleRefs }: Props) {
         height={height}
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Inner lines first (underneath) */}
         <path
           ref={setPathRef(0)}
           d={bluePath}
@@ -207,7 +206,6 @@ export default function DynamicBackgroundLines({ stepCircleRefs }: Props) {
           strokeWidth={strokeWidth}
           fill="none"
         />
-        {/* Outer lines on top */}
         <path
           ref={setPathRef(2)}
           d={redPath}

@@ -42,22 +42,17 @@ export default function RsvpPage() {
   return (
     <div className="bg-white flex flex-col items-start relative w-full min-h-screen">
       <Head title="Hack Club: The Game" />
-      {/* Background Lines */}
       <DynamicBackgroundLines stepCircleRefs={[step1CircleRef, step2CircleRef, step3CircleRef]} />
 
-      {/* Hero Section */}
       <div className="relative z-10 flex items-center justify-center w-full min-h-screen px-4 py-12 lg:py-24">
         <div className="flex flex-col items-end w-full max-w-none lg:max-w-6xl">
-          {/* Logo + CTA Container */}
           <div className="bg-white border-black border-solid border-t-[30px] lg:border-t-[30px] border-r-4 border-b-4 border-l-4 w-full flex flex-col lg:flex-row">
-            {/* Logo Section */}
             <div className="flex items-center justify-center px-6 py-6 bg-white lg:border-r-0">
               <div className="h-20 lg:h-24 w-auto">
                 <HackClubLogo className="block max-w-none h-full w-auto" />
               </div>
             </div>
             
-            {/* Wordmark + CTA Section */}
             <div className="border-t-4 lg:border-t-0 lg:border-l-4 border-black flex-1 flex flex-col px-6 lg:px-10 py-6 lg:py-8 bg-white">
               <div className="mb-4">
                 <p className="text-2xl sm:text-3xl lg:text-6xl xl:text-8xl tracking-[-0.05em] leading-tight lg:leading-none whitespace-nowrap">
@@ -72,7 +67,6 @@ export default function RsvpPage() {
             </div>
           </div>
 
-          {/* RSVP Button & Email Group */}
           <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 lg:gap-3 w-full mt-4 h-20">
             <div className="bg-white border-4 border-black px-4 lg:px-6 sm:flex-1 h-full flex">
               <input
@@ -105,53 +99,33 @@ export default function RsvpPage() {
         </div>
       </div>
 
-      {/* Steps Section */}
       <div className="relative z-10 flex flex-col gap-12 lg:gap-24 w-full px-6 lg:px-48 pb-24 lg:pb-40">
-        <Step 
-          className="flex flex-col lg:flex-row gap-8 lg:gap-16 items-start w-full"
-          stepNumber="1"
-          title="Code online."
-          circleRef={step1CircleRef}
-        >
+        <Step stepNumber="1" title="Code online." circleRef={step1CircleRef}>
           <span className="font-normal">Collect tokens by coding! You can exchange your tokens for items in the real-life game. After you get enough tokens, </span>
           <span className="font-bold">you qualify!</span>
         </Step>
         
-        <Step 
-          className="flex flex-col lg:flex-row gap-8 lg:gap-16 items-start w-full"
-          stepNumber="2"
-          title="Team up."
-          circleRef={step2CircleRef}
-        >
+        <Step stepNumber="2" title="Team up." circleRef={step2CircleRef}>
           <span className="font-normal">After you qualify, you'll get assigned to a team! Create your plans, strategize, and get ready for the game!</span>
         </Step>
         
-        <Step 
-          className="flex flex-col lg:flex-row gap-8 lg:gap-16 items-start w-full"
-          stepNumber="3"
-          title="Play IRL."
-          circleRef={step3CircleRef}
-        >
+        <Step stepNumber="3" title="Play IRL." circleRef={step3CircleRef}>
           <span className="font-normal">We all go to Manhattan, and play a game of Jet Lag! The winners get special prizes and eternal honor.</span>
         </Step>
       </div>
 
-      {/* FAQ Section */}
       <div className="relative z-10 flex flex-col gap-12 lg:gap-20 w-full px-6 lg:px-40 pt-8 pb-24 lg:pb-32">
         <QuestionAnswer 
-          className="flex flex-col gap-4 items-start w-full"
           question="How's the event gonna look like?"
           answer="We're gonna have two stages - an online part and an IRL part. During the online part, you code and gain points depending on the amount of time you put in. If you have enough hours, you can qualify to the in-person part, where we go to Manhattan and go on a hide-and-seek competition!"
         />
         
         <QuestionAnswer 
-          className="flex flex-col gap-4 items-start w-full"
           question="Who can participate?"
           answer="Ages 14 through 18, from anywhere in the world! We provide travel stipends for those abroad. You'll have to get enough points in the online part, though!"
         />
         
         <QuestionAnswer 
-          className="flex flex-col gap-4 items-start w-full"
           question="What's the IRL part about?"
           answer="We will split Manhattan into equally sized blocks, and have teams compete against each other to conquer as much of Manhattan as possible and gain the most points possible by the end! We'll reveal more details about the mechanics during the online part."
         />
