@@ -12,8 +12,8 @@ export default function RsvpPage() {
   return (
     <div className="bg-white flex flex-col items-start relative w-full min-h-screen">
       {/* Background Lines */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <BackgroundLines className="w-screen h-screen opacity-100" />
+      <div className="absolute top-0 left-0 w-screen h-full pointer-events-none">
+        <BackgroundLines className="absolute top-0 left-0 w-full min-w-full h-full min-h-full opacity-100" />
       </div>
 
       {/* Hero Section */}
@@ -45,7 +45,7 @@ export default function RsvpPage() {
 
           {/* RSVP Button & Email Group */}
           <div className="flex flex-col sm:flex-row gap-2 lg:gap-3 w-full mt-4">
-            <div className="bg-white border-4 border-black flex items-center p-4 lg:p-6 sm:flex-1 min-h-[4rem] lg:min-h-[5rem]">
+            <div className="bg-white border-4 border-black p-4 lg:p-6 sm:flex-1">
               <input
                 type="email"
                 value={email}
@@ -58,7 +58,7 @@ export default function RsvpPage() {
               <input type="hidden" name="email" value={email} />
               <button
                 type="submit"
-                className="bg-white border-4 border-black flex items-center justify-center gap-3 lg:gap-4 px-4 lg:px-6 py-4 lg:py-6 hover:bg-black hover:text-white transition-colors w-full sm:w-auto cursor-pointer min-h-[4rem] lg:min-h-[5rem]"
+                className="bg-white border-4 border-black flex items-center justify-center gap-3 lg:gap-4 px-4 lg:px-6 py-4 lg:py-6 hover:bg-black hover:text-white transition-colors w-full sm:w-auto cursor-pointer"
               >
                 <div className="w-6 h-6 lg:w-7 lg:h-7">
                   <ArrowVector className="block max-w-none w-full h-full" />

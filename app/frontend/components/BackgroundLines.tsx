@@ -7,7 +7,7 @@ export default function BackgroundLines({ className }: { className?: string }) {
       height="100%" 
       overflow="visible" 
       style={{ display: 'block' }} 
-      viewBox="0 0 1563 3320" 
+      viewBox="0 0 1485 2500" 
       fill="none" 
       xmlns="http://www.w3.org/2000/svg"
     >
