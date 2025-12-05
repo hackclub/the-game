@@ -4,6 +4,7 @@ type StepProps = {
   title?: string;
   description?: string;
   descriptionHighlight?: string;
+  circleRef?: React.Ref<HTMLDivElement>;
 };
 
 export default function Step({ 
@@ -11,11 +12,15 @@ export default function Step({
   stepNumber = "1", 
   title = "Code online.", 
   description = "Collect tokens by coding! You can exchange your tokens for items in the real-life game. After you get enough tokens, ",
-  descriptionHighlight = "you qualify!"
+  descriptionHighlight = "you qualify!",
+  circleRef,
 }: StepProps) {
   return (
     <div className={className}>
-      <div className="bg-black flex flex-col items-center justify-center rounded-full w-24 h-24 lg:w-32 lg:h-32 shrink-0">
+      <div
+        ref={circleRef}
+        className="bg-black flex flex-col items-center justify-center rounded-full w-24 h-24 lg:w-32 lg:h-32 shrink-0"
+      >
         <p className="font-bold text-4xl lg:text-6xl text-white leading-none">
           {stepNumber}
         </p>

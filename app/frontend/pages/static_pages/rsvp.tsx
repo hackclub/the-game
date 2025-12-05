@@ -1,20 +1,21 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Form } from '@inertiajs/react';
 import Step from '../../components/Step';
 import QuestionAnswer from '../../components/QuestionAnswer';
-import BackgroundLines from '../../components/BackgroundLines';
+import DynamicBackgroundLines from '../../components/DynamicBackgroundLines';
 import HackClubLogo from '../../components/HackClubLogo';
 import ArrowVector from '../../components/ArrowVector';
 
 export default function RsvpPage() {
   const [email, setEmail] = useState('');
+  const step1CircleRef = useRef<HTMLDivElement>(null);
+  const step2CircleRef = useRef<HTMLDivElement>(null);
+  const step3CircleRef = useRef<HTMLDivElement>(null);
 
   return (
     <div className="bg-white flex flex-col items-start relative w-full min-h-screen">
       {/* Background Lines */}
-      <div className="absolute top-0 left-0 w-screen h-full pointer-events-none">
-        <BackgroundLines className="absolute top-0 left-0 w-full min-w-full h-full min-h-full opacity-100" />
-      </div>
+      <DynamicBackgroundLines stepCircleRefs={[step1CircleRef, step2CircleRef, step3CircleRef]} />
 
       {/* Hero Section */}
       <div className="relative z-10 flex items-center justify-center w-full min-h-screen px-4 py-12 lg:py-24">
@@ -44,8 +45,9 @@ export default function RsvpPage() {
           </div>
 
           {/* RSVP Button & Email Group */}
-          <div className="flex flex-col sm:flex-row gap-2 lg:gap-3 w-full mt-4">
-            <div className="bg-white border-4 border-black p-4 lg:p-6 sm:flex-1">
+          <div className="flex flex-col sm:flex-row gap-2 lg:gap-3 w-full mt-4 h-20">
+            <div className="bg-white border-4 border-black px-4 lg:px-6 sm:flex-1 h-full flex
+            ">
               <input
                 type="email"
                 value={email}
@@ -54,11 +56,12 @@ export default function RsvpPage() {
                 className="w-full text-lg lg:text-3xl tracking-[-0.04em] text-gray-600 bg-transparent border-none outline-none placeholder-gray-400"
               />
             </div>
-            <Form method="post" action="/rsvp" className="sm:shrink-0 sm:flex-none">
+            
+            <Form method="post" action="/rsvp" className="h-full">
               <input type="hidden" name="email" value={email} />
               <button
                 type="submit"
-                className="bg-white border-4 border-black flex items-center justify-center gap-3 lg:gap-4 px-4 lg:px-6 py-4 lg:py-6 hover:bg-black hover:text-white transition-colors w-full sm:w-auto cursor-pointer"
+                className="bg-white border-4 border-black flex items-center justify-center gap-3 lg:gap-4 px-4 lg:px-6 py-4 lg:py-6 hover:bg-black hover:text-white transition-colors w-full h-full sm:w-auto cursor-pointer"
               >
                 <div className="w-6 h-6 lg:w-7 lg:h-7">
                   <ArrowVector className="block max-w-none w-full h-full" />
@@ -80,6 +83,7 @@ export default function RsvpPage() {
           title="Code online."
           description="Collect tokens by coding! You can exchange your tokens for items in the real-life game. After you get enough tokens, "
           descriptionHighlight="you qualify!"
+          circleRef={step1CircleRef}
         />
         
         <Step 
@@ -87,6 +91,7 @@ export default function RsvpPage() {
           stepNumber="2"
           title="Team up."
           description="After you qualify, you'll get assigned to a team! Create your plans, strategize, and get ready for the game!"
+          circleRef={step2CircleRef}
         />
         
         <Step 
@@ -94,6 +99,7 @@ export default function RsvpPage() {
           stepNumber="3"
           title="Play IRL."
           description="We all go to Manhattan, and play a game of Jet Lag! The winners get special prizes and eternal honor."
+          circleRef={step3CircleRef}
         />
       </div>
 
