@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react';
-import { Form } from '@inertiajs/react';
+import { useState, useRef, useEffect } from 'react';
+import { useForm } from '@inertiajs/react';
 import Step from '../../components/Step';
 import QuestionAnswer from '../../components/QuestionAnswer';
 import DynamicBackgroundLines from '../../components/DynamicBackgroundLines';
@@ -7,10 +7,37 @@ import HackClubLogo from '../../components/HackClubLogo';
 import ArrowVector from '../../components/ArrowVector';
 
 export default function RsvpPage() {
-  const [email, setEmail] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [fadeOut, setFadeOut] = useState(false);
   const step1CircleRef = useRef<HTMLDivElement>(null);
   const step2CircleRef = useRef<HTMLDivElement>(null);
   const step3CircleRef = useRef<HTMLDivElement>(null);
+
+  const { data, setData, post, reset } = useForm({ email: '' });
+
+  useEffect(() => {
+    if (showSuccess) {
+      const fadeTimer = setTimeout(() => setFadeOut(true), 3000);
+      const hideTimer = setTimeout(() => {
+        setShowSuccess(false);
+        setFadeOut(false);
+      }, 3500);
+      return () => {
+        clearTimeout(fadeTimer);
+        clearTimeout(hideTimer);
+      };
+    }
+  }, [showSuccess]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    post('/rsvp', {
+      onSuccess: () => {
+        reset();
+        setShowSuccess(true);
+      },
+    });
+  };
 
   return (
     <div className="bg-white flex flex-col items-start relative w-full min-h-screen">
@@ -45,33 +72,35 @@ export default function RsvpPage() {
           </div>
 
           {/* RSVP Button & Email Group */}
-          <div className="flex flex-col sm:flex-row gap-2 lg:gap-3 w-full mt-4 h-20">
-            <div className="bg-white border-4 border-black px-4 lg:px-6 sm:flex-1 h-full flex
-            ">
+          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 lg:gap-3 w-full mt-4 h-20">
+            <div className="bg-white border-4 border-black px-4 lg:px-6 sm:flex-1 h-full flex">
               <input
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={data.email}
+                onChange={(e) => setData('email', e.target.value)}
                 placeholder="your@email.com"
-                className="w-full text-lg lg:text-3xl tracking-[-0.04em] text-gray-600 bg-transparent border-none outline-none placeholder-gray-400"
+                className="w-full text-lg lg:text-3xl tracking-[-0.04em] text-gray-600 bg-transparent border-none outline-none placeholder-gray-400 focus:ring-0 font-[Arial]"
               />
             </div>
             
-            <Form method="post" action="/rsvp" className="h-full">
-              <input type="hidden" name="email" value={email} />
-              <button
-                type="submit"
-                className="bg-white border-4 border-black flex items-center justify-center gap-3 lg:gap-4 px-4 lg:px-6 py-4 lg:py-6 hover:bg-black hover:text-white transition-colors w-full h-full sm:w-auto cursor-pointer"
-              >
-                <div className="w-6 h-6 lg:w-7 lg:h-7">
-                  <ArrowVector className="block max-w-none w-full h-full" />
-                </div>
-                <span className="font-bold text-xl lg:text-4xl tracking-[-0.09em]">
-                  RSVP
-                </span>
-              </button>
-            </Form>
-          </div>
+            <button
+              type="submit"
+              className="bg-white border-4 border-black flex items-center justify-center gap-3 lg:gap-4 px-4 lg:px-6 py-4 lg:py-6 hover:bg-black hover:text-white transition-colors w-full h-full sm:w-auto cursor-pointer"
+            >
+              <div className="w-6 h-6 lg:w-7 lg:h-7">
+                <ArrowVector className="block max-w-none w-full h-full" />
+              </div>
+              <span className="font-bold text-xl lg:text-4xl tracking-[-0.09em]">
+                RSVP
+              </span>
+            </button>
+          </form>
+
+          <p
+            className={`mt-4 text-lg lg:text-2xl tracking-[-0.04em] text-black font-bold transition-opacity duration-500 w-full ${showSuccess && !fadeOut ? 'opacity-100' : 'opacity-0'}`}
+          >
+            Thanks, we'll e-mail you updates!
+          </p>
         </div>
       </div>
 
@@ -81,26 +110,29 @@ export default function RsvpPage() {
           className="flex flex-col lg:flex-row gap-8 lg:gap-16 items-start w-full"
           stepNumber="1"
           title="Code online."
-          description="Collect tokens by coding! You can exchange your tokens for items in the real-life game. After you get enough tokens, "
-          descriptionHighlight="you qualify!"
           circleRef={step1CircleRef}
-        />
+        >
+          <span className="font-normal">Collect tokens by coding! You can exchange your tokens for items in the real-life game. After you get enough tokens, </span>
+          <span className="font-bold">you qualify!</span>
+        </Step>
         
         <Step 
           className="flex flex-col lg:flex-row gap-8 lg:gap-16 items-start w-full"
           stepNumber="2"
           title="Team up."
-          description="After you qualify, you'll get assigned to a team! Create your plans, strategize, and get ready for the game!"
           circleRef={step2CircleRef}
-        />
+        >
+          <span className="font-normal">After you qualify, you'll get assigned to a team! Create your plans, strategize, and get ready for the game!</span>
+        </Step>
         
         <Step 
           className="flex flex-col lg:flex-row gap-8 lg:gap-16 items-start w-full"
           stepNumber="3"
           title="Play IRL."
-          description="We all go to Manhattan, and play a game of Jet Lag! The winners get special prizes and eternal honor."
           circleRef={step3CircleRef}
-        />
+        >
+          <span className="font-normal">We all go to Manhattan, and play a game of Jet Lag! The winners get special prizes and eternal honor.</span>
+        </Step>
       </div>
 
       {/* FAQ Section */}

@@ -1,12 +1,22 @@
 import { useEffect, useRef, useState, RefObject, useCallback } from 'react';
 
-const ANIMATION_DURATION = '1.8s';
-const ANIMATION_EASING = 'cubic-bezier(0.0, 0.0, 0.4, 1)';
+const INITIAL_PROGRESS = 0.78;
+const SMOOTHING = 0.04;
+const STAGGER_OFFSET = 0.05;
 
 type Point = { x: number; y: number };
 
 type Props = {
   stepCircleRefs: Array<RefObject<HTMLDivElement | null>>;
+};
+
+const animationState = {
+  started: false,
+  initialized: false,
+  pathLengths: [] as number[],
+  currentOffsets: [] as number[],
+  targetOffsets: [] as number[],
+  animationFrame: null as number | null,
 };
 
 export default function DynamicBackgroundLines({ stepCircleRefs }: Props) {
@@ -17,27 +27,103 @@ export default function DynamicBackgroundLines({ stepCircleRefs }: Props) {
     height: number;
     centers: Point[];
   } | null>(null);
-  const [animated, setAnimated] = useState(false);
 
   const setPathRef = useCallback((index: number) => (el: SVGPathElement | null) => {
     pathRefs.current[index] = el;
+
+    if (el && animationState.initialized && animationState.pathLengths[index]) {
+      el.style.strokeDasharray = `${animationState.pathLengths[index]}`;
+      el.style.strokeDashoffset = `${animationState.currentOffsets[index]}`;
+    }
   }, []);
 
   useEffect(() => {
-    if (!layout) return;
-    
+    if (!layout || animationState.started) return;
+
     const paths = pathRefs.current.filter(Boolean) as SVGPathElement[];
     if (paths.length === 0) return;
 
-    paths.forEach((path) => {
-      const length = path.getTotalLength();
-      path.style.strokeDasharray = `${length}`;
-      path.style.strokeDashoffset = `${length}`;
+    animationState.started = true;
+    animationState.pathLengths = paths.map((path) => path.getTotalLength());
+    animationState.currentOffsets = animationState.pathLengths.map((len) => len);
+    animationState.targetOffsets = animationState.pathLengths.map((len) => len * (1 - INITIAL_PROGRESS));
+
+    paths.forEach((path, i) => {
+      path.style.strokeDasharray = `${animationState.pathLengths[i]}`;
+      path.style.strokeDashoffset = `${animationState.pathLengths[i]}`;
     });
 
-    requestAnimationFrame(() => {
-      setAnimated(true);
-    });
+    const animate = () => {
+      const paths = pathRefs.current.filter(Boolean) as SVGPathElement[];
+      let needsUpdate = false;
+
+      paths.forEach((path, i) => {
+        const diff = animationState.targetOffsets[i] - animationState.currentOffsets[i];
+        if (Math.abs(diff) > 0.5) {
+          animationState.currentOffsets[i] += diff * SMOOTHING;
+          needsUpdate = true;
+        } else {
+          animationState.currentOffsets[i] = animationState.targetOffsets[i];
+        }
+        path.style.strokeDashoffset = `${Math.max(0, animationState.currentOffsets[i])}`;
+      });
+
+      if (needsUpdate) {
+        animationState.animationFrame = requestAnimationFrame(animate);
+      } else {
+        animationState.initialized = true;
+      }
+    };
+
+    animationState.animationFrame = requestAnimationFrame(animate);
+  }, [layout]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !layout) return;
+
+    const handleScroll = () => {
+      if (!containerRef.current) return;
+
+      const rect = containerRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+
+      const scrollProgress = Math.max(0, Math.min(1, (viewportHeight - rect.top) / rect.height));
+
+      const totalProgress = INITIAL_PROGRESS + scrollProgress * (1 - INITIAL_PROGRESS) + (INITIAL_PROGRESS * INITIAL_PROGRESS * 0.05);
+
+      animationState.pathLengths.forEach((len, i) => {
+        const staggeredProgress = Math.min(1, totalProgress + i * STAGGER_OFFSET);
+        animationState.targetOffsets[i] = len * (1 - staggeredProgress);
+      });
+
+      if (!animationState.animationFrame) {
+        const animate = () => {
+          const paths = pathRefs.current.filter(Boolean) as SVGPathElement[];
+          let needsUpdate = false;
+
+          paths.forEach((path, i) => {
+            const diff = animationState.targetOffsets[i] - animationState.currentOffsets[i];
+            if (Math.abs(diff) > 0.5) {
+              animationState.currentOffsets[i] += diff * SMOOTHING;
+              needsUpdate = true;
+            } else {
+              animationState.currentOffsets[i] = animationState.targetOffsets[i];
+            }
+            path.style.strokeDashoffset = `${Math.max(0, animationState.currentOffsets[i])}`;
+          });
+
+          if (needsUpdate) {
+            animationState.animationFrame = requestAnimationFrame(animate);
+          } else {
+            animationState.animationFrame = null;
+          }
+        };
+        animationState.animationFrame = requestAnimationFrame(animate);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [layout]);
 
   useEffect(() => {
@@ -114,10 +200,6 @@ export default function DynamicBackgroundLines({ stepCircleRefs }: Props) {
           stroke="#1C6DAF"
           strokeWidth={strokeWidth}
           fill="none"
-          style={{
-            strokeDashoffset: animated ? 0 : undefined,
-            transition: animated ? `stroke-dashoffset ${ANIMATION_DURATION} ${ANIMATION_EASING}` : undefined,
-          }}
         />
         <path
           ref={setPathRef(1)}
@@ -125,10 +207,6 @@ export default function DynamicBackgroundLines({ stepCircleRefs }: Props) {
           stroke="#ECA82D"
           strokeWidth={strokeWidth}
           fill="none"
-          style={{
-            strokeDashoffset: animated ? 0 : undefined,
-            transition: animated ? `stroke-dashoffset ${ANIMATION_DURATION} ${ANIMATION_EASING}` : undefined,
-          }}
         />
         {/* Outer lines on top */}
         <path
@@ -137,10 +215,6 @@ export default function DynamicBackgroundLines({ stepCircleRefs }: Props) {
           stroke="#C93919"
           strokeWidth={strokeWidth}
           fill="none"
-          style={{
-            strokeDashoffset: animated ? 0 : undefined,
-            transition: animated ? `stroke-dashoffset ${ANIMATION_DURATION} ${ANIMATION_EASING}` : undefined,
-          }}
         />
         <path
           ref={setPathRef(3)}
@@ -148,10 +222,6 @@ export default function DynamicBackgroundLines({ stepCircleRefs }: Props) {
           stroke="#48A71B"
           strokeWidth={strokeWidth}
           fill="none"
-          style={{
-            strokeDashoffset: animated ? 0 : undefined,
-            transition: animated ? `stroke-dashoffset ${ANIMATION_DURATION} ${ANIMATION_EASING}` : undefined,
-          }}
         />
       </svg>
     </div>
@@ -161,7 +231,7 @@ export default function DynamicBackgroundLines({ stepCircleRefs }: Props) {
 function buildGreenPath(c1: Point, c2: Point, c3: Point, width: number, height: number, r: number, strokeWidth: number): string {
   const lineX = c1.x - strokeWidth / 2;
   const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
-  const cornerY = viewportHeight * 0.65;
+  const cornerY = viewportHeight * 0.75;
   const startX = width * 0.55;
   const bottomTurnY = c3.y;
   const rFirstTurn = r - strokeWidth * 2;
@@ -179,7 +249,7 @@ function buildGreenPath(c1: Point, c2: Point, c3: Point, width: number, height: 
 function buildYellowPath(c1: Point, c2: Point, c3: Point, width: number, height: number, r: number, strokeWidth: number): string {
   const lineX = c1.x + strokeWidth / 2;
   const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
-  const cornerY = viewportHeight * 0.65 + strokeWidth;
+  const cornerY = viewportHeight * 0.75 + strokeWidth;
   const startX = width * 0.55 + strokeWidth;
   const bottomY = c3.y;
 
@@ -203,13 +273,14 @@ function buildRedPath(width: number, height: number, r: number, strokeWidth: num
   const fourthTurnY = startY + 900;
   const fifthTurnX = width * 0.78;
   const sixthTurnY = startY + 1470;
+  const rSecondTurn = r * 0.5;
 
   return [
     `M 0 ${startY}`,
     `L ${firstTurnX - r} ${startY}`,
     `A ${r} ${r} 0 0 1 ${firstTurnX} ${startY + r}`,
-    `L ${firstTurnX} ${secondTurnY - r}`,
-    `A ${r} ${r} 0 0 0 ${firstTurnX + r} ${secondTurnY}`,
+    `L ${firstTurnX} ${secondTurnY - rSecondTurn}`,
+    `A ${rSecondTurn} ${rSecondTurn} 0 0 0 ${firstTurnX + rSecondTurn} ${secondTurnY}`,
     `L ${thirdTurnX - r} ${secondTurnY}`,
     `A ${r} ${r} 0 0 1 ${thirdTurnX} ${secondTurnY + r}`,
     `L ${thirdTurnX} ${fourthTurnY - r}`,

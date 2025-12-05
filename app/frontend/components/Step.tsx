@@ -2,18 +2,16 @@ type StepProps = {
   className?: string;
   stepNumber?: string;
   title?: string;
-  description?: string;
-  descriptionHighlight?: string;
   circleRef?: React.Ref<HTMLDivElement>;
+  children?: React.ReactNode;
 };
 
 export default function Step({ 
   className, 
   stepNumber = "1", 
-  title = "Code online.", 
-  description = "Collect tokens by coding! You can exchange your tokens for items in the real-life game. After you get enough tokens, ",
-  descriptionHighlight = "you qualify!",
+  title = "Code online.",
   circleRef,
+  children,
 }: StepProps) {
   return (
     <div className={className}>
@@ -31,8 +29,7 @@ export default function Step({
             {title}
           </p>
           <p className="text-xl lg:text-3xl leading-tight lg:leading-none tracking-[-0.06em] lg:tracking-[-1.92px] max-w-3xl">
-            <span className="font-normal">{description}</span>
-            {descriptionHighlight && <span className="font-bold">{descriptionHighlight}</span>}
+            {children}
           </p>
         </div>
       </div>

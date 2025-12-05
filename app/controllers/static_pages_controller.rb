@@ -21,10 +21,12 @@ class StaticPagesController < ApplicationController
 
   def create_rsvp
     email = params[:email]
-    
-    # TODO: Add backend logic to handle RSVP submission
-    # For now, just redirect back with a success message
-    
+    origin_ip = request.headers["CF-Connecting-IP"] ||
+                request.headers["X-Forwarded-For"]&.split(",")&.first&.strip ||
+                request.remote_ip
+
+    AirtableService.new.create_rsvp(email: email, origin_ip: origin_ip)
+
     redirect_to root_path, notice: "RSVP received! We'll be in touch soon."
   end
 end
