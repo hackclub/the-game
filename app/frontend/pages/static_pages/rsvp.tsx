@@ -5,6 +5,7 @@ import QuestionAnswer from '../../components/QuestionAnswer';
 import DynamicBackgroundLines from '../../components/DynamicBackgroundLines';
 import HackClubLogo from '../../components/HackClubLogo';
 import ArrowVector from '../../components/ArrowVector';
+import HackClubFooter from '../../components/HackClubFooter';
 
 export default function RsvpPage() {
   const [showSuccess, setShowSuccess] = useState(false);
@@ -147,19 +148,38 @@ export default function RsvpPage() {
       <div className="relative z-10 flex flex-col gap-12 lg:gap-20 w-full px-6 lg:px-40 pt-8 pb-24 lg:pb-32">
         <QuestionAnswer 
           question="How's the event gonna look like?"
-          answer="We're gonna have two stages - an online part and an IRL part. During the online part, you code and gain points depending on the amount of time you put in. If you have enough hours, you can qualify to the in-person part, where we go to Manhattan and go on a hide-and-seek competition!"
+          answer="We're gonna have two stages - an online part and an IRL part. During the online part, you code and build projects to gain tokens depending on the amount of time you put in. If you have enough tokens, you can qualify to the in-person part, where we go to Manhattan and play a IRL boardgame inspired competition across Manhattan!" 
         />
         
         <QuestionAnswer 
           question="Who can participate?"
           answer="Ages 14 through 18, from anywhere in the world! We provide travel stipends for those abroad. You'll have to get enough points in the online part, though!"
         />
+
+
+        <QuestionAnswer
+        question="How do I qualify?"
+        answer="You need to code and build projects in exchange for tokens depending on the amount of hours you put in. You'll need to get enough tokens to qualify for the in-person part"
+        />
         
         <QuestionAnswer 
+          question="How do I start?"
+          answer="You can start by RSVPing above. We're still working on our platform where you'll sumbit your projects. We'll send an email when it's ready"
+        />
+
+        <QuestionAnswer
+        question="Will my child be safe?"
+        answer="Yes, we'll have round-the clock supervison and security to ensure the safety of all participants by background checked adult volunteers, as well as a first-aid plan in case of any injuries. Students will not be allowed to freely roam the city outside of the game hours. "
+        />
+
+
+        <QuestionAnswer 
           question="What's the IRL part about?"
-          answer="We will split Manhattan into equally sized blocks, and have teams compete against each other to conquer as much of Manhattan as possible and gain the most points possible by the end! We'll reveal more details about the mechanics during the online part."
+          answer="We will split Manhattan into equally sized blocks, and have teams compete against each other to conquer as much of Manhattan as possible and gain the most points possible by the end! We'll reveal more details about the mechanics during the online part. It's inspired by Jetlag"
         />
       </div>
+
+      <HackClubFooter />
     </div>
   );
 }
