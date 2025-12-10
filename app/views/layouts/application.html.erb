@@ -20,7 +20,6 @@
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
-    <%= vite_stylesheet_tag "application" %>
     <%= vite_react_refresh_tag %>
     <%= vite_client_tag %>
     <%= vite_typescript_tag "inertia.tsx" %>
@@ -39,8 +38,6 @@
   </head>
 
   <body>
-  
-    <%= yield %>
-
-    </body>
+    <%= inertia %>
+  </body>
 </html>

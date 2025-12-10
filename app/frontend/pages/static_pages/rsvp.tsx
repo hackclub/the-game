@@ -144,6 +144,10 @@ export default function RsvpPage() {
           <span className="font-normal">We all go to Manhattan, and play a game of Jet Lag! The winners get special prizes and eternal honor.</span>
         </Step>
       </div>
+{/* 
+      <div className="relative z-10 flex flex-col gap-12 lg:gap-24 w-full px-6 lg:px-48 pt-24 lg:pt-40">
+        <p className="text-4xl lg:text-7xl tracking-[-0.1em] lg:tracking-[-7px] text-black font-bold border-b-4 border-black pb-4 w-full">FAQ</p>
+      </div> */}
 
       <div className="relative z-10 flex flex-col gap-12 lg:gap-20 w-full px-6 lg:px-40 pt-8 pb-24 lg:pb-32">
         <QuestionAnswer 
