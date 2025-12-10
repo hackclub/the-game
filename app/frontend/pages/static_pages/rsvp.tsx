@@ -149,7 +149,7 @@ export default function RsvpPage() {
         <p className="text-4xl lg:text-7xl tracking-[-0.1em] lg:tracking-[-7px] text-black font-bold border-b-4 border-black pb-4 w-full">FAQ</p>
       </div> */}
 
-      <div className="relative z-10 flex flex-col gap-12 lg:gap-20 w-full px-6 lg:px-40 pt-8 pb-24 lg:pb-32">
+      <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-x-16 md:gap-y-20 w-full px-6 md:px-40 pt-8 pb-24 md:pb-32">
         <QuestionAnswer 
           question="How's the event gonna look like?"
           answer="We're gonna have two stages - an online part and an IRL part. During the online part, you code and build projects to gain tokens depending on the amount of time you put in. If you have enough tokens, you can qualify to the in-person part, where we go to Manhattan and play a IRL boardgame inspired competition across Manhattan!" 
@@ -160,10 +160,9 @@ export default function RsvpPage() {
           answer="Ages 14 through 18, from anywhere in the world! We provide travel stipends for those abroad. You'll have to get enough points in the online part, though!"
         />
 
-
         <QuestionAnswer
-        question="How do I qualify?"
-        answer="You need to code and build projects in exchange for tokens depending on the amount of hours you put in. You'll need to get enough tokens to qualify for the in-person part"
+          question="How do I qualify?"
+          answer="You need to code and build projects in exchange for tokens depending on the amount of hours you put in. You'll need to get enough tokens to qualify for the in-person part"
         />
         
         <QuestionAnswer 
@@ -172,10 +171,9 @@ export default function RsvpPage() {
         />
 
         <QuestionAnswer
-        question="Will my child be safe?"
-        answer="Yes, we'll have round-the clock supervison and security to ensure the safety of all participants by background checked adult volunteers, as well as a first-aid plan in case of any injuries. Students will not be allowed to freely roam the city outside of the game hours. "
+          question="Will my child be safe?"
+          answer="Yes, we'll have round-the clock supervison and security to ensure the safety of all participants by background checked adult volunteers, as well as a first-aid plan in case of any injuries. Students will not be allowed to freely roam the city outside of the game hours. "
         />
-
 
         <QuestionAnswer 
           question="What's the IRL part about?"
