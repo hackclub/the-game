@@ -8,6 +8,7 @@ import ArrowVector from '../../components/ArrowVector';
 
 export default function RsvpPage() {
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showScrollArrow, setShowScrollArrow] = useState(true);
   const [fadeOut, setFadeOut] = useState(false);
   const step1CircleRef = useRef<HTMLDivElement>(null);
   const step2CircleRef = useRef<HTMLDivElement>(null);
@@ -28,6 +29,16 @@ export default function RsvpPage() {
       };
     }
   }, [showSuccess]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY || document.documentElement.scrollTop;
+      setShowScrollArrow(scrollY < 100);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +73,7 @@ export default function RsvpPage() {
               </div>
               <div className="text-lg lg:text-2xl xl:text-3xl tracking-[-0.04em] leading-tight lg:leading-none space-y-1">
                 <p>Code online, then join us in a</p>
-                <p>hide-and-seek competition across Manhattan.</p>
+                <p>Jetlag-inspired adventure across Manhattan.</p>
               </div>
             </div>
           </div>
@@ -97,6 +108,25 @@ export default function RsvpPage() {
             Thanks, we'll e-mail you updates!
           </p>
         </div>
+
+        {showScrollArrow && (
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce group cursor-pointer flex flex-col items-center transition-opacity duration-300">
+            <span className="text-sm font-bold tracking-[-0.04em] opacity-0 group-hover:opacity-100 transition-opacity mb-1">scroll</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 5v14M5 12l7 7 7-7" />
+            </svg>
+          </div>
+        )}
       </div>
 
       <div className="relative z-10 flex flex-col gap-12 lg:gap-24 w-full px-6 lg:px-48 pb-24 lg:pb-40">

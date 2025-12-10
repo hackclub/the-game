@@ -7,7 +7,7 @@ export default function Landing() {
           <span className="font-bold">the game.</span>
         </h1>
         <p className="text-2xl mb-12 text-gray-700">
-          Code online, then join us in a hide-and-seek competition across Manhattan.
+          Code online, then join us in a jetlag inspired adventure across Manhattan.
         </p>
         <div className="space-y-4">
           <a
