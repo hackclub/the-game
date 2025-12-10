@@ -52,7 +52,7 @@ export default function RsvpPage() {
   };
 
   return (
-    <div className="bg-white flex flex-col items-start relative w-full min-h-screen">
+    <div className="bg-white flex flex-col items-start relative w-full">
       <Head title="Hack Club: The Game" />
       <DynamicBackgroundLines stepCircleRefs={[step1CircleRef, step2CircleRef, step3CircleRef]} />
 
@@ -144,10 +144,10 @@ export default function RsvpPage() {
           <span className="font-normal">We all go to Manhattan, and play a game of Jet Lag! The winners get special prizes and eternal honor.</span>
         </Step>
       </div>
-{/* 
-      <div className="relative z-10 flex flex-col gap-12 lg:gap-24 w-full px-6 lg:px-48 pt-24 lg:pt-40">
+
+      <div className="relative z-10 flex flex-col gap-12 lg:gap-24 w-full px-6 lg:px-48 pt-12 lg:pt-20">
         <p className="text-4xl lg:text-7xl tracking-[-0.1em] lg:tracking-[-7px] text-black font-bold border-b-4 border-black pb-4 w-full">FAQ</p>
-      </div> */}
+      </div>
 
       <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-x-16 md:gap-y-20 w-full px-6 md:px-40 pt-8 pb-24 md:pb-32">
         <QuestionAnswer 
