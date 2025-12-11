@@ -17,6 +17,7 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root "static_pages#rsvp"
+  get "/index", to: "static_pages#index"
   get "/home", to: "static_pages#home"
   post "/rsvp", to: "static_pages#create_rsvp"
 
