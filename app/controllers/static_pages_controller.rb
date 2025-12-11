@@ -1,9 +1,5 @@
 class StaticPagesController < ApplicationController
-  allow_unauthenticated_access only: %i[rsvp create_rsvp index]
-
-  def index
-    render inertia: {}
-  end
+  allow_unauthenticated_access only: %i[rsvp create_rsvp]
 
   def home
     unless user_logged_in?
