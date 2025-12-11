@@ -69,7 +69,7 @@ export default function RsvpPage() {
               <div className="mb-4">
                 <p className="text-2xl sm:text-3xl lg:text-6xl xl:text-8xl tracking-[-0.05em] leading-tight lg:leading-none whitespace-nowrap">
                   <span className="font-normal">hack club: </span>
-                  <span className="font-bold">the game.</span>
+                  <span className="font-bold">the game</span>
                 </p>
               </div>
               <div className="text-lg lg:text-2xl xl:text-3xl tracking-[-0.04em] leading-tight lg:leading-none space-y-1">
