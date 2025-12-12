@@ -183,7 +183,7 @@ export default function RsvpPage() {
 
         <QuestionAnswer
           question="Will my child be safe?"
-          answer="Yes! We'll have round-the-clock supervison to ensure the safety of all participants, as well as a first-aid plan. Players will not be allowed to freely roam the city outside of game hours, which will end before evening."
+          answer="Yes! We'll have round-the-clock supervison to ensure the safety of all participants, as well as a first-aid plan. Students will not be allowed to freely roam the city outside of game hours, which will end before evening."
         />
 
         <QuestionAnswer
