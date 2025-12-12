@@ -272,7 +272,7 @@ function buildRedPath(width: number, height: number, r: number, strokeWidth: num
   const sixthTurnY = startY + 1470;
   const rSecondTurn = r * 0.5;
 
-  return [
+  const segmentOne = [
     `M 0 ${startY}`,
     `L ${firstTurnX - r} ${startY}`,
     `A ${r} ${r} 0 0 1 ${firstTurnX} ${startY + r}`,
@@ -281,13 +281,25 @@ function buildRedPath(width: number, height: number, r: number, strokeWidth: num
     `L ${thirdTurnX - r} ${secondTurnY}`,
     `A ${r} ${r} 0 0 1 ${thirdTurnX} ${secondTurnY + r}`,
     `L ${thirdTurnX} ${fourthTurnY - r}`,
+  ]
+
+  const segmentTwo = [
     `A ${r} ${r} 0 0 1 ${thirdTurnX - r} ${fourthTurnY}`,
     `L ${fifthTurnX + r} ${fourthTurnY}`,
     `A ${r} ${r} 0 0 0 ${fifthTurnX} ${fourthTurnY + r}`,
     `L ${fifthTurnX} ${sixthTurnY - r}`,
     `A ${r} ${r} 0 0 0 ${fifthTurnX + r} ${sixthTurnY}`,
     `L ${width + 100} ${sixthTurnY}`,
-  ].join(' ');
+  ]
+
+  const smallFinal = [
+    `A ${r} ${r} 0 0 0 ${thirdTurnX + r} ${fourthTurnY}`,
+    `L ${width + 100} ${fourthTurnY}`,
+  ]
+
+  const combined = isSmall() ? [...segmentOne, ...smallFinal] : [...segmentOne, ...segmentTwo]
+
+  return combined.join(' ');
 }
 
 function buildBluePath(width: number, height: number, r: number, strokeWidth: number): string {
@@ -299,7 +311,7 @@ function buildBluePath(width: number, height: number, r: number, strokeWidth: nu
   const fifthTurnX = width * 0.78 + strokeWidth;
   const sixthTurnY = 141 + 1470 + strokeWidth;
 
-  return [
+  const segmentOne = [
     `M 0 ${startY}`,
     `L ${firstTurnX - r} ${startY}`,
     `A ${r} ${r} 0 0 1 ${firstTurnX} ${startY + r}`,
@@ -308,11 +320,28 @@ function buildBluePath(width: number, height: number, r: number, strokeWidth: nu
     `L ${thirdTurnX - r} ${secondTurnY}`,
     `A ${r} ${r} 0 0 1 ${thirdTurnX} ${secondTurnY + r}`,
     `L ${thirdTurnX} ${fourthTurnY - r}`,
+  ]
+
+  const segmentTwo = [
     `A ${r} ${r} 0 0 1 ${thirdTurnX - r} ${fourthTurnY}`,
     `L ${fifthTurnX + r} ${fourthTurnY}`,
     `A ${r} ${r} 0 0 0 ${fifthTurnX} ${fourthTurnY + r}`,
     `L ${fifthTurnX} ${sixthTurnY - r}`,
     `A ${r} ${r} 0 0 0 ${fifthTurnX + r} ${sixthTurnY}`,
     `L ${width + 100} ${sixthTurnY}`,
-  ].join(' ');
+  ]
+
+  const smallFinal = [
+    `A ${r} ${r} 0 0 0 ${thirdTurnX + r} ${fourthTurnY}`,
+    `L ${width + 100} ${fourthTurnY}`,
+  ]
+
+  const combined = isSmall() ? [...segmentOne, ...smallFinal] : [...segmentOne, ...segmentTwo]
+
+  return combined.join(' ');
+}
+
+function isSmall() {
+  return (window.innerWidth || document.documentElement.clientWidth || 
+document.body.clientWidth) < 1300
 }

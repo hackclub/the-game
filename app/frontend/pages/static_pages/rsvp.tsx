@@ -69,12 +69,11 @@ export default function RsvpPage() {
               <div className="mb-4">
                 <p className="text-2xl sm:text-3xl lg:text-6xl xl:text-8xl tracking-[-0.05em] leading-tight lg:leading-none whitespace-nowrap">
                   <span className="font-normal">hack club: </span>
-                  <span className="font-bold">the game.</span>
+                  <span className="font-bold">the game</span>
                 </p>
               </div>
               <div className="text-lg lg:text-2xl xl:text-3xl tracking-[-0.04em] leading-tight lg:leading-none space-y-1">
-                <p>Code online, then join us in a</p>
-                <p>Jetlag-inspired adventure across Manhattan.</p>
+                <p>Build projects, then compete in an IRL adventure game across Manhattan</p>
               </div>
             </div>
           </div>
@@ -133,8 +132,8 @@ export default function RsvpPage() {
       </div>
 
       <div className="relative z-10 flex flex-col gap-12 lg:gap-24 w-full px-6 lg:px-48 pb-24 lg:pb-40">
-        <Step stepNumber="1" title="Code online." circleRef={step1CircleRef}>
-          <span className="font-normal">Collect tokens by coding! You can exchange your tokens for items in the real-life game. After you get enough tokens, </span>
+        <Step stepNumber="1" title="Build projects" circleRef={step1CircleRef}>
+          <span className="font-normal">Collect coins by making projects! After you get enough coins, </span>
           <span className="font-bold">you qualify!</span>
         </Step>
 
@@ -142,8 +141,8 @@ export default function RsvpPage() {
           <span className="font-normal">After you qualify, you'll get assigned to a house! Create your teams, strategize, and get ready for the game!</span>
         </Step>
 
-        <Step stepNumber="3" title="Play IRL." circleRef={step3CircleRef}>
-          <span className="font-normal">We all go to Manhattan, and play a game of Jet Lag! The winners get special prizes and eternal honor.</span>
+        <Step stepNumber="3" title="Play" circleRef={step3CircleRef}>
+          <span className="font-normal">You'll embark on an adventure to complete challenges and outplay your competitors. The winners get special prizes and eternal honor!</span>
         </Step>
       </div>
 
@@ -154,47 +153,42 @@ export default function RsvpPage() {
       <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-x-16 md:gap-y-20 w-full px-6 md:px-40 pt-8 pb-24 md:pb-32">
         <QuestionAnswer
           question="How's the event gonna look like?"
-          answer="We're gonna have two stages - an online part and an IRL part. During the online part, you code and build projects to gain tokens depending on the amount of time you put in. If you have enough tokens, you can qualify to the in-person part, where we go to Manhattan and play a IRL boardgame inspired competition across Manhattan!"
+          answer="Hack Club: The Game will begin online, during which you code and build projects to gain coins. Once you have enough coins, you'll qualify to go to Manhattan and play!"
         />
+
         <QuestionAnswer
           question="Who can participate?"
-          answer="Ages 14 through 18, from anywhere in the world! We provide travel stipends for those abroad. You'll have to get enough points in the online part, though!"
+          answer="Ages 13 through 18, from anywhere in the world can play Hack Club: The Game."
         />
 
         <QuestionAnswer
           question="When is the event?"
-          answer="HCTG will take place sometime in Mid March. We'll have more details in the coming weeks."
-        />
-
-
-
-
-        <QuestionAnswer
-          question="How do I sign up"
-          answer="You can start by RSVPing above. We're still working on our platform where you'll sumbit your projects. We'll send an email when it's ready"
+          answer="Hack Club: The Game will take place in March. We'll have more details in the coming weeks."
         />
 
         <QuestionAnswer
-          question="What's the IRL part about?"
-          answer="We will split Manhattan into equally sized blocks, and have teams compete against each other to conquer as much of Manhattan as possible and gain the most points possible by the end! We'll reveal more details about the mechanics during the online part. It's inspired by Jetlag"
+          question="How do I sign up?"
+          answer="Enter your email above to RSVP for Hack Club: The Game! We'll send you an email when we have more details."
         />
-
 
         <QuestionAnswer
-          question="How do I qualify?"
-          answer="You need to code and build projects in exchange for tokens depending on the amount of hours you put in. You'll need to get enough tokens to qualify for the in-person part"
+          question="When can I start building projects?"
+          answer={<>Now! We'll have our full platform ready in the coming weeks, but you're can start as long as you track your time using <a className="underline" href="https://hackatime.hackclub.com/" target="_blank">Hackatime</a> (coding/art) or a journal (hardware/art). Journals should be on GitHub and include an entry with a photo/video and description for each hour of work. Art can only account for up to 10% of your total time.</>}
         />
 
-
+        <QuestionAnswer
+          question="How will the game work?"
+          answer="It's a mystery for now! We'll be releasing more details about the game as we approach the event."
+        />
 
         <QuestionAnswer
           question="Will my child be safe?"
-          answer="Yes, we'll have round-the clock supervison and security to ensure the safety of all participants by background checked adult volunteers, as well as a first-aid plan in case of any injuries. Students will not be allowed to freely roam the city outside of the game hours. "
+          answer="Yes! We'll have round-the-clock supervison to ensure the safety of all participants, as well as a first-aid plan. Players will not be allowed to freely roam the city outside of game hours, which will end before evening."
         />
 
         <QuestionAnswer
-          question="My Parents are worried, do you have a parents guide?"
-          answer="We're working on a parents guide and will have one in the coming weeks. "
+          question="My parents are worried!"
+          answer="We'll have an in-depth parents guide available in the coming weeks - RSVP above to get notified when it's ready!"
         />
 
       </div>

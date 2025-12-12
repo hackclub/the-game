@@ -1,11 +1,13 @@
+import type { ReactNode } from "react";
+
 type QuestionAnswerProps = {
   question?: string;
-  answer?: string;
+  answer?: string | ReactNode;
 };
 
 export default function QuestionAnswer({ 
-  question = "How's the event gonna look like?", 
-  answer = "We're gonna have two stages - an online part and an IRL part. During the online part, you code and gain points depending on the amount of time you put in. If you have enough hours, you can qualify to the in-person part, where we go to Manhattan and go on a hide-and-seek competition!" 
+  question, 
+  answer
 }: QuestionAnswerProps) {
   return (
     <div className="flex flex-col gap-4 items-start w-full">
