@@ -19,6 +19,13 @@ Rails.application.routes.draw do
   root "static_pages#rsvp"
   get "/index", to: "static_pages#index"
   get "/home", to: "static_pages#home"
+  get "/sorry", to: "static_pages#sorry"
+  get "/adult", to: "static_pages#adult"
+  get "/dashboard", to: "dashboard#index"
+  get "/projects", to: "projects#index"
+  post "/projects", to: "projects#create"
+  patch "/projects/:id", to: "projects#update", as: :project
+  delete "/projects/:id", to: "projects#destroy"
   post "/rsvp", to: "static_pages#create_rsvp"
 
   scope "/auth" do
@@ -28,5 +35,9 @@ Rails.application.routes.draw do
     post "create_email", to: "auth#create_email"
     get "sent", to: "auth#sent"
     post "validate", to: "auth#validate"
+  end
+
+  namespace :admin do
+    resources :users
   end
 end

@@ -42,7 +42,7 @@ class AuthController < ApplicationController
       # Clear the referrer cookie after successful signup
       cookies.delete(:referrer_id) if referrer_id
 
-      redirect_to home_path
+      redirect_to dashboard_path
     else
       flash.now[:alert] = "Invalid OTP. Please try again."
       redirect_to root_path
@@ -96,7 +96,7 @@ class AuthController < ApplicationController
       return redirect_to root_path, alert: "Couldn't log in: #{e.message}"
     end
 
-    redirect_to home_path, notice: "Successfully logged in!"
+    redirect_to dashboard_path, notice: "Successfully logged in!"
   end
 
   private
@@ -104,7 +104,7 @@ class AuthController < ApplicationController
   def redirect_if_logged_in
     return unless user_logged_in?
 
-    redirect_to(post_login_redirect_path || home_path)
+    redirect_to(post_login_redirect_path || dashboard_path)
   end
 
   def set_after_login_redirect

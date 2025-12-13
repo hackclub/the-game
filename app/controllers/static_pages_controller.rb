@@ -1,5 +1,16 @@
 class StaticPagesController < ApplicationController
-  allow_unauthenticated_access only: %i[rsvp create_rsvp]
+  allow_unauthenticated_access only: %i[index rsvp create_rsvp]
+  skip_before_action :redirect_banned_users, only: %i[sorry]
+  skip_before_action :redirect_adults, only: %i[adult]
+
+  def index
+    if user_logged_in?
+      redirect_to dashboard_path
+      return
+    end
+
+    render inertia: {}
+  end
 
   def home
     unless user_logged_in?
@@ -12,7 +23,7 @@ class StaticPagesController < ApplicationController
 
   def rsvp
     if user_logged_in?
-      redirect_to home_path
+      redirect_to dashboard_path
       return
     end
 
@@ -28,5 +39,13 @@ class StaticPagesController < ApplicationController
     AirtableService.new.create_rsvp(email: email, origin_ip: origin_ip)
 
     redirect_to root_path, notice: "RSVP received! We'll be in touch soon."
+  end
+
+  def sorry
+    render inertia: {}
+  end
+
+  def adult
+    render inertia: {}
   end
 end

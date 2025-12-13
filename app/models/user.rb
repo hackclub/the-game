@@ -12,8 +12,11 @@
 #  internal_notes       :text
 #  is_banned            :boolean          default(FALSE), not null
 #  last_active          :datetime
+#  milestones           :jsonb            not null
 #  username             :string
 #  ysws_verified        :boolean
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
 #  account_id           :string
 #  hackatime_id         :string
 #  referrer_id          :bigint
@@ -32,11 +35,49 @@ class User < ApplicationRecord
   # Simple referrer: a user may have one referrer (another User)
   belongs_to :referrer, class_name: "User", optional: true
 
+  has_many :projects, dependent: :destroy
+
   enum :ban_type, { hackatime: 0, blueprint: 1, previous: 2, slack: 3, age: 4 }
 
   after_save_commit :link_hackatime, if: -> { slack_id_previously_changed? && hackatime_id.nil? }
+  after_save_commit :check_setup_milestone
 
   has_paper_trail
+
+  MILESTONE_NAMES = %w[setup starter halfway almost_there new_york].freeze
+
+  def milestone_completed?(name)
+    milestones.include?(name.to_s)
+  end
+
+  def complete_milestone!(name)
+    return false unless MILESTONE_NAMES.include?(name.to_s)
+    return true if milestone_completed?(name)
+
+    update!(milestones: milestones + [ name.to_s ])
+  end
+
+  def current_milestone
+    MILESTONE_NAMES.find { |m| !milestone_completed?(m) } || MILESTONE_NAMES.last
+  end
+
+  def milestones_progress
+    MILESTONE_NAMES.map do |name|
+      completed = milestone_completed?(name)
+      {
+        name: name.titleize,
+        key: name,
+        completed: completed,
+        current: !completed && current_milestone == name
+      }
+    end
+  end
+
+  def is_adult?
+    return false unless birthday.present?
+
+    birthday < 19.years.ago.to_date
+  end
 
   def self.exchange_authorization_code(code)
     response = Faraday.post("https://account.hackclub.com/oauth/token", { client_id: ENV["ACCOUNT_CLIENT_ID"], client_secret: ENV["ACCOUNT_CLIENT_SECRET"], redirect_uri: Rails.application.routes.url_helpers.account_callback_url, code:, grant_type: "authorization_code" })
@@ -89,5 +130,11 @@ class User < ApplicationRecord
     else
       nil
     end
+  end
+
+  def check_setup_milestone
+    return if milestone_completed?(:setup)
+
+    complete_milestone!(:setup) if account_id.present? && hackatime_id.present?
   end
 end

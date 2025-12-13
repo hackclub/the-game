@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_23_081314) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_13_014440) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -22,6 +22,16 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_23_081314) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "projects", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "hackatime_name"
+    t.string "name"
+    t.string "repo_url"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_projects_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "account_access_token"
     t.string "account_id"
@@ -29,13 +39,16 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_23_081314) do
     t.string "avatar"
     t.integer "ban_type"
     t.date "birthday"
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "email", null: false
     t.string "hackatime_id"
     t.text "internal_notes"
     t.boolean "is_banned", default: false, null: false
     t.datetime "last_active"
+    t.jsonb "milestones", default: [], null: false
     t.bigint "referrer_id"
     t.string "slack_id"
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "username"
     t.boolean "ysws_verified"
     t.index ["referrer_id"], name: "index_users_on_referrer_id"
@@ -51,4 +64,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_23_081314) do
     t.string "whodunnit"
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end
+
+  add_foreign_key "projects", "users"
 end

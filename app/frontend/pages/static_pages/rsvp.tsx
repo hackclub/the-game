@@ -193,6 +193,31 @@ export default function RsvpPage() {
 
       </div>
 
+      <div className="relative z-10 flex justify-center w-full pb-12">
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="bg-white border-4 border-black flex items-center justify-center gap-3 px-6 py-4 hover:bg-black hover:text-white transition-colors cursor-pointer group"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="group-hover:stroke-white"
+          >
+            <path d="M12 19V5M5 12l7-7 7 7" />
+          </svg>
+          <span className="font-bold text-xl tracking-[-0.09em]">
+            Back to top
+          </span>
+        </button>
+      </div>
+
       <HackClubFooter />
     </div>
   );
