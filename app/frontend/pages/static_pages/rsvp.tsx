@@ -137,7 +137,7 @@ export default function RsvpPage() {
           <span className="font-bold">you qualify!</span>
         </Step>
 
-        <Step stepNumber="2" title="Team up." circleRef={step2CircleRef}>
+        <Step stepNumber="2" title="Team up" circleRef={step2CircleRef}>
           <span className="font-normal">After you qualify, you'll get assigned to a house! Create your teams, strategize, and get ready for the game!</span>
         </Step>
 
