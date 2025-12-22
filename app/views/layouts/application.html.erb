@@ -1,11 +1,27 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title data-inertia><%= content_for(:title) || "The Game" %></title>
+    <title data-inertia><%= content_for(:title) || "Hack Club The Game" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="The Game">
+    <meta name="application-name" content="Hack Club The Game">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="description" content="Hack Club The Game">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<%= request.original_url %>">
+    <meta property="og:title" content="Hack Club The Game">
+    <meta property="og:description" content="Hack Club The Game">
+    <meta property="og:image" content="https://hc-cdn.hel1.your-objectstorage.com/s/v3/c0994702c234d9d5_hack_club_the_game_twitter_post.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="<%= request.original_url %>">
+    <meta property="twitter:title" content="Hack Club The Game">
+    <meta property="twitter:description" content="Hack Club The Game">
+    <meta property="twitter:image" content="https://hc-cdn.hel1.your-objectstorage.com/s/v3/c0994702c234d9d5_hack_club_the_game_twitter_post.png">
+    
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
