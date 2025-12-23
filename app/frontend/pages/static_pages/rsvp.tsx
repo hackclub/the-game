@@ -132,16 +132,15 @@ export default function RsvpPage() {
       </div>
 
       <div className="relative z-10 flex flex-col gap-12 lg:gap-24 w-full px-6 lg:px-48 pb-24 lg:pb-40">
-        <Step stepNumber="1" title="Build projects" circleRef={step1CircleRef}>
-          <span className="font-normal">Collect coins by making projects! After you get enough coins, </span>
-          <span className="font-bold">you qualify!</span>
+        <Step stepNumber="1" title="Build projects for 40 hours" circleRef={step1CircleRef}>
+          <span className="font-normal"> Work on any programming project you like, and get coins for every project you ship! </span> That's only <span className="font-bold"> 5 hours for 8 weeks!</span>
         </Step>
 
         <Step stepNumber="2" title="Team up" circleRef={step2CircleRef}>
           <span className="font-normal">After you qualify, you'll get assigned to a house! Create your teams, strategize, and get ready for the game!</span>
         </Step>
 
-        <Step stepNumber="3" title="Play" circleRef={step3CircleRef}>
+        <Step stepNumber="3" title="Play together in March" circleRef={step3CircleRef}>
           <span className="font-normal">You'll embark on an adventure to complete challenges and outplay your competitors. The winners get special prizes and eternal honor!</span>
         </Step>
       </div>
