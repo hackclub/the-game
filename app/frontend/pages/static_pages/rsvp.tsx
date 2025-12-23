@@ -52,7 +52,7 @@ export default function RsvpPage() {
   };
 
   return (
-    <div className="bg-white flex flex-col items-start relative w-full">
+    <div id="hero" className="bg-white flex flex-col items-start relative w-full">
       <Head title="Hack Club: The Game" />
       <DynamicBackgroundLines stepCircleRefs={[step1CircleRef, step2CircleRef, step3CircleRef]} />
 
@@ -112,8 +112,7 @@ export default function RsvpPage() {
         </div>
 
         {showScrollArrow && (
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce group cursor-pointer flex flex-col items-center transition-opacity duration-300">
-            <span className="text-sm font-bold tracking-[-0.04em] opacity-0 group-hover:opacity-100 transition-opacity mb-1">scroll</span>
+          <a href="#steps" className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce group cursor-pointer flex flex-col items-center transition-opacity duration-300 scroll-smooth">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="32"
@@ -127,11 +126,11 @@ export default function RsvpPage() {
             >
               <path d="M12 5v14M5 12l7 7 7-7" />
             </svg>
-          </div>
+          </a>
         )}
       </div>
 
-      <div className="relative z-10 flex flex-col gap-12 lg:gap-24 w-full px-6 lg:px-48 pb-24 lg:pb-40">
+      <div className="relative z-10 flex flex-col gap-12 lg:gap-24 w-full px-6 lg:px-48 pb-24 lg:pb-40" id="steps">
         <Step stepNumber="1" title="Build projects for 40 hours" circleRef={step1CircleRef}>
           <span className="font-normal"> Work on any programming project you like, and get coins for every project you ship! </span> That's only <span className="font-bold"> 5 hours for 8 weeks!</span>
         </Step>
@@ -191,6 +190,8 @@ export default function RsvpPage() {
         />
 
       </div>
+
+     
 
       <HackClubFooter />
     </div>
