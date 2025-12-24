@@ -1,10 +1,10 @@
 import { Link } from '@inertiajs/react'
 
-export default function Home({ account_linked, hackatime_linked }: { account_linked: boolean, hackatime_linked: boolean }) {
+export default function Home({ account_linked, hackatime_linked, current_user }: { account_linked: boolean, hackatime_linked: boolean, current_user: any }) {
   return (
     <>
       <p>hey</p>
-      <p>welcome home bro</p>
+      <p>welcome home {current_user?.name}</p>
       <Link method="post" href="/auth/logout">logout if you want</Link>
       <hr />
       {!account_linked && <>

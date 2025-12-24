@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { useForm, Head } from '@inertiajs/react';
+import { useForm, Head, Link } from '@inertiajs/react';
 import Step from '../../components/Step';
 import QuestionAnswer from '../../components/QuestionAnswer';
 import DynamicBackgroundLines from '../../components/DynamicBackgroundLines';
@@ -18,8 +18,8 @@ export default function RsvpPage() {
   const { data, setData, post, reset } = useForm({ email: '' });
 
   useEffect(() => {
-    if (showSuccess ) {
-     console.log(data)
+    if (showSuccess) {
+      console.log(data)
       const fadeTimer = setTimeout(() => setFadeOut(true), 3000);
       const hideTimer = setTimeout(() => {
         setShowSuccess(false);
@@ -29,8 +29,8 @@ export default function RsvpPage() {
         clearTimeout(fadeTimer);
         clearTimeout(hideTimer);
       };
-    } 
-  
+    }
+
   }, [showSuccess]);
 
   useEffect(() => {
@@ -86,7 +86,7 @@ export default function RsvpPage() {
                 type="email"
                 value={data.email}
                 onChange={(e) => setData('email', e.target.value)}
-                placeholder="your@email.com"
+                placeholder="hctg@hackclub.com"
                 className="w-full text-lg lg:text-3xl tracking-[-0.04em] text-black bg-transparent border-none outline-none placeholder-gray-400 focus:ring-0 font-[Arial]"
               />
             </div>
@@ -109,9 +109,8 @@ export default function RsvpPage() {
           >
             Thanks, we'll e-mail you updates!
           </p>
-
-
         </div>
+       
 
         {showScrollArrow && (
           <a href="#steps" className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce group cursor-pointer flex flex-col items-center transition-opacity duration-300 scroll-smooth">
@@ -133,23 +132,24 @@ export default function RsvpPage() {
       </div>
 
       <div className="relative z-10 flex flex-col gap-12 lg:gap-24 w-full px-6 lg:px-48 pb-24 lg:pb-40" id="steps">
-        
-      <div className="md:max-lg:bg-blue-500">
-          hi!
+
+{}
+        <div className="">
           
-      
-        <Step stepNumber="1" title="Build projects for 40 hours" circleRef={step1CircleRef}>
-          <span className="font-normal"> Work on any programming project you like, and get coins for every project you ship! </span> That's only <span className="font-bold"> 5 hours for 8 weeks!</span>
-        </Step>
 
-        <Step stepNumber="2" title="Team up" circleRef={step2CircleRef}>
-          <span className="font-normal">After you qualify, you'll get assigned to a house! Create your teams, strategize, and get ready for the game!</span>
-        </Step>
 
-        <Step stepNumber="3" title="Play together in March" circleRef={step3CircleRef}>
-          <span className="font-normal">You'll embark on an adventure to complete challenges and outplay your competitors. The winners get special prizes and eternal honor!</span>
-        </Step>
-      </div>
+          <Step stepNumber="1" title="Build projects for 40 hours" circleRef={step1CircleRef}>
+            <span className="font-normal"> Work on any programming project you like, and get coins for every project you ship! </span> That's only <span className="font-bold"> 5 hours for 8 weeks!</span>
+          </Step>
+
+          <Step stepNumber="2" title="Team up" circleRef={step2CircleRef}>
+            <span className="font-normal">After you qualify, you'll get assigned to a house! Create your teams, strategize, and get ready for the game!</span>
+          </Step>
+
+          <Step stepNumber="3" title="Play together in March" circleRef={step3CircleRef}>
+            <span className="font-normal">You'll embark on an adventure to complete challenges and outplay your competitors. The winners get special prizes and eternal honor!</span>
+          </Step>
+        </div>
       </div>
 
       <div className="relative z-10 flex flex-col gap-12 lg:gap-24 w-full px-6 lg:px-48 pt-12 lg:pt-20">
@@ -199,7 +199,7 @@ export default function RsvpPage() {
 
       </div>
 
-     
+
 
       <HackClubFooter />
     </div>

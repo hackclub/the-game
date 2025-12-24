@@ -19,7 +19,8 @@ Rails.application.routes.draw do
   root "static_pages#rsvp"
   get "/index", to: "static_pages#index"
   get "/home", to: "static_pages#home"
-  post "/rsvp", to: "static_pages#create_rsvp"
+post "/rsvp", to: "static_pages#create_rsvp"
+
 
   scope "/auth" do
     get "account_callback", to: "auth#account_callback"
