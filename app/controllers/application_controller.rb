@@ -33,7 +33,7 @@ class ApplicationController < ActionController::Base
   def redirect_adults
     return unless user_logged_in?
     return unless current_user.birthday.present?
-    return unless current_user.is_adult?
+    return unless current_user.is_banned
 
     redirect_to adult_path
   end
