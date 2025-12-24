@@ -133,10 +133,9 @@ export default function RsvpPage() {
 
       <div className="relative z-10 flex flex-col gap-12 lg:gap-24 w-full px-6 lg:px-48 pb-24 lg:pb-40" id="steps">
 
-{}
-        <div className="">
-          
 
+        <div className="">
+        
 
           <Step stepNumber="1" title="Build projects for 40 hours" circleRef={step1CircleRef}>
             <span className="font-normal"> Work on any programming project you like, and get coins for every project you ship! </span> That's only <span className="font-bold"> 5 hours for 8 weeks!</span>

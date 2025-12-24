@@ -1,5 +1,5 @@
 class StaticPagesController < ApplicationController
-  allow_unauthenticated_access only: %i[rsvp create_rsvp login]
+  allow_unauthenticated_access only: %i[rsvp create_rsvp login index]
 
   def home
     unless user_logged_in?
