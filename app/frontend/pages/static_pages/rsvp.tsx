@@ -18,7 +18,8 @@ export default function RsvpPage() {
   const { data, setData, post, reset } = useForm({ email: '' });
 
   useEffect(() => {
-    if (showSuccess) {
+    if (showSuccess ) {
+     console.log(data)
       const fadeTimer = setTimeout(() => setFadeOut(true), 3000);
       const hideTimer = setTimeout(() => {
         setShowSuccess(false);
@@ -28,7 +29,8 @@ export default function RsvpPage() {
         clearTimeout(fadeTimer);
         clearTimeout(hideTimer);
       };
-    }
+    } 
+  
   }, [showSuccess]);
 
   useEffect(() => {
@@ -80,7 +82,7 @@ export default function RsvpPage() {
 
           <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 lg:gap-3 w-full mt-4 h-20">
             <div className="bg-white border-4 border-black px-4 lg:px-6 sm:flex-1 h-full flex">
-              <input
+              <input required
                 type="email"
                 value={data.email}
                 onChange={(e) => setData('email', e.target.value)}
@@ -131,6 +133,11 @@ export default function RsvpPage() {
       </div>
 
       <div className="relative z-10 flex flex-col gap-12 lg:gap-24 w-full px-6 lg:px-48 pb-24 lg:pb-40" id="steps">
+        
+      <div className="md:max-lg:bg-blue-500">
+          hi!
+          
+      
         <Step stepNumber="1" title="Build projects for 40 hours" circleRef={step1CircleRef}>
           <span className="font-normal"> Work on any programming project you like, and get coins for every project you ship! </span> That's only <span className="font-bold"> 5 hours for 8 weeks!</span>
         </Step>
@@ -142,6 +149,7 @@ export default function RsvpPage() {
         <Step stepNumber="3" title="Play together in March" circleRef={step3CircleRef}>
           <span className="font-normal">You'll embark on an adventure to complete challenges and outplay your competitors. The winners get special prizes and eternal honor!</span>
         </Step>
+      </div>
       </div>
 
       <div className="relative z-10 flex flex-col gap-12 lg:gap-24 w-full px-6 lg:px-48 pt-12 lg:pt-20">
