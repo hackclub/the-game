@@ -132,9 +132,9 @@ export default function RsvpPage() {
         )}
       </div>
 
-      <div className="relative z-10 flex flex-col gap-14 lg:gap-24 w-full px-6 lg:px-48 pb-24 lg:pb-40" id="steps">
+      <div className="relative z-10 flex flex-col  lg:gap-24 w-full px-6 lg:px-48 pb-24 lg:pb-40" id="steps">
         
-      <div className="md:max-lg:bg-blue-500">
+      <div className="">
       
         
       
