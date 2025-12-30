@@ -1,4 +1,5 @@
 import { Link } from "@inertiajs/react";
+import Sidebar from "@/components/sidebar";
 
 export default function Home({
   account_linked,
@@ -10,6 +11,7 @@ export default function Home({
 }) {
   return (
     <>
+      <Sidebar />
       <p>hey!</p>
       <p>welcome home</p>
       <Link method="post" href="/auth/logout">
