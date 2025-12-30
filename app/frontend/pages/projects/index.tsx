@@ -1,5 +1,6 @@
 import { Link } from "@inertiajs/react";
 import ProjectCreate from "@/components/ProjectCreate";
+import Sidebar from "@/components/sidebar";
 
 interface Project {
   id: number;
@@ -27,8 +28,10 @@ interface Project {
 export default function Index({ projects }: { projects: Project[] }) {
   console.log(projects);
   return (
-    <>
-      <h1> Your Projects</h1>
+    <div className="flex">
+      <Sidebar />
+      <main className="flex-1 lg:ml-64 p-6">
+        <h1>Your Projects</h1>
       {projects.length === 0 && (
         <>
           <h1 className="text-center text-2xl font-bold text-gray-800">
@@ -51,6 +54,7 @@ export default function Index({ projects }: { projects: Project[] }) {
           </div>
         ))}
       </div>
-    </>
+      </main>
+    </div>
   );
 }
