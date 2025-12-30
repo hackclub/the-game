@@ -1,5 +1,5 @@
 class StaticPagesController < ApplicationController
-  allow_unauthenticated_access only: %i[rsvp create_rsvp login index]
+  allow_unauthenticated_access only: %i[rsvp create_rsvp signup index]
 
   def home
     unless user_logged_in?
@@ -13,7 +13,12 @@ class StaticPagesController < ApplicationController
   def index
     render inertia: {}
   end
-
+  
+  def projects
+    @projects = current_user.projects
+    render inertia: 'Projects/Index', props: { projects: @projects }
+  end
+  
   def rsvp
     if user_logged_in?
       redirect_to home_path
@@ -34,8 +39,13 @@ class StaticPagesController < ApplicationController
     redirect_to root_path, notice: "RSVP received! We'll be in touch soon."
   end
 
-  def login
-    email = params[:email]
-    redirect_to "/auth/start/#{email}"
+
+  def signup
+   email = params[:email]
+    if request.inertia?
+      render inertia: "Redirect", props: {url: '/auth/start?email=' + email}
+    else
+      redirect_to '/auth/start'
+    end
   end
 end

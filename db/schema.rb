@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_23_081314) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_30_201014) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -20,6 +20,29 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_23_081314) do
     t.datetime "expires_at"
     t.string "secret", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "projects", force: :cascade do |t|
+    t.integer "approved"
+    t.datetime "created_at", null: false
+    t.string "demo_link"
+    t.text "desc"
+    t.string "hackatime_project_keys"
+    t.text "internal_notes"
+    t.boolean "is_deleted"
+    t.string "project_type"
+    t.string "readme_link"
+    t.string "repo_link"
+    t.decimal "reported_hours", precision: 3, scale: 1
+    t.integer "review_status"
+    t.text "reviewer_note"
+    t.boolean "shipped"
+    t.datetime "submitted_at"
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.string "ysws"
+    t.index ["user_id"], name: "index_projects_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -51,4 +74,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_23_081314) do
     t.string "whodunnit"
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end
+
+  add_foreign_key "projects", "users"
 end

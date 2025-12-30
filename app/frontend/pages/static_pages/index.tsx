@@ -7,10 +7,11 @@ export default function Landing() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post('/rsvp', {
-      onSuccess: () => {
-        reset();
-        setShowSuccess(true);
+    post('/signup', {
+      onSuccess: (page) => {
+        if (page.props.url) {
+          window.location.href = page.props.url as string;
+        }
       },
     });
   };
