@@ -1,6 +1,7 @@
 import { Link } from "@inertiajs/react";
-import ProjectCreate from "@/components/ProjectCreate";
+import ProjectCreate from "@/components/Projects/ProjectCreate";
 import Sidebar from "@/components/sidebar";
+import ProjectList from "@/components/Projects/ProjectList";
 
 interface Project {
   id: number;
@@ -28,6 +29,7 @@ interface Project {
 export default function Index({ projects }: { projects: Project[] }) {
   console.log(projects);
   return (
+    
     <div className="flex">
       <Sidebar />
       <main className="flex-1 lg:ml-64 p-6">
@@ -41,19 +43,9 @@ export default function Index({ projects }: { projects: Project[] }) {
       )}
       <ProjectCreate />
 
+
       <h1 className="text-xl font-bold mt-8 mb-4">Your Projects</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {projects.map((project) => (
-          <div key={project.id} className="p-4 border rounded-lg shadow-sm">
-            <h2 className="text-lg font-semibold">{project.title}</h2>
-            <p className="text-gray-600 mt-2">{project.desc}</p>
-            <div className="mt-4 flex gap-4">
-              {project.demo_link && <a href={project.demo_link} className="text-blue-500 hover:underline">Demo</a>}
-              {project.repo_link && <a href={project.repo_link} className="text-blue-500 hover:underline">Repo</a>}
-            </div>
-          </div>
-        ))}
-      </div>
+      <ProjectList projects={projects} />
       </main>
     </div>
   );
