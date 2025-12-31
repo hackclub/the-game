@@ -1,9 +1,7 @@
 class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
-  allow_browser versions: :modern
+  # allow_browser versions: :modern
 
-  # Changes to the importmap will invalidate the etag for HTML responses
-  stale_when_importmap_changes
 
   include Authentication
 
@@ -35,7 +33,7 @@ class ApplicationController < ActionController::Base
   def redirect_adults
     return unless user_logged_in?
     return unless current_user.birthday.present?
-    return unless current_user.is_adult?
+    return unless current_user.is_banned
 
     redirect_to adult_path
   end
