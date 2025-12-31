@@ -4,19 +4,19 @@ import Sidebar from "@/components/sidebar";
 export default function Home({
   account_linked,
   hackatime_linked,
+  current_user
 }: {
   account_linked: boolean;
   hackatime_linked: boolean;
+  current_user: any;
 }) {
   return (
     <div className="flex min-h-screen bg-gray-100">
       <Sidebar />
       <main className="flex-1 lg:ml-64 p-6">
-        <p className="text-2xl font-bold">hey!</p>
+        <p className="text-2xl font-bold">hey {current_user.username}!</p>
         <p className="text-xl">welcome home</p>
-        <Link method="post" href="/auth/logout">
-          logout if you want
-        </Link>
+        
         <hr />
         {!account_linked && (
           <>
@@ -34,6 +34,11 @@ export default function Home({
             </p>
           </>
         )}
+        
+        <hr />
+      
+      
+        
       </main>
     </div>
   );

@@ -7,18 +7,18 @@ class StaticPagesController < ApplicationController
       return
     end
 
-    render inertia: { account_linked: current_user.account_id.present?, hackatime_linked: current_user.hackatime_id.present? }
+    render inertia: { account_linked: current_user.account_id.present?, hackatime_linked: current_user.hackatime_id.present?, current_user: current_user }
   end
 
   def index
     render inertia: {}
   end
-  
+
   def projects
     @projects = current_user.projects
     render inertia: 'Projects/Index', props: { projects: @projects }
   end
-  
+
   def rsvp
     if user_logged_in?
       redirect_to home_path

@@ -30,6 +30,7 @@ patch "/projects/:id", to: "projects#update"
 delete "/projects/:id", to: "projects#destroy"
 patch "/projects/:id/ship", to: "projects#ship"
 get "/admin", to: "admin#index"
+get "/explore", to: "explore#index"
 
   scope "/auth" do
     get "account_callback", to: "auth#account_callback"
