@@ -29,6 +29,7 @@ class User < ApplicationRecord
     "User##{id}"
   end
 
+  
   has_many :projects
 
   # Simple referrer: a user may have one referrer (another User)

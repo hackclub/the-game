@@ -35,6 +35,7 @@ class Project < ApplicationRecord
   belongs_to :user
   has_paper_trail
 
+  validates :title, :desc, :repo_link, :demo_link, presence: true
 
   enum :review_status, { pending: 0, approved: 1, rejected: 2 }
   enum :approved, { not_shipped: 0, shipped: 1 }
@@ -43,7 +44,7 @@ class Project < ApplicationRecord
 
   private
 
-  
+
   def approved_review_status
     self.review_status = Project.review_statuses[:pending]
     self.approved = Project.approveds[:not_shipped]
