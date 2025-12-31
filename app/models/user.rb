@@ -37,6 +37,7 @@ class User < ApplicationRecord
   enum :ban_type, { hackatime: 0, blueprint: 1, previous: 2, slack: 3, age: 4 }
 
   after_save_commit :link_hackatime, if: -> { slack_id_previously_changed? && hackatime_id.nil? }
+  after_save_commit :fetch_avatar, if: -> { slack_id_previously_changed? && avatar.nil? }
 
   has_paper_trail
 
@@ -90,6 +91,16 @@ class User < ApplicationRecord
       update!(hackatime_id: response.body["data"]["user_id"])
     else
       nil
+    end
+  end
+
+  def fetch_avatar
+    return if slack_id.blank?
+
+    response = Faraday.get("https://cachet.dunkirk.sh/users/#{slack_id}")
+    if response.success?
+      data = JSON.parse(response.body)
+      update(avatar: data["imageUrl"])
     end
   end
 end
