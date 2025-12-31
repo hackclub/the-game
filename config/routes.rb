@@ -28,6 +28,8 @@ get "/projects/:id", to: "projects#show"
 get "/projects/:id/edit", to: "projects#edit"
 patch "/projects/:id", to: "projects#update"
 delete "/projects/:id", to: "projects#destroy"
+patch "/projects/:id/ship", to: "projects#ship"
+get "/admin", to: "admin#index"
 
   scope "/auth" do
     get "account_callback", to: "auth#account_callback"

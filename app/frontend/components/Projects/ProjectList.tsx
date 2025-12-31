@@ -1,13 +1,15 @@
 import { Link } from "@inertiajs/react";
 
+
 export default function ProjectList({ projects }: { projects: Project[] }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {projects.map((project) => (
         <div key={project.id} className="p-4 border rounded-lg shadow-sm">
           <h2 className="text-lg font-semibold">{project.title}</h2>
-          <p className="text-gray-600 mt-2">{project.desc}</p>
-          <div className="mt-4 flex gap-4">
+          <span className="bg-amber-200"> Review: {project.review_status}</span>
+          <p className="text-gray-600 mt-4">{project.desc}</p>
+          <div className="mt-6 flex gap-2">
             {project.demo_link && (
               <a
                 href={project.demo_link}
@@ -30,7 +32,9 @@ export default function ProjectList({ projects }: { projects: Project[] }) {
             >
               Edit
             </Link>
-            <span className="text-gray-500">{project.review_status}</span>
+    
+            <span className="text-gray-500">{project.approved}</span>
+            <br />
           </div>
         </div>
       ))}

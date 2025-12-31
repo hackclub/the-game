@@ -27,6 +27,12 @@ class ProjectsController < ApplicationController
     render inertia: 'projects/show', props: { project: @project }
   end
 
+  def ship
+    @project = Project.find(params[:id])
+    @project.update!(approved: :shipped)
+    redirect_to projects_path
+  end
+
   def edit
     @project = Project.find(params[:id])
     render inertia: 'projects/edit', props: { project: @project }

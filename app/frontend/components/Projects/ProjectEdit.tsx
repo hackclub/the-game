@@ -9,7 +9,14 @@ interface Project {
 }
 
 export default function EditProject({ project }: { project: Project }) {
-  const { data, setData, patch, delete: destroy, processing, errors } = useForm({
+  const {
+    data,
+    setData,
+    patch,
+    delete: destroy,
+    processing,
+    errors,
+  } = useForm({
     title: project.title,
     desc: project.desc,
     repo_link: project.repo_link,
@@ -21,17 +28,21 @@ export default function EditProject({ project }: { project: Project }) {
     patch(`/projects/${project.id}`);
   }
 
+  function shipProject(e: React.FormEvent) {
+    e.preventDefault();
+    patch(`/projects/${project.id}/ship`);
+  }
+
   function handleDelete(e: React.FormEvent) {
     e.preventDefault();
     if (confirm("Are you sure you want to delete this project?")) {
-      destroy(`/projects/${project.id}`)
+      destroy(`/projects/${project.id}`);
     }
   }
-  
-  return (
 
+  return (
     <div className="flex flex-col items-center justify-center">
-    <br></br>
+      <br></br>
       <form onSubmit={submit}>
         <div className="mb-4">
           <label htmlFor="title">Title:</label>
@@ -67,17 +78,32 @@ export default function EditProject({ project }: { project: Project }) {
         </div>
 
         <div className="flex flex-col gap-2 mt-4">
-        <button className="p-5  bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit" disabled={processing}>
-          Update Project
-        </button>
+          <button
+            className="p-5  bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+            type="button"
+            onClick={shipProject}
+            disabled={processing}
+          >
+            Ship Project
+          </button>
+          <button
+            className="p-5  bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            type="submit"
+            disabled={processing}
+          >
+            Update Project
+          </button>
 
-        <button className="p-5  bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" type="button" onClick={handleDelete} disabled={processing}>
-          Delete Project
-        </button>
+          <button
+            className="p-5  bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+            type="button"
+            onClick={handleDelete}
+            disabled={processing}
+          >
+            Delete Project
+          </button>
         </div>
-
       </form>
     </div>
   );
 }
-
