@@ -38,7 +38,7 @@ class User < ApplicationRecord
 
   after_save_commit :link_hackatime, if: -> { slack_id_previously_changed? && hackatime_id.nil? }
   after_save_commit :fetch_avatar, if: -> { slack_id_previously_changed? && avatar.nil? }
-
+  after_save_commit :fetch_username, if: -> { slack_id_previously_changed? && username.nil? }
   has_paper_trail
 
   def self.exchange_authorization_code(code)
@@ -91,6 +91,16 @@ class User < ApplicationRecord
       update!(hackatime_id: response.body["data"]["user_id"])
     else
       nil
+    end
+  end
+
+  def fetch_username
+    return if slack_id.blank?
+
+    response = Faraday.get("https://cachet.dunkirk.sh/users/#{slack_id}")
+    if response.success?
+      data = JSON.parse(response.body)
+      update(username: data["displayName"])
     end
   end
 
