@@ -24,6 +24,10 @@ post "/signup", to: "static_pages#signup"
 get "/projects", to: "projects#index"
 get "/projects/new", to: "projects#new"
 post "/projects", to: "projects#create"
+get "/projects/:id", to: "projects#show"
+get "/projects/:id/edit", to: "projects#edit"
+patch "/projects/:id", to: "projects#update"
+delete "/projects/:id", to: "projects#destroy"
 
   scope "/auth" do
     get "account_callback", to: "auth#account_callback"
