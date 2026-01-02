@@ -31,6 +31,7 @@ class User < ApplicationRecord
 
   
   has_many :projects
+  has_many :hackatime_projects
 
   # Simple referrer: a user may have one referrer (another User)
   belongs_to :referrer, class_name: "User", optional: true
@@ -80,6 +81,7 @@ class User < ApplicationRecord
   def link_hackatime
     response = if slack_id.present?
       User.hackatime_client.get("users/#{slack_id}/stats")
+      
       # Use when we have an admin hackatime key
       # User.hackatime_client.get("users/lookup_slack_uid/#{slack_id}")
     else

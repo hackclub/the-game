@@ -18,7 +18,7 @@ class ProjectsController < ApplicationController
       Rails.logger.info("Project created: #{@projects}")
       redirect_to projects_path
     else
-      render inertia: "projects/new", props: { project: @projects }
+      render inertia: "projects/new", props: { project: @projects, errors: @projects.errors }
     end
   end
 
@@ -44,7 +44,7 @@ class ProjectsController < ApplicationController
       flash[:success] = "Project updated successfully"
       redirect_to projects_path
     else
-      render inertia: 'projects/edit', props: { project: @project }
+      render inertia: 'projects/edit', props: { project: @project, errors: @project.errors }
     end
   end
 
@@ -62,6 +62,7 @@ class ProjectsController < ApplicationController
 
   private
   def project_params
+
     params.require(:project).permit(:title, :desc, :demo_link, :repo_link)
   end
 end

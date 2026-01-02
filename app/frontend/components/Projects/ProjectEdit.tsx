@@ -1,4 +1,4 @@
-import { useForm } from "@inertiajs/react";
+import { useForm, usePage } from "@inertiajs/react";
 
 interface Project {
   id: number;
@@ -6,6 +6,7 @@ interface Project {
   desc: string | null;
   repo_link: string | null;
   demo_link: string | null;
+  approved: string;
 }
 
 export default function EditProject({ project }: { project: Project }) {
@@ -21,6 +22,7 @@ export default function EditProject({ project }: { project: Project }) {
     desc: project.desc,
     repo_link: project.repo_link,
     demo_link: project.demo_link,
+    approved: project.approved,
   });
 
   function submit(e: React.FormEvent) {
@@ -40,6 +42,8 @@ export default function EditProject({ project }: { project: Project }) {
     }
   }
 
+  const isShipped = data.approved === "shipped" ? true : false;
+
   return (
     <div className="flex flex-col items-center justify-center">
       <br></br>
@@ -51,6 +55,7 @@ export default function EditProject({ project }: { project: Project }) {
             value={data.title}
             onChange={(e) => setData("title", e.target.value)}
           />
+          {errors.title && <div className="text-red-500">{errors.title}</div>}
         </div>
         <div className="mb-4">
           <label htmlFor="desc">Description:</label>
@@ -59,6 +64,7 @@ export default function EditProject({ project }: { project: Project }) {
             value={data.desc}
             onChange={(e) => setData("desc", e.target.value)}
           />
+          {errors.desc && <div className="text-red-500">{errors.desc}</div>}
         </div>
         <div className="mb-4">
           <label htmlFor="demo_link">Demo Link:</label>
@@ -67,6 +73,9 @@ export default function EditProject({ project }: { project: Project }) {
             value={data.demo_link}
             onChange={(e) => setData("demo_link", e.target.value)}
           />
+          {errors.demo_link && (
+            <p className="text-red-500">{errors.demo_link}</p>
+          )}
         </div>
         <div className="mb-4">
           <label htmlFor="repo_link">Repository Link:</label>
@@ -75,6 +84,9 @@ export default function EditProject({ project }: { project: Project }) {
             value={data.repo_link}
             onChange={(e) => setData("repo_link", e.target.value)}
           />
+          {errors.repo_link && (
+            <p className="text-red-500">{errors.repo_link}</p>
+          )}
         </div>
 
         <div className="flex flex-col gap-2 mt-4">
@@ -83,6 +95,7 @@ export default function EditProject({ project }: { project: Project }) {
             type="button"
             onClick={shipProject}
             disabled={processing}
+            style={{ display: isShipped ? "none" : "block" }}
           >
             Ship Project
           </button>
