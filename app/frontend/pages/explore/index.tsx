@@ -5,6 +5,7 @@ interface Project {
   title: string;
   desc: string;
   user_id: number;
+  username: string | null;
   created_at: string;
   demo_link: string;
   repo_link: string;
@@ -21,6 +22,7 @@ export default function ExplorePage({ projects }: { projects: Project[] }) {
           {projects.map((project) => (
             <div key={project.id} className="p-4 border rounded-lg shadow-sm">
               <h2 className="text-lg font-semibold">{project.title}</h2>
+              <p className="text-sm text-gray-500">by {project.username || "Unknown"}</p>
               <p className="text-gray-600 mt-4">{project.desc}</p>
               <div className="mt-6 flex gap-2">
                 {project.demo_link && (
