@@ -7,6 +7,7 @@ interface User {
   slack_id: string;
   username: string;
   avatar: string | null;
+  admin: boolean
 }
 
 interface PageProps {
@@ -20,6 +21,9 @@ export default function Sidebar() {
   const user = props.current_user;
   const avatarUrl = user?.avatar;
 
+  const isAdmin = user?.admin || false;
+  console.log(isAdmin)
+  
   const navItems = [
     { href: "/home", label: "Home", icon: HomeIcon, color: "bg-red-500" },
     {
@@ -34,7 +38,6 @@ export default function Sidebar() {
       icon: ExploreIcon,
       color: "bg-purple-500",
     },
-    { href: "/shop", label: "Shop", icon: ShopIcon, color: "bg-green-500" },
   ];
 
   const isActive = (href: string) => url.startsWith(href);
@@ -138,6 +141,9 @@ export default function Sidebar() {
                 <div className="text-white font-semibold truncate">
                   {user?.username || "Guest"}
                 </div>
+                <span className="bg-amber-100 text-amber-800 px-2 py-1 rounded-full text-xs">
+                  {isAdmin ? "Admin" : ""}
+                </span>
                 <div className="flex items-center gap-2 text-sm">
                   <Link
                     href="/settings"

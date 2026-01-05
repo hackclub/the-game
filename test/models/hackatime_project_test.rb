@@ -6,7 +6,7 @@
 #  name       :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  project_id :bigint           not null
+#  project_id :bigint
 #  user_id    :bigint           not null
 #
 # Indexes
@@ -16,7 +16,6 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (project_id => projects.id)
 #  fk_rails_...  (user_id => users.id)
 #
 require "test_helper"

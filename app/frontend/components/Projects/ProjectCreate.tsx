@@ -1,11 +1,12 @@
 import { useForm } from "@inertiajs/react";
 
-export default function ProjectCreate() {
+export default function ProjectCreate({ hackatime_projects, project_times }) {
   const { data, setData, post, processing, errors } = useForm({
     title: "",
     desc: "",
     repo_link: "",
     demo_link: "",
+    hackatime_project_ids: [] as number[],
   });
 
   function submit(e: React.FormEvent) {
@@ -42,8 +43,8 @@ export default function ProjectCreate() {
           <div className="mb-4 gap-2">
             <label htmlFor="demo_link">Demo Link:</label>
             <input
-            className="m-2"
-              type="text"
+              className="m-2"
+              type="url"
               value={data.demo_link}
               onChange={(e) => setData("demo_link", e.target.value)}
             />
@@ -52,10 +53,32 @@ export default function ProjectCreate() {
             )}
           </div>
           <div className="mb-4">
+            <label>Hackatime Projects:</label>
+            <select
+              multiple
+              className="m-2 p-2 border w-full h-32"
+              value={data.hackatime_project_ids.map(String)}
+              onChange={(e) =>
+                setData(
+                  "hackatime_project_ids",
+                  [...e.target.selectedOptions].map((o) => Number(o.value)),
+                )
+              }
+            >
+              {hackatime_projects.map((hp) => (
+                <option key={hp.id} value={hp.id}>
+                  {hp.name} ({Math.floor((project_times[hp.name] || 0) / 3600)}
+                  h)
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="mb-4">
             <label htmlFor="repo_link">Repository Link:</label>
             <input
-            className="m-2"
-              type="text"
+              className="m-2"
+              type="url"
               value={data.repo_link}
               onChange={(e) => setData("repo_link", e.target.value)}
             />
@@ -64,7 +87,11 @@ export default function ProjectCreate() {
             )}
           </div>
 
-          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit" disabled={processing}>
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            type="submit"
+            disabled={processing}
+          >
             Create Project
           </button>
         </form>

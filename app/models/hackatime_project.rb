@@ -6,7 +6,7 @@
 #  name       :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  project_id :bigint           not null
+#  project_id :bigint
 #  user_id    :bigint           not null
 #
 # Indexes
@@ -16,11 +16,10 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (project_id => projects.id)
 #  fk_rails_...  (user_id => users.id)
 #
 class HackatimeProject < ApplicationRecord
-  belongs_to :project
+  belongs_to :project, optional: true
   belongs_to :user
   
   

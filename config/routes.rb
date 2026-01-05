@@ -1,6 +1,5 @@
 Rails.application.routes.draw do
-  get "settings/index"
-  get "settings/update"
+  
   # Redirect to localhost from 127.0.0.1 to use same IP address with Vite server
   constraints(host: "127.0.0.1") do
     get "(*path)", to: redirect { |params, req| "#{req.protocol}localhost:#{req.port}/#{params[:path]}" }
@@ -23,11 +22,18 @@ Rails.application.routes.draw do
   get "/home", to: "static_pages#home"
 post "/rsvp", to: "static_pages#create_rsvp"
 post "/signup", to: "static_pages#signup"
-resources :projects
-patch "/projects/:id/ship", to: "projects#ship"
+resources :projects do
+  member do
+    patch :ship
+  end
+end
+
+
 get "/admin", to: "admin#index"
 get "/explore", to: "explore#index"
-get "/settings", to: "settings#index"
+
+resources :settings 
+
 
 
 

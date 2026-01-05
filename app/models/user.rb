@@ -29,7 +29,7 @@ class User < ApplicationRecord
     "User##{id}"
   end
 
-  
+
   has_many :projects
   has_many :hackatime_projects
 
@@ -41,6 +41,7 @@ class User < ApplicationRecord
   after_save_commit :link_hackatime, if: -> { slack_id_previously_changed? && hackatime_id.nil? }
   after_save_commit :fetch_avatar, if: -> { slack_id_previously_changed? && avatar.nil? }
   after_save_commit :fetch_username, if: -> { slack_id_previously_changed? && username.nil? }
+  after_save_commit :sync_hackatime_projects, if: -> { slack_id_changed? }
   has_paper_trail
 
   def self.exchange_authorization_code(code)
@@ -80,18 +81,21 @@ class User < ApplicationRecord
 
   def link_hackatime
     response = if slack_id.present?
-      User.hackatime_client.get("users/#{slack_id}/stats")
-      
+      response = User.hackatime_client.get("users/#{slack_id}/stats")
+      Rails.logger.info("Hackatime response: #{response.body}")
+      response
       # Use when we have an admin hackatime key
-      # User.hackatime_client.get("users/lookup_slack_uid/#{slack_id}")
+     # response = User.hackatime_client.get("users/lookup_slack_uid/#{slack_id}")
     else
       # Don't have an admin hackatime key yet, so we can't lookup by email.
       # User.hackatime_client.get("users/lookup_email/#{URI.encode_uri_component(user.email)}")
+      Rails.logger.info("Hackatime response: User not found")
       nil
     end
 
     if response&.success?
       update!(hackatime_id: response.body["data"]["user_id"])
+
     else
       nil
     end
@@ -104,6 +108,26 @@ class User < ApplicationRecord
     if response.success?
       data = JSON.parse(response.body)
       update(username: data["displayName"])
+    end
+  end
+
+  def sync_hackatime_projects
+    response = User.hackatime_client.get("users/#{slack_id}/stats") do |req|
+      req.params = {
+        filter_by_project: "inf-expr",
+        start_date: "2025-12-23T00:00:00Z",
+        end_date: Time.now.utc.iso8601,
+        features: "projects"
+      }
+      puts req.params
+    end
+    if response.success?
+      response = response.body["data"]["projects"]
+      projects = response.map do |project|
+        Rails.logger.info("Project: #{project["name"]}")
+        hackatime_project = hackatime_projects.find_or_create_by!(name: project["name"])
+        hackatime_project
+      end
     end
   end
 

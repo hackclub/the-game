@@ -34,6 +34,7 @@
 class Project < ApplicationRecord
   belongs_to :user
   has_paper_trail
+  has_many :hackatime_projects, dependent: :destroy
 
   validates :title, :desc, :repo_link, :demo_link, presence: true
   validates :demo_link, format: { with: /\Ahttps?:\/\/[^\s]+/, message: "must be a valid HTTP or HTTPS URL" }
@@ -42,7 +43,7 @@ class Project < ApplicationRecord
   enum :approved, { not_shipped: 0, shipped: 1 }
 
   before_create :approved_review_status
-  
+
 
   private
 
