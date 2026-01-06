@@ -2,7 +2,7 @@ class HackatimeService
   BASE_URL = "https://hackatime.hackclub.com/api/v1"
 
   def self.fetch_user_projects(slack_uid)
-    start_date ||= 1.month.ago.strftime("%Y-%m-%d")
+    start_date ||= 1.month.ago.strftimpe("%Y-%m-%d")
     url = "#{BASE_URL}/users/#{slack_uid}/stats?features=projects&start_date=#{start_date}"
 
     response = Faraday.get(url) do |req|

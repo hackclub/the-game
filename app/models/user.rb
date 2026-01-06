@@ -81,9 +81,8 @@ class User < ApplicationRecord
 
   def link_hackatime
     response = if slack_id.present?
-      response = User.hackatime_client.get("users/#{slack_id}/stats")
-      Rails.logger.info("Hackatime response: #{response.body}")
-      response
+    res =  HackatimeService.link_hackatime(slack_id, self)
+    res
       # Use when we have an admin hackatime key
      # response = User.hackatime_client.get("users/lookup_slack_uid/#{slack_id}")
     else
@@ -95,9 +94,6 @@ class User < ApplicationRecord
 
     if response&.success?
       update!(hackatime_id: response.body["data"]["user_id"])
-
-    else
-      nil
     end
   end
 
@@ -112,23 +108,7 @@ class User < ApplicationRecord
   end
 
   def sync_hackatime_projects
-    response = User.hackatime_client.get("users/#{slack_id}/stats") do |req|
-      req.params = {
-        filter_by_project: "inf-expr",
-        start_date: "2025-12-23T00:00:00Z",
-        end_date: Time.now.utc.iso8601,
-        features: "projects"
-      }
-      puts req.params
-    end
-    if response.success?
-      response = response.body["data"]["projects"]
-      projects = response.map do |project|
-        Rails.logger.info("Project: #{project["name"]}")
-        hackatime_project = hackatime_projects.find_or_create_by!(name: project["name"])
-        hackatime_project
-      end
-    end
+  HackatimeService.sync_hackatime_projects(self)
   end
 
   def fetch_avatar
