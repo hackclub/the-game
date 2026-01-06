@@ -73,11 +73,7 @@ class User < ApplicationRecord
     end
   end
 
-  def self.hackatime_client
-    Faraday.new(url: "https://hackatime.hackclub.com/api/v1", headers: { "Authorization" => "Bearer #{ENV["HACKATIME_API_KEY"]}" }) do |conn|
-      conn.response :json, content_type: /\bjson$/
-    end
-  end
+  
 
   def link_hackatime
     response = if slack_id.present?

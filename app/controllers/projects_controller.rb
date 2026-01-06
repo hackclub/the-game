@@ -99,7 +99,7 @@ end
 def fetch_project_times
   return {} unless current_user.slack_id.present?
 
-  response = User.hackatime_client.get("users/#{current_user.slack_id}/stats") do |req|
+  response = HackatimeService.hackatime_client.get("users/#{current_user.slack_id}/stats") do |req|
     req.params = {
       features: "projects",
       start_date: "2025-12-23",
