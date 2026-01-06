@@ -1,5 +1,6 @@
 import { Link } from "@inertiajs/react";
 import Sidebar from "@/components/sidebar";
+import Countdown from "@/components/home/countdown";
 
 export default function Home({
   account_linked,
@@ -16,7 +17,7 @@ export default function Home({
       <main className="flex-1 lg:ml-64 p-6">
         <p className="text-2xl font-bold">hey {current_user.username}!</p>
         <p className="text-xl">welcome home</p>
-        
+        {/*<Countdown />*/}
         <hr />
         {!account_linked && (
           <>

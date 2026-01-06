@@ -12,6 +12,11 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
+  mount Blazer::Engine, at: "blazer", constraints: ->(request) {
+    user_id = request.session[:user_id]
+    user_id && User.find_by(id: user_id)&.admin?
+  }
+  
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
@@ -45,4 +50,6 @@ resources :settings
     get "sent", to: "auth#sent"
     post "validate", to: "auth#validate"
   end
+  
+  
 end
