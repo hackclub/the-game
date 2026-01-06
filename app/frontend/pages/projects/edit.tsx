@@ -20,11 +20,21 @@ interface Project {
   title: string | null;
   ysws: string | null;
   created_at: string;
-updated_at: string;
+  updated_at: string;
   user_id: number;
 }
 
-export default function EditProject({ project }: { project: Project }) {
+interface Props {
+  project: Project;
+  hackatime_projects: { id: number; name: string }[];
+  project_times: Record<string, number>;
+}
+
+export default function EditProject({
+  project,
+  hackatime_projects,
+  project_times,
+}: Props) {
   return (
     <div className="flex bg-gray-200 min-h-screen">
       <Sidebar />
@@ -32,7 +42,11 @@ export default function EditProject({ project }: { project: Project }) {
         <h1 className="text-center text-2xl font-bold text-gray-800">
           Edit your Project{" "}
         </h1>
-        <ProjectEdit project={project} />
+        <ProjectEdit
+          project={project}
+          hackatime_projects={hackatime_projects}
+          project_times={project_times}
+        />
       </main>
     </div>
   );

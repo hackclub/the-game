@@ -3,6 +3,7 @@ class ApplicationController < ActionController::Base
   # allow_browser versions: :modern
 
   include Authentication
+  include Pundit::Authorization
 
   before_action :set_paper_trail_whodunnit
   before_action :update_last_active

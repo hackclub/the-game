@@ -6,7 +6,7 @@ class ProjectsController < ApplicationController
 
   def new
     @hackatime_projects = current_user.hackatime_projects.select(:id, :name)
-    render inertia: "projects/new", props: { 
+    render inertia: "projects/new", props: {
       hackatime_projects: @hackatime_projects,
       project_times: fetch_project_times
     }
@@ -19,6 +19,8 @@ class ProjectsController < ApplicationController
 
     if @project.save
       link_hackatime_projects
+      # set_reported_hours
+
       flash[:success] = "Project created successfully"
       Rails.logger.info("Project created: #{@project}")
       redirect_to projects_path
@@ -32,15 +34,18 @@ class ProjectsController < ApplicationController
     render inertia: 'projects/show', props: { project: @project }
   end
 
-  def ship
-    @project = current_user.projects.find(params[:id])
-    @project.update!(approved: :shipped)
-    redirect_to projects_path
-  end
+
 
   def edit
     @project = current_user.projects.find(params[:id])
-    render inertia: 'projects/edit', props: { project: @project }
+    @hackatime_projects = current_user.hackatime_projects.select(:id, :name)
+    # Rails.logger.info("Projects: #{@hackatime_project}")
+    # Rails.logger.info("Project editing: #{@project}")
+    render inertia: 'projects/edit', props: {
+      project: @project,
+      hackatime_projects: @hackatime_projects,
+      project_times: fetch_project_times
+    }
   end
 
   def update
@@ -64,31 +69,48 @@ class ProjectsController < ApplicationController
     end
   end
 
+  def ship
+    @hackatime_projects = current_user.hackatime_projects.select(:id, :name)
+    @project = current_user.projects.find(params[:id])
+    @project.update!(approved: :shipped)
+    redirect_to projects_path
+  end
 
   private
   def project_params
 
-    params.require(:project).permit(:title, :desc, :demo_link, :repo_link)
+    params.require(:project).permit(:title, :desc, :demo_link, :repo_link, :reported_hours)
   end
 
-def hackatime_project_ids
-  Array(params.dig(:project, :hackatime_project_ids)).map(&:to_i).reject(&:zero?)
+def hackatime_project_keys
+  # Rails.logger.info(Array(params.dig(:project, :hackatime_project_keys)))
+  Array(params.dig(:project, :hackatime_project_keys)).map(&:to_i)
+  # Array(params.dig(:project, :hackatime_project_keys)).map(&:to_i).reject(&:zero?)
 end
 
+
+
 def link_hackatime_projects
-  return if hackatime_project_ids.empty?
-  current_user.hackatime_projects.where(id: hackatime_project_ids).update_all(project_id: @project.id)
+    Rails.logger.info("Linking hackatime projects: #{hackatime_project_keys}")
+  return if hackatime_project_keys.empty?
+  current_user.hackatime_projects.where(id: hackatime_project_keys).update_all(project_id: @project.id)
 end
 
 def fetch_project_times
   return {} unless current_user.slack_id.present?
-  
+
   response = User.hackatime_client.get("users/#{current_user.slack_id}/stats") do |req|
-    req.params = { features: "projects", start_date: "2025-12-23" }
+    req.params = {
+      features: "projects",
+      start_date: "2025-12-23",
+      end_date: Time.now.iso8601,
+      filter_by_project: "inf-expr",
+      test_param: true
+    }
   end
-  
+
   return {} unless response.success?
-  
+
   # Returns { "project-name" => seconds, ... }
   response.body.dig("data", "projects")&.each_with_object({}) do |p, hash|
     hash[p["name"]] = p["total_seconds"]

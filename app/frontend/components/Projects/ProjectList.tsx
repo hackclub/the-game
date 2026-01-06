@@ -24,6 +24,8 @@ export default function ProjectList({ projects }: { projects: Project[] }) {
       {projects.map((project) => (
         <div key={project.id} className="p-4 border rounded-lg shadow-sm">
           <h2 className="text-lg font-semibold">{project.title}</h2>
+          <span className=""> {project.id} </span> {/* For debugging purposes, remember to remove */}
+          <br></br>
           <span className=""> {isReviewed(project.review_status)}</span>
           <p className="text-gray-600 mt-4">{project.desc}</p>
           <div className="mt-6 flex gap-2">

@@ -42,13 +42,13 @@ class Project < ApplicationRecord
   enum :review_status, { pending: 0, approved: 1, rejected: 2 }
   enum :approved, { not_shipped: 0, shipped: 1 }
 
-  before_create :approved_review_status
+  before_create :set_approved_review_status
 
 
   private
 
 
-  def approved_review_status
+  def set_approved_review_status
     self.review_status = Project.review_statuses[:pending]
     self.approved = Project.approveds[:not_shipped]
   end
