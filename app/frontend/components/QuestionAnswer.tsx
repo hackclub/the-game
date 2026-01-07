@@ -5,9 +5,9 @@ type QuestionAnswerProps = {
   answer?: string | ReactNode;
 };
 
-export default function QuestionAnswer({ 
-  question, 
-  answer
+export default function QuestionAnswer({
+  question,
+  answer,
 }: QuestionAnswerProps) {
   return (
     <div className="flex flex-col gap-4 items-start w-full">

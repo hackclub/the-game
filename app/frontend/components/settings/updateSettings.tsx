@@ -42,7 +42,7 @@ export default function ProjectCreate() {
           <div className="mb-4 gap-2">
             <label htmlFor="demo_link">Demo Link:</label>
             <input
-            className="m-2"
+              className="m-2"
               type="text"
               value={data.demo_link}
               onChange={(e) => setData("demo_link", e.target.value)}
@@ -54,7 +54,7 @@ export default function ProjectCreate() {
           <div className="mb-4">
             <label htmlFor="repo_link">Repository Link:</label>
             <input
-            className="m-2"
+              className="m-2"
               type="text"
               value={data.repo_link}
               onChange={(e) => setData("repo_link", e.target.value)}
@@ -64,7 +64,11 @@ export default function ProjectCreate() {
             )}
           </div>
 
-          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit" disabled={processing}>
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            type="submit"
+            disabled={processing}
+          >
             Create Project
           </button>
         </form>

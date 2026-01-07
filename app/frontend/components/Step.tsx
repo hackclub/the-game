@@ -5,8 +5,8 @@ type StepProps = {
   children?: React.ReactNode;
 };
 
-export default function Step({ 
-  stepNumber = "1", 
+export default function Step({
+  stepNumber = "1",
   title = "Code online.",
   circleRef,
   children,

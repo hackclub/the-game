@@ -1,7 +1,7 @@
-import { createInertiaApp, type ResolvedComponent } from '@inertiajs/react'
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './application.css'
+import { createInertiaApp, type ResolvedComponent } from "@inertiajs/react";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./application.css";
 
 void createInertiaApp({
   // Set default page title
@@ -15,13 +15,13 @@ void createInertiaApp({
   // progress: false,
 
   resolve: (name) => {
-    const pages = import.meta.glob<ResolvedComponent>('../pages/**/*.tsx', {
+    const pages = import.meta.glob<ResolvedComponent>("../pages/**/*.tsx", {
       eager: true,
-    })
-    const page = pages[`../pages/${name}.tsx`]
-    console.log(page)
+    });
+    const page = pages[`../pages/${name}.tsx`];
+    console.log(page);
     if (!page) {
-      console.error(`Missing Inertia page component: '${name}.tsx'`)
+      console.error(`Missing Inertia page component: '${name}.tsx'`);
     }
 
     // To use a default layout, import the Layout component
@@ -30,15 +30,15 @@ void createInertiaApp({
     //
     // page.default.layout ||= (page) => (<Layout>{page}</Layout>)
 
-    return page
+    return page;
   },
 
   setup({ el, App, props }) {
     createRoot(el).render(
       <StrictMode>
         <App {...props} />
-      </StrictMode>
-    )
+      </StrictMode>,
+    );
   },
 
   defaults: {
@@ -56,12 +56,12 @@ void createInertiaApp({
   // by checking for the presence of the root element (#app by default).
   // Feel free to remove this `catch` if you don't need it.
   if (document.getElementById("app")) {
-    throw error
+    throw error;
   } else {
     console.error(
       "Missing root element.\n\n" +
-      "If you see this error, it probably means you loaded Inertia.js on non-Inertia pages.\n" +
-      'Consider moving <%= vite_typescript_tag "inertia.tsx" %> to the Inertia-specific layout instead.',
-    )
+        "If you see this error, it probably means you loaded Inertia.js on non-Inertia pages.\n" +
+        'Consider moving <%= vite_typescript_tag "inertia.tsx" %> to the Inertia-specific layout instead.',
+    );
   }
-})
+});

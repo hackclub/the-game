@@ -1,4 +1,4 @@
-import { Form } from '@inertiajs/react'
+import { Form } from "@inertiajs/react";
 
 export default function Sent({ email }: { email: string }) {
   return (
@@ -12,5 +12,5 @@ export default function Sent({ email }: { email: string }) {
         <button type="submit">take my otp code!</button>
       </Form>
     </>
-  )
+  );
 }

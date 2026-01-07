@@ -7,7 +7,7 @@ interface User {
   slack_id: string;
   username: string;
   avatar: string | null;
-  admin: boolean
+  admin: boolean;
 }
 
 interface PageProps {
@@ -22,8 +22,8 @@ export default function Sidebar() {
   const avatarUrl = user?.avatar;
 
   const isAdmin = user?.admin || false;
-  console.log(isAdmin)
-  
+  console.log(isAdmin);
+
   const navItems = [
     { href: "/home", label: "Home", icon: HomeIcon, color: "bg-red-500" },
     {

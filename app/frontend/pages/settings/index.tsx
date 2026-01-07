@@ -1,10 +1,6 @@
 import Sidebar from "@/components/sidebar";
 
-export default function SettingsIndex(
-profile: {
-  user: any
-}
-) {
+export default function SettingsIndex(profile: { user: any }) {
   return (
     <div className="flex bg-gray-200 min-h-screen">
       <Sidebar />

@@ -5,7 +5,7 @@ import Countdown from "@/components/home/countdown";
 export default function Home({
   account_linked,
   hackatime_linked,
-  current_user
+  current_user,
 }: {
   account_linked: boolean;
   hackatime_linked: boolean;
@@ -22,7 +22,9 @@ export default function Home({
         {!account_linked && (
           <>
             <p>yo chat we need to verify your identity</p>
-            <p>click the lil link below to link with hack club account pls thx</p>
+            <p>
+              click the lil link below to link with hack club account pls thx
+            </p>
             <a href="/auth/start">link me!</a>
           </>
         )}
@@ -35,11 +37,8 @@ export default function Home({
             </p>
           </>
         )}
-        
+
         <hr />
-      
-      
-        
       </main>
     </div>
   );

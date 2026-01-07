@@ -29,7 +29,10 @@ interface Props {
   project_times: Record<string, number>;
 }
 
-export default function NewProject({ hackatime_projects, project_times }: Props) {
+export default function NewProject({
+  hackatime_projects,
+  project_times,
+}: Props) {
   return (
     <div className="flex bg-gray-200 min-h-screen">
       <Sidebar />
@@ -37,8 +40,8 @@ export default function NewProject({ hackatime_projects, project_times }: Props)
         <h1 className="text-center text-2xl font-bold text-gray-800">
           Make your first project!
         </h1>
-        <ProjectCreate 
-          hackatime_projects={hackatime_projects} 
+        <ProjectCreate
+          hackatime_projects={hackatime_projects}
           project_times={project_times}
         />
       </main>

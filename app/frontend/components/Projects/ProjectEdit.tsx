@@ -1,13 +1,15 @@
 import { useForm, usePage } from "@inertiajs/react";
 
-
-
 interface Props {
   hackatime_projects: { id: number; name: string }[];
   project_times: Record<string, number>;
 }
 
-export default function EditProject({ project, hackatime_projects, project_times }: Props) {
+export default function EditProject({
+  project,
+  hackatime_projects,
+  project_times,
+}: Props) {
   const {
     data,
     setData,
@@ -21,7 +23,7 @@ export default function EditProject({ project, hackatime_projects, project_times
     repo_link: project.repo_link,
     demo_link: project.demo_link,
     approved: project.approved,
-    hackatime_project_keys: hackatime_projects
+    hackatime_project_keys: hackatime_projects,
   });
 
   function submit(e: React.FormEvent) {
@@ -30,7 +32,7 @@ export default function EditProject({ project, hackatime_projects, project_times
   }
 
   function shipProject(e: React.FormEvent) {
-    e.preventDefault();    
+    e.preventDefault();
     patch(`/projects/${project.id}/ship`);
   }
 
@@ -85,7 +87,7 @@ export default function EditProject({ project, hackatime_projects, project_times
             onChange={(e) =>
               setData(
                 "hackatime_project_keys",
-                [...e.target.selectedOptions].map((o) => o.value)
+                [...e.target.selectedOptions].map((o) => o.value),
               )
             }
           >
@@ -94,7 +96,7 @@ export default function EditProject({ project, hackatime_projects, project_times
               const hours = Math.floor(totalSeconds / 3600);
               const minutes = Math.floor((totalSeconds % 3600) / 60);
               const formattedTime = `${hours}h ${minutes}m`;
-              
+
               return (
                 <option key={project.id} value={project.id}>
                   {project.name} ({formattedTime})
