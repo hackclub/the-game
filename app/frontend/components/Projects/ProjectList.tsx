@@ -1,4 +1,4 @@
-import { App, Link } from "@inertiajs/react";
+import { Link } from "@inertiajs/react";
 
 export default function ProjectList({ projects }: { projects: Project[] }) {
   const isReviewed = (review_status: string) => {

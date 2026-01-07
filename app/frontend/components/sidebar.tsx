@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, usePage } from "@inertiajs/react";
-import HackClubLogo from "./HackClubLogo";
+import HackClubLogo from "./rsvp/HackClubLogo";
 
 interface User {
   id: number;

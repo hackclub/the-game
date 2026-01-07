@@ -1,8 +1,10 @@
-import { useForm, usePage } from "@inertiajs/react";
+import { useForm } from "@inertiajs/react";
+import type { Project } from "@/interfaces/project";
 
 interface Props {
   hackatime_projects: { id: number; name: string }[];
   project_times: Record<string, number>;
+  project: Project;
 }
 
 export default function EditProject({

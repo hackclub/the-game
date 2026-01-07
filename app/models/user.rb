@@ -29,7 +29,6 @@ class User < ApplicationRecord
     "User##{id}"
   end
 
-
   has_many :projects
   has_many :hackatime_projects
 
@@ -73,14 +72,14 @@ class User < ApplicationRecord
     end
   end
 
-  
+
 
   def link_hackatime
     response = if slack_id.present?
-    res =  HackatimeService.link_hackatime(slack_id, self)
-    res
+      res =  HackatimeService.link_hackatime(slack_id, self)
+      res
       # Use when we have an admin hackatime key
-     # response = User.hackatime_client.get("users/lookup_slack_uid/#{slack_id}")
+      # response = User.hackatime_client.get("users/lookup_slack_uid/#{slack_id}")
     else
       # Don't have an admin hackatime key yet, so we can't lookup by email.
       # User.hackatime_client.get("users/lookup_email/#{URI.encode_uri_component(user.email)}")

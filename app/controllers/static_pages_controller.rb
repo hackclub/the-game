@@ -16,7 +16,7 @@ class StaticPagesController < ApplicationController
 
   def projects
     @projects = current_user.projects
-    render inertia: 'Projects/Index', props: { projects: @projects }
+    render inertia: "Projects/Index", props: { projects: @projects }
   end
 
   def rsvp
@@ -43,9 +43,9 @@ class StaticPagesController < ApplicationController
   def signup
    email = params[:email]
     if request.inertia?
-      render inertia: "Redirect", props: {url: '/auth/start?email=' + email}
+      render inertia: "Redirect", props: { url: "/auth/start?email=" + email }
     else
-      redirect_to '/auth/start'
+      redirect_to "/auth/start"
     end
   end
 end

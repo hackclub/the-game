@@ -1,18 +1,11 @@
 import Sidebar from "@/components/sidebar";
+import type { Project } from "@/interfaces/project";
 
-interface Project {
-  id: number;
-  title: string;
-  desc: string;
-  user_id: number;
-  username: string | null;
-  created_at: string;
-  demo_link: string;
-  repo_link: string;
-  readme_link: string;
-}
-
-export default function ExplorePage({ projects }: { projects: Project[] }) {
+export default function ExplorePage({
+  projects,
+}: {
+  projects: (Project & { username: string })[];
+}) {
   return (
     <div className="flex bg-gray-200 min-h-screen">
       <Sidebar />

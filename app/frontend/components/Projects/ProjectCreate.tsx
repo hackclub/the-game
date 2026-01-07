@@ -1,6 +1,14 @@
 import { useForm } from "@inertiajs/react";
 
-export default function ProjectCreate({ hackatime_projects, project_times }) {
+interface Props {
+  hackatime_projects: { id: number; name: string }[];
+  project_times: Record<string, number>;
+}
+
+export default function ProjectCreate({
+  hackatime_projects,
+  project_times,
+}: Props) {
   const { data, setData, post, processing, errors } = useForm({
     title: "",
     desc: "",
@@ -61,7 +69,7 @@ export default function ProjectCreate({ hackatime_projects, project_times }) {
               onChange={(e) =>
                 setData(
                   "hackatime_project_keys",
-                  [...e.target.selectedOptions].map((o) => o.value),
+                  [...e.target.selectedOptions].map((o) => Number(o.value)),
                 )
               }
             >
