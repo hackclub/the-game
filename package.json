@@ -2,6 +2,8 @@
   "private": true,
   "type": "module",
   "devDependencies": {
+    "prettier": "^3.7.4",
+    "prettier-plugin-tailwindcss": "^0.7.2",
     "vite": "^7.2.4",
     "vite-plugin-ruby": "^5.1.1"
   },
@@ -19,6 +21,8 @@
     "typescript": "^5.9.3"
   },
   "scripts": {
-    "check": "tsc -p tsconfig.app.json && tsc -p tsconfig.node.json"
+    "check": "tsc -p tsconfig.app.json && tsc -p tsconfig.node.json",
+    "format:check": "prettier --check app/frontend/ app/assets/stylesheets/",
+    "format": "prettier --write app/frontend/ app/assets/stylesheets/"
   }
 }
