@@ -1,4 +1,4 @@
-require 'date'
+require "date"
 
 class AirtableService
   BASE_URL = "https://api.airtable.com/v0".freeze
