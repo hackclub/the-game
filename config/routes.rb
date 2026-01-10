@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  
   # Redirect to localhost from 127.0.0.1 to use same IP address with Vite server
   constraints(host: "127.0.0.1") do
     get "(*path)", to: redirect { |params, req| "#{req.protocol}localhost:#{req.port}/#{params[:path]}" }
@@ -16,7 +15,7 @@ Rails.application.routes.draw do
     user_id = request.session[:user_id]
     user_id && User.find_by(id: user_id)&.admin?
   }
-  
+
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
@@ -25,22 +24,19 @@ Rails.application.routes.draw do
   root "static_pages#rsvp"
   get "/index", to: "static_pages#index"
   get "/home", to: "static_pages#home"
-post "/rsvp", to: "static_pages#create_rsvp"
-post "/signup", to: "static_pages#signup"
-resources :projects do
-  member do
-    patch :ship
+  post "/rsvp", to: "static_pages#create_rsvp"
+  post "/signup", to: "static_pages#signup"
+  resources :projects do
+    member do
+      patch :ship
+    end
   end
-end
 
 
-get "/admin", to: "admin#index"
-get "/explore", to: "explore#index"
+  get "/admin", to: "admin#index"
+  get "/explore", to: "explore#index"
 
-resources :settings 
-
-
-
+  resources :settings
 
   scope "/auth" do
     get "account_callback", to: "auth#account_callback"
@@ -50,6 +46,4 @@ resources :settings
     get "sent", to: "auth#sent"
     post "validate", to: "auth#validate"
   end
-  
-  
 end
