@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, RefObject, useCallback } from 'react';
+import { useEffect, useRef, useState, RefObject, useCallback } from "react";
 
 const INITIAL_PROGRESS = 0.78;
 const SMOOTHING = 0.04;
@@ -28,14 +28,21 @@ export default function DynamicBackgroundLines({ stepCircleRefs }: Props) {
     centers: Point[];
   } | null>(null);
 
-  const setPathRef = useCallback((index: number) => (el: SVGPathElement | null) => {
-    pathRefs.current[index] = el;
+  const setPathRef = useCallback(
+    (index: number) => (el: SVGPathElement | null) => {
+      pathRefs.current[index] = el;
 
-    if (el && animationState.initialized && animationState.pathLengths[index]) {
-      el.style.strokeDasharray = `${animationState.pathLengths[index]}`;
-      el.style.strokeDashoffset = `${animationState.currentOffsets[index]}`;
-    }
-  }, []);
+      if (
+        el &&
+        animationState.initialized &&
+        animationState.pathLengths[index]
+      ) {
+        el.style.strokeDasharray = `${animationState.pathLengths[index]}`;
+        el.style.strokeDashoffset = `${animationState.currentOffsets[index]}`;
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!layout || animationState.started) return;
@@ -45,8 +52,12 @@ export default function DynamicBackgroundLines({ stepCircleRefs }: Props) {
 
     animationState.started = true;
     animationState.pathLengths = paths.map((path) => path.getTotalLength());
-    animationState.currentOffsets = animationState.pathLengths.map((len) => len);
-    animationState.targetOffsets = animationState.pathLengths.map((len) => len * (1 - INITIAL_PROGRESS));
+    animationState.currentOffsets = animationState.pathLengths.map(
+      (len) => len,
+    );
+    animationState.targetOffsets = animationState.pathLengths.map(
+      (len) => len * (1 - INITIAL_PROGRESS),
+    );
 
     paths.forEach((path, i) => {
       path.style.strokeDasharray = `${animationState.pathLengths[i]}`;
@@ -58,7 +69,8 @@ export default function DynamicBackgroundLines({ stepCircleRefs }: Props) {
       let needsUpdate = false;
 
       paths.forEach((path, i) => {
-        const diff = animationState.targetOffsets[i] - animationState.currentOffsets[i];
+        const diff =
+          animationState.targetOffsets[i] - animationState.currentOffsets[i];
         if (Math.abs(diff) > 0.5) {
           animationState.currentOffsets[i] += diff * SMOOTHING;
           needsUpdate = true;
@@ -79,7 +91,7 @@ export default function DynamicBackgroundLines({ stepCircleRefs }: Props) {
   }, [layout]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     const updateTargetsFromScroll = () => {
       if (!containerRef.current || !animationState.initialized) return;
@@ -87,12 +99,21 @@ export default function DynamicBackgroundLines({ stepCircleRefs }: Props) {
       const rect = containerRef.current.getBoundingClientRect();
       const viewportHeight = window.innerHeight;
 
-      const scrollProgress = Math.max(0, Math.min(1, (viewportHeight - rect.top) / rect.height));
+      const scrollProgress = Math.max(
+        0,
+        Math.min(1, (viewportHeight - rect.top) / rect.height),
+      );
 
-      const totalProgress = INITIAL_PROGRESS + scrollProgress * (1 - INITIAL_PROGRESS) + (INITIAL_PROGRESS * INITIAL_PROGRESS * 0.05);
+      const totalProgress =
+        INITIAL_PROGRESS +
+        scrollProgress * (1 - INITIAL_PROGRESS) +
+        INITIAL_PROGRESS * INITIAL_PROGRESS * 0.05;
 
       animationState.pathLengths.forEach((len, i) => {
-        const staggeredProgress = Math.min(1, totalProgress + i * STAGGER_OFFSET);
+        const staggeredProgress = Math.min(
+          1,
+          totalProgress + i * STAGGER_OFFSET,
+        );
         animationState.targetOffsets[i] = len * (1 - staggeredProgress);
       });
     };
@@ -103,7 +124,8 @@ export default function DynamicBackgroundLines({ stepCircleRefs }: Props) {
       const paths = pathRefs.current.filter(Boolean) as SVGPathElement[];
 
       paths.forEach((path, i) => {
-        const diff = animationState.targetOffsets[i] - animationState.currentOffsets[i];
+        const diff =
+          animationState.targetOffsets[i] - animationState.currentOffsets[i];
         if (Math.abs(diff) > 0.5) {
           animationState.currentOffsets[i] += diff * SMOOTHING;
         } else {
@@ -126,7 +148,7 @@ export default function DynamicBackgroundLines({ stepCircleRefs }: Props) {
   }, []);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     const updateLayout = () => {
       if (!containerRef.current) return;
@@ -152,11 +174,11 @@ export default function DynamicBackgroundLines({ stepCircleRefs }: Props) {
     };
 
     updateLayout();
-    window.addEventListener('resize', updateLayout);
+    window.addEventListener("resize", updateLayout);
     document.fonts?.ready.then(updateLayout);
 
     return () => {
-      window.removeEventListener('resize', updateLayout);
+      window.removeEventListener("resize", updateLayout);
     };
   }, [stepCircleRefs]);
 
@@ -164,7 +186,7 @@ export default function DynamicBackgroundLines({ stepCircleRefs }: Props) {
     return (
       <div
         ref={containerRef}
-        className="absolute top-0 left-0 w-full h-full pointer-events-none"
+        className="pointer-events-none absolute top-0 left-0 h-full w-full"
       />
     );
   }
@@ -176,15 +198,31 @@ export default function DynamicBackgroundLines({ stepCircleRefs }: Props) {
   const rOuter = 84;
   const rInner = rOuter - strokeWidth;
 
-  const greenPath = buildGreenPath(c1, c2, c3, width, height, rOuter, strokeWidth);
-  const yellowPath = buildYellowPath(c1, c2, c3, width, height, rInner, strokeWidth);
+  const greenPath = buildGreenPath(
+    c1,
+    c2,
+    c3,
+    width,
+    height,
+    rOuter,
+    strokeWidth,
+  );
+  const yellowPath = buildYellowPath(
+    c1,
+    c2,
+    c3,
+    width,
+    height,
+    rInner,
+    strokeWidth,
+  );
   const redPath = buildRedPath(width, height, rOuter, strokeWidth);
   const bluePath = buildBluePath(width, height, rInner, strokeWidth);
 
   return (
     <div
       ref={containerRef}
-      className="absolute top-0 left-0 w-full h-full pointer-events-none"
+      className="pointer-events-none absolute top-0 left-0 h-full w-full"
     >
       <svg
         className="absolute top-0 left-0"
@@ -225,9 +263,18 @@ export default function DynamicBackgroundLines({ stepCircleRefs }: Props) {
   );
 }
 
-function buildGreenPath(c1: Point, c2: Point, c3: Point, width: number, height: number, r: number, strokeWidth: number): string {
+function buildGreenPath(
+  c1: Point,
+  c2: Point,
+  c3: Point,
+  width: number,
+  height: number,
+  r: number,
+  strokeWidth: number,
+): string {
   const lineX = c1.x - strokeWidth / 2;
-  const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
+  const viewportHeight =
+    typeof window !== "undefined" ? window.innerHeight : 800;
   const cornerY = viewportHeight * 0.75;
   const startX = width * 0.55;
   const bottomTurnY = c3.y;
@@ -240,12 +287,21 @@ function buildGreenPath(c1: Point, c2: Point, c3: Point, width: number, height: 
     `L ${lineX + r} ${cornerY}`,
     `A ${r} ${r} 0 0 0 ${lineX} ${cornerY + r}`,
     `L ${lineX} ${bottomTurnY}`,
-  ].join(' ');
+  ].join(" ");
 }
 
-function buildYellowPath(c1: Point, c2: Point, c3: Point, width: number, height: number, r: number, strokeWidth: number): string {
+function buildYellowPath(
+  c1: Point,
+  c2: Point,
+  c3: Point,
+  width: number,
+  height: number,
+  r: number,
+  strokeWidth: number,
+): string {
   const lineX = c1.x + strokeWidth / 2;
-  const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
+  const viewportHeight =
+    typeof window !== "undefined" ? window.innerHeight : 800;
   const cornerY = viewportHeight * 0.75 + strokeWidth;
   const startX = width * 0.55 + strokeWidth;
   const bottomY = c3.y;
@@ -259,10 +315,15 @@ function buildYellowPath(c1: Point, c2: Point, c3: Point, width: number, height:
     `L ${lineX + r} ${cornerY}`,
     `A ${r} ${r} 0 0 0 ${lineX} ${cornerY + r}`,
     `L ${lineX} ${bottomY}`,
-  ].join(' ');
+  ].join(" ");
 }
 
-function buildRedPath(width: number, height: number, r: number, strokeWidth: number): string {
+function buildRedPath(
+  width: number,
+  height: number,
+  r: number,
+  strokeWidth: number,
+): string {
   const startY = 141;
   const firstTurnX = width * 0.48;
   const secondTurnY = startY + 380;
@@ -281,7 +342,7 @@ function buildRedPath(width: number, height: number, r: number, strokeWidth: num
     `L ${thirdTurnX - r} ${secondTurnY}`,
     `A ${r} ${r} 0 0 1 ${thirdTurnX} ${secondTurnY + r}`,
     `L ${thirdTurnX} ${fourthTurnY - r}`,
-  ]
+  ];
 
   const segmentTwo = [
     `A ${r} ${r} 0 0 1 ${thirdTurnX - r} ${fourthTurnY}`,
@@ -290,19 +351,26 @@ function buildRedPath(width: number, height: number, r: number, strokeWidth: num
     `L ${fifthTurnX} ${sixthTurnY - r}`,
     `A ${r} ${r} 0 0 0 ${fifthTurnX + r} ${sixthTurnY}`,
     `L ${width + 100} ${sixthTurnY}`,
-  ]
+  ];
 
   const smallFinal = [
     `A ${r} ${r} 0 0 0 ${thirdTurnX + r} ${fourthTurnY}`,
     `L ${width + 100} ${fourthTurnY}`,
-  ]
+  ];
 
-  const combined = isSmall() ? [...segmentOne, ...smallFinal] : [...segmentOne, ...segmentTwo]
+  const combined = isSmall()
+    ? [...segmentOne, ...smallFinal]
+    : [...segmentOne, ...segmentTwo];
 
-  return combined.join(' ');
+  return combined.join(" ");
 }
 
-function buildBluePath(width: number, height: number, r: number, strokeWidth: number): string {
+function buildBluePath(
+  width: number,
+  height: number,
+  r: number,
+  strokeWidth: number,
+): string {
   const startY = 141 + strokeWidth;
   const firstTurnX = width * 0.48 - strokeWidth;
   const secondTurnY = 141 + 380 + strokeWidth;
@@ -320,7 +388,7 @@ function buildBluePath(width: number, height: number, r: number, strokeWidth: nu
     `L ${thirdTurnX - r} ${secondTurnY}`,
     `A ${r} ${r} 0 0 1 ${thirdTurnX} ${secondTurnY + r}`,
     `L ${thirdTurnX} ${fourthTurnY - r}`,
-  ]
+  ];
 
   const segmentTwo = [
     `A ${r} ${r} 0 0 1 ${thirdTurnX - r} ${fourthTurnY}`,
@@ -329,19 +397,24 @@ function buildBluePath(width: number, height: number, r: number, strokeWidth: nu
     `L ${fifthTurnX} ${sixthTurnY - r}`,
     `A ${r} ${r} 0 0 0 ${fifthTurnX + r} ${sixthTurnY}`,
     `L ${width + 100} ${sixthTurnY}`,
-  ]
+  ];
 
   const smallFinal = [
     `A ${r} ${r} 0 0 0 ${thirdTurnX + r} ${fourthTurnY}`,
     `L ${width + 100} ${fourthTurnY}`,
-  ]
+  ];
 
-  const combined = isSmall() ? [...segmentOne, ...smallFinal] : [...segmentOne, ...segmentTwo]
+  const combined = isSmall()
+    ? [...segmentOne, ...smallFinal]
+    : [...segmentOne, ...segmentTwo];
 
-  return combined.join(' ');
+  return combined.join(" ");
 }
 
 function isSmall() {
-  return (window.innerWidth || document.documentElement.clientWidth || 
-document.body.clientWidth) < 1300
+  return (
+    (window.innerWidth ||
+      document.documentElement.clientWidth ||
+      document.body.clientWidth) < 1300
+  );
 }

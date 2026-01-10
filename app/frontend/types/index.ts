@@ -1,8 +1,8 @@
 export type Flash = {
-  notice?: string
-  alert?: string
-}
+  notice?: string;
+  alert?: string;
+};
 
 export type SharedProps = {
-  flash: Flash
-}
+  flash: Flash;
+};
