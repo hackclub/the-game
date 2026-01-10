@@ -1,20 +1,20 @@
 export default function HackClubFooter() {
   return (
-    <div className="relative z-10 w-full px-6 lg:px-40 py-16 lg:py-24 bg-[#1a1a2e]">
-      <div className="flex flex-col gap-6 max-w-4xl">
-        <h2 className="text-2xl lg:text-4xl tracking-[-0.04em] text-white">
+    <div className="relative z-10 w-full bg-[#1a1a2e] px-6 py-16 lg:px-40 lg:py-24">
+      <div className="flex max-w-4xl flex-col gap-6">
+        <h2 className="text-2xl tracking-[-0.04em] text-white lg:text-4xl">
           <span className="font-normal">A project by </span>
           <a
             href="https://hackclub.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-bold text-[#eed02b] underline hover:text-[#c93a1a] transition-colors"
+            className="font-bold text-[#eed02b] underline transition-colors hover:text-[#c93a1a]"
           >
             Hack Club
           </a>
         </h2>
 
-        <p className="text-lg lg:text-2xl tracking-[-0.04em] text-white/90 leading-relaxed">
+        <p className="text-lg leading-relaxed tracking-[-0.04em] text-white/90 lg:text-2xl">
           Hack Club is a 501(c)(3) nonprofit and network of 60k+ technical high
           schoolers. We believe you learn best by building so we're creating
           community and providing grants so you can make awesome projects. In
@@ -23,7 +23,7 @@ export default function HackClubFooter() {
             href="https://summer.hackclub.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline hover:text-[#eed02b] transition-colors"
+            className="underline transition-colors hover:text-[#eed02b]"
           >
             partnered with GitHub to run Summer of Making
           </a>
@@ -32,7 +32,7 @@ export default function HackClubFooter() {
             href="https://zephyr.hackclub.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline hover:text-[#eed02b] transition-colors"
+            className="underline transition-colors hover:text-[#eed02b]"
           >
             ran a cross-country hackathon on a train across America
           </a>
@@ -41,14 +41,14 @@ export default function HackClubFooter() {
             href="https://apocalypse.hackclub.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline hover:text-[#eed02b] transition-colors"
+            className="underline transition-colors hover:text-[#eed02b]"
           >
             hosted Canada's largest high school hackathon
           </a>
           .
         </p>
 
-        <p className="text-lg lg:text-2xl tracking-[-0.04em] text-white/90 leading-relaxed">
+        <p className="text-lg leading-relaxed tracking-[-0.04em] text-white/90 lg:text-2xl">
           At Hack Club, students aren't just learning, they're shipping.
         </p>
       </div>

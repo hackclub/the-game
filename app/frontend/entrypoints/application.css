@@ -4,8 +4,8 @@
 @source "../components/**/*.{js,ts,jsx,tsx}";
 @source "../pages/**/*.{js,ts,jsx,tsx}";
 
-@plugin '@tailwindcss/typography';
-@plugin '@tailwindcss/forms';
+@plugin "@tailwindcss/typography";
+@plugin "@tailwindcss/forms";
 
 @font-face {
   font-family: "Helvetica";

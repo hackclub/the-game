@@ -186,7 +186,7 @@ export default function DynamicBackgroundLines({ stepCircleRefs }: Props) {
     return (
       <div
         ref={containerRef}
-        className="absolute top-0 left-0 w-full h-full pointer-events-none"
+        className="pointer-events-none absolute top-0 left-0 h-full w-full"
       />
     );
   }
@@ -222,7 +222,7 @@ export default function DynamicBackgroundLines({ stepCircleRefs }: Props) {
   return (
     <div
       ref={containerRef}
-      className="absolute top-0 left-0 w-full h-full pointer-events-none"
+      className="pointer-events-none absolute top-0 left-0 h-full w-full"
     >
       <svg
         className="absolute top-0 left-0"
