@@ -37,7 +37,7 @@ class Project < ApplicationRecord
   has_many :hackatime_projects, dependent: :destroy
 
   validates :title, :desc, :repo_link, :demo_link, presence: true
-  validates :demo_link, format: { with: /\Ahttps?:\/\/[^\s]+/, message: "must be a valid HTTP or HTTPS URL" }
+  validates :demo_link, format: { with: URI.regexp(%w[http https]), message: "must be a valid URL" }
 
   enum :review_status, { pending: 0, approved: 1, rejected: 2 }
   enum :approved, { not_shipped: 0, shipped: 1 }
