@@ -33,8 +33,6 @@ class ProjectsController < ApplicationController
     render inertia: "projects/show", props: { project: @project }
   end
 
-
-
   def edit
     @project = current_user.projects.find(params[:id])
     @hackatime_projects = current_user.hackatime_projects.select(:id, :name)

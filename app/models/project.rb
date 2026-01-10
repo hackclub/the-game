@@ -44,9 +44,7 @@ class Project < ApplicationRecord
 
   before_create :set_approved_review_status
 
-
   private
-
 
   def set_approved_review_status
     self.review_status = Project.review_statuses[:pending]

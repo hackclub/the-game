@@ -41,7 +41,8 @@ class StaticPagesController < ApplicationController
 
 
   def signup
-   email = params[:email]
+    email = params[:email]
+
     if request.inertia?
       render inertia: "Redirect", props: { url: "/auth/start?email=" + email }
     else

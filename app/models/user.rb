@@ -72,8 +72,6 @@ class User < ApplicationRecord
     end
   end
 
-
-
   def link_hackatime
     response = if slack_id.present?
       res =  HackatimeService.link_hackatime(slack_id, self)

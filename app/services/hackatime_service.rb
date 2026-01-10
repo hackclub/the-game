@@ -19,10 +19,9 @@ class HackatimeService
 
     if response.success?
       response = response.body["data"]["projects"]
-      projects = response.map do |project|
+      response.map do |project|
         Rails.logger.info("Project: #{project["name"]}")
-        hackatime_project = user.hackatime_projects.find_or_create_by!(name: project["name"])
-        # hackatime_project
+        user.hackatime_projects.find_or_create_by!(name: project["name"])
       end
     else
       nil
@@ -62,7 +61,7 @@ class HackatimeService
 
   def self.hackatime_client
     Faraday.new(url: BASE_URL, headers: { "Authorization" => "Bearer #{ENV['HACKATIME_API_KEY']}" }) do |conn|
-    conn.response :json, content_type: /\bjson$/
+      conn.response :json, content_type: /\bjson$/
     end
   end
 end
