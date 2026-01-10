@@ -134,7 +134,7 @@ export default function RsvpPage() {
 
       <div className="relative z-10 flex flex-col  lg:gap-24 w-full px-6 lg:px-48 pb-24 lg:pb-40" id="steps">
         
-      <div className="">
+      <div className="flex flex-col gap-10">
       
         
       
