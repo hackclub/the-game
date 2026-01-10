@@ -11,9 +11,9 @@ export default function NewProject({
   project_times,
 }: Props) {
   return (
-    <div className="flex bg-gray-200 min-h-screen">
+    <div className="flex min-h-screen bg-gray-200">
       <Sidebar />
-      <main className="flex-1 lg:ml-64 p-6">
+      <main className="flex-1 p-6 lg:ml-64">
         <h1 className="text-center text-2xl font-bold text-gray-800">
           Make your first project!
         </h1>

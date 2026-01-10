@@ -41,7 +41,7 @@ export default function ProjectCreate({
           <div className="mb-4">
             <label htmlFor="desc">Description:</label>
             <input
-              className="m-2 p-2 border border-black-300 "
+              className="border-black-300 m-2 border p-2"
               type="text"
               value={data.desc}
               onChange={(e) => setData("desc", e.target.value)}
@@ -64,7 +64,7 @@ export default function ProjectCreate({
             <label>Hackatime Projects:</label>
             <select
               multiple
-              className="m-2 p-2 border w-full h-32"
+              className="m-2 h-32 w-full border p-2"
               value={data.hackatime_project_keys.map(String)}
               onChange={(e) =>
                 setData(
@@ -100,7 +100,7 @@ export default function ProjectCreate({
           </div>
 
           <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
             type="submit"
             disabled={processing}
           >

@@ -45,15 +45,15 @@ export default function Sidebar() {
   return (
     <>
       {/* Navigation Toggle */}
-      <div className="lg:hidden fixed top-4 left-4 z-70">
+      <div className="fixed top-4 left-4 z-70 lg:hidden">
         <button
           type="button"
-          className="py-2 px-3 inline-flex justify-center items-center gap-x-2 bg-gray-800 border border-gray-700 text-white text-sm font-medium rounded-lg shadow-lg hover:bg-gray-700"
+          className="inline-flex items-center justify-center gap-x-2 rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm font-medium text-white shadow-lg hover:bg-gray-700"
           aria-label="Toggle navigation"
           onClick={() => setIsOpen(true)}
         >
           <svg
-            className="w-5 h-5"
+            className="h-5 w-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -70,51 +70,46 @@ export default function Sidebar() {
 
       {/* Sidebar */}
       <div
-        className={`lg:block lg:translate-x-0 lg:end-auto lg:bottom-0 w-64
-          ${isOpen ? "translate-x-0" : "-translate-x-full"}
-          transition-all duration-300 transform
-          h-full
-          fixed top-0 start-0 bottom-0 z-60
-          bg-black`}
+        className={`w-64 lg:end-auto lg:bottom-0 lg:block lg:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"} fixed start-0 top-0 bottom-0 z-60 h-full transform bg-black transition-all duration-300`}
         role="dialog"
         tabIndex={-1}
         aria-label="Sidebar"
       >
-        <div className="relative flex flex-col h-full max-h-full">
+        <div className="relative flex h-full max-h-full flex-col">
           {/* Header with Logo */}
           <header className="p-6">
             <Link
               className="flex items-center gap-3 focus:outline-none"
               href="/"
             >
-              <div className="w-12 h-12 flex items-center justify-center">
-                <HackClubLogo className="w-12 h-12 text-white" />
+              <div className="flex h-12 w-12 items-center justify-center">
+                <HackClubLogo className="h-12 w-12 text-white" />
               </div>
               <div className="text-white">
-                <div className="text-xl font-bold leading-tight">
+                <div className="text-xl leading-tight font-bold">
                   Hack Club:
                 </div>
-                <div className="text-xl font-bold leading-tight">The Game</div>
+                <div className="text-xl leading-tight font-bold">The Game</div>
               </div>
             </Link>
           </header>
 
           {/* Navigation */}
-          <nav className="flex-1 px-4 space-y-2">
+          <nav className="flex-1 space-y-2 px-4">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-4 px-2 py-3 rounded-lg transition-colors ${
+                className={`flex items-center gap-4 rounded-lg px-2 py-3 transition-colors ${
                   isActive(item.href) ? "bg-red-600" : "hover:bg-gray-900"
                 }`}
               >
                 <div
-                  className={`w-12 h-12 ${item.color} rounded-full flex items-center justify-center`}
+                  className={`h-12 w-12 ${item.color} flex items-center justify-center rounded-full`}
                 >
-                  <item.icon className="w-6 h-6 text-white" />
+                  <item.icon className="h-6 w-6 text-white" />
                 </div>
-                <span className="text-white text-xl font-semibold">
+                <span className="text-xl font-semibold text-white">
                   {item.label}
                 </span>
               </Link>
@@ -124,24 +119,24 @@ export default function Sidebar() {
           {/* User Section */}
           <div className="mt-auto border-t border-gray-800 p-4">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-700 flex-shrink-0">
+              <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-gray-700">
                 {avatarUrl ? (
                   <img
                     src={avatarUrl}
                     alt=""
-                    className="w-full h-full object-cover"
+                    className="h-full w-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-white text-lg font-bold">
+                  <div className="flex h-full w-full items-center justify-center text-lg font-bold text-white">
                     {user?.username?.charAt(0) || "?"}
                   </div>
                 )}
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-white font-semibold truncate">
+              <div className="min-w-0 flex-1">
+                <div className="truncate font-semibold text-white">
                   {user?.username || "Guest"}
                 </div>
-                <span className="bg-amber-100 text-amber-800 px-2 py-1 rounded-full text-xs">
+                <span className="rounded-full bg-amber-100 px-2 py-1 text-xs text-amber-800">
                   {isAdmin ? "Admin" : ""}
                 </span>
                 <div className="flex items-center gap-2 text-sm">
@@ -170,7 +165,7 @@ export default function Sidebar() {
       {/* Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-50 lg:hidden"
+          className="fixed inset-0 z-50 bg-black/50 lg:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}

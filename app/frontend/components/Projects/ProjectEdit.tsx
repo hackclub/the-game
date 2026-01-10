@@ -84,7 +84,7 @@ export default function EditProject({
           <label htmlFor="hackatime_project_keys">Hackatime Projects:</label>
           <select
             multiple
-            className="m-2 p-2 border w-full h-32"
+            className="m-2 h-32 w-full border p-2"
             value={data.hackatime_project_keys.map(String)}
             onChange={(e) =>
               setData(
@@ -119,9 +119,9 @@ export default function EditProject({
           )}
         </div>
 
-        <div className="flex flex-col gap-2 mt-4">
+        <div className="mt-4 flex flex-col gap-2">
           <button
-            className="p-5  bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+            className="rounded bg-green-500 p-5 px-4 py-2 font-bold text-white hover:bg-green-700"
             type="button"
             onClick={shipProject}
             disabled={processing}
@@ -130,7 +130,7 @@ export default function EditProject({
             Ship Project
           </button>
           <button
-            className="p-5  bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            className="rounded bg-blue-500 p-5 px-4 py-2 font-bold text-white hover:bg-blue-700"
             type="submit"
             disabled={processing}
           >
@@ -138,7 +138,7 @@ export default function EditProject({
           </button>
 
           <button
-            className="p-5  bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+            className="rounded bg-red-500 p-5 px-4 py-2 font-bold text-white hover:bg-red-700"
             type="button"
             onClick={handleDelete}
             disabled={processing}
