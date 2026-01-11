@@ -21,6 +21,7 @@ export default function Sidebar() {
   const user = props.current_user;
   const avatarUrl = user?.avatar;
 
+  
   const isAdmin = user?.admin || false;
   console.log(isAdmin);
 
