@@ -32,12 +32,12 @@ export default function Sidebar() {
       icon: ProjectsIcon,
       color: "bg-blue-600",
     },
-    {
-      href: "/explore",
-      label: "Explore",
-      icon: ExploreIcon,
-      color: "bg-purple-500",
-    },
+    // {
+    //   href: "/explore",
+    //   label: "Explore",
+    //   icon: ExploreIcon,
+    //   color: "bg-purple-500",
+    // },
   ];
 
   const isActive = (href: string) => url.startsWith(href);
