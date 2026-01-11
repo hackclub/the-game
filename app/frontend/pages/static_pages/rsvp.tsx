@@ -64,7 +64,7 @@ export default function RsvpPage() {
 
       <div className="relative z-10 flex min-h-screen w-full items-center justify-center px-4 py-12 lg:py-24">
         <div className="flex w-full max-w-none flex-col items-end lg:max-w-6xl">
-          <div className="flex w-full flex-col border-t-[30px] border-r-4 border-b-4 border-l-4 border-solid border-black bg-white lg:flex-row lg:border-t-[30px]">
+          <div className="flex w-full flex-col border-t-30 border-r-4 border-b-4 border-l-4 border-solid border-black bg-white lg:flex-row">
             <div className="flex items-center justify-center bg-white px-6 py-6 lg:border-r-0">
               <div className="h-20 w-auto lg:h-24">
                 <HackClubLogo className="block h-full w-auto max-w-none" />
@@ -184,7 +184,7 @@ export default function RsvpPage() {
       </div>
 
       <div className="relative z-10 flex w-full flex-col gap-12 px-6 pt-12 lg:gap-24 lg:px-48 lg:pt-20">
-        <p className="w-full border-b-4 border-black pb-4 text-4xl font-bold tracking-[-0.1em] text-black lg:text-7xl lg:tracking-[-7px]">
+        <p className="w-full border-b-4 border-black pb-4 text-4xl font-bold -tracking-widest text-black lg:text-7xl lg:tracking-[-7px]">
           FAQ
         </p>
       </div>
