@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { useForm, Head } from "@inertiajs/react";
-import Step from "../../components/Step";
-import QuestionAnswer from "../../components/QuestionAnswer";
-import DynamicBackgroundLines from "../../components/DynamicBackgroundLines";
-import HackClubLogo from "../../components/HackClubLogo";
-import ArrowVector from "../../components/ArrowVector";
-import HackClubFooter from "../../components/HackClubFooter";
+import Step from "../../components/rsvp/Step";
+import QuestionAnswer from "../../components/rsvp/QuestionAnswer";
+import DynamicBackgroundLines from "../../components/rsvp/DynamicBackgroundLines";
+import HackClubLogo from "../../components/rsvp/HackClubLogo";
+import ArrowVector from "../../components/rsvp/ArrowVector";
+import HackClubFooter from "../../components/rsvp/HackClubFooter";
 
 export default function RsvpPage() {
   const [showSuccess, setShowSuccess] = useState(false);
