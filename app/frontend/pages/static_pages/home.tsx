@@ -1,15 +1,18 @@
 import { Link } from "@inertiajs/react";
 import Sidebar from "@/components/sidebar";
 import Countdown from "@/components/home/countdown";
+import LoggedHours from "@/components/home/LoggedHours";
 
 export default function Home({
   account_linked,
   hackatime_linked,
   current_user,
+  totalProjectTime
 }: {
   account_linked: boolean;
   hackatime_linked: boolean;
   current_user: any;
+  totalProjectTime: number
 }) {
   return (
     <div className="flex min-h-screen bg-gray-200">
@@ -38,7 +41,16 @@ export default function Home({
           </>
         )}
 
-        <hr />
+       <LoggedHours totalProjectTime={totalProjectTime} />
+
+       {current_user.admin && (
+        <div className="mt-6">
+        <Link href="/admin" className="bg-blue-500 text-white px-4 py-2 rounded-md">
+          Go to Admin Dashboard
+        </Link>
+        </div>
+       )}
+
       </main>
     </div>
   );

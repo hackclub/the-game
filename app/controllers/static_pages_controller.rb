@@ -7,7 +7,9 @@ class StaticPagesController < ApplicationController
       return
     end
 
-    render inertia: { account_linked: current_user.account_id.present?, hackatime_linked: current_user.hackatime_id.present?, current_user: current_user }
+    totalProjectTime = current_user.projects.sum(:total_seconds)
+    Rails.logger.info(totalProjectTime)
+    render inertia: { account_linked: current_user.account_id.present?, hackatime_linked: current_user.hackatime_id.present?, current_user: current_user, totalProjectTime: totalProjectTime }
   end
 
   def index

@@ -14,12 +14,12 @@
 #  project_type           :string
 #  readme_link            :string
 #  repo_link              :string
-#  reported_hours         :decimal(3, 1)
 #  review_status          :integer
 #  reviewer_note          :text
 #  shipped                :boolean
 #  submitted_at           :datetime
 #  title                  :string
+#  total_seconds          :integer
 #  ysws                   :string
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null

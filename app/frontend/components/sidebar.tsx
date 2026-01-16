@@ -15,6 +15,7 @@ interface PageProps {
   [key: string]: unknown;
 }
 
+
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const { url, props } = usePage<PageProps>();
@@ -23,7 +24,6 @@ export default function Sidebar() {
 
   
   const isAdmin = user?.admin || false;
-  console.log(isAdmin);
 
   const navItems = [
     { href: "/home", label: "Home", icon: HomeIcon, color: "bg-red-500" },
@@ -32,7 +32,10 @@ export default function Sidebar() {
       label: "Projects",
       icon: ProjectsIcon,
       color: "bg-blue-600",
+      
     },
+   
+  
     // {
     //   href: "/explore",
     //   label: "Explore",
@@ -42,7 +45,8 @@ export default function Sidebar() {
   ];
 
   const isActive = (href: string) => url.startsWith(href);
-
+  console.log(isAdmin)
+  
   return (
     <>
       {/* Navigation Toggle */}
@@ -98,12 +102,14 @@ export default function Sidebar() {
           {/* Navigation */}
           <nav className="flex-1 space-y-2 px-4">
             {navItems.map((item) => (
+              
               <Link
                 key={item.href}
                 href={item.href}
                 className={`flex items-center gap-4 rounded-lg px-2 py-3 transition-colors ${
                   isActive(item.href) ? "bg-red-600" : "hover:bg-gray-900"
-                }`}
+                  } 
+              `}
               >
                 <div
                   className={`h-12 w-12 ${item.color} flex items-center justify-center rounded-full`}
@@ -138,7 +144,9 @@ export default function Sidebar() {
                   {user?.username || "Guest"}
                 </div>
                 <span className="rounded-full bg-amber-100 px-2 py-1 text-xs text-amber-800">
-                  {isAdmin ? "Admin" : ""}
+                  {isAdmin && (
+                    <a href="/admin">Admin</a>
+                  )}
                 </span>
                 <div className="flex items-center gap-2 text-sm">
                   <Link
@@ -211,6 +219,24 @@ function ExploreIcon({ className }: { className?: string }) {
 }
 
 function ProjectsIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+      />
+    </svg>
+  );
+}
+
+function AdminIcon({ className }: { className?: string }) {
   return (
     <svg
       className={className}

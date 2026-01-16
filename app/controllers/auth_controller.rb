@@ -1,11 +1,21 @@
 class AuthController < ApplicationController
-  allow_unauthenticated_access only: %i[ create_email start account_callback validate sent ]
+  allow_unauthenticated_access only: %i[ create_email start account_callback validate sent create_or_login_user ]
   skip_before_action :redirect_adults, only: %i[ logout ]
 
   layout false
 
   before_action :set_after_login_redirect, only: %i[ create_email ]
   before_action :redirect_if_logged_in, only: %i[ create_email ]
+
+  def create_or_login_user
+    email = params[:email]
+    user = User.find_or_create_by(email: email)
+    state = SecureRandom.hex(24)
+    session[:auth_state] = state
+    account_link = "https://account.hackclub.com/oauth/authorize?client_id=#{ENV["ACCOUNT_CLIENT_ID"]}&redirect_uri=#{account_callback_url}&response_type=code&scope=email name slack_id verification_status&state=#{state}&login_hint=#{email}"
+    Rails.logger.info("Redirecting to account link: #{account_link}")
+    inertia_location account_link
+  end
 
   def create_email
     email = params[:email]
@@ -60,6 +70,7 @@ class AuthController < ApplicationController
     state = SecureRandom.hex(24)
     session[:auth_state] = state
     account_link = "https://account.hackclub.com/oauth/authorize?client_id=#{ENV["ACCOUNT_CLIENT_ID"]}&redirect_uri=#{account_callback_url}&response_type=code&scope=email name slack_id verification_status&state=#{state}"
+    Rails.logger.info("Redirecting to account link: #{account_link}")
     redirect_to account_link, allow_other_host: true
   end
 

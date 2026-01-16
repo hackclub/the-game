@@ -44,7 +44,7 @@ export default function RsvpPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post("/rsvp", {
+    post("/auth/create_or_login_user", {
       onSuccess: () => {
         reset();
         setShowSuccess(true);
@@ -110,7 +110,7 @@ export default function RsvpPage() {
                 <ArrowVector className="block h-full w-full max-w-none" />
               </div>
               <span className="text-xl font-bold tracking-[-0.09em] lg:text-4xl">
-                RSVP
+                Get Started
               </span>
             </button>
           </form>
@@ -120,7 +120,10 @@ export default function RsvpPage() {
           >
             Thanks, we'll e-mail you updates!
           </p>
+
         </div>
+
+
 
         {showScrollArrow && (
           <a
