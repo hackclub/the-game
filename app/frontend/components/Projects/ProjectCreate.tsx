@@ -1,14 +1,12 @@
 import { useForm } from "@inertiajs/react";
+import type { HackatimeProject } from "@/interfaces/hackatime_project";
+import formatTime from "@/utils/formatTime";
 
 interface Props {
-  hackatime_projects: { id: number; name: string }[];
-  project_times: Record<string, number>;
+  hackatime_projects: HackatimeProject[];
 }
 
-export default function ProjectCreate({
-  hackatime_projects,
-  project_times,
-}: Props) {
+export default function ProjectCreate({ hackatime_projects }: Props) {
   const { data, setData, post, processing, errors } = useForm({
     title: "",
     desc: "",
@@ -24,13 +22,15 @@ export default function ProjectCreate({
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center">
-        <form onSubmit={submit}>
+      <div className="flex flex-col justify-center">
+        <form onSubmit={submit} className="flex max-w-lg flex-col gap-4">
           <br></br>
-          <div className="mb-4">
-            <label htmlFor="title">Title:</label>
+          <div className="flex flex-col">
+            <label className="font-bold" htmlFor="title">
+              Title
+            </label>
             <input
-              className="m-2 p-2"
+              className="p-2"
               type="text"
               value={data.title}
               onChange={(e) => setData("title", e.target.value)}
@@ -38,20 +38,24 @@ export default function ProjectCreate({
 
             {errors.title && <div className="text-red-500">{errors.title}</div>}
           </div>
-          <div className="mb-4">
-            <label htmlFor="desc">Description:</label>
+          <div className="flex flex-col">
+            <label className="font-bold" htmlFor="desc">
+              Description
+            </label>
             <input
-              className="border-black-300 m-2 border p-2"
+              className="p-2"
               type="text"
               value={data.desc}
               onChange={(e) => setData("desc", e.target.value)}
             />
             {errors.desc && <div className="text-red-500">{errors.desc}</div>}
           </div>
-          <div className="mb-4 gap-2">
-            <label htmlFor="demo_link">Demo Link:</label>
+          <div className="flex flex-col">
+            <label className="font-bold" htmlFor="demo_link">
+              Demo Link
+            </label>
             <input
-              className="m-2"
+              className="p-2"
               type="url"
               value={data.demo_link}
               onChange={(e) => setData("demo_link", e.target.value)}
@@ -60,12 +64,10 @@ export default function ProjectCreate({
               <div className="text-red-500">{errors.demo_link}</div>
             )}
           </div>
-          <div className="mb-4">
-            <label>Hackatime Projects:</label>
+          <div className="flex flex-col">
+            <label className="font-bold">Hackatime Projects</label>
             <select
-              multiple
-              className="m-2 h-32 w-full border p-2"
-              value={data.hackatime_project_keys.map(String)}
+              className="p-2"
               onChange={(e) =>
                 setData(
                   "hackatime_project_keys",
@@ -74,22 +76,25 @@ export default function ProjectCreate({
               }
             >
               {hackatime_projects.map((hp) => {
-                const totalSeconds = project_times[hp.name] || 0;
-                const hours = Math.floor(totalSeconds / 3600);
-                const minutes = Math.floor((totalSeconds % 3600) / 60);
                 return (
-                  <option key={hp.id} value={hp.id}>
-                    {hp.name} ({hours}h {minutes}m)
+                  <option
+                    key={hp.id}
+                    value={hp.id}
+                    selected={data.hackatime_project_keys.includes(hp.id)}
+                  >
+                    {hp.name} ({formatTime(hp.total_seconds)})
                   </option>
                 );
               })}
             </select>
           </div>
 
-          <div className="mb-4">
-            <label htmlFor="repo_link">Repository Link:</label>
+          <div className="flex flex-col">
+            <label className="font-bold" htmlFor="repo_link">
+              Repository Link
+            </label>
             <input
-              className="m-2"
+              className="p-2"
               type="url"
               value={data.repo_link}
               onChange={(e) => setData("repo_link", e.target.value)}

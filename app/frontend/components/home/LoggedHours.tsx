@@ -11,6 +11,8 @@ export default function LoggedHours({ totalProjectTime }: { totalProjectTime: nu
     Math.floor(seconds / 10),
     seconds % 10,
   ];
+  
+  console.log(digits);
 
   return (
     <div className="rounded-lg border bg-white p-6 shadow-sm">

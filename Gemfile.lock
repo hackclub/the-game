@@ -1,6 +1,8 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    aasm (5.5.2)
+      concurrent-ruby (~> 1.0)
     action_text-trix (2.1.16)
       railties
     actioncable (8.1.2)
@@ -75,6 +77,16 @@ GEM
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
+    acts_as_paranoid (0.11.0)
+      activerecord (>= 6.1, < 8.2)
+      activesupport (>= 6.1, < 8.2)
+    actual_db_schema (0.8.5)
+      activerecord
+      activesupport
+      ast
+      csv
+      parser
+      prism
     addressable (2.8.8)
       public_suffix (>= 2.0.2, < 8.0)
     annotaterb (4.20.0)
@@ -424,6 +436,9 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  aasm (~> 5.5)
+  acts_as_paranoid (~> 0.11.0)
+  actual_db_schema
   annotaterb
   blazer
   bootsnap

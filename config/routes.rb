@@ -21,8 +21,7 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
-  root "static_pages#rsvp"
-  get "/index", to: "static_pages#index"
+  root "static_pages#index"
   get "/home", to: "static_pages#home"
   post "/rsvp", to: "static_pages#create_rsvp"
   post "/signup", to: "static_pages#signup"
@@ -44,6 +43,7 @@ Rails.application.routes.draw do
     post "logout", to: "auth#logout"
     post "create_email", to: "auth#create_email"
     post "create_or_login_user", to: "auth#create_or_login_user"
+    get "account_link", to: "auth#account_link"
     get "sent", to: "auth#sent"
     post "validate", to: "auth#validate"
   end

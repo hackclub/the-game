@@ -1,64 +1,267 @@
 import { useState, useRef, useEffect } from "react";
 import { useForm, Head } from "@inertiajs/react";
+import Step from "../../components/rsvp/Step";
+import QuestionAnswer from "../../components/rsvp/QuestionAnswer";
+import DynamicBackgroundLines from "../../components/rsvp/DynamicBackgroundLines";
+import HackClubLogo from "../../components/rsvp/HackClubLogo";
+import ArrowVector from "../../components/rsvp/ArrowVector";
 
-export default function Landing() {
+import HackClubFooter from "../../components/rsvp/HackClubFooter";
+export default function RsvpPage({ signed_in }: { signed_in: boolean }) {
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showScrollArrow, setShowScrollArrow] = useState(true);
+  const [fadeOut, setFadeOut] = useState(false);
+  const step1CircleRef = useRef<HTMLDivElement>(null);
+  const step2CircleRef = useRef<HTMLDivElement>(null);
+  const step3CircleRef = useRef<HTMLDivElement>(null);
+
   const { data, setData, post, reset } = useForm({ email: "" });
+
+  useEffect(() => {
+    if (showSuccess) {
+      console.log(data);
+      const fadeTimer = setTimeout(() => setFadeOut(true), 3000);
+      const hideTimer = setTimeout(() => {
+        setShowSuccess(false);
+        setFadeOut(false);
+      }, 3500);
+      return () => {
+        clearTimeout(fadeTimer);
+        clearTimeout(hideTimer);
+      };
+    }
+  }, [showSuccess]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY || document.documentElement.scrollTop;
+      setShowScrollArrow(scrollY < 100);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post("/signup", {
-      onSuccess: (page) => {
-        if (page.props.url) {
-          window.location.href = page.props.url as string;
-        }
+    post("/auth/create_or_login_user", {
+      onSuccess: () => {
+        reset();
+        setShowSuccess(true);
       },
     });
   };
 
-  const [showSuccess, setShowSuccess] = useState(false);
-
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-white px-4">
-      <div className="text-center">
-        <h1 className="mb-8 text-6xl font-bold tracking-[-0.05em]">
-          <span className="font-normal">hack club: </span>
-          <span className="font-bold">the game.</span>
-        </h1>
-        <p className="mb-12 text-2xl text-gray-700">
-          Code online, then join us in a jetlag inspired adventure across
-          Manhattan.
-        </p>
-        <form
-          onSubmit={handleSubmit}
-          className="mt-4 flex h-20 w-full flex-col gap-2 sm:flex-row lg:gap-3"
-        >
-          <div className="flex h-full border-4 border-black bg-white px-4 sm:flex-1 lg:px-6">
-            <input
-              required
-              type="email"
-              value={data.email}
-              onChange={(e) => setData("email", e.target.value)}
-              placeholder="your@email.com"
-              className="w-full border-none bg-transparent font-[Arial] text-lg tracking-[-0.04em] text-black placeholder-gray-400 outline-none focus:ring-0 lg:text-3xl"
-            />
-          </div>
-          <button
-            type="submit"
-            className="border-4 border-black bg-black px-8 py-4 text-xl font-bold text-white transition-colors hover:bg-white hover:text-black"
-          >
-            Get Started →
-          </button>
-        </form>
+    <div
+      id="hero"
+      className="relative flex w-full flex-col items-start bg-white"
+    >
+      <Head title="Hack Club: The Game" />
+      <DynamicBackgroundLines
+        stepCircleRefs={[step1CircleRef, step2CircleRef, step3CircleRef]}
+      />
 
-        <div className="text-gray-500">
-          <p>
-            Already have an account?{" "}
-            <a href="/auth/start" className="underline hover:no-underline">
-              Sign in
+      <div className="relative z-10 flex min-h-screen w-full items-center justify-center px-4 py-12 lg:py-24">
+        <div className="flex w-full max-w-none flex-col items-end lg:max-w-6xl">
+          <div className="flex w-full flex-col border-t-30 border-r-4 border-b-4 border-l-4 border-solid border-black bg-white lg:flex-row">
+            <div className="flex items-center justify-center bg-white px-6 py-6 lg:border-r-0">
+              <div className="h-20 w-auto lg:h-24">
+                <HackClubLogo className="block h-full w-auto max-w-none" />
+              </div>
+            </div>
+
+            <div className="flex flex-1 flex-col border-t-4 border-black bg-white px-6 py-6 lg:border-t-0 lg:border-l-4 lg:px-10 lg:py-8">
+              <div className="mb-4">
+                <p className="text-2xl leading-tight tracking-[-0.05em] whitespace-nowrap sm:text-3xl lg:text-6xl lg:leading-none xl:text-8xl">
+                  <span className="font-normal">hack club: </span>
+                  <span className="font-bold">the game</span>
+                </p>
+              </div>
+              <div className="space-y-1 text-lg leading-tight tracking-[-0.04em] lg:text-2xl lg:leading-none xl:text-3xl">
+                <p>
+                  Build projects, then compete in an IRL adventure game across
+                  Manhattan
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {signed_in ? (
+            <a
+              href="/home"
+              className="mt-1 flex h-full w-full cursor-pointer items-center justify-center gap-3 border-4 border-black bg-white px-4 py-4 transition-colors hover:bg-black hover:text-white lg:gap-4 lg:px-6 lg:py-6"
+            >
+              <div className="h-6 w-6 lg:h-7 lg:w-7">
+                <ArrowVector className="block h-full w-full max-w-none" />
+              </div>
+              <span className="text-xl font-bold tracking-[-0.09em] lg:text-4xl">
+                Enter the Platform
+              </span>
             </a>
+          ) : (
+            <form
+              onSubmit={handleSubmit}
+              className="mt-4 flex h-20 w-full flex-col gap-2 sm:flex-row lg:gap-3"
+            >
+              <div className="flex h-full border-4 border-black bg-white px-4 sm:flex-1 lg:px-6">
+                <input
+                  required
+                  type="email"
+                  value={data.email}
+                  onChange={(e) => setData("email", e.target.value)}
+                  placeholder="your@email.com"
+                  className="w-full border-none bg-transparent font-[Arial] text-lg tracking-[-0.04em] text-black placeholder-gray-400 outline-none focus:ring-0 lg:text-3xl"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="flex h-full w-full cursor-pointer items-center justify-center gap-3 border-4 border-black bg-white px-4 py-4 transition-colors hover:bg-black hover:text-white sm:w-auto lg:gap-4 lg:px-6 lg:py-6"
+              >
+                <div className="h-6 w-6 lg:h-7 lg:w-7">
+                  <ArrowVector className="block h-full w-full max-w-none" />
+                </div>
+                <span className="text-xl font-bold tracking-[-0.09em] lg:text-4xl">
+                  Get Started
+                </span>
+              </button>
+            </form>
+          )}
+
+          <p
+            className={`mt-4 w-full text-lg font-bold tracking-[-0.04em] text-black transition-opacity duration-500 lg:text-2xl ${showSuccess && !fadeOut ? "opacity-100" : "opacity-0"}`}
+          >
+            Thanks, we'll e-mail you updates!
           </p>
         </div>
+
+        {showScrollArrow && (
+          <a
+            href="#steps"
+            className="group absolute bottom-8 left-1/2 flex -translate-x-1/2 animate-bounce cursor-pointer flex-col items-center scroll-smooth transition-opacity duration-300"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 5v14M5 12l7 7 7-7" />
+            </svg>
+          </a>
+        )}
       </div>
+
+      <div
+        className="relative z-10 flex w-full flex-col px-6 pb-24 lg:gap-24 lg:px-48 lg:pb-40"
+        id="steps"
+      >
+        <div className="flex flex-col gap-10">
+          <Step
+            stepNumber="1"
+            title="Build projects"
+            circleRef={step1CircleRef}
+          >
+            <span className="font-normal">
+              {" "}
+              Work on any programming project you like for{" "}
+              <span className="font-bold"> 40 hours</span>, and get coins for
+              every project you ship!{" "}
+            </span>{" "}
+            That's only <span className="font-bold"> 5 hours for 8 weeks!</span>
+          </Step>
+          <Step stepNumber="2" title="Team up" circleRef={step2CircleRef}>
+            <span className="font-normal">
+              After you qualify, you'll get assigned to a house! Create your
+              teams, strategize, and get ready for the game!
+            </span>
+          </Step>
+
+          <Step
+            stepNumber="3"
+            title="Play together in March"
+            circleRef={step3CircleRef}
+          >
+            <span className="font-normal">
+              You'll embark on an adventure to complete challenges and outplay
+              your competitors. The winners get special prizes and eternal
+              honor!
+            </span>
+          </Step>
+        </div>
+      </div>
+
+      <div className="relative z-10 flex w-full flex-col gap-12 px-6 pt-12 lg:gap-24 lg:px-48 lg:pt-20">
+        <p className="w-full border-b-4 border-black pb-4 text-4xl font-bold -tracking-widest text-black lg:text-7xl lg:tracking-[-7px]">
+          FAQ
+        </p>
+      </div>
+
+      <div className="relative z-10 grid w-full grid-cols-1 gap-12 px-6 pt-8 pb-24 md:grid-cols-2 md:gap-x-16 md:gap-y-20 md:px-40 md:pb-32">
+        <QuestionAnswer
+          question="How's the event gonna look like?"
+          answer="Hack Club: The Game will begin online, during which you code and build projects to gain coins. Once you have enough coins, you'll qualify to go to Manhattan and play!"
+        />
+
+        <QuestionAnswer
+          question="Who can participate?"
+          answer="Ages 13 through 18, from anywhere in the world can play Hack Club: The Game."
+        />
+
+        <QuestionAnswer
+          question="When is the event?"
+          answer="Hack Club: The Game will take place in March. We'll have more details in the coming weeks."
+        />
+
+        <QuestionAnswer
+          question="How do I sign up?"
+          answer="Enter your email above to RSVP for Hack Club: The Game! We'll send you an email when we have more details."
+        />
+
+        <QuestionAnswer
+          question="When can I start building projects?"
+          answer={
+            <>
+              Now! We'll have our full platform ready in the coming weeks, but
+              you're can start as long as you track your time using{" "}
+              <a
+                className="underline"
+                href="https://hackatime.hackclub.com/"
+                target="_blank"
+              >
+                Hackatime
+              </a>{" "}
+              (coding/art) or a journal (hardware/art). Journals should be on
+              GitHub and include an entry with a photo/video and description for
+              each hour of work. Art can only account for up to 10% of your
+              total time.
+            </>
+          }
+        />
+
+        <QuestionAnswer
+          question="How will the game work?"
+          answer="It's a mystery for now! We'll be releasing more details about the game as we approach the event."
+        />
+
+        <QuestionAnswer
+          question="Will my child be safe?"
+          answer="Yes! We'll have round-the-clock supervison to ensure the safety of all participants, as well as a first-aid plan. Students will not be allowed to freely roam the city outside of game hours, which will end before evening."
+        />
+
+        <QuestionAnswer
+          question="My parents are worried!"
+          answer="We'll have an in-depth parents guide available in the coming weeks - RSVP above to get notified when it's ready!"
+        />
+      </div>
+
+      <HackClubFooter />
     </div>
   );
 }

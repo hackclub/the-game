@@ -72,6 +72,8 @@ group :development do
 
   # Annotate Rails classes with schema information
   gem "annotaterb"
+
+  gem "actual_db_schema"
 end
 
 group :test do
@@ -91,3 +93,7 @@ gem "byebug", "~> 12.0", groups: [ :development, :test ]
 gem "faraday"
 
 gem "pundit", "~> 2.5"
+
+gem "aasm", "~> 5.5"
+
+gem "acts_as_paranoid", "~> 0.11.0"

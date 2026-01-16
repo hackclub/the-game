@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_16_001521) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_16_044332) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -95,32 +95,31 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_16_001521) do
   end
 
   create_table "projects", force: :cascade do |t|
-    t.integer "approved"
+    t.string "aasm_state"
+    t.datetime "approved_at"
     t.datetime "created_at", null: false
+    t.datetime "deleted_at"
     t.string "demo_link"
     t.text "desc"
-    t.string "hackatime_project_keys"
     t.text "internal_notes"
-    t.boolean "is_deleted"
     t.string "project_type"
     t.string "readme_link"
+    t.datetime "rejected_at"
     t.string "repo_link"
-    t.integer "review_status"
     t.text "reviewer_note"
-    t.boolean "shipped"
     t.datetime "submitted_at"
     t.string "title"
     t.integer "total_seconds"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.string "ysws"
+    t.index ["deleted_at"], name: "index_projects_on_deleted_at"
     t.index ["user_id"], name: "index_projects_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
     t.string "account_access_token"
     t.string "account_id"
-    t.boolean "admin", default: false, null: false
     t.string "avatar"
     t.integer "ban_type"
     t.date "birthday"
@@ -130,6 +129,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_16_001521) do
     t.boolean "is_banned", default: false, null: false
     t.datetime "last_active"
     t.bigint "referrer_id"
+    t.string "role", default: "user"
     t.string "slack_id"
     t.string "username"
     t.boolean "ysws_verified"

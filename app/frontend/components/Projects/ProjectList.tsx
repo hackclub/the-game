@@ -1,33 +1,24 @@
 import { Link } from "@inertiajs/react";
+import type { Project } from "@/interfaces/project";
+import formatTime from "@/utils/formatTime";
 
 export default function ProjectList({ projects }: { projects: Project[] }) {
-  const isReviewed = (review_status: string) => {
-    console.log(review_status);
-    if (review_status === "approved") {
-      return "Approved";
-    } else if (review_status === "pending") {
-      return "Pending";
-    } else if (review_status === "rejected") {
-      return "Rejected";
-    }
-  };
-
-  const isShipped = (shipStatus: string) => {
-    if (shipStatus === "shipped") {
-      return true;
-    }
-    return false;
-  };
-
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       {projects.map((project) => (
-        <div key={project.id} className="rounded-lg border p-4 shadow-sm">
-          <h2 className="text-lg font-semibold">{project.title}</h2>
-          <span className=""> {project.id} </span>{" "}
-          {/* For debugging purposes, remember to remove */}
-          <br></br>
-          <span className=""> {isReviewed(project.review_status)}</span>
+        <div
+          key={project.id}
+          className="rounded-lg border bg-white p-4 shadow-sm"
+        >
+          <div className="flex flex-row justify-between">
+            <h2 className="text-lg font-semibold">{project.title}</h2>
+            <span className="text-md font-normal">
+              {formatTime(project.total_seconds)}
+            </span>
+          </div>
+          <span className="italic">
+            {project.aasm_state[0].toUpperCase() + project.aasm_state.slice(1)}
+          </span>
           <p className="mt-4 text-gray-600">{project.desc}</p>
           <div className="mt-6 flex gap-2">
             {project.demo_link && (
@@ -52,16 +43,16 @@ export default function ProjectList({ projects }: { projects: Project[] }) {
             >
               Edit
             </Link>
-
-            <span
-              className={`text-${isShipped(project.approved) ? "green" : "red"}-500`}
-            >
-              {isShipped(project.approved) ? "Shipped!" : "Not Shipped!"}
-            </span>
             <br />
           </div>
         </div>
       ))}
+      <a
+        href="/projects/new"
+        className="flex items-center justify-center rounded-lg border bg-white p-4 shadow-sm hover:bg-gray-300"
+      >
+        <p className="text-2xl">Create a new project</p>
+      </a>
     </div>
   );
 }

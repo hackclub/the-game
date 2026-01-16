@@ -1,5 +1,5 @@
 class StaticPagesController < ApplicationController
-  allow_unauthenticated_access only: %i[rsvp create_rsvp signup index]
+  allow_unauthenticated_access only: %i[index create_rsvp signup index]
 
   def home
     unless user_logged_in?
@@ -7,13 +7,9 @@ class StaticPagesController < ApplicationController
       return
     end
 
-    totalProjectTime = current_user.projects.sum(:total_seconds)
+    totalProjectTime = current_user.projects.reduce(0) { |acc, project| acc + project.display_seconds }
     Rails.logger.info(totalProjectTime)
-    render inertia: { account_linked: current_user.account_id.present?, hackatime_linked: current_user.hackatime_id.present?, current_user: current_user, totalProjectTime: totalProjectTime }
-  end
-
-  def index
-    render inertia: {}
+    render inertia: { username: current_user.username, admin: current_user.admin?, totalProjectTime: totalProjectTime }
   end
 
   def projects
@@ -21,13 +17,8 @@ class StaticPagesController < ApplicationController
     render inertia: "Projects/Index", props: { projects: @projects }
   end
 
-  def rsvp
-    if user_logged_in?
-      redirect_to home_path
-      return
-    end
-
-    render inertia: {}
+  def index
+    render inertia: { signed_in: user_logged_in? }
   end
 
   def create_rsvp
