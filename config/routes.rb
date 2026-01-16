@@ -44,6 +44,7 @@ Rails.application.routes.draw do
     post "logout", to: "auth#logout"
     post "create_email", to: "auth#create_email"
     post "create_or_login_user", to: "auth#create_or_login_user"
+    get "account_link", to: "auth#account_link"
     get "sent", to: "auth#sent"
     post "validate", to: "auth#validate"
   end

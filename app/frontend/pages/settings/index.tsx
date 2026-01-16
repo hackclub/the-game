@@ -1,14 +1,50 @@
+import { Link } from "@inertiajs/react";
 import Sidebar from "@/components/sidebar";
 
-export default function SettingsIndex(profile: { user: any }) {
+export default function SettingsIndex(user: {
+  email: string;
+  hca_linked: boolean;
+  hackatime_linked: boolean;
+  admin: boolean;
+}) {
   return (
     <div className="flex min-h-screen bg-gray-200">
       <Sidebar />
       <main className="flex-1 p-6 lg:ml-64">
-        <h1 className="text-2xl font-bold"> Settings Page </h1>
-        <div className="flex flex-col gap-4">
-          <p>Welcome, {profile.user.username}!</p>
-          <p>Your email is: {profile.user.email}</p>
+        <h1 className="text-2xl font-bold">Settings</h1>
+        <hr />
+        <div className="flex flex-col gap-4 py-3 text-lg">
+          {user.admin && <p>You are an admin.</p>}
+          <p>
+            <span className="font-bold">Email: </span>
+            {user.email}
+          </p>
+          <p>
+            <span className="font-bold">Hack Club Account:</span>{" "}
+            {user.hca_linked ? (
+              <span className="text-green-600">Linked</span>
+            ) : (
+              <Link
+                className="text-red-500 underline"
+                href="/auth/account_link"
+              >
+                Click here to link
+              </Link>
+            )}
+          </p>
+          <p>
+            <span className="font-bold">Hackatime:</span>{" "}
+            {user.hackatime_linked ? (
+              <span className="text-green-600">Linked</span>
+            ) : (
+              <Link
+                className="text-red-500 underline"
+                href="/auth/hackatime_link"
+              >
+                Click here to link
+              </Link>
+            )}
+          </p>
         </div>
       </main>
     </div>

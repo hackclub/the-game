@@ -10,10 +10,14 @@ class AuthController < ApplicationController
   def create_or_login_user
     email = params[:email]
     user = User.find_or_create_by(email:)
-    state = SecureRandom.hex(24)
     session[:pending_user_id] = user.id
-    session[:auth_state] = state
-    account_link = "https://account.hackclub.com/oauth/authorize?client_id=#{ENV["ACCOUNT_CLIENT_ID"]}&redirect_uri=#{account_callback_url}&response_type=code&scope=email name slack_id verification_status&state=#{state}&login_hint=#{email}"
+    account_link = generate_hca_authorize_link(email)
+    Rails.logger.info("Redirecting to account link: #{account_link}")
+    inertia_location account_link
+  end
+
+  def account_link
+    account_link = generate_hca_authorize_link
     Rails.logger.info("Redirecting to account link: #{account_link}")
     inertia_location account_link
   end
@@ -152,5 +156,11 @@ class AuthController < ApplicationController
 
   def validate_otp(email, otp)
     OneTimePassword.valid?(otp, email)
+  end
+
+  def generate_hca_authorize_link(email)
+    state = SecureRandom.hex(24)
+    session[:auth_state] = state
+    "https://account.hackclub.com/oauth/authorize?client_id=#{ENV["ACCOUNT_CLIENT_ID"]}&redirect_uri=#{account_callback_url}&response_type=code&scope=email name slack_id verification_status&state=#{state}#{"&login_hint=#{email}" if email.present?}"
   end
 end
