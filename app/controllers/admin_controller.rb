@@ -6,7 +6,7 @@ class AdminController < ApplicationController
     end
     render inertia: "admin/index", props: { user: @user }
   end
-  
+
   def announcements
     @user = current_user
     unless @user.admin?

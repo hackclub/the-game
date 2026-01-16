@@ -18,8 +18,8 @@ export default function AdminPage() {
           Annoucements
         </a>
         <a
-        href="https://plausible.io/hctg.hackclub.com"
-        className="block rounded-lg bg-red-300 p-6 shadow-md transition-colors hover:bg-red-200"
+          href="https://plausible.io/hctg.hackclub.com"
+          className="block rounded-lg bg-red-300 p-6 shadow-md transition-colors hover:bg-red-200"
         >
           Plausible Analytics
         </a>

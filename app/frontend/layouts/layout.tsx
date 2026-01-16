@@ -6,7 +6,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <>
       <Head>
         <title>Hack Club: The Game</title>
-        
       </Head>
       <div className="flex min-h-screen bg-gray-200">
         <Sidebar />

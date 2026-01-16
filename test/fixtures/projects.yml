@@ -32,18 +32,12 @@
 #  fk_rails_...  (user_id => users.id)
 #
 one:
-  approved: 1
-  reported_hours: 9.99
   demo_link: MyString
-  hackatime_project_keys: MyString
   desc: MyText
-  is_deleted: false
-  review_status: 1
   repo_link: MyString
   readme_link: MyString
   title: MyString
   user: one
-  shipped: false
   reviewer_note: MyText
   ysws: MyString
   project_type: MyString
@@ -51,18 +45,12 @@ one:
   submitted_at: 2025-12-30 15:10:14
 
 two:
-  approved: 1
-  reported_hours: 9.99
   demo_link: MyString
-  hackatime_project_keys: MyString
   desc: MyText
-  is_deleted: false
-  review_status: 1
   repo_link: MyString
   readme_link: MyString
   title: MyString
   user: two
-  shipped: false
   reviewer_note: MyText
   ysws: MyString
   project_type: MyString

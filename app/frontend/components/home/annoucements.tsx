@@ -1,4 +1,8 @@
-export default function Announcements({ announcements }: { announcements: string[] }) {
+export default function Announcements({
+  announcements,
+}: {
+  announcements: string[];
+}) {
   announcements.sort((a, b) => a.localeCompare(b));
 
   return (

@@ -1,4 +1,8 @@
-export default function LoggedHours({ totalProjectTime }: { totalProjectTime: number }) {
+export default function LoggedHours({
+  totalProjectTime,
+}: {
+  totalProjectTime: number;
+}) {
   const hours = Math.floor(totalProjectTime / 3600);
   const minutes = Math.floor((totalProjectTime % 3600) / 60);
   const seconds = totalProjectTime % 60;
@@ -11,12 +15,12 @@ export default function LoggedHours({ totalProjectTime }: { totalProjectTime: nu
     Math.floor(seconds / 10),
     seconds % 10,
   ];
-  
+
   console.log(digits);
 
   return (
     <div className="rounded-lg border bg-white p-6 shadow-sm">
-      <h2 className="text-gray-700 text-lg font-semibold text-center mb-4">
+      <h2 className="mb-4 text-center text-lg font-semibold text-gray-700">
         Time Logged
       </h2>
       <div className="flex items-center justify-center gap-1">
@@ -29,16 +33,18 @@ export default function LoggedHours({ totalProjectTime }: { totalProjectTime: nu
         <FlipDigit digit={digits[4]} />
         <FlipDigit digit={digits[5]} />
       </div>
-      <p className="text-center text-sm text-gray-500 mt-3">hours : minutes : seconds</p>
+      <p className="mt-3 text-center text-sm text-gray-500">
+        hours : minutes : seconds
+      </p>
     </div>
   );
 }
 
 function FlipDigit({ digit }: { digit: number }) {
   return (
-    <div className="bg-gray-900 w-10 h-14 sm:w-12 sm:h-16 rounded flex items-center justify-center relative overflow-hidden">
+    <div className="relative flex h-14 w-10 items-center justify-center overflow-hidden rounded bg-gray-900 sm:h-16 sm:w-12">
       <div className="absolute inset-x-0 top-1/2 h-px bg-gray-700" />
-      <span className="text-white text-3xl sm:text-4xl font-bold">{digit}</span>
+      <span className="text-3xl font-bold text-white sm:text-4xl">{digit}</span>
     </div>
   );
 }
@@ -46,8 +52,8 @@ function FlipDigit({ digit }: { digit: number }) {
 function Colon() {
   return (
     <div className="flex flex-col gap-2 px-1">
-      <div className="w-1.5 h-1.5 bg-gray-400 rounded-full" />
-      <div className="w-1.5 h-1.5 bg-gray-400 rounded-full" />
+      <div className="h-1.5 w-1.5 rounded-full bg-gray-400" />
+      <div className="h-1.5 w-1.5 rounded-full bg-gray-400" />
     </div>
   );
 }
