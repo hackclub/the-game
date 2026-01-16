@@ -21,8 +21,6 @@ export default function Sidebar() {
   const user = props.current_user;
   const avatarUrl = user?.avatar;
 
-  const isAdmin = user?.admin || false;
-
   const navItems = [
     { href: "/home", label: "Home", icon: HomeIcon, color: "red-500" },
     {
@@ -71,7 +69,7 @@ export default function Sidebar() {
 
       {/* Sidebar */}
       <div
-        className={`w-64 border-r-6 lg:end-auto border-${activeColor} lg:bottom-0 lg:block lg:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"} fixed start-0 top-0 bottom-0 z-60 h-full transform bg-black transition-all duration-300`}
+        className={`w-64 ${activeColor ? "border-r-6" : ""} lg:end-auto border-${activeColor} lg:bottom-0 lg:block lg:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"} fixed start-0 top-0 bottom-0 z-60 h-full transform bg-black transition-all duration-300`}
         role="dialog"
         tabIndex={-1}
         aria-label="Sidebar"
@@ -99,12 +97,10 @@ export default function Sidebar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`my-3 flex items-center gap-4 rounded-lg rounded-l-full pr-2 transition-colors ${
-                  isActive(item.href) ? `bg-${item.color}` : "hover:bg-gray-900"
-                } `}
+                className={`my-3 flex items-center gap-4 rounded-lg rounded-l-full pr-2 transition-colors ${`${isActive(item.href) ? "" : "hover:"}bg-${item.color}`} `}
               >
                 <div
-                  className={`h-12 w-12 bg-${item.color} flex items-center justify-center rounded-full border-[1px] border-black`}
+                  className={`h-12 w-12 bg-${item.color} flex items-center justify-center rounded-full border border-black`}
                 >
                   <item.icon className="h-6 w-6 text-white" />
                 </div>

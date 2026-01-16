@@ -1,7 +1,7 @@
 @import "tailwindcss";
-@source inline("bg-red-500");
+@source inline("{hover:,}bg-red-500");
 @source inline("border-red-500");
-@source inline("bg-blue-600");
+@source inline("{hover:,}bg-blue-600");
 @source inline("border-blue-600");
 
 @source "../**/*.{js,ts,jsx,tsx}";
