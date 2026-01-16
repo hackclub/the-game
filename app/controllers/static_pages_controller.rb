@@ -1,5 +1,5 @@
 class StaticPagesController < ApplicationController
-  allow_unauthenticated_access only: %i[rsvp create_rsvp signup index]
+  allow_unauthenticated_access only: %i[index create_rsvp signup index]
 
   def home
     unless user_logged_in?
@@ -12,16 +12,12 @@ class StaticPagesController < ApplicationController
     render inertia: { account_linked: current_user.account_id.present?, hackatime_linked: current_user.hackatime_id.present?, current_user: current_user, totalProjectTime: totalProjectTime }
   end
 
-  def index
-    render inertia: {}
-  end
-
   def projects
     @projects = current_user.projects
     render inertia: "Projects/Index", props: { projects: @projects }
   end
 
-  def rsvp
+  def index
     if user_logged_in?
       redirect_to home_path
       return
