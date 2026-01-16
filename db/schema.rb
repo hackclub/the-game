@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_16_001521) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_16_004205) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -99,7 +99,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_16_001521) do
     t.datetime "created_at", null: false
     t.string "demo_link"
     t.text "desc"
-    t.string "hackatime_project_keys"
     t.text "internal_notes"
     t.boolean "is_deleted"
     t.string "project_type"

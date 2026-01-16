@@ -2,26 +2,25 @@
 #
 # Table name: projects
 #
-#  id                     :bigint           not null, primary key
-#  approved               :integer
-#  demo_link              :string
-#  desc                   :text
-#  hackatime_project_keys :string
-#  internal_notes         :text
-#  is_deleted             :boolean
-#  project_type           :string
-#  readme_link            :string
-#  repo_link              :string
-#  review_status          :integer
-#  reviewer_note          :text
-#  shipped                :boolean
-#  submitted_at           :datetime
-#  title                  :string
-#  total_seconds          :integer
-#  ysws                   :string
-#  created_at             :datetime         not null
-#  updated_at             :datetime         not null
-#  user_id                :bigint           not null
+#  id             :bigint           not null, primary key
+#  approved       :integer
+#  demo_link      :string
+#  desc           :text
+#  internal_notes :text
+#  is_deleted     :boolean
+#  project_type   :string
+#  readme_link    :string
+#  repo_link      :string
+#  review_status  :integer
+#  reviewer_note  :text
+#  shipped        :boolean
+#  submitted_at   :datetime
+#  title          :string
+#  total_seconds  :integer
+#  ysws           :string
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  user_id        :bigint           not null
 #
 # Indexes
 #
