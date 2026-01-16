@@ -15,14 +15,12 @@ interface PageProps {
   [key: string]: unknown;
 }
 
-
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const { url, props } = usePage<PageProps>();
   const user = props.current_user;
   const avatarUrl = user?.avatar;
 
-  
   const isAdmin = user?.admin || false;
 
   const navItems = [
@@ -32,10 +30,8 @@ export default function Sidebar() {
       label: "Projects",
       icon: ProjectsIcon,
       color: "bg-blue-600",
-      
     },
-   
-  
+
     // {
     //   href: "/explore",
     //   label: "Explore",
@@ -45,8 +41,8 @@ export default function Sidebar() {
   ];
 
   const isActive = (href: string) => url.startsWith(href);
-  console.log(isAdmin)
-  
+  console.log(isAdmin);
+
   return (
     <>
       {/* Navigation Toggle */}
@@ -102,14 +98,12 @@ export default function Sidebar() {
           {/* Navigation */}
           <nav className="flex-1 space-y-2 px-4">
             {navItems.map((item) => (
-              
               <Link
                 key={item.href}
                 href={item.href}
                 className={`flex items-center gap-4 rounded-lg px-2 py-3 transition-colors ${
                   isActive(item.href) ? "bg-red-600" : "hover:bg-gray-900"
-                  } 
-              `}
+                } `}
               >
                 <div
                   className={`h-12 w-12 ${item.color} flex items-center justify-center rounded-full`}
@@ -143,11 +137,6 @@ export default function Sidebar() {
                 <div className="truncate font-semibold text-white">
                   {user?.username || "Guest"}
                 </div>
-                <span className="rounded-full bg-amber-100 px-2 py-1 text-xs text-amber-800">
-                  {isAdmin && (
-                    <a href="/admin">Admin</a>
-                  )}
-                </span>
                 <div className="flex items-center gap-2 text-sm">
                   <Link
                     href="/settings"
