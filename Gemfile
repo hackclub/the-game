@@ -72,6 +72,8 @@ group :development do
 
   # Annotate Rails classes with schema information
   gem "annotaterb"
+
+  gem "actual_db_schema"
 end
 
 group :test do
