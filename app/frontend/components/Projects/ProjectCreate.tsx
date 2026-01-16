@@ -1,5 +1,6 @@
 import { useForm } from "@inertiajs/react";
 import type { HackatimeProject } from "@/interfaces/hackatime_project";
+import formatTime from "@/utils/formatTime";
 
 interface Props {
   hackatime_projects: HackatimeProject[];
@@ -75,17 +76,13 @@ export default function ProjectCreate({ hackatime_projects }: Props) {
               }
             >
               {hackatime_projects.map((hp) => {
-                console.log(hp);
-                const totalSeconds = hp["total_seconds"];
-                const hours = Math.floor(totalSeconds / 3600);
-                const minutes = Math.floor((totalSeconds % 3600) / 60);
                 return (
                   <option
                     key={hp.id}
                     value={hp.id}
                     selected={data.hackatime_project_keys.includes(hp.id)}
                   >
-                    {hp.name} ({hours}h {minutes}m)
+                    {hp.name} ({formatTime(hp.total_seconds)})
                   </option>
                 );
               })}

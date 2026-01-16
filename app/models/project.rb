@@ -51,7 +51,19 @@ class Project < ApplicationRecord
     end
   end
 
+  def display_seconds
+    return total_seconds if total_seconds.present?
+
+    hackatime_projects.reduce(0) do |acc, project|
+      acc + project.sync_total_seconds
+    end
+  end
+
   def display_hash
-    self.as_json.slice("id", "aasm_state", "approved_at", "demo_link", "desc", "readme_link", "rejected_at", "repo_link", "submitted_at", "title", "total_seconds", "ysws", "created_at", "updated_at")
+    hash = self.as_json.slice("id", "aasm_state", "approved_at", "demo_link", "desc", "readme_link", "rejected_at", "repo_link", "submitted_at", "title", "ysws", "created_at", "updated_at")
+    hash["total_seconds"] = display_seconds
+    hash["hackatime_projects"] = hackatime_projects.pluck(:id)
+
+    hash
   end
 end

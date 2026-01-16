@@ -1,5 +1,6 @@
 import { Link } from "@inertiajs/react";
 import type { Project } from "@/interfaces/project";
+import formatTime from "@/utils/formatTime";
 
 export default function ProjectList({ projects }: { projects: Project[] }) {
   return (
@@ -10,10 +11,14 @@ export default function ProjectList({ projects }: { projects: Project[] }) {
           className="rounded-lg border bg-white p-4 shadow-sm"
         >
           <div className="flex flex-row justify-between">
-            <h2 className="text-lg font-semibold">{project.title} </h2>
-            <span className="text-md font-normal">{project.total_seconds}</span>
+            <h2 className="text-lg font-semibold">{project.title}</h2>
+            <span className="text-md font-normal">
+              {formatTime(project.total_seconds)}
+            </span>
           </div>
-          <span className="italic">{project.aasm_state}</span>
+          <span className="italic">
+            {project.aasm_state[0].toUpperCase() + project.aasm_state.slice(1)}
+          </span>
           <p className="mt-4 text-gray-600">{project.desc}</p>
           <div className="mt-6 flex gap-2">
             {project.demo_link && (

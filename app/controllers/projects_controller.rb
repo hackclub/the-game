@@ -1,6 +1,6 @@
 class ProjectsController < ApplicationController
   def index
-    projects = current_user.projects
+    projects = current_user.projects.map { |project| project.display_hash }
     render inertia: "projects/index", props: { projects: }
   end
 
@@ -29,14 +29,13 @@ class ProjectsController < ApplicationController
   end
 
   def show
-    project = current_user.projects.find(params[:id])
+    project = current_user.projects.find(params[:id]).display_hash
     render inertia: "projects/show", props: { project: }
   end
 
   def edit
     project = current_user.projects.includes(:hackatime_projects).find(params[:id])
-    project_hash = project.as_json
-    project_hash["hackatime_projects"] = project.hackatime_projects.pluck(:id)
+    project_hash = project.display_hash
     hackatime_projects = filter_hp_columns current_user.sync_hackatime_projects
     render inertia: "projects/edit", props: {
       project: project_hash,
@@ -50,7 +49,7 @@ class ProjectsController < ApplicationController
       flash[:success] = "Project updated successfully"
       redirect_to projects_path
     else
-      render inertia: "projects/edit", props: { project: project, errors: project.errors }
+      render inertia: "projects/edit", props: { project: project.display_hash, errors: project.errors }
     end
   end
 
