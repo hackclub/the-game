@@ -5,10 +5,10 @@
 #  id             :bigint           not null, primary key
 #  aasm_state     :string
 #  approved_at    :datetime
+#  deleted_at     :datetime
 #  demo_link      :string
 #  desc           :text
 #  internal_notes :text
-#  is_deleted     :boolean
 #  project_type   :string
 #  readme_link    :string
 #  rejected_at    :datetime
@@ -24,7 +24,8 @@
 #
 # Indexes
 #
-#  index_projects_on_user_id  (user_id)
+#  index_projects_on_deleted_at  (deleted_at)
+#  index_projects_on_user_id     (user_id)
 #
 # Foreign Keys
 #

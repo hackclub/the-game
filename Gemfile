@@ -95,3 +95,5 @@ gem "faraday"
 gem "pundit", "~> 2.5"
 
 gem "aasm", "~> 5.5"
+
+gem "acts_as_paranoid", "~> 0.11.0"
