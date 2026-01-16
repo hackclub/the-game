@@ -2,23 +2,6 @@ import { Link } from "@inertiajs/react";
 import type { Project } from "@/interfaces/project";
 
 export default function ProjectList({ projects }: { projects: Project[] }) {
-  const isReviewed = (review_status: string | null) => {
-    if (review_status === "approved") {
-      return "Approved";
-    } else if (review_status === "pending" || review_status === null) {
-      return "Pending";
-    } else if (review_status === "rejected") {
-      return "Rejected";
-    }
-  };
-
-  const isShipped = (shipStatus: string | null) => {
-    if (shipStatus === "shipped") {
-      return true;
-    }
-    return false;
-  };
-
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       {projects.map((project) => (
@@ -28,13 +11,9 @@ export default function ProjectList({ projects }: { projects: Project[] }) {
         >
           <div className="flex flex-row justify-between">
             <h2 className="text-lg font-semibold">{project.title} </h2>
-            <span
-              className={`text-md font-normal text-${isShipped(project.approved) ? "green" : "red"}-500`}
-            >
-              {isShipped(project.approved) ? "Shipped!" : "Not Shipped!"}
-            </span>
+            <span className="text-md font-normal">{project.total_seconds}</span>
           </div>
-          <span className="italic">{isReviewed(project.review_status)}</span>
+          <span className="italic">{project.aasm_state}</span>
           <p className="mt-4 text-gray-600">{project.desc}</p>
           <div className="mt-6 flex gap-2">
             {project.demo_link && (

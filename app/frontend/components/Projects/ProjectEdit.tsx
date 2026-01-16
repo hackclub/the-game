@@ -20,7 +20,6 @@ export default function EditProject({ project, hackatime_projects }: Props) {
     desc: project.desc,
     repo_link: project.repo_link,
     demo_link: project.demo_link,
-    approved: project.approved,
     hackatime_project_keys: project.hackatime_projects ?? [],
   });
 
@@ -40,8 +39,6 @@ export default function EditProject({ project, hackatime_projects }: Props) {
       destroy(`/projects/${project.id}`);
     }
   }
-
-  const isShipped = data.approved === "shipped" ? true : false;
 
   return (
     <div className="flex flex-col items-center justify-center">
@@ -121,7 +118,9 @@ export default function EditProject({ project, hackatime_projects }: Props) {
             type="button"
             onClick={shipProject}
             disabled={processing}
-            style={{ display: isShipped ? "none" : "block" }}
+            style={{
+              display: project.aasm_state === "pending" ? "block" : "none",
+            }}
           >
             Ship Project
           </button>

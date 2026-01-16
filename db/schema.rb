@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_16_011651) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_16_035318) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -95,7 +95,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_16_011651) do
   end
 
   create_table "projects", force: :cascade do |t|
-    t.integer "approved"
+    t.string "aasm_state"
+    t.datetime "approved_at"
     t.datetime "created_at", null: false
     t.string "demo_link"
     t.text "desc"
@@ -103,10 +104,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_16_011651) do
     t.boolean "is_deleted"
     t.string "project_type"
     t.string "readme_link"
+    t.datetime "rejected_at"
     t.string "repo_link"
-    t.integer "review_status"
     t.text "reviewer_note"
-    t.boolean "shipped"
     t.datetime "submitted_at"
     t.string "title"
     t.integer "total_seconds"

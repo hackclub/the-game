@@ -67,7 +67,7 @@ class ProjectsController < ApplicationController
 
   def ship
     project = current_user.projects.find(params[:id])
-    project.update!(approved: :shipped)
+    project.mark_submitted!
     redirect_to projects_path
   end
 

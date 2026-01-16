@@ -3,17 +3,17 @@
 # Table name: projects
 #
 #  id             :bigint           not null, primary key
-#  approved       :integer
+#  aasm_state     :string
+#  approved_at    :datetime
 #  demo_link      :string
 #  desc           :text
 #  internal_notes :text
 #  is_deleted     :boolean
 #  project_type   :string
 #  readme_link    :string
+#  rejected_at    :datetime
 #  repo_link      :string
-#  review_status  :integer
 #  reviewer_note  :text
-#  shipped        :boolean
 #  submitted_at   :datetime
 #  title          :string
 #  total_seconds  :integer
@@ -31,6 +31,8 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Project < ApplicationRecord
+  include AASM
+
   belongs_to :user
   has_paper_trail
   has_many :hackatime_projects, dependent: :destroy
@@ -38,15 +40,18 @@ class Project < ApplicationRecord
   validates :title, :desc, :repo_link, :demo_link, presence: true
   validates :demo_link, format: { with: URI.regexp(%w[http https]), message: "must be a valid URL" }
 
-  enum :review_status, { pending: 0, approved: 1, rejected: 2 }
-  enum :approved, { not_shipped: 0, shipped: 1 }
+  aasm timestamps: true do
+    state :pending, initial: true
+    state :submitted
+    state :approved
+    state :rejected
 
-  before_create :set_approved_review_status
+    event :mark_submitted do
+      transitions from: [ :pending, :rejected ], to: :submitted
+    end
+  end
 
-  private
-
-  def set_approved_review_status
-    self.review_status = Project.review_statuses[:pending]
-    self.approved = Project.approveds[:not_shipped]
+  def display_hash
+    self.as_json.slice("id", "aasm_state", "approved_at", "demo_link", "desc", "readme_link", "rejected_at", "repo_link", "submitted_at", "title", "total_seconds", "ysws", "created_at", "updated_at")
   end
 end
