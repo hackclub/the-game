@@ -17,7 +17,7 @@ interface PageProps {
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { url, props } = usePage<PageProps>();
+  const { url, props, flash } = usePage<PageProps>();
   const user = props.current_user;
   const avatarUrl = user?.avatar;
 
@@ -110,6 +110,15 @@ export default function Sidebar() {
               </Link>
             ))}
           </nav>
+
+          {Object.entries(flash ?? {}).map(([key, message]) => (
+            <div
+              x-key={key}
+              className={`${key === "alert" ? "bg-red-500" : "bg-green-700"} m-4 rounded-md border-2 border-${key === "alert" ? "red-700" : "green-900"} p-4`}
+            >
+              <p className="text-white">{message as string}</p>
+            </div>
+          ))}
 
           {/* User Section */}
           <div className="mt-auto border-t border-gray-800 p-4">
