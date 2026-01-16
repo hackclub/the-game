@@ -1,25 +1,19 @@
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import Layout from "@/layouts/layout";
 import LoggedHours from "@/components/home/LoggedHours";
 
-export default function Home({
-  username,
-  admin,
-  totalProjectTime,
-}: {
-  username: string;
-  admin: boolean;
-  totalProjectTime: number;
-}) {
+export default function Home() {
+  const { props } = usePage<{ totalProjectTime: number }>();
+
   return (
     <Layout>
       <h2 className="mb-2 text-3xl font-bold">
-        Welcome to the Platform, {username}!
+        Welcome to the Platform, {props.user.username}!
       </h2>
 
-      <LoggedHours totalProjectTime={totalProjectTime} />
+      <LoggedHours totalProjectTime={props.totalProjectTime} />
 
-      {admin && (
+      {props.user.role === "admin" && (
         <div className="mt-6">
           <Link
             href="/admin"

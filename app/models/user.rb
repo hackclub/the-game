@@ -69,6 +69,10 @@ class User < ApplicationRecord
     HackatimeService.sync_hackatime_projects(self)
   end
 
+  def display_hash
+    self.as_json.slice("id", "avatar", "email", "role", "username", "ysws_verified", "account_id", "hackatime_id", "slack_id")
+  end
+
   private
 
   def self.account_client(access_token)

@@ -2,24 +2,13 @@ import { useState } from "react";
 import { Link, usePage } from "@inertiajs/react";
 import HackClubLogo from "./rsvp/HackClubLogo";
 
-interface User {
-  id: number;
-  slack_id: string;
-  username: string;
-  avatar: string | null;
-  admin: boolean;
-}
-
 interface PageProps {
-  current_user?: User;
   [key: string]: unknown;
 }
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const { url, props, flash } = usePage<PageProps>();
-  const user = props.current_user;
-  const avatarUrl = user?.avatar;
 
   const navItems = [
     { href: "/home", label: "Home", icon: HomeIcon, color: "red-500" },
@@ -124,21 +113,21 @@ export default function Sidebar() {
           <div className="mt-auto border-t border-gray-800 p-4">
             <div className="flex items-center gap-3">
               <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-gray-700">
-                {avatarUrl ? (
+                {props.user.avatar ? (
                   <img
-                    src={avatarUrl}
+                    src={props.user.avatar}
                     alt=""
                     className="h-full w-full object-cover"
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center text-lg font-bold text-white">
-                    {user?.username?.charAt(0) || "?"}
+                    {props.user?.username?.charAt(0) || "?"}
                   </div>
                 )}
               </div>
               <div className="min-w-0 flex-1">
                 <div className="truncate font-semibold text-white">
-                  {user?.username || "Guest"}
+                  {props.user?.username || "Guest"}
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Link

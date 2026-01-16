@@ -1,17 +1,19 @@
 class AdminController < ApplicationController
+  before_action :verify_admin
+
   def index
-    @user = current_user
-    unless @user.admin?
-      redirect_to root_path, alert: "You are not authorized to access this page."
-    end
-    render inertia: "admin/index", props: { user: @user }
+    render inertia: "admin/index"
   end
 
   def announcements
-    @user = current_user
-    unless @user.admin?
-      redirect_to root_path, alert: "You are not authorized to access this page."
+    render inertia: "admin/announcements"
+  end
+
+  private
+
+  def verify_admin
+    unless current_user.admin?
+      redirect_to home_path, alert: "You are not authorized to access this page."
     end
-    render inertia: "admin/announcements", props: { user: @user }
   end
 end

@@ -9,12 +9,7 @@ class StaticPagesController < ApplicationController
 
     totalProjectTime = current_user.projects.reduce(0) { |acc, project| acc + project.display_seconds }
     Rails.logger.info(totalProjectTime)
-    render inertia: { username: current_user.username, admin: current_user.admin?, totalProjectTime: totalProjectTime }
-  end
-
-  def projects
-    @projects = current_user.projects
-    render inertia: "Projects/Index", props: { projects: @projects }
+    render inertia: { totalProjectTime: totalProjectTime }
   end
 
   def index

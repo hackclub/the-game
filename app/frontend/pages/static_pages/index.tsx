@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useForm, Head } from "@inertiajs/react";
+import { useForm, Head, usePage } from "@inertiajs/react";
 import Step from "../../components/rsvp/Step";
 import QuestionAnswer from "../../components/rsvp/QuestionAnswer";
 import DynamicBackgroundLines from "../../components/rsvp/DynamicBackgroundLines";
@@ -7,7 +7,7 @@ import HackClubLogo from "../../components/rsvp/HackClubLogo";
 import ArrowVector from "../../components/rsvp/ArrowVector";
 
 import HackClubFooter from "../../components/rsvp/HackClubFooter";
-export default function RsvpPage({ signed_in }: { signed_in: boolean }) {
+export default function RsvpPage() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [showScrollArrow, setShowScrollArrow] = useState(true);
   const [fadeOut, setFadeOut] = useState(false);
@@ -15,6 +15,7 @@ export default function RsvpPage({ signed_in }: { signed_in: boolean }) {
   const step2CircleRef = useRef<HTMLDivElement>(null);
   const step3CircleRef = useRef<HTMLDivElement>(null);
 
+  const { props } = usePage();
   const { data, setData, post, reset } = useForm({ email: "" });
 
   useEffect(() => {
@@ -87,7 +88,7 @@ export default function RsvpPage({ signed_in }: { signed_in: boolean }) {
             </div>
           </div>
 
-          {signed_in ? (
+          {props.user ? (
             <a
               href="/home"
               className="mt-1 flex h-full w-full cursor-pointer items-center justify-center gap-3 border-4 border-black bg-white px-4 py-4 transition-colors hover:bg-black hover:text-white lg:gap-4 lg:px-6 lg:py-6"
