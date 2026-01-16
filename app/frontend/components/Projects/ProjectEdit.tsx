@@ -109,7 +109,7 @@ export default function EditProject({ project, hackatime_projects }: Props) {
         </div>
 
         <div className="mt-4 flex flex-col gap-2">
-          <button
+          {/* <button
             className="rounded bg-green-500 p-5 px-4 py-2 font-bold text-white hover:bg-green-700"
             type="button"
             onClick={shipProject}
@@ -119,7 +119,7 @@ export default function EditProject({ project, hackatime_projects }: Props) {
             }}
           >
             Ship Project
-          </button>
+          </button> */}
           <button
             className="rounded bg-blue-500 p-5 px-4 py-2 font-bold text-white hover:bg-blue-700"
             type="submit"
