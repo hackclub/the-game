@@ -149,7 +149,7 @@ export default function Sidebar() {
                     href="/auth/logout"
                     method="post"
                     as="button"
-                    className="text-gray-400 hover:text-white"
+                    className="cursor-pointer text-gray-400 hover:text-white"
                   >
                     Logout
                   </Link>
