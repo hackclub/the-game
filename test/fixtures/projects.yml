@@ -35,10 +35,8 @@ one:
   demo_link: MyString
   desc: MyText
   repo_link: MyString
-  readme_link: MyString
   title: MyString
   user: one
-  reviewer_note: MyText
   ysws: MyString
   project_type: MyString
   internal_notes: MyText
@@ -48,10 +46,8 @@ two:
   demo_link: MyString
   desc: MyText
   repo_link: MyString
-  readme_link: MyString
   title: MyString
   user: two
-  reviewer_note: MyText
   ysws: MyString
   project_type: MyString
   internal_notes: MyText
