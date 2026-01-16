@@ -10,10 +10,8 @@
 #  desc           :text
 #  internal_notes :text
 #  project_type   :string
-#  readme_link    :string
 #  rejected_at    :datetime
 #  repo_link      :string
-#  reviewer_note  :text
 #  submitted_at   :datetime
 #  title          :string
 #  total_seconds  :integer
@@ -62,7 +60,7 @@ class Project < ApplicationRecord
   end
 
   def display_hash
-    hash = self.as_json.slice("id", "aasm_state", "approved_at", "demo_link", "desc", "readme_link", "rejected_at", "repo_link", "submitted_at", "title", "ysws", "created_at", "updated_at")
+    hash = self.as_json.slice("id", "aasm_state", "approved_at", "demo_link", "desc", "rejected_at", "repo_link", "submitted_at", "title", "ysws", "created_at", "updated_at")
     hash["total_seconds"] = display_seconds
     hash["hackatime_projects"] = hackatime_projects.pluck(:id)
 

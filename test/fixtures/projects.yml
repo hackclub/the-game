@@ -12,10 +12,8 @@
 #  desc           :text
 #  internal_notes :text
 #  project_type   :string
-#  readme_link    :string
 #  rejected_at    :datetime
 #  repo_link      :string
-#  reviewer_note  :text
 #  submitted_at   :datetime
 #  title          :string
 #  total_seconds  :integer

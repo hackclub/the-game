@@ -5,7 +5,6 @@ export interface Project {
   desc: string | null;
   hackatime_projects: number[];
   project_type: string | null;
-  readme_link: string | null;
   repo_link: string | null;
   submitted_at: string | null;
   approved_at: string | null;

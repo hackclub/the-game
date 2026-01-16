@@ -34,14 +34,6 @@ export default function ExplorePage({
                   Repo
                 </a>
               )}
-              {project.readme_link && (
-                <a
-                  href={project.readme_link}
-                  className="text-blue-500 hover:underline"
-                >
-                  Readme
-                </a>
-              )}
             </div>
           </div>
         ))}
