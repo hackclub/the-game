@@ -12,7 +12,7 @@ class HackatimeService
     response = hackatime_client.get("users/#{user.slack_id}/stats") do |req|
       req.params = {
         filter_by_project: "inf-expr",
-        start_date: "2024-12-23T00:00:00Z",
+        start_date: "2025-12-23T00:00:00Z",
         end_date: Time.now.utc.iso8601,
         features: "projects"
       }
