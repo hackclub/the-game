@@ -4,7 +4,6 @@
 #
 #  id                   :bigint           not null, primary key
 #  account_access_token :string
-#  admin                :boolean          default(FALSE), not null
 #  avatar               :string
 #  ban_type             :integer
 #  birthday             :date
@@ -12,6 +11,7 @@
 #  internal_notes       :text
 #  is_banned            :boolean          default(FALSE), not null
 #  last_active          :datetime
+#  role                 :string           default("user")
 #  username             :string
 #  ysws_verified        :boolean
 #  account_id           :string
@@ -36,6 +36,7 @@ class User < ApplicationRecord
   belongs_to :referrer, class_name: "User", optional: true
 
   enum :ban_type, { hackatime: 0, blueprint: 1, previous: 2, slack: 3, age: 4 }
+  enum :role, { user: "user", admin: "admin" }
 
   after_save_commit :link_hackatime, if: -> { hackatime_id.nil? }
   after_save_commit :fetch_avatar, if: -> { avatar.nil? }

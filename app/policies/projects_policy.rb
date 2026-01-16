@@ -7,6 +7,6 @@ class ProjectsPolicy < ApplicationPolicy
   end
 
   def edit
-    logged_in? || @user.admin
+    logged_in? || @user.admin?
   end
 end

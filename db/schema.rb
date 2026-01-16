@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_16_004205) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_16_011651) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -119,7 +119,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_16_004205) do
   create_table "users", force: :cascade do |t|
     t.string "account_access_token"
     t.string "account_id"
-    t.boolean "admin", default: false, null: false
     t.string "avatar"
     t.integer "ban_type"
     t.date "birthday"
@@ -129,6 +128,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_16_004205) do
     t.boolean "is_banned", default: false, null: false
     t.datetime "last_active"
     t.bigint "referrer_id"
+    t.string "role", default: "user"
     t.string "slack_id"
     t.string "username"
     t.boolean "ysws_verified"
