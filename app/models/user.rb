@@ -37,9 +37,9 @@ class User < ApplicationRecord
 
   enum :ban_type, { hackatime: 0, blueprint: 1, previous: 2, slack: 3, age: 4 }
 
-  after_save_commit :link_hackatime, if: -> { slack_id_previously_changed? && hackatime_id.nil? }
-  after_save_commit :fetch_avatar, if: -> { slack_id_previously_changed? && avatar.nil? }
-  after_save_commit :fetch_username, if: -> { slack_id_previously_changed? && username.nil? }
+  after_save_commit :link_hackatime, if: -> { hackatime_id.nil? }
+  after_save_commit :fetch_avatar, if: -> { avatar.nil? }
+  after_save_commit :fetch_username, if: -> { username.nil? }
   after_save_commit :sync_hackatime_projects, if: -> { slack_id_changed? }
   has_paper_trail
 
