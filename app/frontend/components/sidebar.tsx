@@ -24,12 +24,12 @@ export default function Sidebar() {
   const isAdmin = user?.admin || false;
 
   const navItems = [
-    { href: "/home", label: "Home", icon: HomeIcon, color: "bg-red-500" },
+    { href: "/home", label: "Home", icon: HomeIcon, color: "red-500" },
     {
       href: "/projects",
       label: "Projects",
       icon: ProjectsIcon,
-      color: "bg-blue-600",
+      color: "blue-600",
     },
 
     // {
@@ -41,7 +41,7 @@ export default function Sidebar() {
   ];
 
   const isActive = (href: string) => url.startsWith(href);
-  console.log(isAdmin);
+  const activeColor = navItems.find((i) => isActive(i.href))?.color;
 
   return (
     <>
@@ -71,7 +71,7 @@ export default function Sidebar() {
 
       {/* Sidebar */}
       <div
-        className={`w-64 lg:end-auto lg:bottom-0 lg:block lg:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"} fixed start-0 top-0 bottom-0 z-60 h-full transform bg-black transition-all duration-300`}
+        className={`w-64 border-r-6 lg:end-auto border-${activeColor} lg:bottom-0 lg:block lg:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"} fixed start-0 top-0 bottom-0 z-60 h-full transform bg-black transition-all duration-300`}
         role="dialog"
         tabIndex={-1}
         aria-label="Sidebar"
@@ -87,26 +87,24 @@ export default function Sidebar() {
                 <HackClubLogo className="h-12 w-12 text-white" />
               </div>
               <div className="text-white">
-                <div className="text-xl leading-tight font-bold">
-                  Hack Club:
-                </div>
-                <div className="text-xl leading-tight font-bold">The Game</div>
+                <div className="text-xl leading-tight">hack club:</div>
+                <div className="text-xl leading-tight font-bold">the game</div>
               </div>
             </Link>
           </header>
 
           {/* Navigation */}
-          <nav className="flex-1 space-y-2 px-4">
+          <nav className="flex-1 space-y-2 pl-4">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-4 rounded-lg px-2 py-3 transition-colors ${
-                  isActive(item.href) ? "bg-red-600" : "hover:bg-gray-900"
+                className={`my-3 flex items-center gap-4 rounded-lg rounded-l-full pr-2 transition-colors ${
+                  isActive(item.href) ? `bg-${item.color}` : "hover:bg-gray-900"
                 } `}
               >
                 <div
-                  className={`h-12 w-12 ${item.color} flex items-center justify-center rounded-full`}
+                  className={`h-12 w-12 bg-${item.color} flex items-center justify-center rounded-full border-[1px] border-black`}
                 >
                   <item.icon className="h-6 w-6 text-white" />
                 </div>
