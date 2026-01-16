@@ -33,7 +33,7 @@ class HackatimeService
   end
 
   def self.hackatime_client
-    Faraday.new(url: BASE_URL, headers: { "Authorization" => "Bearer #{ENV['HACKATIME_API_KEY']}" }) do |conn|
+    Faraday.new(url: BASE_URL) do |conn|
       conn.response :json, content_type: /\bjson$/
     end
   end
