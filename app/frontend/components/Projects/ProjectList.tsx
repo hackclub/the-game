@@ -26,11 +26,15 @@ export default function ProjectList({ projects }: { projects: Project[] }) {
           key={project.id}
           className="rounded-lg border bg-white p-4 shadow-sm"
         >
-          <h2 className="text-lg font-semibold">{project.title}</h2>
-          <span className=""> {project.id} </span>{" "}
-          {/* For debugging purposes, remember to remove */}
-          <br></br>
-          <span className=""> {isReviewed(project.review_status)}</span>
+          <div className="flex flex-row justify-between">
+            <h2 className="text-lg font-semibold">{project.title} </h2>
+            <span
+              className={`text-md font-normal text-${isShipped(project.approved) ? "green" : "red"}-500`}
+            >
+              {isShipped(project.approved) ? "Shipped!" : "Not Shipped!"}
+            </span>
+          </div>
+          <span className="italic">{isReviewed(project.review_status)}</span>
           <p className="mt-4 text-gray-600">{project.desc}</p>
           <div className="mt-6 flex gap-2">
             {project.demo_link && (
@@ -55,12 +59,6 @@ export default function ProjectList({ projects }: { projects: Project[] }) {
             >
               Edit
             </Link>
-
-            <span
-              className={`text-${isShipped(project.approved) ? "green" : "red"}-500`}
-            >
-              {isShipped(project.approved) ? "Shipped!" : "Not Shipped!"}
-            </span>
             <br />
           </div>
         </div>

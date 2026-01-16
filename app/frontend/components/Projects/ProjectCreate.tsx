@@ -21,13 +21,15 @@ export default function ProjectCreate({ hackatime_projects }: Props) {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center">
-        <form onSubmit={submit}>
+      <div className="flex flex-col justify-center">
+        <form onSubmit={submit} className="flex max-w-lg flex-col gap-4">
           <br></br>
-          <div className="mb-4">
-            <label htmlFor="title">Title:</label>
+          <div className="flex flex-col">
+            <label className="font-bold" htmlFor="title">
+              Title
+            </label>
             <input
-              className="m-2 p-2"
+              className="p-2"
               type="text"
               value={data.title}
               onChange={(e) => setData("title", e.target.value)}
@@ -35,20 +37,24 @@ export default function ProjectCreate({ hackatime_projects }: Props) {
 
             {errors.title && <div className="text-red-500">{errors.title}</div>}
           </div>
-          <div className="mb-4">
-            <label htmlFor="desc">Description:</label>
+          <div className="flex flex-col">
+            <label className="font-bold" htmlFor="desc">
+              Description
+            </label>
             <input
-              className="border-black-300 m-2 border p-2"
+              className="p-2"
               type="text"
               value={data.desc}
               onChange={(e) => setData("desc", e.target.value)}
             />
             {errors.desc && <div className="text-red-500">{errors.desc}</div>}
           </div>
-          <div className="mb-4 gap-2">
-            <label htmlFor="demo_link">Demo Link:</label>
+          <div className="flex flex-col">
+            <label className="font-bold" htmlFor="demo_link">
+              Demo Link
+            </label>
             <input
-              className="m-2"
+              className="p-2"
               type="url"
               value={data.demo_link}
               onChange={(e) => setData("demo_link", e.target.value)}
@@ -57,10 +63,10 @@ export default function ProjectCreate({ hackatime_projects }: Props) {
               <div className="text-red-500">{errors.demo_link}</div>
             )}
           </div>
-          <div className="mb-4">
-            <label>Hackatime Projects:</label>
+          <div className="flex flex-col">
+            <label className="font-bold">Hackatime Projects</label>
             <select
-              className="m-2 h-32 w-full border p-2"
+              className="p-2"
               onChange={(e) =>
                 setData(
                   "hackatime_project_keys",
@@ -86,10 +92,12 @@ export default function ProjectCreate({ hackatime_projects }: Props) {
             </select>
           </div>
 
-          <div className="mb-4">
-            <label htmlFor="repo_link">Repository Link:</label>
+          <div className="flex flex-col">
+            <label className="font-bold" htmlFor="repo_link">
+              Repository Link
+            </label>
             <input
-              className="m-2"
+              className="p-2"
               type="url"
               value={data.repo_link}
               onChange={(e) => setData("repo_link", e.target.value)}
