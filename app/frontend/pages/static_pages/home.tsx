@@ -15,9 +15,9 @@ export default function Home({
 }) {
   return (
     <Layout>
-      <p className="text-2xl font-bold">hey {current_user.username}!</p>
-      <p className="text-xl">welcome home</p>
-      <hr />
+      <h2 className="mb-2 text-3xl font-bold">
+        Welcome to the Platform, {current_user.username}!
+      </h2>
       {!account_linked && (
         <>
           <p>yo chat we need to verify your identity</p>

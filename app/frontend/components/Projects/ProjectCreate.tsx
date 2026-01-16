@@ -60,9 +60,7 @@ export default function ProjectCreate({ hackatime_projects }: Props) {
           <div className="mb-4">
             <label>Hackatime Projects:</label>
             <select
-              multiple
               className="m-2 h-32 w-full border p-2"
-              value={data.hackatime_project_keys.map(String)}
               onChange={(e) =>
                 setData(
                   "hackatime_project_keys",
@@ -76,7 +74,11 @@ export default function ProjectCreate({ hackatime_projects }: Props) {
                 const hours = Math.floor(totalSeconds / 3600);
                 const minutes = Math.floor((totalSeconds % 3600) / 60);
                 return (
-                  <option key={hp.id} value={hp.id}>
+                  <option
+                    key={hp.id}
+                    value={hp.id}
+                    selected={data.hackatime_project_keys.includes(hp.id)}
+                  >
                     {hp.name} ({hours}h {minutes}m)
                   </option>
                 );

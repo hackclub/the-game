@@ -21,7 +21,7 @@ export default function EditProject({ project, hackatime_projects }: Props) {
     repo_link: project.repo_link,
     demo_link: project.demo_link,
     approved: project.approved,
-    hackatime_project_keys: hackatime_projects.map((hp) => hp.id),
+    hackatime_project_keys: project.hackatime_projects ?? [],
   });
 
   function submit(e: React.FormEvent) {

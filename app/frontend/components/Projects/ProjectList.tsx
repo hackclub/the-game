@@ -22,7 +22,10 @@ export default function ProjectList({ projects }: { projects: Project[] }) {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       {projects.map((project) => (
-        <div key={project.id} className="rounded-lg border p-4 shadow-sm">
+        <div
+          key={project.id}
+          className="rounded-lg border bg-white p-4 shadow-sm"
+        >
           <h2 className="text-lg font-semibold">{project.title}</h2>
           <span className=""> {project.id} </span>{" "}
           {/* For debugging purposes, remember to remove */}
@@ -62,6 +65,12 @@ export default function ProjectList({ projects }: { projects: Project[] }) {
           </div>
         </div>
       ))}
+      <a
+        href="/projects/new"
+        className="flex items-center justify-center rounded-lg border bg-white p-4 shadow-sm hover:bg-gray-300"
+      >
+        <p className="text-2xl">Create a new project</p>
+      </a>
     </div>
   );
 }

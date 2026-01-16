@@ -3,7 +3,7 @@ export interface Project {
   approved: "not_shipped" | "shipped" | null;
   demo_link: string | null;
   desc: string | null;
-  hackatime_project_keys: string | null;
+  hackatime_projects: number[];
   internal_notes: string | null;
   is_deleted: boolean | null;
   project_type: string | null;

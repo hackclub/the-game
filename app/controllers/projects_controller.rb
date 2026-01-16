@@ -15,16 +15,17 @@ class ProjectsController < ApplicationController
     Rails.logger.info("Creating project with params: #{project_params}")
     project = current_user.projects.new(project_params)
 
-    if project.save
-      return if hackatime_project_keys.empty?
-      current_user.hackatime_projects.where(id: hackatime_project_keys).update_all(project_id: project.id)
-
-      flash[:success] = "Project created successfully"
-      Rails.logger.info("Project created: #{project}")
-      redirect_to projects_path
-    else
-      render inertia: "projects/new", props: { project: project, errors: project.errors }
+    if hackatime_project_keys.empty? || !project.save
+      hackatime_projects = filter_hp_columns current_user.sync_hackatime_projects
+      render inertia: "projects/new", props: { project: project, hackatime_projects:, errors: project.errors }
+      return
     end
+
+    current_user.hackatime_projects.where(id: hackatime_project_keys).update_all(project_id: project.id)
+
+    flash[:success] = "Project created successfully"
+    Rails.logger.info("Project created: #{project}")
+    redirect_to projects_path
   end
 
   def show
@@ -33,10 +34,12 @@ class ProjectsController < ApplicationController
   end
 
   def edit
-    project = current_user.projects.find(params[:id])
+    project = current_user.projects.includes(:hackatime_projects).find(params[:id])
+    project_hash = project.as_json
+    project_hash["hackatime_projects"] = project.hackatime_projects.pluck(:id)
     hackatime_projects = filter_hp_columns current_user.sync_hackatime_projects
     render inertia: "projects/edit", props: {
-      project: project,
+      project: project_hash,
       hackatime_projects: hackatime_projects
     }
   end
@@ -75,9 +78,7 @@ class ProjectsController < ApplicationController
   end
 
   def hackatime_project_keys
-    # Rails.logger.info(Array(params.dig(:project, :hackatime_project_keys)))
-    Array(params.dig(:project, :hackatime_project_keys)).map(&:to_i)
-    # Array(params.dig(:project, :hackatime_project_keys)).map(&:to_i).reject(&:zero?)
+    params[:hackatime_project_keys].map(&:to_i)
   end
 
   def filter_hp_columns(hackatime_projects)
