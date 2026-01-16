@@ -18,12 +18,7 @@ class StaticPagesController < ApplicationController
   end
 
   def index
-    if user_logged_in?
-      redirect_to home_path
-      return
-    end
-
-    render inertia: {}
+    render inertia: { signed_in: user_logged_in? }
   end
 
   def create_rsvp

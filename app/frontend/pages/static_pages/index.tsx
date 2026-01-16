@@ -5,9 +5,9 @@ import QuestionAnswer from "../../components/rsvp/QuestionAnswer";
 import DynamicBackgroundLines from "../../components/rsvp/DynamicBackgroundLines";
 import HackClubLogo from "../../components/rsvp/HackClubLogo";
 import ArrowVector from "../../components/rsvp/ArrowVector";
-import HackClubFooter from "../../components/rsvp/HackClubFooter";
 
-export default function RsvpPage() {
+import HackClubFooter from "../../components/rsvp/HackClubFooter";
+export default function RsvpPage({ signed_in }: { signed_in: boolean }) {
   const [showSuccess, setShowSuccess] = useState(false);
   const [showScrollArrow, setShowScrollArrow] = useState(true);
   const [fadeOut, setFadeOut] = useState(false);
@@ -87,43 +87,54 @@ export default function RsvpPage() {
             </div>
           </div>
 
-          <form
-            onSubmit={handleSubmit}
-            className="mt-4 flex h-20 w-full flex-col gap-2 sm:flex-row lg:gap-3"
-          >
-            <div className="flex h-full border-4 border-black bg-white px-4 sm:flex-1 lg:px-6">
-              <input
-                required
-                type="email"
-                value={data.email}
-                onChange={(e) => setData("email", e.target.value)}
-                placeholder="your@email.com"
-                className="w-full border-none bg-transparent font-[Arial] text-lg tracking-[-0.04em] text-black placeholder-gray-400 outline-none focus:ring-0 lg:text-3xl"
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="flex h-full w-full cursor-pointer items-center justify-center gap-3 border-4 border-black bg-white px-4 py-4 transition-colors hover:bg-black hover:text-white sm:w-auto lg:gap-4 lg:px-6 lg:py-6"
+          {signed_in ? (
+            <a
+              href="/home"
+              className="mt-1 flex h-full w-full cursor-pointer items-center justify-center gap-3 border-4 border-black bg-white px-4 py-4 transition-colors hover:bg-black hover:text-white lg:gap-4 lg:px-6 lg:py-6"
             >
               <div className="h-6 w-6 lg:h-7 lg:w-7">
                 <ArrowVector className="block h-full w-full max-w-none" />
               </div>
               <span className="text-xl font-bold tracking-[-0.09em] lg:text-4xl">
-                Get Started
+                Enter the Platform
               </span>
-            </button>
-          </form>
+            </a>
+          ) : (
+            <form
+              onSubmit={handleSubmit}
+              className="mt-4 flex h-20 w-full flex-col gap-2 sm:flex-row lg:gap-3"
+            >
+              <div className="flex h-full border-4 border-black bg-white px-4 sm:flex-1 lg:px-6">
+                <input
+                  required
+                  type="email"
+                  value={data.email}
+                  onChange={(e) => setData("email", e.target.value)}
+                  placeholder="your@email.com"
+                  className="w-full border-none bg-transparent font-[Arial] text-lg tracking-[-0.04em] text-black placeholder-gray-400 outline-none focus:ring-0 lg:text-3xl"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="flex h-full w-full cursor-pointer items-center justify-center gap-3 border-4 border-black bg-white px-4 py-4 transition-colors hover:bg-black hover:text-white sm:w-auto lg:gap-4 lg:px-6 lg:py-6"
+              >
+                <div className="h-6 w-6 lg:h-7 lg:w-7">
+                  <ArrowVector className="block h-full w-full max-w-none" />
+                </div>
+                <span className="text-xl font-bold tracking-[-0.09em] lg:text-4xl">
+                  Get Started
+                </span>
+              </button>
+            </form>
+          )}
 
           <p
             className={`mt-4 w-full text-lg font-bold tracking-[-0.04em] text-black transition-opacity duration-500 lg:text-2xl ${showSuccess && !fadeOut ? "opacity-100" : "opacity-0"}`}
           >
             Thanks, we'll e-mail you updates!
           </p>
-
         </div>
-
-
 
         {showScrollArrow && (
           <a
