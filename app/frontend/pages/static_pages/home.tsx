@@ -18,8 +18,8 @@ export default function Home({
     <div className="flex min-h-screen bg-gray-200">
       <Sidebar />
       <main className="flex-1 p-6 lg:ml-64">
-        <p className="text-2xl font-bold">hey {current_user.username}!</p>
-        <p className="text-xl">welcome home</p>
+        <p className="text-2xl font-bold"> {current_user.username ? `hey ${current_user.username}!` : 'hey!'}</p>
+        <p className="text-xl">Welcome to Hack Club The Game!</p>
         {/*<Countdown />*/}
         <hr />
         {!account_linked && (
