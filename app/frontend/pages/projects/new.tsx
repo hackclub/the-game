@@ -1,4 +1,4 @@
-import ProjectCreate from "@/components/Projects/ProjectCreate";
+import ProjectForm from "@/components/projects/ProjectForm";
 import Layout from "@/layouts/layout";
 
 import type { HackatimeProject } from "@/interfaces/hackatime_project";
@@ -11,7 +11,7 @@ export default function NewProject({ hackatime_projects }: Props) {
   return (
     <Layout>
       <h2 className="mb-2 text-3xl font-bold">Create a project</h2>
-      <ProjectCreate hackatime_projects={hackatime_projects} />
+      <ProjectForm hackatime_projects={hackatime_projects} />
     </Layout>
   );
 }

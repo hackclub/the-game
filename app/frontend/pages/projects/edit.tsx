@@ -1,4 +1,4 @@
-import ProjectEdit from "@/components/Projects/ProjectEdit";
+import ProjectForm from "@/components/projects/ProjectForm";
 import Layout from "@/layouts/layout";
 import type { Project } from "@/interfaces/project";
 import type { HackatimeProject } from "@/interfaces/hackatime_project";
@@ -11,10 +11,8 @@ interface Props {
 export default function EditProject({ project, hackatime_projects }: Props) {
   return (
     <Layout>
-      <h1 className="text-center text-2xl font-bold text-gray-800">
-        Edit your Project{" "}
-      </h1>
-      <ProjectEdit project={project} hackatime_projects={hackatime_projects} />
+      <h2 className="mb-2 text-3xl font-bold">Edit project</h2>
+      <ProjectForm project={project} hackatime_projects={hackatime_projects} />
     </Layout>
   );
 }

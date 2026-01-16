@@ -1,23 +1,50 @@
 import { useForm } from "@inertiajs/react";
 import type { HackatimeProject } from "@/interfaces/hackatime_project";
+import type { Project } from "@/interfaces/project";
 import formatTime from "@/utils/formatTime";
 
 interface Props {
   hackatime_projects: HackatimeProject[];
+  project?: Project;
 }
 
-export default function ProjectCreate({ hackatime_projects }: Props) {
-  const { data, setData, post, processing, errors } = useForm({
-    title: "",
-    desc: "",
-    repo_link: "",
-    demo_link: "",
-    hackatime_project_keys: [] as number[],
+export default function ProjectForm({ hackatime_projects, project }: Props) {
+  const {
+    data,
+    setData,
+    post,
+    patch,
+    delete: destroy,
+    processing,
+    errors,
+  } = useForm({
+    title: project?.title ?? "",
+    desc: project?.desc ?? "",
+    repo_link: project?.repo_link ?? "",
+    demo_link: project?.demo_link ?? "",
+    hackatime_project_keys: project?.hackatime_projects ?? ([] as number[]),
   });
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    post("/projects/");
+
+    if (project) {
+      patch(`/projects/${project.id}`);
+    } else {
+      post("/projects/");
+    }
+  }
+
+  function shipProject(e: React.FormEvent) {
+    e.preventDefault();
+    patch(`/projects/${project!.id}/ship`);
+  }
+
+  function handleDelete(e: React.FormEvent) {
+    e.preventDefault();
+    if (confirm("Are you sure you want to delete this project?")) {
+      destroy(`/projects/${project!.id}`);
+    }
   }
 
   return (
@@ -104,16 +131,39 @@ export default function ProjectCreate({ hackatime_projects }: Props) {
             )}
           </div>
 
-          <button
-            className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
-            type="submit"
+          <div className="mt-4 flex flex-col gap-2">
+            <button
+              className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+              type="submit"
+              disabled={processing}
+            >
+              {project ? "Update" : "Create"} Project
+            </button>
+            {/* <button
+            className="rounded bg-green-500 p-5 px-4 py-2 font-bold text-white hover:bg-green-700"
+            type="button"
+            onClick={shipProject}
             disabled={processing}
+            style={{
+              display: project.aasm_state === "pending" ? "block" : "none",
+            }}
           >
-            Create Project
-          </button>
+            Ship Project
+          </button> */}
+
+            {project && (
+              <button
+                className="rounded bg-red-500 p-5 px-4 py-2 font-bold text-white hover:bg-red-700"
+                type="button"
+                onClick={handleDelete}
+                disabled={processing}
+              >
+                Delete Project
+              </button>
+            )}
+          </div>
         </form>
       </div>
     </>
   );
-  console.log(data);
 }

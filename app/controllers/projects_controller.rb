@@ -39,18 +39,24 @@ class ProjectsController < ApplicationController
     hackatime_projects = filter_hp_columns current_user.sync_hackatime_projects
     render inertia: "projects/edit", props: {
       project: project_hash,
-      hackatime_projects: hackatime_projects
+      hackatime_projects:
     }
   end
 
   def update
     project = current_user.projects.find(params[:id])
-    if project.update(project_params)
-      flash[:success] = "Project updated successfully"
-      redirect_to projects_path
-    else
-      render inertia: "projects/edit", props: { project: project.display_hash, errors: project.errors }
+
+    ActiveRecord::Base.transaction do
+      project.update!(project_params)
+      project.hackatime_projects.update_all(project_id: nil)
+      current_user.hackatime_projects.where(id: hackatime_project_keys).update_all(project_id: project.id)
     end
+
+    flash[:success] = "Project updated successfully"
+    redirect_to projects_path
+  rescue
+    hackatime_projects = filter_hp_columns current_user.sync_hackatime_projects
+    render inertia: "projects/edit", props: { project: project.display_hash, hackatime_projects:, errors: project.errors }
   end
 
   def destroy

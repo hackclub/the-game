@@ -1,5 +1,5 @@
 import Layout from "@/layouts/layout";
-import ProjectList from "@/components/Projects/ProjectList";
+import ProjectList from "@/components/projects/ProjectList";
 
 import type { Project } from "@/interfaces/project";
 
