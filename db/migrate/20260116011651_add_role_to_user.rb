@@ -2,9 +2,7 @@ class AddRoleToUser < ActiveRecord::Migration[8.1]
   def up
     add_column :users, :role, :string, default: "user"
 
-    User.all.each do |user|
-      user.update!(role: "admin") if user.admin?
-    end
+    execute "UPDATE users SET role = 'admin' WHERE admin = true"
 
     remove_column :users, :admin
   end
@@ -12,9 +10,7 @@ class AddRoleToUser < ActiveRecord::Migration[8.1]
   def down
     add_column :users, :admin, :boolean, default: false
 
-    User.all.each do |user|
-      user.update!(admin: user.role === "admin")
-    end
+    execute "UPDATE users SET admin = true WHERE role = 'admin'"
 
     remove_column :users, :role
   end
