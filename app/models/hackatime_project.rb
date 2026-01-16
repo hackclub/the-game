@@ -21,4 +21,11 @@
 class HackatimeProject < ApplicationRecord
   belongs_to :project, optional: true
   belongs_to :user
+
+  attr_accessor :total_seconds
+
+  def sync_total_seconds
+    hp = user.sync_hackatime_projects.detect { |p| p.name == name }
+    hp.total_seconds
+  end
 end

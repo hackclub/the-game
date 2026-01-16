@@ -64,6 +64,10 @@ class User < ApplicationRecord
     end
   end
 
+  def sync_hackatime_projects
+    HackatimeService.sync_hackatime_projects(self)
+  end
+
   private
 
   def self.account_client(access_token)
@@ -74,19 +78,19 @@ class User < ApplicationRecord
 
   def link_hackatime
     response = if slack_id.present?
-      res =  HackatimeService.link_hackatime(slack_id, self)
-      res
+      HackatimeService.fetch_user_stats(slack_id)
       # Use when we have an admin hackatime key
       # response = User.hackatime_client.get("users/lookup_slack_uid/#{slack_id}")
     else
       # Don't have an admin hackatime key yet, so we can't lookup by email.
       # User.hackatime_client.get("users/lookup_email/#{URI.encode_uri_component(user.email)}")
-      Rails.logger.info("Hackatime response: User not found")
       nil
     end
 
-    if response&.success?
+    if response.present?
       update!(hackatime_id: response.body["data"]["user_id"])
+    else
+      Rails.logger.info("Failed to link hackatime")
     end
   end
 
@@ -98,10 +102,6 @@ class User < ApplicationRecord
       data = JSON.parse(response.body)
       update(username: data["displayName"])
     end
-  end
-
-  def sync_hackatime_projects
-  HackatimeService.sync_hackatime_projects(self)
   end
 
   def fetch_avatar

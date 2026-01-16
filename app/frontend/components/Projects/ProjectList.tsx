@@ -1,18 +1,18 @@
 import { Link } from "@inertiajs/react";
+import type { Project } from "@/interfaces/project";
 
 export default function ProjectList({ projects }: { projects: Project[] }) {
-  const isReviewed = (review_status: string) => {
-    console.log(review_status);
+  const isReviewed = (review_status: string | null) => {
     if (review_status === "approved") {
       return "Approved";
-    } else if (review_status === "pending") {
+    } else if (review_status === "pending" || review_status === null) {
       return "Pending";
     } else if (review_status === "rejected") {
       return "Rejected";
     }
   };
 
-  const isShipped = (shipStatus: string) => {
+  const isShipped = (shipStatus: string | null) => {
     if (shipStatus === "shipped") {
       return true;
     }

@@ -1,17 +1,13 @@
 import { useForm } from "@inertiajs/react";
 import type { Project } from "@/interfaces/project";
+import { HackatimeProject } from "@/interfaces/hackatime_project";
 
 interface Props {
-  hackatime_projects: { id: number; name: string }[];
-  project_times: Record<string, number>;
+  hackatime_projects: HackatimeProject[];
   project: Project;
 }
 
-export default function EditProject({
-  project,
-  hackatime_projects,
-  project_times,
-}: Props) {
+export default function EditProject({ project, hackatime_projects }: Props) {
   const {
     data,
     setData,
@@ -25,7 +21,7 @@ export default function EditProject({
     repo_link: project.repo_link,
     demo_link: project.demo_link,
     approved: project.approved,
-    hackatime_project_keys: hackatime_projects,
+    hackatime_project_keys: hackatime_projects.map((hp) => hp.id),
   });
 
   function submit(e: React.FormEvent) {
@@ -55,7 +51,7 @@ export default function EditProject({
           <label htmlFor="title">Title:</label>
           <input
             type="text"
-            value={data.title}
+            value={data.title ?? undefined}
             onChange={(e) => setData("title", e.target.value)}
           />
           {errors.title && <div className="text-red-500">{errors.title}</div>}
@@ -64,7 +60,7 @@ export default function EditProject({
           <label htmlFor="desc">Description:</label>
           <input
             type="text"
-            value={data.desc}
+            value={data.desc ?? undefined}
             onChange={(e) => setData("desc", e.target.value)}
           />
           {errors.desc && <div className="text-red-500">{errors.desc}</div>}
@@ -73,7 +69,7 @@ export default function EditProject({
           <label htmlFor="demo_link">Demo Link:</label>
           <input
             type="text"
-            value={data.demo_link}
+            value={data.demo_link ?? undefined}
             onChange={(e) => setData("demo_link", e.target.value)}
           />
           {errors.demo_link && (
@@ -89,12 +85,12 @@ export default function EditProject({
             onChange={(e) =>
               setData(
                 "hackatime_project_keys",
-                [...e.target.selectedOptions].map((o) => o.value),
+                [...e.target.selectedOptions].map((o) => Number(o.value)),
               )
             }
           >
             {hackatime_projects.map((project) => {
-              const totalSeconds = project_times[project.name] || 0;
+              const totalSeconds = project["total_seconds"];
               const hours = Math.floor(totalSeconds / 3600);
               const minutes = Math.floor((totalSeconds % 3600) / 60);
               const formattedTime = `${hours}h ${minutes}m`;
@@ -111,7 +107,7 @@ export default function EditProject({
           <label htmlFor="repo_link">Repository Link:</label>
           <input
             type="text"
-            value={data.repo_link}
+            value={data.repo_link ?? undefined}
             onChange={(e) => setData("repo_link", e.target.value)}
           />
           {errors.repo_link && (

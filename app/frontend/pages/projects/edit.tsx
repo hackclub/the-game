@@ -1,18 +1,14 @@
 import ProjectEdit from "@/components/Projects/ProjectEdit";
 import Sidebar from "@/components/sidebar";
 import type { Project } from "@/interfaces/project";
+import type { HackatimeProject } from "@/interfaces/hackatime_project";
 
 interface Props {
   project: Project;
-  hackatime_projects: { id: number; name: string }[];
-  project_times: Record<string, number>;
+  hackatime_projects: HackatimeProject[];
 }
 
-export default function EditProject({
-  project,
-  hackatime_projects,
-  project_times,
-}: Props) {
+export default function EditProject({ project, hackatime_projects }: Props) {
   return (
     <div className="flex min-h-screen bg-gray-200">
       <Sidebar />
@@ -23,7 +19,6 @@ export default function EditProject({
         <ProjectEdit
           project={project}
           hackatime_projects={hackatime_projects}
-          project_times={project_times}
         />
       </main>
     </div>
