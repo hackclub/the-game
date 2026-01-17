@@ -83,7 +83,8 @@ class ProjectsController < ApplicationController
   end
 
   def hackatime_project_keys
-    params[:hackatime_project_keys].map(&:to_i)
+    keys = params[:hackatime_project_keys].map(&:to_i)
+    HackatimeProject.where(id: keys, user: current_user).pluck(:id)
   end
 
   def filter_hp_columns(hackatime_projects)
