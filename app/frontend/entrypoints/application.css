@@ -1,4 +1,13 @@
 @import "tailwindcss";
+@source inline("{hover:,}bg-red-500");
+@source inline("border-red-500");
+@source inline("{hover:,}bg-blue-600");
+@source inline("border-blue-600");
+@source inline("border-green-900");
+
+@source "../**/*.{js,ts,jsx,tsx}";
+@source "../components/**/*.{js,ts,jsx,tsx}";
+@source "../pages/**/*.{js,ts,jsx,tsx}";
 
 @plugin "@tailwindcss/typography";
 @plugin "@tailwindcss/forms";

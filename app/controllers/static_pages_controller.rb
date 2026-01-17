@@ -1,5 +1,5 @@
 class StaticPagesController < ApplicationController
-  allow_unauthenticated_access only: %i[rsvp create_rsvp]
+  allow_unauthenticated_access only: %i[index create_rsvp signup index]
 
   def home
     unless user_logged_in?
@@ -7,16 +7,13 @@ class StaticPagesController < ApplicationController
       return
     end
 
-    render inertia: { account_linked: current_user.account_id.present?, hackatime_linked: current_user.hackatime_id.present? }
+    totalProjectTime = current_user.projects.reduce(0) { |acc, project| acc + project.display_seconds }
+    Rails.logger.info(totalProjectTime)
+    render inertia: { totalProjectTime: totalProjectTime }
   end
 
-  def rsvp
-    if user_logged_in?
-      redirect_to home_path
-      return
-    end
-
-    render inertia: {}
+  def index
+    render inertia: { signed_in: user_logged_in? }
   end
 
   def create_rsvp
@@ -28,5 +25,16 @@ class StaticPagesController < ApplicationController
     AirtableService.new.create_rsvp(email: email, origin_ip: origin_ip)
 
     redirect_to root_path, notice: "RSVP received! We'll be in touch soon."
+  end
+
+
+  def signup
+    email = params[:email]
+
+    if request.inertia?
+      render inertia: "Redirect", props: { url: "/auth/start?email=" + email }
+    else
+      redirect_to "/auth/start"
+    end
   end
 end

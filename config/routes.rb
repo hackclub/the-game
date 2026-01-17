@@ -11,21 +11,39 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
+  mount Blazer::Engine, at: "blazer", constraints: ->(request) {
+    user_id = request.session[:user_id]
+    user_id && User.find_by(id: user_id)&.admin?
+  }
+
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
-  root "static_pages#rsvp"
-  get "/index", to: "static_pages#index"
+  root "static_pages#index"
   get "/home", to: "static_pages#home"
   post "/rsvp", to: "static_pages#create_rsvp"
+  post "/signup", to: "static_pages#signup"
+  resources :projects do
+    member do
+      patch :ship
+    end
+  end
+
+
+  get "/admin", to: "admin#index"
+  get "/explore", to: "explore#index"
+
+  resources :settings
 
   scope "/auth" do
     get "account_callback", to: "auth#account_callback"
     get "start", to: "auth#start"
     post "logout", to: "auth#logout"
     post "create_email", to: "auth#create_email"
+    post "create_or_login_user", to: "auth#create_or_login_user"
+    get "account_link", to: "auth#account_link"
     get "sent", to: "auth#sent"
     post "validate", to: "auth#validate"
   end

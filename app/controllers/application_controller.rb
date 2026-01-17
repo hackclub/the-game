@@ -2,13 +2,21 @@ class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   # allow_browser versions: :modern
 
-
   include Authentication
+  include Pundit::Authorization
 
   before_action :set_paper_trail_whodunnit
   before_action :update_last_active
   before_action :redirect_banned_users
   before_action :redirect_adults
+
+  inertia_share do
+    if user_logged_in?
+      { user: current_user.display_hash }
+    else
+      {}
+    end
+  end
 
   def not_found
     raise ActionController::RoutingError.new("Not Found")

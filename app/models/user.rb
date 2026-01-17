@@ -4,7 +4,6 @@
 #
 #  id                   :bigint           not null, primary key
 #  account_access_token :string
-#  admin                :boolean          default(FALSE), not null
 #  avatar               :string
 #  ban_type             :integer
 #  birthday             :date
@@ -12,6 +11,7 @@
 #  internal_notes       :text
 #  is_banned            :boolean          default(FALSE), not null
 #  last_active          :datetime
+#  role                 :string           default("user")
 #  username             :string
 #  ysws_verified        :boolean
 #  account_id           :string
@@ -29,13 +29,19 @@ class User < ApplicationRecord
     "User##{id}"
   end
 
+  has_many :projects
+  has_many :hackatime_projects
+
   # Simple referrer: a user may have one referrer (another User)
   belongs_to :referrer, class_name: "User", optional: true
 
   enum :ban_type, { hackatime: 0, blueprint: 1, previous: 2, slack: 3, age: 4 }
+  enum :role, { user: "user", admin: "admin" }
 
-  after_save_commit :link_hackatime, if: -> { slack_id_previously_changed? && hackatime_id.nil? }
-
+  after_save_commit :link_hackatime, if: -> { hackatime_id.nil? }
+  after_save_commit :fetch_avatar, if: -> { avatar.nil? }
+  after_save_commit :fetch_username, if: -> { username.nil? }
+  after_save_commit :sync_hackatime_projects, if: -> { slack_id_changed? }
   has_paper_trail
 
   def self.exchange_authorization_code(code)
@@ -59,6 +65,14 @@ class User < ApplicationRecord
     end
   end
 
+  def sync_hackatime_projects
+    HackatimeService.sync_hackatime_projects(self)
+  end
+
+  def display_hash
+    self.as_json.slice("id", "avatar", "email", "role", "username", "ysws_verified", "account_id", "hackatime_id", "slack_id")
+  end
+
   private
 
   def self.account_client(access_token)
@@ -67,27 +81,41 @@ class User < ApplicationRecord
     end
   end
 
-  def self.hackatime_client
-    Faraday.new(url: "https://hackatime.hackclub.com/api/v1", headers: { "Authorization" => "Bearer #{ENV["HACKATIME_API_KEY"]}" }) do |conn|
-      conn.response :json, content_type: /\bjson$/
-    end
-  end
-
   def link_hackatime
     response = if slack_id.present?
-      User.hackatime_client.get("users/#{slack_id}/stats")
+      HackatimeService.fetch_user_stats(slack_id)
       # Use when we have an admin hackatime key
-      # User.hackatime_client.get("users/lookup_slack_uid/#{slack_id}")
+      # response = User.hackatime_client.get("users/lookup_slack_uid/#{slack_id}")
     else
       # Don't have an admin hackatime key yet, so we can't lookup by email.
       # User.hackatime_client.get("users/lookup_email/#{URI.encode_uri_component(user.email)}")
       nil
     end
 
-    if response&.success?
+    if response.present?
       update!(hackatime_id: response.body["data"]["user_id"])
     else
-      nil
+      Rails.logger.info("Failed to link hackatime")
+    end
+  end
+
+  def fetch_username
+    return if slack_id.blank?
+
+    response = Faraday.get("https://cachet.dunkirk.sh/users/#{slack_id}")
+    if response.success?
+      data = JSON.parse(response.body)
+      update(username: data["displayName"])
+    end
+  end
+
+  def fetch_avatar
+    return if slack_id.blank?
+
+    response = Faraday.get("https://cachet.dunkirk.sh/users/#{slack_id}")
+    if response.success?
+      data = JSON.parse(response.body)
+      update(avatar: data["imageUrl"])
     end
   end
 end

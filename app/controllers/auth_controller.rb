@@ -1,11 +1,26 @@
 class AuthController < ApplicationController
-  allow_unauthenticated_access only: %i[ create_email start account_callback validate sent ]
+  allow_unauthenticated_access only: %i[ create_email start account_callback validate sent create_or_login_user ]
   skip_before_action :redirect_adults, only: %i[ logout ]
 
   layout false
 
   before_action :set_after_login_redirect, only: %i[ create_email ]
   before_action :redirect_if_logged_in, only: %i[ create_email ]
+
+  def create_or_login_user
+    email = params[:email]
+    user = User.find_or_create_by(email:)
+    session[:pending_user_id] = user.id
+    account_link = generate_hca_authorize_link(email)
+    Rails.logger.info("Redirecting to account link: #{account_link}")
+    inertia_location account_link
+  end
+
+  def account_link
+    account_link = generate_hca_authorize_link
+    Rails.logger.info("Redirecting to account link: #{account_link}")
+    inertia_location account_link
+  end
 
   def create_email
     email = params[:email]
@@ -60,6 +75,7 @@ class AuthController < ApplicationController
     state = SecureRandom.hex(24)
     session[:auth_state] = state
     account_link = "https://account.hackclub.com/oauth/authorize?client_id=#{ENV["ACCOUNT_CLIENT_ID"]}&redirect_uri=#{account_callback_url}&response_type=code&scope=email name slack_id verification_status&state=#{state}"
+    Rails.logger.info("Redirecting to account link: #{account_link}")
     redirect_to account_link, allow_other_host: true
   end
 
@@ -83,8 +99,11 @@ class AuthController < ApplicationController
 
       user = User.find_by(account_id: user_info["id"])
       if user.nil?
-        if current_user.present?
-          current_user.update!(account_id: user_info["id"], account_access_token: access_token, slack_id: user_info["slack_id"])
+        Rails.logger.error(session[:pending_user_id])
+        current_or_pending_user = current_user || User.find(session[:pending_user_id])
+        if current_or_pending_user.present?
+          current_or_pending_user.update!(account_id: user_info["id"], account_access_token: access_token, slack_id: user_info["slack_id"])
+          user = current_or_pending_user
         else
           user = User.create!(account_id: user_info["id"], account_access_token: access_token, email: user_info["primary_email"], slack_id: user_info["slack_id"])
         end
@@ -137,5 +156,11 @@ class AuthController < ApplicationController
 
   def validate_otp(email, otp)
     OneTimePassword.valid?(otp, email)
+  end
+
+  def generate_hca_authorize_link(email)
+    state = SecureRandom.hex(24)
+    session[:auth_state] = state
+    "https://account.hackclub.com/oauth/authorize?client_id=#{ENV["ACCOUNT_CLIENT_ID"]}&redirect_uri=#{account_callback_url}&response_type=code&scope=email name slack_id verification_status&state=#{state}#{"&login_hint=#{email}" if email.present?}"
   end
 end
