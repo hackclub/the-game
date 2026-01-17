@@ -102,6 +102,9 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
                 )
               }
             >
+              <option disabled selected={!project} value="-1">
+                Select a project
+              </option>
               {hackatime_projects.map((hp) => {
                 return (
                   <option
