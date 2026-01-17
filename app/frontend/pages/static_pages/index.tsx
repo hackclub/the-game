@@ -186,7 +186,7 @@ export default function RsvpPage() {
 
           <Step
             stepNumber="3"
-            title="Play together in March"
+            title="Play together in April"
             circleRef={step3CircleRef}
           >
             <span className="font-normal">
@@ -217,7 +217,7 @@ export default function RsvpPage() {
 
         <QuestionAnswer
           question="When is the event?"
-          answer="Hack Club: The Game will take place in March. We'll have more details in the coming weeks."
+          answer="Hack Club: The Game will take place from April 10th to April 13th. We'll have more details in the coming weeks."
         />
 
         <QuestionAnswer
