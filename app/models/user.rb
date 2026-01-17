@@ -7,6 +7,7 @@
 #  avatar               :string
 #  ban_type             :integer
 #  birthday             :date
+#  deleted_at           :datetime
 #  email                :string           not null
 #  internal_notes       :text
 #  is_banned            :boolean          default(FALSE), not null
@@ -21,6 +22,7 @@
 #
 # Indexes
 #
+#  index_users_on_deleted_at   (deleted_at)
 #  index_users_on_referrer_id  (referrer_id)
 #
 class User < ApplicationRecord
@@ -28,6 +30,9 @@ class User < ApplicationRecord
   def to_s
     "User##{id}"
   end
+
+  acts_as_paranoid
+  has_paper_trail
 
   has_many :projects
   has_many :hackatime_projects
@@ -42,7 +47,6 @@ class User < ApplicationRecord
   after_save_commit :fetch_avatar, if: -> { avatar.nil? }
   after_save_commit :fetch_username, if: -> { username.nil? }
   after_save_commit :sync_hackatime_projects, if: -> { slack_id_changed? }
-  has_paper_trail
 
   def self.exchange_authorization_code(code)
     response = Faraday.post("https://account.hackclub.com/oauth/token", { client_id: ENV["ACCOUNT_CLIENT_ID"], client_secret: ENV["ACCOUNT_CLIENT_SECRET"], redirect_uri: Rails.application.routes.url_helpers.account_callback_url, code:, grant_type: "authorization_code" })
