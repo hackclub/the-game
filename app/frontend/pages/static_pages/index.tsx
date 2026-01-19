@@ -15,7 +15,7 @@ export default function RsvpPage() {
   const step2CircleRef = useRef<HTMLDivElement>(null);
   const step3CircleRef = useRef<HTMLDivElement>(null);
 
-  const { props } = usePage();
+  const { props, flash } = usePage();
   const { data, setData, post, reset } = useForm({ email: "" });
 
   useEffect(() => {
@@ -62,6 +62,17 @@ export default function RsvpPage() {
       <DynamicBackgroundLines
         stepCircleRefs={[step1CircleRef, step2CircleRef, step3CircleRef]}
       />
+
+      <div className="fixed top-5 right-5 flex flex-col gap-3">
+        {Object.entries(flash ?? {}).map(([key, message]) => (
+          <div
+            x-key={key}
+            className={`${key === "alert" ? "bg-red-500" : "bg-green-700"} m-4 rounded-md border-2 border-${key === "alert" ? "red-700" : "green-900"} p-4`}
+          >
+            <p className="text-lg text-white">{message as string}</p>
+          </div>
+        ))}
+      </div>
 
       <div className="relative z-10 flex min-h-screen w-full items-center justify-center px-4 py-12 lg:py-24">
         <div className="flex w-full max-w-none flex-col items-end lg:max-w-6xl">
