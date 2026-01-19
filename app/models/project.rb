@@ -39,6 +39,7 @@ class Project < ApplicationRecord
 
   validates :title, :desc, :repo_link, :demo_link, presence: true
   validates :demo_link, format: { with: URI.regexp(%w[http https]), message: "must be a valid URL" }
+  validates :repo_link, format: { with: URI.regexp(%w[http https]), message: "must be a valid URL" }
 
   aasm timestamps: true do
     state :pending, initial: true
