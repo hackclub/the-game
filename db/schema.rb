@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_17_014109) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_19_192241) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -133,6 +133,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_17_014109) do
     t.string "username"
     t.boolean "ysws_verified"
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
+    t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["referrer_id"], name: "index_users_on_referrer_id"
   end
 

@@ -23,6 +23,7 @@
 # Indexes
 #
 #  index_users_on_deleted_at   (deleted_at)
+#  index_users_on_email        (email) UNIQUE
 #  index_users_on_referrer_id  (referrer_id)
 #
 class User < ApplicationRecord
