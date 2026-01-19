@@ -99,8 +99,13 @@ class AuthController < ApplicationController
 
       user = User.find_by(account_id: user_info["id"])
       if user.nil?
-        Rails.logger.error(session[:pending_user_id])
         current_or_pending_user = current_user || User.find(session[:pending_user_id])
+
+        if current_or_pending_user.email != user_info["primary_email"]
+          redirect_to root_path, alert: "Please log in with the same email"
+          return
+        end
+
         if current_or_pending_user.present?
           current_or_pending_user.update!(account_id: user_info["id"], account_access_token: access_token, slack_id: user_info["slack_id"])
           user = current_or_pending_user
