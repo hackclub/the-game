@@ -37,9 +37,9 @@ class Project < ApplicationRecord
   belongs_to :user
   has_many :hackatime_projects, dependent: :destroy
 
-  validates :title, :desc, :repo_link, :demo_link, presence: true
-  validates :demo_link, format: { with: URI.regexp(%w[http https]), message: "must be a valid URL" }
-  validates :repo_link, format: { with: URI.regexp(%w[http https]), message: "must be a valid URL" }
+  validates :title, :desc, presence: true
+  validates :demo_link, format: { with: URI.regexp(%w[http https]), message: "must be a valid URL" }, if: -> { demo_link.present? }
+  validates :repo_link, format: { with: URI.regexp(%w[http https]), message: "must be a valid URL" }, if: -> { repo_link.present? }
 
   aasm timestamps: true do
     state :pending, initial: true

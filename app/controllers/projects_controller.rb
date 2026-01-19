@@ -15,9 +15,9 @@ class ProjectsController < ApplicationController
     Rails.logger.info("Creating project with params: #{project_params}")
     project = current_user.projects.new(project_params)
 
-    if hackatime_project_keys.empty? || !project.save
+    if !project.save
       hackatime_projects = filter_hp_columns current_user.sync_hackatime_projects
-      render inertia: "projects/new", props: { project: project, hackatime_projects:, errors: project.errors }
+      redirect_to new_project_path, inertia: { project: project, hackatime_projects:, errors: project.errors }
       return
     end
 
@@ -79,7 +79,7 @@ class ProjectsController < ApplicationController
   private
 
   def project_params
-    params.require(:project).permit(:title, :desc, :demo_link, :repo_link, :reported_hours)
+    params.require(:project).permit(:title, :desc, :demo_link, :reported_hours)
   end
 
   def hackatime_project_keys
