@@ -88,7 +88,7 @@ class AuthController < ApplicationController
 
       session.delete(:auth_state)
 
-      access_token = User.exchange_authorization_code(params[:code])
+      access_token = User.exchange_authorization_code(params[:code], host: request.base_url)
 
       if access_token.nil?
         redirect_to root_path, alert: "Failed to log in. Please try again."
