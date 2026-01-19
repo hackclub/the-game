@@ -1,6 +1,7 @@
 export interface Project {
   id: number;
   aasm_state: string;
+  status: string;
   demo_link: string | null;
   desc: string | null;
   hackatime_projects: number[];

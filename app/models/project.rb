@@ -63,7 +63,23 @@ class Project < ApplicationRecord
     hash = self.as_json.slice("id", "aasm_state", "approved_at", "demo_link", "desc", "rejected_at", "repo_link", "submitted_at", "title", "ysws", "created_at", "updated_at")
     hash["total_seconds"] = display_seconds
     hash["hackatime_projects"] = hackatime_projects.pluck(:id)
+    hash["status"] = display_status
 
     hash
+  end
+
+  def display_status
+    case aasm_state
+    when "pending"
+      "In progress"
+    when "submitted"
+      "Under review"
+    when "approved"
+      "Approved!"
+    when "rejected"
+      "Rejected"
+    else
+      "Unknown"
+    end
   end
 end

@@ -16,9 +16,7 @@ export default function ProjectList({ projects }: { projects: Project[] }) {
               {formatTime(project.total_seconds)}
             </span>
           </div>
-          <span className="italic">
-            {project.aasm_state[0].toUpperCase() + project.aasm_state.slice(1)}
-          </span>
+          <span className="italic">{project.status}</span>
           <p className="mt-4 text-gray-600">{project.desc}</p>
           <div className="mt-6 flex gap-2">
             {project.demo_link && (
