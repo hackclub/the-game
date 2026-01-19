@@ -21,6 +21,28 @@ class AirtableService
     end
   end
 
+  def get_rsvps
+    records = []
+    result = { offset: nil }
+
+    loop do
+      response = connection.get do |req|
+        if result["offset"].present?
+          req.params["offset"] = result["offset"]
+        end
+      end
+
+      raise "fetch rsvps failed" unless response.status == 200
+
+      result = response.body
+      records += result["records"]
+
+      break if result["offset"].nil?
+    end
+
+    records
+  end
+
   private
 
   def connection
