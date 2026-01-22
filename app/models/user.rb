@@ -73,7 +73,14 @@ class User < ApplicationRecord
   end
 
   def sync_hackatime_projects
-    HackatimeService.sync_hackatime_projects(self)
+    Rails.cache.fetch("#{self.cache_key_with_version}/hackatime_projects", expires_in: 1.minute) do
+      HackatimeService.sync_hackatime_projects(self).map do |hp|
+        hash = hp.as_json
+        hash["total_seconds"] = hp.total_seconds
+
+        hash
+      end
+    end
   end
 
   def display_hash

@@ -24,8 +24,20 @@ class HackatimeProject < ApplicationRecord
 
   attr_accessor :total_seconds
 
+  def self.sync_total_seconds(hash)
+    hp = User.find(hash["user_id"]).sync_hackatime_projects.detect { |p| p["name"] == hash["name"] }
+    hp["total_seconds"]
+  end
+
+  def self.display_hash(hash)
+    hash.slice("id", "name", "total_seconds")
+  end
+
   def sync_total_seconds
-    hp = user.sync_hackatime_projects.detect { |p| p.name == name }
-    hp.total_seconds
+    HackatimeProject.sync_total_seconds(self.as_json)
+  end
+
+  def display_hash
+    HackatimeProject.display_hash(self.as_json)
   end
 end

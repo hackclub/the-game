@@ -5,7 +5,7 @@ class ProjectsController < ApplicationController
   end
 
   def new
-    hackatime_projects = filter_hp_columns current_user.sync_hackatime_projects
+    hackatime_projects = current_user.sync_hackatime_projects.map { |hp| HackatimeProject.display_hash(hp) }
     render inertia: "projects/new", props: {
       hackatime_projects:
     }
@@ -16,7 +16,7 @@ class ProjectsController < ApplicationController
     project = current_user.projects.new(project_params)
 
     if !project.save
-      hackatime_projects = filter_hp_columns current_user.sync_hackatime_projects
+      hackatime_projects = current_user.sync_hackatime_projects.map { |hp| HackatimeProject.display_hash(hp) }
       redirect_to new_project_path, inertia: { project: project, hackatime_projects:, errors: project.errors }
       return
     end
@@ -36,7 +36,7 @@ class ProjectsController < ApplicationController
   def edit
     project = current_user.projects.includes(:hackatime_projects).find(params[:id])
     project_hash = project.display_hash
-    hackatime_projects = filter_hp_columns current_user.sync_hackatime_projects
+    hackatime_projects = current_user.sync_hackatime_projects.map { |hp| HackatimeProject.display_hash(hp) }
     render inertia: "projects/edit", props: {
       project: project_hash,
       hackatime_projects:
@@ -55,7 +55,7 @@ class ProjectsController < ApplicationController
     flash[:success] = "Project updated successfully"
     redirect_to projects_path
   rescue
-    hackatime_projects = filter_hp_columns current_user.sync_hackatime_projects
+    hackatime_projects = current_user.sync_hackatime_projects.map { |hp| HackatimeProject.display_hash(hp) }
     render inertia: "projects/edit", props: { project: project.display_hash, hackatime_projects:, errors: project.errors }
   end
 
@@ -85,14 +85,5 @@ class ProjectsController < ApplicationController
   def hackatime_project_keys
     keys = params[:hackatime_project_keys].map(&:to_i)
     HackatimeProject.where(id: keys, user: current_user).pluck(:id)
-  end
-
-  def filter_hp_columns(hackatime_projects)
-    hackatime_projects.map do |hp|
-      new_hp = hp.as_json.slice("id", "name")
-      new_hp["total_seconds"] = hp.total_seconds
-
-      new_hp
-    end
   end
 end
