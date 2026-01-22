@@ -15,6 +15,8 @@
 #  role                 :string           default("user")
 #  username             :string
 #  ysws_verified        :boolean
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
 #  account_id           :string
 #  hackatime_id         :string
 #  referrer_id          :bigint

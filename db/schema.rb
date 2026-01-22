@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_19_192241) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_22_220325) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -121,6 +121,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_19_192241) do
     t.string "avatar"
     t.integer "ban_type"
     t.date "birthday"
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.datetime "deleted_at"
     t.string "email", null: false
     t.string "hackatime_id"
@@ -130,6 +131,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_19_192241) do
     t.bigint "referrer_id"
     t.string "role", default: "user"
     t.string "slack_id"
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "username"
     t.boolean "ysws_verified"
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
