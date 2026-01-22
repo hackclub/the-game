@@ -95,6 +95,7 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
             <label className="font-bold">Hackatime Projects</label>
             <select
               className="p-2"
+              multiple
               onChange={(e) =>
                 setData(
                   "hackatime_project_keys",
