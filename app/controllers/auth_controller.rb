@@ -22,6 +22,10 @@ class AuthController < ApplicationController
     inertia_location account_link
   end
 
+  def hackatime_link
+    inertia_location generate_hackatime_authorize_link
+  end
+
   def create_email
     email = params[:email]
 
@@ -123,6 +127,25 @@ class AuthController < ApplicationController
     redirect_to home_path, notice: "Successfully logged in!"
   end
 
+  def hackatime_callback
+    unless params[:state].present? && params[:state] == session[:hackatime_state]
+      redirect_to settings_path, alert: "Invalid hackatime session. Please try again."
+      return
+    end
+
+    session.delete(:hackatime_state)
+
+    access_token = User.exchange_hackatime_code(params[:code], host: request.base_url)
+    user_info = User.hackatime_user_info(access_token)
+
+    current_user.update!(hackatime_id: user_info.body["id"])
+
+    redirect_to settings_path, notice: "Successfully linked Hackatime!"
+  rescue StandardError => e
+    Rails.logger.error(e)
+    redirect_to settings_path, alert: "Couldn't link hackatime: #{e.message}"
+  end
+
   private
 
   def redirect_if_logged_in
@@ -167,5 +190,11 @@ class AuthController < ApplicationController
     state = SecureRandom.hex(24)
     session[:auth_state] = state
     "https://account.hackclub.com/oauth/authorize?client_id=#{ENV["ACCOUNT_CLIENT_ID"]}&redirect_uri=#{account_callback_url}&response_type=code&scope=email name slack_id verification_status&state=#{state}#{"&login_hint=#{email}" if email.present?}"
+  end
+
+  def generate_hackatime_authorize_link
+    state = SecureRandom.hex(24)
+    session[:hackatime_state] = state
+    "https://hackatime.hackclub.com/oauth/authorize?client_id=#{ENV["HACKATIME_CLIENT_ID"]}&redirect_uri=#{hackatime_callback_url}&response_type=code&scope=profile read&state=#{state}"
   end
 end

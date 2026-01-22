@@ -32,6 +32,14 @@ class HackatimeService
     projects
   end
 
+  def self.authed_user_stats(access_token)
+    response = hackatime_client.get("authenticated/me") do |req|
+      req.headers["Authorization"] = "Bearer #{access_token}"
+    end
+
+    response if response&.success?
+  end
+
   def self.hackatime_client
     Faraday.new(url: BASE_URL) do |conn|
       conn.response :json, content_type: /\bjson$/

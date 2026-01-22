@@ -29,10 +29,7 @@ export default function SettingsIndex() {
           {props.user.hackatime_id ? (
             <span className="text-green-600">Linked</span>
           ) : (
-            <Link
-              className="text-red-500 underline"
-              href="/auth/hackatime_link"
-            >
+            <Link className="text-red-500 underline" href="/hackatime/link">
               Click here to link
             </Link>
           )}

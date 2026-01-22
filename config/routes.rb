@@ -47,4 +47,7 @@ Rails.application.routes.draw do
     get "sent", to: "auth#sent"
     post "validate", to: "auth#validate"
   end
+
+  get "hackatime/link", to: "auth#hackatime_link"
+  get "hackatime/callback", to: "auth#hackatime_callback"
 end

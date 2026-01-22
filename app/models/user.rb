@@ -61,6 +61,17 @@ class User < ApplicationRecord
     end
   end
 
+  def self.exchange_hackatime_code(code, host:)
+    response = Faraday.post("https://hackatime.hackclub.com/oauth/token", { client_id: ENV["HACKATIME_CLIENT_ID"], client_secret: ENV["HACKATIME_CLIENT_SECRET"], redirect_uri: Rails.application.routes.url_helpers.hackatime_callback_url(host:), code:, grant_type: "authorization_code" })
+
+    if response.status == 200
+      result = JSON.parse(response.body)
+      result["access_token"]
+    else
+      nil
+    end
+  end
+
   def self.account_user_info(access_token)
     response = account_client(access_token).get("me")
 
@@ -69,6 +80,10 @@ class User < ApplicationRecord
     else
       nil
     end
+  end
+
+  def self.hackatime_user_info(access_token)
+    HackatimeService.authed_user_stats(access_token)
   end
 
   def cached_hackatime_projects
