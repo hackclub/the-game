@@ -5,9 +5,8 @@ class ProjectsController < ApplicationController
   end
 
   def new
-    hackatime_projects = current_user.sync_hackatime_projects.map { |hp| HackatimeProject.display_hash(hp) }
     render inertia: "projects/new", props: {
-      hackatime_projects:
+      hackatime_projects: available_hackatime_projects
     }
   end
 
@@ -16,8 +15,7 @@ class ProjectsController < ApplicationController
     project = current_user.projects.new(project_params)
 
     if !project.save
-      hackatime_projects = current_user.sync_hackatime_projects.map { |hp| HackatimeProject.display_hash(hp) }
-      redirect_to new_project_path, inertia: { project: project, hackatime_projects:, errors: project.errors }
+      redirect_to new_project_path, inertia: { project: project, hackatime_projects: available_hackatime_projects, errors: project.errors }
       return
     end
 
@@ -36,10 +34,10 @@ class ProjectsController < ApplicationController
   def edit
     project = current_user.projects.includes(:hackatime_projects).find(params[:id])
     project_hash = project.display_hash
-    hackatime_projects = current_user.sync_hackatime_projects.map { |hp| HackatimeProject.display_hash(hp) }
+    hackatime_projects = available_hackatime_projects + project.hackatime_projects.map(&:display_hash)
     render inertia: "projects/edit", props: {
       project: project_hash,
-      hackatime_projects:
+      hackatime_projects: hackatime_projects
     }
   end
 
@@ -55,8 +53,8 @@ class ProjectsController < ApplicationController
     flash[:success] = "Project updated successfully"
     redirect_to projects_path
   rescue
-    hackatime_projects = current_user.sync_hackatime_projects.map { |hp| HackatimeProject.display_hash(hp) }
-    render inertia: "projects/edit", props: { project: project.display_hash, hackatime_projects:, errors: project.errors }
+    hackatime_projects = available_hackatime_projects + project.hackatime_projects.map(&:display_hash)
+    render inertia: "projects/edit", props: { project: project.display_hash, hackatime_projects: hackatime_projects, errors: project.errors }
   end
 
   def destroy
@@ -85,5 +83,9 @@ class ProjectsController < ApplicationController
   def hackatime_project_keys
     keys = params[:hackatime_project_keys].map(&:to_i)
     HackatimeProject.where(id: keys, user: current_user).pluck(:id)
+  end
+
+  def available_hackatime_projects
+    current_user.unassigned_hackatime_projects.map(&:display_hash)
   end
 end

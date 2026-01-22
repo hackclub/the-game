@@ -49,7 +49,6 @@ class User < ApplicationRecord
   after_save_commit :link_hackatime, if: -> { hackatime_id.nil? }
   after_save_commit :fetch_avatar, if: -> { avatar.nil? }
   after_save_commit :fetch_username, if: -> { username.nil? }
-  after_save_commit :sync_hackatime_projects, if: -> { slack_id_changed? }
 
   def self.exchange_authorization_code(code, host:)
     response = Faraday.post("https://account.hackclub.com/oauth/token", { client_id: ENV["ACCOUNT_CLIENT_ID"], client_secret: ENV["ACCOUNT_CLIENT_SECRET"], redirect_uri: Rails.application.routes.url_helpers.account_callback_url(host:), code:, grant_type: "authorization_code" })
@@ -72,7 +71,7 @@ class User < ApplicationRecord
     end
   end
 
-  def sync_hackatime_projects
+  def cached_hackatime_projects
     Rails.cache.fetch("#{self.cache_key_with_version}/hackatime_projects", expires_in: 1.minute) do
       HackatimeService.sync_hackatime_projects(self).map do |hp|
         hash = hp.as_json
@@ -85,6 +84,10 @@ class User < ApplicationRecord
 
   def display_hash
     self.as_json.slice("id", "avatar", "email", "role", "username", "ysws_verified", "account_id", "hackatime_id", "slack_id")
+  end
+
+  def unassigned_hackatime_projects
+    HackatimeProject.where(id: cached_hackatime_projects.map { |hp| hp["id"] }, project: nil)
   end
 
   private

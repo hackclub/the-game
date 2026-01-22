@@ -2,6 +2,7 @@ import { useForm } from "@inertiajs/react";
 import type { HackatimeProject } from "@/interfaces/hackatime_project";
 import type { Project } from "@/interfaces/project";
 import formatTime from "@/utils/formatTime";
+import { useMemo } from "react";
 
 interface Props {
   hackatime_projects: HackatimeProject[];
@@ -46,6 +47,11 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
       destroy(`/projects/${project!.id}`);
     }
   }
+
+  const sortedHackatimeProjects = useMemo(
+    () => hackatime_projects.sort((a, b) => b.total_seconds - a.total_seconds),
+    [hackatime_projects],
+  );
 
   return (
     <>
@@ -110,7 +116,7 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
               >
                 Select a project
               </option>
-              {hackatime_projects.map((hp) => {
+              {sortedHackatimeProjects.map((hp) => {
                 return (
                   <option
                     key={hp.id}
