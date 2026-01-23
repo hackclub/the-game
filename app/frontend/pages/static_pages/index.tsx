@@ -233,7 +233,7 @@ export default function RsvpPage() {
 
         <QuestionAnswer
           question="How do I sign up?"
-          answer="Enter your email above to RSVP for Hack Club: The Game! We'll send you an email when we have more details."
+          answer="Enter your email above to sign up for Hack Club: The Game! After you sign up, you can get started making projects, and logging time!"
         />
 
         <QuestionAnswer
@@ -273,14 +273,13 @@ export default function RsvpPage() {
             <>
               Hack Club takes the safety and well-being of all participants seriously.
               You can read our full <a className="underline" target="_blank" href="https://hackclub.com/safeguarding-policy"></a> safeguarding policy to learn about our commitment to child protection.
-
             </>
           }
         />
 
         <QuestionAnswer
           question="My parents are worried!"
-          answer="We'll have an in-depth parents guide available in the coming weeks - RSVP above to get notified when it's ready!"
+          answer="We'll have an in-depth parents guide available in the coming weeks"
         />
       </div>
 
