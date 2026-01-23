@@ -10,15 +10,7 @@ interface Props {
 }
 
 export default function ProjectForm({ hackatime_projects, project }: Props) {
-  const {
-    data,
-    setData,
-    post,
-    patch,
-    delete: destroy,
-    processing,
-    errors,
-  } = useForm({
+  const { data, setData, post, patch, processing, errors } = useForm({
     title: project?.title ?? "",
     desc: project?.desc ?? "",
     repo_link: project?.repo_link ?? "",
@@ -33,18 +25,6 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
       patch(`/projects/${project.id}`);
     } else {
       post("/projects/");
-    }
-  }
-
-  function shipProject(e: React.FormEvent) {
-    e.preventDefault();
-    patch(`/projects/${project!.id}/ship`);
-  }
-
-  function handleDelete(e: React.FormEvent) {
-    e.preventDefault();
-    if (confirm("Are you sure you want to delete this project?")) {
-      destroy(`/projects/${project!.id}`);
     }
   }
 
@@ -152,28 +132,6 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
             >
               {project ? "Update" : "Create"} Project
             </button>
-            {/* <button
-            className="rounded bg-green-500 p-5 px-4 py-2 font-bold text-white hover:bg-green-700"
-            type="button"
-            onClick={shipProject}
-            disabled={processing}
-            style={{
-              display: project.aasm_state === "pending" ? "block" : "none",
-            }}
-          >
-            Ship Project
-          </button> */}
-
-            {project && (
-              <button
-                className="rounded bg-red-500 p-5 px-4 py-2 font-bold text-white hover:bg-red-700"
-                type="button"
-                onClick={handleDelete}
-                disabled={processing}
-              >
-                Delete Project
-              </button>
-            )}
           </div>
         </form>
       </div>
