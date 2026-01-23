@@ -26,7 +26,7 @@ class HackatimeProject < ApplicationRecord
 
   def self.sync_total_seconds(hash)
     hp = User.find(hash["user_id"]).cached_hackatime_projects.detect { |p| p["name"] == hash["name"] }
-    hp["total_seconds"]
+    hp.present? ? hp["total_seconds"] : 0
   end
 
   def self.display_hash(hash)

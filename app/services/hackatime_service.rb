@@ -9,7 +9,7 @@ class HackatimeService
   def self.sync_hackatime_projects(user)
     projects = []
 
-    response = hackatime_client.get("users/#{user.slack_id}/stats") do |req|
+    response = hackatime_client.get("users/#{user.hackatime_id}/stats") do |req|
       req.params = {
         filter_by_project: "inf-expr",
         start_date: "2025-12-23T00:00:00Z",
