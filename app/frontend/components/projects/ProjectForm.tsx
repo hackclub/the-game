@@ -98,6 +98,20 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
             )}
           </div>
           <div className="flex flex-col">
+            <label className="font-bold" htmlFor="repo_link">
+              Repository Link
+            </label>
+            <input
+              className="rounded-md p-2"
+              type="url"
+              value={data.repo_link}
+              onChange={(e) => setData("repo_link", e.target.value)}
+            />
+            {errors.repo_link && (
+              <div className="text-red-500">{errors.repo_link}</div>
+            )}
+          </div>
+          <div className="flex flex-col">
             <label className="font-bold">Hackatime Projects</label>
             <select
               className="rounded-md p-2"
@@ -128,21 +142,6 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
                 );
               })}
             </select>
-          </div>
-
-          <div className="flex flex-col">
-            <label className="font-bold" htmlFor="repo_link">
-              Repository Link
-            </label>
-            <input
-              className="rounded-md p-2"
-              type="url"
-              value={data.repo_link}
-              onChange={(e) => setData("repo_link", e.target.value)}
-            />
-            {errors.repo_link && (
-              <div className="text-red-500">{errors.repo_link}</div>
-            )}
           </div>
 
           <div className="mt-4 flex flex-col gap-2">
