@@ -272,7 +272,7 @@ export default function RsvpPage() {
           answer={
             <>
               Hack Club takes the safety and well-being of all participants seriously.
-              You can read our full <a className="underline" target="_blank" href="https://hackclub.com/safeguarding-policy"></a> safeguarding policy to learn about our commitment to child protection.
+              You can read our full <a className="underline" target="_blank" href="https://hackclub.com/safeguarding-policy">safeguarding policy </a> to learn about our commitment to child protection.
             </>
           }
         />
