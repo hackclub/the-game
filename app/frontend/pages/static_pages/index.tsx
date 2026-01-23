@@ -268,6 +268,17 @@ export default function RsvpPage() {
         />
 
         <QuestionAnswer
+          question="What is Hack Club's child protection policy?"
+          answer={
+            <>
+              Hack Club takes the safety and well-being of all participants seriously.
+              You can read our full <a className="underline" target="_blank" href="https://hackclub.com/safeguarding-policy"></a> safeguarding policy to learn about our commitment to child protection.
+
+            </>
+          }
+        />
+
+        <QuestionAnswer
           question="My parents are worried!"
           answer="We'll have an in-depth parents guide available in the coming weeks - RSVP above to get notified when it's ready!"
         />
