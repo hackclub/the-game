@@ -19,7 +19,7 @@ export default function LoggedHours({
   console.log(digits);
 
   return (
-    <div className="rounded-lg border bg-white p-6 shadow-sm">
+    <div className="rounded-lg border border-gray-600 bg-white p-4 shadow-sm">
       <h2 className="mb-4 text-center text-lg font-semibold text-gray-700">
         Time Logged
       </h2>

@@ -63,7 +63,7 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
               Title
             </label>
             <input
-              className="p-2"
+              className="rounded-md p-2"
               type="text"
               value={data.title}
               onChange={(e) => setData("title", e.target.value)}
@@ -76,7 +76,7 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
               Description
             </label>
             <input
-              className="p-2"
+              className="rounded-md p-2"
               type="text"
               value={data.desc}
               onChange={(e) => setData("desc", e.target.value)}
@@ -88,7 +88,7 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
               Demo Link
             </label>
             <input
-              className="p-2"
+              className="rounded-md p-2"
               type="url"
               value={data.demo_link}
               onChange={(e) => setData("demo_link", e.target.value)}
@@ -100,7 +100,7 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
           <div className="flex flex-col">
             <label className="font-bold">Hackatime Projects</label>
             <select
-              className="p-2"
+              className="rounded-md p-2"
               multiple
               onChange={(e) =>
                 setData(
@@ -135,7 +135,7 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
               Repository Link
             </label>
             <input
-              className="p-2"
+              className="rounded-md p-2"
               type="url"
               value={data.repo_link}
               onChange={(e) => setData("repo_link", e.target.value)}
