@@ -21,14 +21,9 @@ class ProjectsController < ApplicationController
 
     current_user.hackatime_projects.where(id: hackatime_project_keys).update_all(project_id: project.id)
 
-    flash[:success] = "Project created successfully"
+    flash[:notice] = "Project created successfully"
     Rails.logger.info("Project created: #{project}")
     redirect_to projects_path
-  end
-
-  def show
-    project = current_user.projects.find(params[:id]).display_hash
-    render inertia: "projects/show", props: { project: }
   end
 
   def edit
@@ -50,7 +45,7 @@ class ProjectsController < ApplicationController
       current_user.hackatime_projects.where(id: hackatime_project_keys).update_all(project_id: project.id)
     end
 
-    flash[:success] = "Project updated successfully"
+    flash[:notice] = "Project updated successfully"
     redirect_to projects_path
   rescue
     hackatime_projects = available_hackatime_projects + project.hackatime_projects.map(&:display_hash)
@@ -60,10 +55,10 @@ class ProjectsController < ApplicationController
   def destroy
     project = current_user.projects.find(params[:id])
     if project.destroy
-      flash[:success] = "Project deleted successfully"
+      flash[:notice] = "Project deleted successfully"
       redirect_to projects_path
     else
-      flash[:error] = "Failed to delete project"
+      flash[:alert] = "Failed to delete project"
       redirect_to project_path(project)
     end
   end
@@ -71,6 +66,7 @@ class ProjectsController < ApplicationController
   def ship
     project = current_user.projects.find(params[:id])
     project.mark_submitted!
+    flash[:notice] = "Shipped #{project.title}!"
     redirect_to projects_path
   end
 

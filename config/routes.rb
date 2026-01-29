@@ -25,7 +25,7 @@ Rails.application.routes.draw do
   get "/home", to: "static_pages#home"
   post "/rsvp", to: "static_pages#create_rsvp"
   post "/signup", to: "static_pages#signup"
-  resources :projects do
+  resources :projects, only: [ :index, :new, :create, :edit, :update, :destroy ] do
     member do
       patch :ship
     end
