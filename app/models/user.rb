@@ -39,12 +39,13 @@ class User < ApplicationRecord
 
   has_many :projects
   has_many :hackatime_projects
+  has_many :reviews, class_name: "Project::Review"
 
   # Simple referrer: a user may have one referrer (another User)
   belongs_to :referrer, class_name: "User", optional: true
 
   enum :ban_type, { hackatime: 0, blueprint: 1, previous: 2, slack: 3, age: 4 }
-  enum :role, { user: "user", admin: "admin" }
+  enum :role, { user: "user", admin: "admin", reviewer: "reviewer" }
 
   after_save_commit :link_hackatime, if: -> { hackatime_id.nil? }
   after_save_commit :fetch_avatar, if: -> { avatar.nil? }

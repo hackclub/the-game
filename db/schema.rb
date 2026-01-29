@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_22_220325) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_29_010313) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -92,6 +92,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_220325) do
     t.datetime "expires_at"
     t.string "secret", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "project_reviews", force: :cascade do |t|
+    t.bigint "author_id", null: false
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.bigint "project_id", null: false
+    t.string "review_type"
+    t.datetime "updated_at", null: false
+    t.index ["author_id"], name: "index_project_reviews_on_author_id"
+    t.index ["project_id"], name: "index_project_reviews_on_project_id"
   end
 
   create_table "projects", force: :cascade do |t|

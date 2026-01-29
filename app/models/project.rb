@@ -61,7 +61,7 @@ class Project < ApplicationRecord
   end
 
   def display_hash
-    hash = self.as_json.slice("id", "aasm_state", "approved_at", "demo_link", "desc", "rejected_at", "repo_link", "submitted_at", "title", "ysws", "created_at", "updated_at")
+    hash = self.as_json.slice("id", "aasm_state", "approved_at", "demo_link", "desc", "rejected_at", "repo_link", "submitted_at", "title", "ysws", "created_at", "updated_at", "user_id")
     hash["total_seconds"] = display_seconds
     hash["hackatime_projects"] = hackatime_projects.pluck(:id)
     hash["status"] = display_status

@@ -9,6 +9,10 @@ class AdminController < ApplicationController
     render inertia: "admin/announcements"
   end
 
+  def projects
+    render inertia: "admin/projects", props: { projects: Project.all.map(&:display_hash) }
+  end
+
   private
 
   def verify_admin
