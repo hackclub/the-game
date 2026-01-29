@@ -73,4 +73,10 @@ module Authentication
   def terminate_session
     reset_session
   end
+
+  def signed_in_admin
+    unless current_user.admin?
+      redirect_to home_path, flash: { alert: "You'll need to sign in as an admin" }
+    end
+  end
 end

@@ -9,7 +9,7 @@ interface Props {
   hackatime_projects: HackatimeProject[];
 }
 
-export default function EditProject({ project, hackatime_projects }: Props) {
+export default function ShowProject({ project, hackatime_projects }: Props) {
   function shipProject(e: React.MouseEvent) {
     e.stopPropagation();
     if (confirm("Are you sure you want to ship this project?")) {

@@ -10,6 +10,10 @@ class ApplicationController < ActionController::Base
   before_action :redirect_banned_users
   before_action :redirect_adults
 
+  after_action :verify_authorized, unless: -> { controller_path.starts_with?("doorkeeper/") || controller_path.starts_with?("audits1984/") }
+
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+
   inertia_share do
     if user_logged_in?
       { user: current_user.display_hash }
@@ -20,6 +24,15 @@ class ApplicationController < ActionController::Base
 
   def not_found
     raise ActionController::RoutingError.new("Not Found")
+  end
+
+  def user_not_authorized
+    flash[:alert] = "You are not authorized to perform this action."
+    if current_user || !request.get?
+      redirect_back_or_to root_path
+    else
+      redirect_to auth_users_path(return_to: request.url, require_reload: true)
+    end
   end
 
   private

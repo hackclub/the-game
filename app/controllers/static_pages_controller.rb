@@ -1,5 +1,6 @@
 class StaticPagesController < ApplicationController
   allow_unauthenticated_access only: %i[index create_rsvp signup index]
+  skip_after_action :verify_authorized, only: %i[index create_rsvp signup index home]
 
   def home
     unless user_logged_in?

@@ -22,7 +22,7 @@ export default function Project({ project }: { project: Project }) {
       key={project.id}
       className="group cursor-pointer overflow-hidden rounded-lg border border-gray-300 bg-white shadow-sm hover:shadow-md"
       onClick={() => {
-        window.location.pathname = `/projects/${project.id}/edit`;
+        window.location.pathname = `/projects/${project.id}`;
       }}
     >
       <div className="p-4 pb-0">
@@ -37,7 +37,7 @@ export default function Project({ project }: { project: Project }) {
       </div>
       <div className="relative mt-6 flex w-full transition-all group-hover:bottom-0 md:-bottom-20">
         <Link
-          href={`/projects/${project.id}/edit`}
+          href={`/projects/${project.id}`}
           className="grow bg-blue-400 py-2 text-center"
         >
           Edit

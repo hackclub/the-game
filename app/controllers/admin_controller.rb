@@ -1,5 +1,6 @@
 class AdminController < ApplicationController
-  before_action :verify_admin
+  skip_after_action :verify_authorized
+  before_action :signed_in_admin
 
   def index
     render inertia: "admin/index"
@@ -11,13 +12,5 @@ class AdminController < ApplicationController
 
   def projects
     render inertia: "admin/projects", props: { projects: Project.all.map(&:display_hash) }
-  end
-
-  private
-
-  def verify_admin
-    unless current_user.admin?
-      redirect_to home_path, alert: "You are not authorized to access this page."
-    end
   end
 end

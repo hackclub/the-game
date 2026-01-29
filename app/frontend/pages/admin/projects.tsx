@@ -28,7 +28,7 @@ const columns = [
   columnHelper.display({
     header: "Actions",
     cell: (info) => (
-      <a className="underline" href={`/projects/${info.row.original.id}/edit`}>
+      <a className="underline" href={`/projects/${info.row.original.id}`}>
         Review
       </a>
     ),

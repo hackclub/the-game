@@ -26,7 +26,7 @@ Rails.application.routes.draw do
   post "/rsvp", to: "static_pages#create_rsvp"
   post "/signup", to: "static_pages#signup"
 
-  resources :projects, only: [ :index, :new, :create, :edit, :update, :destroy ] do
+  resources :projects, only: [ :index, :new, :create, :show, :update, :destroy ] do
     member do
       patch :ship
     end
