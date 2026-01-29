@@ -58,7 +58,7 @@ export default function ShowProject({ project, hackatime_projects }: Props) {
           Repo
         </a>
       </p>
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         <ProjectForm
           project={project}
           hackatime_projects={hackatime_projects}
