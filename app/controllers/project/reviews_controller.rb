@@ -1,20 +1,28 @@
 class Project
   class ReviewsController < ApplicationController
+    before_action :set_project
+
     def create
       if current_user.user?
         head :unauthorized
         return
       end
 
-      Project::Review.create!(review_params)
+      skip_authorization
 
-      redirect_to admin_projects_path
+      @project.reviews.create!(review_params.merge(author: current_user))
+
+      redirect_to project_path(@project)
     end
 
     private
 
     def review_params
-      params.require(:review).permit(:content, :review_status, :project_id)
+      params.require(:review).permit(:content, :review_type)
+    end
+
+    def set_project
+      @project = Project.find(params[:project_id])
     end
   end
 end

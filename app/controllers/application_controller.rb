@@ -16,7 +16,7 @@ class ApplicationController < ActionController::Base
 
   inertia_share do
     if user_logged_in?
-      { user: current_user.display_hash }
+      { user: current_user.display_hash(private: true) }
     else
       {}
     end

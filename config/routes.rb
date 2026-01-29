@@ -27,12 +27,12 @@ Rails.application.routes.draw do
   post "/signup", to: "static_pages#signup"
 
   resources :projects, only: [ :index, :new, :create, :show, :update, :destroy ] do
+    resources :reviews, only: [ :create, :destroy ], module: :project
+
     member do
       patch :ship
     end
   end
-
-  resources :reviews, only: [ :create, :destroy ]
 
   get "/explore", to: "explore#index"
 

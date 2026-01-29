@@ -1,11 +1,14 @@
 import { router } from "@inertiajs/react";
 import ProjectForm from "@/components/projects/ProjectForm";
+import ProjectReviews from "@/components/projects/ProjectReviews";
 import Layout from "@/layouts/layout";
 import type { Project } from "@/interfaces/project";
+import type { ProjectReview } from "@/interfaces/project_review";
 import type { HackatimeProject } from "@/interfaces/hackatime_project";
+import type { PublicUser } from "@/interfaces/user";
 
 interface Props {
-  project: Project;
+  project: Project & { reviews: (ProjectReview & { author: PublicUser })[] };
   hackatime_projects: HackatimeProject[];
 }
 
@@ -26,7 +29,7 @@ export default function ShowProject({ project, hackatime_projects }: Props) {
 
   return (
     <Layout>
-      <div className="mb-2 flex items-center gap-6">
+      <div className="mb-2 flex w-full items-center gap-6">
         <h2 className="text-3xl font-bold">{project.title}</h2>
         <div className="flex gap-4">
           <button
@@ -43,7 +46,25 @@ export default function ShowProject({ project, hackatime_projects }: Props) {
           </button>
         </div>
       </div>
-      <ProjectForm project={project} hackatime_projects={hackatime_projects} />
+      <p className="italic">
+        {project.aasm_state[0].toUpperCase() + project.aasm_state.slice(1)}
+      </p>
+      <p>
+        <a className="text-blue-500 underline" href={project.demo_link ?? "#"}>
+          Demo
+        </a>{" "}
+        |{" "}
+        <a className="text-blue-500 underline" href={project.repo_link ?? "#"}>
+          Repo
+        </a>
+      </p>
+      <div className="grid grid-cols-2 gap-5">
+        <ProjectForm
+          project={project}
+          hackatime_projects={hackatime_projects}
+        />
+        <ProjectReviews project={project} />
+      </div>
     </Layout>
   );
 }

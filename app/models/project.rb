@@ -36,6 +36,7 @@ class Project < ApplicationRecord
 
   belongs_to :user
   has_many :hackatime_projects, dependent: :destroy
+  has_many :reviews, class_name: "Project::Review"
 
   validates :title, :desc, presence: true
   validates :demo_link, format: { with: URI.regexp(%w[http https]), message: "must be a valid URL" }, if: -> { demo_link.present? }
@@ -50,6 +51,14 @@ class Project < ApplicationRecord
     event :mark_submitted do
       transitions from: [ :pending, :rejected ], to: :submitted
     end
+
+    event :mark_approved do
+      transitions from: [ :submitted, :rejected ], to: :approved
+    end
+
+    event :mark_rejected do
+      transitions from: :submitted, to: :rejected
+    end
   end
 
   def display_seconds
@@ -60,11 +69,15 @@ class Project < ApplicationRecord
     end
   end
 
-  def display_hash
+  def display_hash(reviews: false)
     hash = self.as_json.slice("id", "aasm_state", "approved_at", "demo_link", "desc", "rejected_at", "repo_link", "submitted_at", "title", "ysws", "created_at", "updated_at", "user_id")
     hash["total_seconds"] = display_seconds
     hash["hackatime_projects"] = hackatime_projects.pluck(:id)
     hash["status"] = display_status
+
+    if reviews
+      hash["reviews"] = self.reviews.map { |review| review.display_hash(author: true) }
+    end
 
     hash
   end

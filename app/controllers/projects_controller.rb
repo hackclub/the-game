@@ -1,6 +1,6 @@
 class ProjectsController < ApplicationController
   skip_after_action :verify_authorized, only: [ :index, :new, :create ]
-  before_action :set_project, only: [ :show, :update, :destroy ]
+  before_action :set_project, only: [ :show, :update, :destroy, :ship ]
 
   def index
     projects = current_user.projects.map { |project| project.display_hash }
@@ -29,7 +29,7 @@ class ProjectsController < ApplicationController
 
   def show
     authorize @project
-    project_hash = @project.display_hash
+    project_hash = @project.display_hash(reviews: true)
     hackatime_projects = available_hackatime_projects + @project.hackatime_projects.map(&:display_hash)
     render inertia: "projects/show", props: {
       project: project_hash,

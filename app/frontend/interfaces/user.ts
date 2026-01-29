@@ -1,4 +1,4 @@
-export interface User {
+export interface PrivateUser {
   id: number;
   avatar: string;
   email: string;
@@ -8,4 +8,12 @@ export interface User {
   account_id: string;
   hackatime_id: string;
   slack_id: string;
+}
+
+export interface PublicUser {
+  id: number;
+  avatar: string;
+  email: string;
+  role: string;
+  username: string;
 }

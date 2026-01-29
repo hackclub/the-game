@@ -98,8 +98,12 @@ class User < ApplicationRecord
     end
   end
 
-  def display_hash
-    self.as_json.slice("id", "avatar", "email", "role", "username", "ysws_verified", "account_id", "hackatime_id", "slack_id")
+  def display_hash(private: false)
+    if private
+      self.as_json.slice("id", "avatar", "email", "role", "username", "ysws_verified", "account_id", "hackatime_id", "slack_id")
+    else
+      self.as_json.slice("id", "avatar", "email", "role", "username")
+    end
   end
 
   def unassigned_hackatime_projects

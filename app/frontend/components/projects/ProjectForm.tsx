@@ -35,7 +35,7 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
 
   return (
     <>
-      <div className="flex flex-col justify-center">
+      <div className="flex flex-col">
         <form onSubmit={submit} className="flex max-w-lg flex-col gap-4">
           <br></br>
           <div className="flex flex-col">
