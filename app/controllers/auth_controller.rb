@@ -13,13 +13,11 @@ class AuthController < ApplicationController
     user = User.find_or_create_by(email:)
     session[:pending_user_id] = user.id
     account_link = generate_hca_authorize_link(email)
-    Rails.logger.info("Redirecting to account link: #{account_link}")
     inertia_location account_link
   end
 
   def account_link
     account_link = generate_hca_authorize_link
-    Rails.logger.info("Redirecting to account link: #{account_link}")
     inertia_location account_link
   end
 
@@ -80,7 +78,6 @@ class AuthController < ApplicationController
     state = SecureRandom.hex(24)
     session[:auth_state] = state
     account_link = "https://account.hackclub.com/oauth/authorize?client_id=#{ENV["ACCOUNT_CLIENT_ID"]}&redirect_uri=#{account_callback_url}&response_type=code&scope=email name slack_id verification_status&state=#{state}"
-    Rails.logger.info("Redirecting to account link: #{account_link}")
     redirect_to account_link, allow_other_host: true
   end
 
@@ -121,7 +118,6 @@ class AuthController < ApplicationController
 
       session[:user_id] = user.id
     rescue StandardError => e
-      Rails.logger.error(e)
       return redirect_to root_path, alert: "Couldn't log in: #{e.message}"
     end
 
@@ -143,7 +139,6 @@ class AuthController < ApplicationController
 
     redirect_to settings_path, notice: "Successfully linked Hackatime!"
   rescue StandardError => e
-    Rails.logger.error(e)
     redirect_to settings_path, alert: "Couldn't link hackatime: #{e.message}"
   end
 

@@ -127,8 +127,6 @@ class User < ApplicationRecord
 
     if response.present?
       update!(hackatime_id: response.body["data"]["user_id"])
-    else
-      Rails.logger.info("Failed to link hackatime")
     end
   end
 

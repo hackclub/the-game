@@ -9,7 +9,6 @@ class StaticPagesController < ApplicationController
     end
 
     totalProjectTime = current_user.projects.reduce(0) { |acc, project| acc + project.display_seconds }
-    Rails.logger.info(totalProjectTime)
     render inertia: { totalProjectTime: totalProjectTime }
   end
 

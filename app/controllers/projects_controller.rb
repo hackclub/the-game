@@ -14,7 +14,6 @@ class ProjectsController < ApplicationController
   end
 
   def create
-    Rails.logger.info("Creating project with params: #{project_params}")
     project = current_user.projects.new(project_params)
 
     if !project.save
@@ -25,7 +24,6 @@ class ProjectsController < ApplicationController
     current_user.hackatime_projects.where(id: hackatime_project_keys).update_all(project_id: project.id)
 
     flash[:notice] = "Project created successfully"
-    Rails.logger.info("Project created: #{project}")
     redirect_to projects_path
   end
 
