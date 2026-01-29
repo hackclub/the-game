@@ -90,7 +90,7 @@ export default function Sidebar() {
           </header>
 
           {/* Navigation */}
-          <nav className="flex-1 space-y-2 pl-4">
+          <nav className="flex-1 space-y-6 pl-4">
             {navItems.map((item) => (
               <Link
                 key={item.href}
