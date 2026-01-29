@@ -1,7 +1,7 @@
 import type { Project } from "@/interfaces/project";
 import type { ProjectReview } from "@/interfaces/project_review";
 import type { PublicUser } from "@/interfaces/user";
-import { useForm } from "@inertiajs/react";
+import { useForm, usePage } from "@inertiajs/react";
 
 export default function ProjectReviews({
   project,
@@ -12,6 +12,7 @@ export default function ProjectReviews({
     review_type: "comment",
     content: "",
   });
+  const { props } = usePage();
 
   function submitReview(e: React.FormEvent) {
     e.preventDefault();
@@ -59,31 +60,33 @@ export default function ProjectReviews({
             )}
           </div>
 
-          <form
-            className="mt-5 flex flex-col items-start gap-2"
-            onSubmit={submitReview}
-          >
-            <select
-              value={data.review_type}
-              onChange={(e) => setData("review_type", e.target.value)}
+          {props.user.role === "admin" && (
+            <form
+              className="mt-5 flex flex-col items-start gap-2"
+              onSubmit={submitReview}
             >
-              <option value="comment">Comment</option>
-              <option value="rejection">Rejection</option>
-              <option value="approval">Approval</option>
-            </select>
-            <textarea
-              className="min-w-md rounded-md"
-              value={data.content}
-              onChange={(e) => setData("content", e.target.value)}
-              placeholder="Add your comment here - this will be shown to the author"
-            />
-            <button
-              className="rounded-md bg-blue-500 px-4 py-2 font-bold text-white"
-              disabled={processing}
-            >
-              Add review
-            </button>
-          </form>
+              <select
+                value={data.review_type}
+                onChange={(e) => setData("review_type", e.target.value)}
+              >
+                <option value="comment">Comment</option>
+                <option value="rejection">Rejection</option>
+                <option value="approval">Approval</option>
+              </select>
+              <textarea
+                className="min-w-md rounded-md"
+                value={data.content}
+                onChange={(e) => setData("content", e.target.value)}
+                placeholder="Add your comment here - this will be shown to the author"
+              />
+              <button
+                className="rounded-md bg-blue-500 px-4 py-2 font-bold text-white"
+                disabled={processing}
+              >
+                Add review
+              </button>
+            </form>
+          )}
         </>
       )}
     </div>
