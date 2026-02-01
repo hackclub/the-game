@@ -46,9 +46,7 @@ export default function ShowProject({ project, hackatime_projects }: Props) {
           </button>
         </div>
       </div>
-      <p className="italic">
-        {project.aasm_state[0].toUpperCase() + project.aasm_state.slice(1)}
-      </p>
+      <p className="italic">{project.status}</p>
       <p>
         <a className="text-blue-500 underline" href={project.demo_link ?? "#"}>
           Demo
