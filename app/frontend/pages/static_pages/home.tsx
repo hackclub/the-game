@@ -21,11 +21,11 @@ export default function Home() {
   const { props } = usePage<{ totalProjectTime: number }>();
 
   return (
-    <Layout className="bg-blue-200">
+    <Layout className="relative bg-[url(/nyc.png)] bg-cover">
       <div className="flex h-full items-center justify-center">
-        <div className="flex flex-col items-center justify-center gap-5 rounded-md border border-black bg-gray-50 p-10">
+        <div className="flex flex-col items-center gap-5 rounded-md border border-black bg-gray-800 py-10 text-white md:px-10">
           <div>
-            <h2 className="mb-2 text-4xl font-bold">
+            <h2 className="mb-2 text-center text-4xl font-bold">
               Welcome to the Platform!
             </h2>
             <p className="text-center text-lg italic">{chosenFlavorText}</p>
@@ -44,6 +44,20 @@ export default function Home() {
           <LoggedHours totalProjectTime={props.totalProjectTime} />
         </div>
       </div>
+
+      <p className="absolute right-0 bottom-0 bg-[#333333DF] px-5 py-1 text-white">
+        <a
+          href="https://cannoneyed.com/isometric-nyc/"
+          className="underline"
+          target="_blank"
+        >
+          Isometric NYC
+        </a>{" "}
+        by{" "}
+        <a href="https://cannoneyed.com/" className="underline" target="_blank">
+          Andy Coenen
+        </a>
+      </p>
     </Layout>
   );
 }

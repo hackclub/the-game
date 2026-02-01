@@ -16,10 +16,8 @@ export default function LoggedHours({
     seconds % 10,
   ];
 
-  console.log(digits);
-
   return (
-    <div className="rounded-lg bg-white p-4">
+    <div className="rounded-lg">
       <h2 className="mb-4 text-center text-lg font-semibold">Time Logged</h2>
       <div className="flex items-center justify-center gap-1">
         <FlipDigit digit={digits[0]} />
