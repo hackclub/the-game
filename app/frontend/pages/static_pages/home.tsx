@@ -31,15 +31,25 @@ export default function Home() {
             <p className="text-center text-lg italic">{chosenFlavorText}</p>
           </div>
 
-          {!props.user?.hackatime_id ? (
-            <p className="rounded-md border border-black bg-red-400 p-2 text-lg">
+          {!props.user?.hackatime_id && (
+            <p className="rounded-md border border-black bg-red-700 p-3 text-lg text-white">
               Your Hackatime account is not linked, and we cannot track your
               time.{" "}
               <Link className="underline" href="/hackatime/link">
                 Click here to link.
               </Link>
             </p>
-          ) : null}
+          )}
+
+          {props.totalProjectTime === 0 && (
+            <p className="rounded-md border border-black bg-red-700 p-3 text-lg text-white">
+              Head over to the{" "}
+              <a className="underline" href="/projects">
+                projects page
+              </a>{" "}
+              to create your first project!
+            </p>
+          )}
 
           <LoggedHours totalProjectTime={props.totalProjectTime} />
         </div>
