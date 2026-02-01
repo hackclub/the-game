@@ -42,12 +42,12 @@ export default function Project({ project }: { project: Project }) {
         >
           Edit
         </Link>
-        <button
+        {/* <button
           className="grow cursor-pointer bg-green-400 py-2 text-center"
           onClick={shipProject}
         >
           Ship
-        </button>
+        </button> */}
         <button
           className="grow cursor-pointer bg-red-400 py-2 text-center"
           onClick={deleteProject}

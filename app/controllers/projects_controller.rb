@@ -1,6 +1,6 @@
 class ProjectsController < ApplicationController
   skip_after_action :verify_authorized, only: [ :index, :new, :create ]
-  before_action :set_project, only: [ :show, :update, :destroy, :ship ]
+  before_action :set_project, only: [ :show, :update, :destroy ]
 
   def index
     projects = current_user.projects.map { |project| project.display_hash }
@@ -65,13 +65,13 @@ class ProjectsController < ApplicationController
     end
   end
 
-  def ship
-    authorize @project
+  # def ship
+  #   authorize @project
 
-    @project.mark_submitted!
-    flash[:notice] = "Shipped #{@project.title}!"
-    redirect_to project_path(@project)
-  end
+  #   @project.mark_submitted!
+  #   flash[:notice] = "Shipped #{@project.title}!"
+  #   redirect_to project_path(@project)
+  # end
 
   private
 
