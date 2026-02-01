@@ -126,7 +126,7 @@ class AuthController < ApplicationController
 
   def hackatime_callback
     unless params[:state].present? && params[:state] == session[:hackatime_state]
-      redirect_to settings_path, alert: "Invalid hackatime session. Please try again."
+      redirect_to home_path, alert: "Invalid hackatime session. Please try again."
       return
     end
 
@@ -137,9 +137,9 @@ class AuthController < ApplicationController
 
     current_user.update!(hackatime_id: user_info.body["id"])
 
-    redirect_to settings_path, notice: "Successfully linked Hackatime!"
+    redirect_to home_path, notice: "Successfully linked Hackatime!"
   rescue StandardError => e
-    redirect_to settings_path, alert: "Couldn't link hackatime: #{e.message}"
+    redirect_to home_path, alert: "Couldn't link hackatime: #{e.message}"
   end
 
   private
