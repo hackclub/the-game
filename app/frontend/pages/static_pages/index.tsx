@@ -92,7 +92,7 @@ export default function RsvpPage() {
               </div>
               <div className="space-y-1 text-lg leading-tight tracking-[-0.04em] lg:text-2xl lg:leading-none xl:text-3xl">
                 <p>
-                  Build projects, then compete in an a scavenger hunt adventure
+                  Build projects, then compete in a scavenger hunt adventure
                   game across Manhattan
                 </p>
               </div>
