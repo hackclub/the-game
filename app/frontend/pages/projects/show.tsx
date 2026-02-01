@@ -61,7 +61,7 @@ export default function ShowProject({ project, hackatime_projects }: Props) {
           project={project}
           hackatime_projects={hackatime_projects}
         />
-        <ProjectReviews project={project} />
+        {/* <ProjectReviews project={project} /> */}
       </div>
     </Layout>
   );
