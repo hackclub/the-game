@@ -10,7 +10,7 @@ class ApplicationController < ActionController::Base
   before_action :redirect_banned_users
   before_action :redirect_adults
 
-  after_action :verify_authorized, unless: -> { controller_path.starts_with?("doorkeeper/") || controller_path.starts_with?("audits1984/") }
+  after_action :verify_authorized
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
