@@ -92,8 +92,8 @@ export default function RsvpPage() {
               </div>
               <div className="space-y-1 text-lg leading-tight tracking-[-0.04em] lg:text-2xl lg:leading-none xl:text-3xl">
                 <p>
-                  Build projects, then compete in an IRL adventure game across
-                  Manhattan
+                  Build projects, then compete in an a scavenger hunt adventure
+                  game across Manhattan
                 </p>
               </div>
             </div>
@@ -271,8 +271,16 @@ export default function RsvpPage() {
           question="What is Hack Club's child protection policy?"
           answer={
             <>
-              Hack Club takes the safety and well-being of all participants seriously.
-              You can read our full <a className="underline" target="_blank" href="https://hackclub.com/safeguarding-policy">safeguarding policy </a> to learn about our commitment to child protection.
+              Hack Club takes the safety and well-being of all participants
+              seriously. You can read our full{" "}
+              <a
+                className="underline"
+                target="_blank"
+                href="https://hackclub.com/safeguarding-policy"
+              >
+                safeguarding policy{" "}
+              </a>{" "}
+              to learn about our commitment to child protection.
             </>
           }
         />

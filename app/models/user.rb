@@ -41,6 +41,8 @@ class User < ApplicationRecord
   has_many :hackatime_projects
   has_many :reviews, class_name: "Project::Review"
 
+  encrypts :account_access_token
+
   # Simple referrer: a user may have one referrer (another User)
   belongs_to :referrer, class_name: "User", optional: true
 
