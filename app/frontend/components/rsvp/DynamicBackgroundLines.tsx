@@ -225,7 +225,7 @@ export default function DynamicBackgroundLines({ stepCircleRefs }: Props) {
       className="pointer-events-none absolute top-0 left-0 h-full w-full"
     >
       <svg
-        className="absolute top-0 left-0"
+        className="absolute top-0 left-0 h-full"
         width={width}
         height={height}
         xmlns="http://www.w3.org/2000/svg"
