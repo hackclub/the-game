@@ -183,7 +183,7 @@ export default function RsvpPage() {
             <span className="font-normal">
               {" "}
               Work on any programming project you like for{" "}
-              <span className="font-bold"> 40 hours</span>, and get coins for
+              <span className="font-bold"> 40 hours</span>, and get tickets for
               every project you ship!{" "}
             </span>{" "}
             That's only <span className="font-bold"> 5 hours for 8 weeks!</span>
@@ -218,7 +218,7 @@ export default function RsvpPage() {
       <div className="relative z-10 grid w-full grid-cols-1 gap-12 px-6 pt-8 pb-24 md:grid-cols-2 md:gap-x-16 md:gap-y-20 md:px-40 md:pb-32">
         <QuestionAnswer
           question="How's the event gonna look like?"
-          answer="Hack Club: The Game will begin online, during which you code and build projects to gain coins. Once you have enough coins, you'll qualify to go to Manhattan and play!"
+          answer="Hack Club: The Game will begin online, during which you code and build projects to gain tickets. Once you have enough tickets, you'll qualify to go to Manhattan and play!"
         />
 
         <QuestionAnswer
