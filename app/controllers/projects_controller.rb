@@ -76,7 +76,7 @@ class ProjectsController < ApplicationController
   private
 
   def project_params
-    params.require(:project).permit(:title, :desc, :demo_link, :reported_hours)
+    params.require(:project).permit(:title, :desc, :demo_link, :repo_link, :reported_hours)
   end
 
   def hackatime_project_keys
