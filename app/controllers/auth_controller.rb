@@ -1,7 +1,7 @@
 class AuthController < ApplicationController
   allow_unauthenticated_access only: %i[ create_email start account_callback validate sent create_or_login_user ]
   skip_before_action :redirect_adults, only: %i[ logout ]
-  skip_after_action :verify_authorized, only: %i[ create_email start account_callback hackatime_callback validate sent create_or_login_user account_link hackatime_link ]
+  skip_after_action :verify_authorized
 
   layout false
 
