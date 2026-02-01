@@ -1,4 +1,4 @@
-import { usePage } from "@inertiajs/react";
+import { usePage, Link } from "@inertiajs/react";
 import Layout from "@/layouts/layout";
 import LoggedHours from "@/components/home/LoggedHours";
 
@@ -30,6 +30,16 @@ export default function Home() {
             </h2>
             <p className="text-center text-lg italic">{chosenFlavorText}</p>
           </div>
+
+          {!props.user?.hackatime_id ? (
+            <p className="rounded-md border border-black bg-red-400 p-2 text-lg">
+              Your Hackatime account is not linked, and we cannot track your
+              time.{" "}
+              <Link className="underline" href="/hackatime/link">
+                Click here to link.
+              </Link>
+            </p>
+          ) : null}
 
           <LoggedHours totalProjectTime={props.totalProjectTime} />
         </div>
