@@ -1,0 +1,28 @@
+class Project
+  class ReviewsController < ApplicationController
+    before_action :set_project
+
+    def create
+      if current_user.user?
+        head :unauthorized
+        return
+      end
+
+      skip_authorization
+
+      @project.reviews.create!(review_params.merge(author: current_user))
+
+      redirect_to project_path(@project)
+    end
+
+    private
+
+    def review_params
+      params.require(:review).permit(:content, :review_type)
+    end
+
+    def set_project
+      @project = Project.find(params[:project_id])
+    end
+  end
+end

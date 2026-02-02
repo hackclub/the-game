@@ -183,7 +183,7 @@ export default function RsvpPage() {
             <span className="font-normal">
               {" "}
               Work on any programming project you like for{" "}
-              <span className="font-bold"> 40 hours</span>, and get coins for
+              <span className="font-bold"> 40 hours</span>, and get tickets for
               every project you ship!{" "}
             </span>{" "}
             That's only <span className="font-bold"> 5 hours for 8 weeks!</span>
@@ -218,7 +218,7 @@ export default function RsvpPage() {
       <div className="relative z-10 grid w-full grid-cols-1 gap-12 px-6 pt-8 pb-24 md:grid-cols-2 md:gap-x-16 md:gap-y-20 md:px-40 md:pb-32">
         <QuestionAnswer
           question="How's the event gonna look like?"
-          answer="Hack Club: The Game will begin online, during which you code and build projects to gain coins. Once you have enough coins, you'll qualify to go to Manhattan and play!"
+          answer="Hack Club: The Game will begin online, during which you code and build projects to gain tickets. Once you have enough tickets, you'll qualify to go to Manhattan and play!"
         />
 
         <QuestionAnswer
@@ -228,7 +228,28 @@ export default function RsvpPage() {
 
         <QuestionAnswer
           question="When is the event?"
-          answer="Hack Club: The Game will take place from April 10th to April 13th. We'll have more details in the coming weeks."
+          answer={
+            <>
+              Hack Club: The Game will take place from April 10th to April 13th.
+              We'll have more details in the coming weeks - join{" "}
+              <a
+                className="text-blue-500 underline"
+                href="https://hackclub.enterprise.slack.com/archives/C0A7HQZFFNX"
+                target="_blank"
+              >
+                #hctg-bulletin
+              </a>{" "}
+              on{" "}
+              <a
+                className="text-blue-500 underline"
+                href="https://hackclub.com/slack"
+                target="_blank"
+              >
+                Slack
+              </a>{" "}
+              to get notified!
+            </>
+          }
         />
 
         <QuestionAnswer
@@ -243,28 +264,63 @@ export default function RsvpPage() {
               Now! We'll have our full platform ready in the coming weeks, but
               you're can start as long as you track your time using{" "}
               <a
-                className="underline"
+                className="text-blue-500 underline"
                 href="https://hackatime.hackclub.com/"
                 target="_blank"
               >
                 Hackatime
               </a>{" "}
-              (coding/art) or a journal (hardware/art). Journals should be on
-              GitHub and include an entry with a photo/video and description for
-              each hour of work. Art can only account for up to 10% of your
-              total time.
+              (coding/art) or{" "}
+              <a
+                className="text-blue-500 underline"
+                href="https://lapse.hackclub.com"
+                target="_blank"
+              >
+                Lapse
+              </a>{" "}
+              (hardware/art). Art can only account for up to 10% of your total
+              time.
             </>
           }
         />
 
         <QuestionAnswer
           question="How will the game work?"
-          answer="It's a mystery for now! We'll be releasing more details about the game as we approach the event."
+          answer={
+            <>
+              Hack Club: The Game is a territory capture game played in
+              Manhattan, inspired by{" "}
+              <a
+                href="https://www.youtube.com/@jetlagthegame"
+                className="text-blue-500 underline"
+                target="_blank"
+              >
+                Jet Lag: The Game
+              </a>
+              . More details will be shared gradually, and some will be kept a
+              surprise :D
+            </>
+          }
         />
 
         <QuestionAnswer
-          question="Will my child be safe?"
-          answer="Yes! We'll have round-the-clock supervison to ensure the safety of all participants, as well as a first-aid plan. Students will not be allowed to freely roam the city outside of game hours, which will end before evening."
+          question="My parents are worried!"
+          answer={
+            <>
+              We'll have round-the-clock supervison to ensure the safety of all
+              participants, as well as a first-aid plan. Students will not be
+              allowed to freely roam the city outside of game hours, which will
+              end before evening. For more information, see our{" "}
+              <a
+                className="text-blue-500 underline"
+                href="https://hack.club/hctg-parents-guide"
+                target="_blank"
+              >
+                parent's guide
+              </a>
+              !
+            </>
+          }
         />
 
         <QuestionAnswer
@@ -274,20 +330,15 @@ export default function RsvpPage() {
               Hack Club takes the safety and well-being of all participants
               seriously. You can read our full{" "}
               <a
-                className="underline"
+                className="text-blue-500 underline"
                 target="_blank"
                 href="https://hackclub.com/safeguarding-policy"
               >
-                safeguarding policy{" "}
+                safeguarding policy
               </a>{" "}
               to learn about our commitment to child protection.
             </>
           }
-        />
-
-        <QuestionAnswer
-          question="My parents are worried!"
-          answer="We'll have an in-depth parents guide available in the coming weeks"
         />
       </div>
 

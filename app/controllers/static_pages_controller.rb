@@ -1,5 +1,6 @@
 class StaticPagesController < ApplicationController
   allow_unauthenticated_access only: %i[index create_rsvp signup index]
+  skip_after_action :verify_authorized, only: %i[index create_rsvp signup index home]
 
   def home
     unless user_logged_in?
@@ -8,8 +9,7 @@ class StaticPagesController < ApplicationController
     end
 
     totalProjectTime = current_user.projects.reduce(0) { |acc, project| acc + project.display_seconds }
-    Rails.logger.info(totalProjectTime)
-    render inertia: { totalProjectTime: totalProjectTime }
+    render inertia: { totalProjectTime: totalProjectTime, projectCount: current_user.projects.count, announcements: Announcement.all.map(&:display_hash) }
   end
 
   def index
@@ -26,7 +26,6 @@ class StaticPagesController < ApplicationController
 
     redirect_to root_path, notice: "RSVP received! We'll be in touch soon."
   end
-
 
   def signup
     email = params[:email]

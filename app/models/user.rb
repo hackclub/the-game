@@ -39,6 +39,7 @@ class User < ApplicationRecord
 
   has_many :projects
   has_many :hackatime_projects
+  has_many :reviews, class_name: "Project::Review"
 
   encrypts :account_access_token
 
@@ -46,7 +47,7 @@ class User < ApplicationRecord
   belongs_to :referrer, class_name: "User", optional: true
 
   enum :ban_type, { hackatime: 0, blueprint: 1, previous: 2, slack: 3, age: 4 }
-  enum :role, { user: "user", admin: "admin" }
+  enum :role, { user: "user", admin: "admin", reviewer: "reviewer" }
 
   after_save_commit :link_hackatime, if: -> { hackatime_id.nil? }
   after_save_commit :fetch_avatar, if: -> { avatar.nil? }
@@ -99,8 +100,12 @@ class User < ApplicationRecord
     end
   end
 
-  def display_hash
-    self.as_json.slice("id", "avatar", "email", "role", "username", "ysws_verified", "account_id", "hackatime_id", "slack_id")
+  def display_hash(private: false)
+    if private
+      self.as_json.slice("id", "avatar", "email", "role", "username", "ysws_verified", "account_id", "hackatime_id", "slack_id")
+    else
+      self.as_json.slice("id", "avatar", "email", "role", "username")
+    end
   end
 
   def unassigned_hackatime_projects
@@ -128,8 +133,6 @@ class User < ApplicationRecord
 
     if response.present?
       update!(hackatime_id: response.body["data"]["user_id"])
-    else
-      Rails.logger.info("Failed to link hackatime")
     end
   end
 

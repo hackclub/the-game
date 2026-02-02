@@ -1,4 +1,4 @@
-import type { User } from "@/interfaces/user";
+import type { PrivateUser } from "@/interfaces/user";
 
 export type Flash = {
   notice?: string;
@@ -7,5 +7,5 @@ export type Flash = {
 
 export type SharedProps = {
   flash: Flash;
-  user: User;
+  user: PrivateUser;
 };

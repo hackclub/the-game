@@ -16,13 +16,9 @@ export default function LoggedHours({
     seconds % 10,
   ];
 
-  console.log(digits);
-
   return (
-    <div className="rounded-lg border bg-white p-6 shadow-sm">
-      <h2 className="mb-4 text-center text-lg font-semibold text-gray-700">
-        Time Logged
-      </h2>
+    <div className="rounded-lg">
+      <h2 className="mb-4 text-center text-lg font-semibold">Time Logged</h2>
       <div className="flex items-center justify-center gap-1">
         <FlipDigit digit={digits[0]} />
         <FlipDigit digit={digits[1]} />
@@ -33,7 +29,7 @@ export default function LoggedHours({
         <FlipDigit digit={digits[4]} />
         <FlipDigit digit={digits[5]} />
       </div>
-      <p className="mt-3 text-center text-sm text-gray-500">
+      <p className="mt-3 text-center text-sm text-gray-300">
         hours : minutes : seconds
       </p>
     </div>

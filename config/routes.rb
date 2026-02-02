@@ -25,17 +25,21 @@ Rails.application.routes.draw do
   get "/home", to: "static_pages#home"
   post "/rsvp", to: "static_pages#create_rsvp"
   post "/signup", to: "static_pages#signup"
-  resources :projects do
+
+  resources :projects, only: [ :index, :new, :create, :show, :update, :destroy ] do
+    resources :reviews, only: [ :create, :destroy ], module: :project
+
     member do
       patch :ship
     end
   end
 
-
-  get "/admin", to: "admin#index"
   get "/explore", to: "explore#index"
 
   resources :settings
+  namespace :admin do
+    resources :announcements, only: [ :index, :create, :edit, :update, :destroy ]
+  end
 
   scope "/auth" do
     get "account_callback", to: "auth#account_callback"
@@ -46,6 +50,11 @@ Rails.application.routes.draw do
     get "account_link", to: "auth#account_link"
     get "sent", to: "auth#sent"
     post "validate", to: "auth#validate"
+  end
+
+  scope "admin", as: "admin" do
+    get "/", to: "admin#index"
+    get "/projects", to: "admin#projects"
   end
 
   get "hackatime/link", to: "auth#hackatime_link"

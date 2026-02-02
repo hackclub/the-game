@@ -1,6 +1,7 @@
 class AuthController < ApplicationController
   allow_unauthenticated_access only: %i[ create_email start account_callback validate sent create_or_login_user ]
   skip_before_action :redirect_adults, only: %i[ logout ]
+  skip_after_action :verify_authorized
 
   layout false
 
@@ -12,13 +13,11 @@ class AuthController < ApplicationController
     user = User.find_or_create_by(email:)
     session[:pending_user_id] = user.id
     account_link = generate_hca_authorize_link(email)
-    Rails.logger.info("Redirecting to account link: #{account_link}")
     inertia_location account_link
   end
 
   def account_link
     account_link = generate_hca_authorize_link
-    Rails.logger.info("Redirecting to account link: #{account_link}")
     inertia_location account_link
   end
 
@@ -79,7 +78,6 @@ class AuthController < ApplicationController
     state = SecureRandom.hex(24)
     session[:auth_state] = state
     account_link = "https://account.hackclub.com/oauth/authorize?client_id=#{ENV["ACCOUNT_CLIENT_ID"]}&redirect_uri=#{account_callback_url}&response_type=code&scope=email name slack_id verification_status&state=#{state}"
-    Rails.logger.info("Redirecting to account link: #{account_link}")
     redirect_to account_link, allow_other_host: true
   end
 
@@ -120,7 +118,6 @@ class AuthController < ApplicationController
 
       session[:user_id] = user.id
     rescue StandardError => e
-      Rails.logger.error(e)
       return redirect_to root_path, alert: "Couldn't log in: #{e.message}"
     end
 
@@ -129,7 +126,7 @@ class AuthController < ApplicationController
 
   def hackatime_callback
     unless params[:state].present? && params[:state] == session[:hackatime_state]
-      redirect_to settings_path, alert: "Invalid hackatime session. Please try again."
+      redirect_to home_path, alert: "Invalid hackatime session. Please try again."
       return
     end
 
@@ -140,10 +137,9 @@ class AuthController < ApplicationController
 
     current_user.update!(hackatime_id: user_info.body["id"])
 
-    redirect_to settings_path, notice: "Successfully linked Hackatime!"
+    redirect_to home_path, notice: "Successfully linked Hackatime!"
   rescue StandardError => e
-    Rails.logger.error(e)
-    redirect_to settings_path, alert: "Couldn't link hackatime: #{e.message}"
+    redirect_to home_path, alert: "Couldn't link hackatime: #{e.message}"
   end
 
   private
