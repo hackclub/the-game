@@ -29,7 +29,7 @@ export default function LoggedHours({
         <FlipDigit digit={digits[4]} />
         <FlipDigit digit={digits[5]} />
       </div>
-      <p className="mt-3 text-center text-sm text-gray-500">
+      <p className="mt-3 text-center text-sm text-gray-300">
         hours : minutes : seconds
       </p>
     </div>
