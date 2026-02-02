@@ -37,6 +37,9 @@ Rails.application.routes.draw do
   get "/explore", to: "explore#index"
 
   resources :settings
+  namespace :admin do
+    resources :announcements, only: [ :index, :create, :edit, :update, :destroy ]
+  end
 
   scope "/auth" do
     get "account_callback", to: "auth#account_callback"

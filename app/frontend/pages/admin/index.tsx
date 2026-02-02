@@ -12,10 +12,10 @@ export default function AdminPage() {
           Blazer
         </a>
         <a
-          href="/admin/annoucements/"
+          href="/admin/announcements/"
           className="block rounded-lg bg-red-300 p-6 shadow-md transition-colors hover:bg-red-200"
         >
-          Annoucements
+          Announcements
         </a>
         <a
           href="https://plausible.io/hctg.hackclub.com"

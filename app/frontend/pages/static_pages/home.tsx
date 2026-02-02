@@ -1,6 +1,7 @@
 import { usePage, Link } from "@inertiajs/react";
 import Layout from "@/layouts/layout";
 import LoggedHours from "@/components/home/LoggedHours";
+import { Announcement } from "@/interfaces/announcement";
 
 const flavorTexts = [
   "Choo Choo Chew!",
@@ -21,11 +22,18 @@ export default function Home() {
   const { props } = usePage<{
     totalProjectTime: number;
     projectCount: number;
+    announcements: Announcement[];
   }>();
 
   return (
     <Layout className="relative bg-[url(/nyc.png)] bg-cover">
-      <div className="flex h-full items-center justify-center">
+      <div className="flex h-full flex-col items-center justify-center gap-5">
+        {props.announcements.map((announcement) => (
+          <div className="w-2/3 rounded-md border-4 border-yellow-500 bg-gray-700 p-4 text-center text-lg text-white md:w-1/3">
+            <p className="font-bold">{announcement.title}</p>
+            <p>{announcement.content}</p>
+          </div>
+        ))}
         <div className="flex flex-col items-center gap-5 rounded-md border border-black bg-gray-800 py-10 text-white md:px-10">
           <div>
             <h2 className="mb-2 text-center text-4xl font-bold">

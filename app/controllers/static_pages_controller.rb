@@ -9,7 +9,7 @@ class StaticPagesController < ApplicationController
     end
 
     totalProjectTime = current_user.projects.reduce(0) { |acc, project| acc + project.display_seconds }
-    render inertia: { totalProjectTime: totalProjectTime, projectCount: current_user.projects.count }
+    render inertia: { totalProjectTime: totalProjectTime, projectCount: current_user.projects.count, announcements: Announcement.all.map(&:display_hash) }
   end
 
   def index
@@ -26,7 +26,6 @@ class StaticPagesController < ApplicationController
 
     redirect_to root_path, notice: "RSVP received! We'll be in touch soon."
   end
-
 
   def signup
     email = params[:email]
