@@ -55,6 +55,7 @@ Rails.application.routes.draw do
   scope "admin", as: "admin" do
     get "/", to: "admin#index"
     get "/projects", to: "admin#projects"
+    get "/users", to: "admin#users"
   end
 
   get "hackatime/link", to: "auth#hackatime_link"
