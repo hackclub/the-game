@@ -18,7 +18,10 @@ const chosenFlavorText =
   flavorTexts[Math.floor(Math.random() * flavorTexts.length)];
 
 export default function Home() {
-  const { props } = usePage<{ totalProjectTime: number }>();
+  const { props } = usePage<{
+    totalProjectTime: number;
+    projectCount: number;
+  }>();
 
   return (
     <Layout className="relative bg-[url(/nyc.png)] bg-cover">
@@ -41,7 +44,7 @@ export default function Home() {
             </p>
           )}
 
-          {props.totalProjectTime === 0 && (
+          {props.projectCount === 0 && (
             <p className="rounded-md border border-black bg-red-700 p-3 text-lg text-white">
               Head over to the{" "}
               <a className="underline" href="/projects">

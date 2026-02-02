@@ -9,7 +9,7 @@ class StaticPagesController < ApplicationController
     end
 
     totalProjectTime = current_user.projects.reduce(0) { |acc, project| acc + project.display_seconds }
-    render inertia: { totalProjectTime: totalProjectTime }
+    render inertia: { totalProjectTime: totalProjectTime, projectCount: current_user.projects.count }
   end
 
   def index
