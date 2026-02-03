@@ -11,7 +11,7 @@ class AdminController < ApplicationController
   end
 
   def projects
-    render inertia: "admin/projects", props: { projects: Project.all.map(&:display_hash) }
+    render inertia: "admin/projects", props: { projects: Project.all.map { |project| project.display_hash(user: true) } }
   end
 
   def users

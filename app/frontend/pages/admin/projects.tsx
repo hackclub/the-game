@@ -1,5 +1,6 @@
 import Layout from "@/layouts/layout";
 import { Project } from "@/interfaces/project";
+import { PublicUser } from "@/interfaces/user";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import { useState } from "react";
@@ -7,7 +8,7 @@ import { useState } from "react";
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 interface Props {
-  projects: Project[];
+  projects: (Project & { user: PublicUser })[];
 }
 
 export default function Projects({ projects }: Props) {
@@ -27,10 +28,16 @@ export default function Projects({ projects }: Props) {
         );
       },
     },
+    { field: "user.id" as const, headerName: "User ID" },
     { field: "title" as const },
     {
       field: "aasm_state" as const,
       headerName: "Status",
+    },
+    {
+      field: "total_seconds" as const,
+      headerName: "Hours",
+      valueFormatter: (field: any) => (field.value / 3600).toPrecision(4),
     },
     {
       field: "created_at" as const,

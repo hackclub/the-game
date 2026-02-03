@@ -69,7 +69,7 @@ class Project < ApplicationRecord
     end
   end
 
-  def display_hash(reviews: false)
+  def display_hash(reviews: false, user: false)
     hash = self.as_json.slice("id", "aasm_state", "approved_at", "demo_link", "desc", "rejected_at", "repo_link", "submitted_at", "title", "ysws", "created_at", "updated_at", "user_id")
     hash["total_seconds"] = display_seconds
     hash["hackatime_projects"] = hackatime_projects.pluck(:id)
@@ -77,6 +77,10 @@ class Project < ApplicationRecord
 
     if reviews
       hash["reviews"] = self.reviews.map { |review| review.display_hash(author: true) }
+    end
+
+    if user
+      hash["user"] = self.user.display_hash
     end
 
     hash
