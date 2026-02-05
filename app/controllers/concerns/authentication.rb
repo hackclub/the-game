@@ -13,6 +13,7 @@ module Authentication
   class_methods do
     def allow_unauthenticated_access(only: nil)
       skip_before_action :authenticate_user!, only: only
+      before_action :set_referral_code, only: only
     end
   end
 
@@ -22,6 +23,10 @@ module Authentication
     unless current_user
       redirect_to main_app.root_path, alert: "You need to be logged in to see this!"
     end
+  end
+
+  def set_referral_code
+    session[:referral_code] = params[:ref] if params[:ref].present?
   end
 
   def ensure_allowed_user!

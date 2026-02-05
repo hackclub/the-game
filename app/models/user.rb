@@ -12,6 +12,7 @@
 #  internal_notes       :text
 #  is_banned            :boolean          default(FALSE), not null
 #  last_active          :datetime
+#  referral_code        :string
 #  role                 :string           default("user")
 #  username             :string
 #  ysws_verified        :boolean

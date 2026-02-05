@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_02_171022) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_05_223228) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -149,6 +149,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_02_171022) do
     t.text "internal_notes"
     t.boolean "is_banned", default: false, null: false
     t.datetime "last_active"
+    t.string "referral_code"
     t.bigint "referrer_id"
     t.string "role", default: "user"
     t.string "slack_id"
