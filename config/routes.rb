@@ -46,8 +46,6 @@ Rails.application.routes.draw do
   scope "/auth" do
     get "hca/callback", to: "auth#account_callback"
     post "logout", to: "auth#logout"
-    get "account_link", to: "auth#account_link"
-    get "sent", to: "auth#sent"
   end
 
   scope "admin", as: "admin" do

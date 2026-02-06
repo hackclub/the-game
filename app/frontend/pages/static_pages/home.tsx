@@ -2,6 +2,7 @@ import { usePage, Link } from "@inertiajs/react";
 import Layout from "@/layouts/layout";
 import LoggedHours from "@/components/home/LoggedHours";
 import { Announcement } from "@/interfaces/announcement";
+import MissingAccountFields from "@/components/settings/missingAccountFields";
 
 const flavorTexts = [
   "Choo Choo Chew!",
@@ -51,6 +52,8 @@ export default function Home() {
               </Link>
             </p>
           )}
+
+          <MissingAccountFields />
 
           {props.projectCount === 0 && (
             <p className="rounded-md border border-black bg-red-700 p-3 text-lg text-white">

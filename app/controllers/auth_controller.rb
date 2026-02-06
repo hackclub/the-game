@@ -5,18 +5,8 @@ class AuthController < ApplicationController
 
   layout false
 
-  def account_link
-    redirect_to "/auth/hca"
-  end
-
   def hackatime_link
     inertia_location generate_hackatime_authorize_link
-  end
-
-  def sent
-    email = params[:email]
-
-    render inertia: { email: }
   end
 
   def logout
@@ -33,35 +23,35 @@ class AuthController < ApplicationController
       account_id = auth["uid"]
 
       user = User.find_by(account_id:)
+
+      data = {
+        first_name: user_info["given_name"],
+        last_name: user_info["family_name"],
+        address_street: user_info["address"]&.[]("street_address"),
+        address_locality: user_info["address"]&.[]("locality"),
+        address_region: user_info["address"]&.[]("region"),
+        address_postal: user_info["address"]&.[]("postal"),
+        address_country: user_info["address"]&.[]("country"),
+        birthday: user_info["birthdate"],
+        slack_id: user_info["slack_id"],
+        verification_status: user_info["verification_status"],
+        referral_code: current_user.nil? && user.nil? ? session[:referral_code] : nil
+      }
+
       if user.nil?
         if current_user.present? && current_user.email != user_info["email"]
           redirect_to root_path, alert: "Please log in with the same email"
           return
         end
 
-        data = {
-          account_id:,
-          first_name: user_info["given_name"],
-          last_name: user_info["family_name"],
-          address_street: user_info["address"]&.[]("street_address"),
-          address_locality: user_info["address"]&.[]("locality"),
-          address_region: user_info["address"]&.[]("region"),
-          address_postal: user_info["address"]&.[]("postal"),
-          address_country: user_info["address"]&.[]("country"),
-          birthday: user_info["birthdate"],
-          slack_id: user_info["slack_id"],
-          verification_status: user_info["verification_status"],
-          referral_code: current_user.nil? ? session[:referral_code] : nil
-        }
-
         if current_user.present?
-          current_user.update!(data)
           user = current_user
         else
-          data[:email] = user_info["email"]
-          user = User.create!(data)
+          user = User.create!(email: user_info["email"])
         end
       end
+
+      user.update!(data)
 
       session[:user_id] = user.id
       session.delete(:referral_code)
