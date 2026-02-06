@@ -43,6 +43,7 @@ gem "image_processing", "~> 1.2"
 
 group :production do
   gem "sidekiq"
+  gem "sidekiq-cron"
   gem "redis"
 end
 
@@ -97,3 +98,5 @@ gem "pundit", "~> 2.5"
 gem "aasm", "~> 5.5"
 
 gem "acts_as_paranoid", "~> 0.11.0"
+
+gem "airctiverecord"

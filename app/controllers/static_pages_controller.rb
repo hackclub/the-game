@@ -8,7 +8,7 @@ class StaticPagesController < ApplicationController
       return
     end
 
-    totalProjectTime = current_user.projects.reduce(0) { |acc, project| acc + project.display_seconds }
+    totalProjectTime = current_user.total_seconds
     render inertia: { totalProjectTime: totalProjectTime, projectCount: current_user.projects.count, announcements: Announcement.all.map(&:display_hash) }
   end
 

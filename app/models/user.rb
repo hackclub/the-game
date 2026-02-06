@@ -113,6 +113,24 @@ class User < ApplicationRecord
     HackatimeProject.where(id: cached_hackatime_projects.map { |hp| hp["id"] }, project: nil)
   end
 
+  def sync_pyramid_record
+    data = { email:, referral_code:, projects_count: projects.count, idv_status: "a", hours: (total_seconds / 3600.00) }
+
+    if pyramid_record.nil?
+      Pyramid.create(data)
+    else
+      pyramid_record.update(data)
+    end
+  end
+
+  def pyramid_record
+    Pyramid.find_by(email:)
+  end
+
+  def total_seconds
+    projects.reduce(0) { |acc, project| acc + project.display_seconds }
+  end
+
   private
 
   def self.account_client(access_token)

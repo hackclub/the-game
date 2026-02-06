@@ -6,7 +6,7 @@ class AirtableService
   TABLE_ID = "tbldCj1zJQS2U5x9N".freeze
 
   def initialize
-    @api_key = ENV.fetch("AIRTABLE_API_KEY_RSVP")
+    @api_key = ENV.fetch("AIRTABLE_API_KEY")
   end
 
   def create_rsvp(email:, origin_ip:)
