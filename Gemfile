@@ -100,3 +100,5 @@ gem "aasm", "~> 5.5"
 gem "acts_as_paranoid", "~> 0.11.0"
 
 gem "airctiverecord"
+
+gem "aws-sdk-s3", "~> 1.185", require: false
