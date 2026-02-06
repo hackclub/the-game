@@ -54,6 +54,7 @@ class User < ApplicationRecord
   after_save_commit :link_hackatime, if: -> { hackatime_id.nil? }
   after_save_commit :fetch_avatar, if: -> { avatar.nil? }
   after_save_commit :fetch_username, if: -> { username.nil? }
+  after_save_commit :sync_pyramid_record, if: -> { referral_code_previously_changed? }
 
   def self.exchange_authorization_code(code, host:)
     response = Faraday.post("https://account.hackclub.com/oauth/token", { client_id: ENV["ACCOUNT_CLIENT_ID"], client_secret: ENV["ACCOUNT_CLIENT_SECRET"], redirect_uri: Rails.application.routes.url_helpers.account_callback_url(host:), code:, grant_type: "authorization_code" })
