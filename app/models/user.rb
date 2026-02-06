@@ -15,6 +15,7 @@
 #  referral_code        :string
 #  role                 :string           default("user")
 #  username             :string
+#  verification_status  :string
 #  ysws_verified        :boolean
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
