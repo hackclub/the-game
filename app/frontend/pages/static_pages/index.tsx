@@ -93,7 +93,7 @@ export default function RsvpPage() {
               <div className="space-y-1 text-lg leading-tight tracking-[-0.04em] lg:text-2xl lg:leading-none xl:text-3xl">
                 <p>
                   Build projects, then compete in a scavenger hunt adventure
-                  game across Manhattan from <b> May 22nd to May 25th 2026 </b>
+                  game across Manhattan
                 </p>
               </div>
             </div>
@@ -197,7 +197,7 @@ export default function RsvpPage() {
 
           <Step
             stepNumber="3"
-            title="Play together in May"
+            title="Play together in April"
             circleRef={step3CircleRef}
           >
             <span className="font-normal">
