@@ -20,7 +20,7 @@ export default function Item({ item }: { item: Item }) {
         </p>
       ) : (
         <Link
-          className="block w-full bg-green-600 px-3 py-2 text-center text-white"
+          className="block w-full cursor-pointer bg-green-600 px-3 py-2 text-center text-white"
           href={`/shop/${item.id}/buy`}
           method="post"
         >
