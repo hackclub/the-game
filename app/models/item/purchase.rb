@@ -18,7 +18,7 @@ class Item
     belongs_to :user
     belongs_to :item
 
-    validate :check_balance
+    validate :check_balance, on: :create
 
     private
 

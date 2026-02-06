@@ -10,4 +10,7 @@
 #  updated_at  :datetime         not null
 #
 class Item < ApplicationRecord
+  def display_hash
+    self.as_json.slice("id", "description", "name", "price")
+  end
 end

@@ -3,6 +3,7 @@ export interface PrivateUser {
   first_name: string;
   last_name: string;
   github_username: string;
+  balance: number;
 
   address_street: string;
   address_locality: string;

@@ -18,6 +18,12 @@ export default function Sidebar() {
       icon: ProjectsIcon,
       color: "blue-600",
     },
+    {
+      href: "/shop",
+      label: "Shop",
+      icon: ShopIcon,
+      color: "green-600",
+    },
 
     // {
     //   href: "/explore",
@@ -252,7 +258,6 @@ function AdminIcon({ className }: { className?: string }) {
   );
 }
 
-// @ts-expect-error future use
 function ShopIcon({ className }: { className?: string }) {
   return (
     <svg

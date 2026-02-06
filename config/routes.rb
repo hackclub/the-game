@@ -36,6 +36,12 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :shop, controller: :items, only: [ :index, :create, :edit, :update, :destroy ] do
+    member do
+      post "buy"
+    end
+  end
+
   get "/explore", to: "explore#index"
 
   resources :settings

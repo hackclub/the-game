@@ -93,9 +93,12 @@ class User < ApplicationRecord
 
   def display_hash(private: false)
     if private
-      self.as_json.slice("id", "first_name", "last_name", "github_username", "address_street", "address_locality", "address_region", "address_country", "address_postal", "birthday", "avatar", "email", "role", "username", "ysws_verified", "account_id", "hackatime_id", "slack_id")
+      hash = self.as_json.slice("id", "first_name", "last_name", "github_username", "address_street", "address_locality", "address_region", "address_country", "address_postal", "birthday", "avatar", "email", "role", "username", "ysws_verified", "account_id", "hackatime_id", "slack_id")
+      hash["balance"] = self.balance
+
+      hash
     else
-      self.as_json.slice("id", "avatar", "email", "role", "username")
+      self.as_json.slice("id", "avatar", "role", "username")
     end
   end
 
