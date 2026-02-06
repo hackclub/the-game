@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_06_033643) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_06_041241) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -167,16 +167,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_06_033643) do
   create_table "users", force: :cascade do |t|
     t.string "account_access_token"
     t.string "account_id"
+    t.string "address_country"
+    t.string "address_locality"
+    t.string "address_postal"
+    t.string "address_region"
+    t.string "address_street"
     t.string "avatar"
     t.integer "ban_type"
     t.date "birthday"
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.datetime "deleted_at"
     t.string "email", null: false
+    t.string "first_name"
     t.string "hackatime_id"
     t.text "internal_notes"
     t.boolean "is_banned", default: false, null: false
     t.datetime "last_active"
+    t.string "last_name"
     t.string "referral_code"
     t.bigint "referrer_id"
     t.string "role", default: "user"
