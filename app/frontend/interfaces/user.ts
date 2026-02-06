@@ -30,12 +30,12 @@ export interface PublicUser {
 }
 
 export const ACCOUNT_REQUIRED_FIELDS = [
-  "first_name",
-  "last_name",
-  "address_street",
-  "address_locality",
-  "address_region",
-  "address_country",
-  "address_postal",
-  "birthday",
+  // "first_name",
+  // "last_name",
+  // "address_street",
+  // "address_locality",
+  // "address_region",
+  // "address_country",
+  // "address_postal",
+  // "birthday",
 ];
