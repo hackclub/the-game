@@ -8,28 +8,12 @@ import ArrowVector from "../../components/rsvp/ArrowVector";
 
 import HackClubFooter from "../../components/rsvp/HackClubFooter";
 export default function RsvpPage() {
-  const [showSuccess, setShowSuccess] = useState(false);
   const [showScrollArrow, setShowScrollArrow] = useState(true);
-  const [fadeOut, setFadeOut] = useState(false);
   const step1CircleRef = useRef<HTMLDivElement>(null);
   const step2CircleRef = useRef<HTMLDivElement>(null);
   const step3CircleRef = useRef<HTMLDivElement>(null);
 
   const { props, flash } = usePage();
-
-  useEffect(() => {
-    if (showSuccess) {
-      const fadeTimer = setTimeout(() => setFadeOut(true), 3000);
-      const hideTimer = setTimeout(() => {
-        setShowSuccess(false);
-        setFadeOut(false);
-      }, 3500);
-      return () => {
-        clearTimeout(fadeTimer);
-        clearTimeout(hideTimer);
-      };
-    }
-  }, [showSuccess]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -102,7 +86,6 @@ export default function RsvpPage() {
           ) : (
             <form
               action="/auth/hca"
-              onSubmit={() => setShowSuccess(true)}
               className="mt-4 flex h-20 w-full flex-col gap-2 sm:flex-row lg:gap-3"
             >
               <div className="flex h-full border-4 border-black bg-white px-4 sm:flex-1 lg:px-6">
@@ -128,12 +111,6 @@ export default function RsvpPage() {
               </button>
             </form>
           )}
-
-          <p
-            className={`mt-4 w-full text-lg font-bold tracking-[-0.04em] text-black transition-opacity duration-500 lg:text-2xl ${showSuccess && !fadeOut ? "opacity-100" : "opacity-0"}`}
-          >
-            Thanks, we'll e-mail you updates!
-          </p>
         </div>
 
         {showScrollArrow && (
