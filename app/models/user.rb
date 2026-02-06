@@ -115,7 +115,7 @@ class User < ApplicationRecord
   end
 
   def sync_pyramid_record
-    data = { email:, referral_code:, projects_count: projects.count, idv_status: "a", hours: (total_seconds / 3600.00) }
+    data = { email:, referral_code:, projects_count: projects.count, idv_status: verification_status, hours: (total_seconds / 3600.00) }
 
     if pyramid_record.nil?
       Pyramid.create(data)
