@@ -121,8 +121,8 @@ class User < ApplicationRecord
     projects.reduce(0) { |acc, project| acc + project.display_seconds }
   end
 
-  def tickets
-    revenue = projects.approved.reduce(0) { |acc, project| acc + project.total_seconds } / 3600.00
+  def balance
+    revenue = (projects.approved.reduce(0) { |acc, project| acc + project.total_seconds } / 3600.00).floor
     expenses = purchases.includes(:item).reduce(0) { |acc, purchase| acc + purchase.item.price }
 
     revenue - expenses

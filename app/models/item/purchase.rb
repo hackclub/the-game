@@ -17,5 +17,15 @@ class Item
   class Purchase < ApplicationRecord
     belongs_to :user
     belongs_to :item
+
+    validate :check_balance
+
+    private
+
+    def check_balance
+      if user.balance < item.price
+        errors.add(:base, "User ##{user.id} (#{user.balance} tickets) does not have sufficient tickets to purchase #{item.name} (#{item.price} tickets)")
+      end
+    end
   end
 end
