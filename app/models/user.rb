@@ -49,6 +49,8 @@ class User < ApplicationRecord
   has_many :projects
   has_many :hackatime_projects
   has_many :reviews, class_name: "Project::Review"
+  has_many :purchases, class_name: "Item::Purchase"
+  has_many :items, through: :purchases
 
   encrypts :account_access_token
 
@@ -117,6 +119,13 @@ class User < ApplicationRecord
 
   def total_seconds
     projects.reduce(0) { |acc, project| acc + project.display_seconds }
+  end
+
+  def tickets
+    revenue = projects.approved.reduce(0) { |acc, project| acc + project.total_seconds } / 3600.00
+    expenses = purchases.includes(:item).reduce(0) { |acc, purchase| acc + purchase.item.price }
+
+    revenue - expenses
   end
 
   private

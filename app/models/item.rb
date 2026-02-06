@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: shop_items
+# Table name: items
 #
 #  id          :bigint           not null, primary key
 #  description :text             not null
@@ -9,5 +9,5 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #
-class ShopItem < ApplicationRecord
+class Item < ApplicationRecord
 end

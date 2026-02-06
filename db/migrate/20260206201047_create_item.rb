@@ -1,6 +1,6 @@
-class CreateShopItem < ActiveRecord::Migration[8.1]
+class CreateItem < ActiveRecord::Migration[8.1]
   def change
-    create_table :shop_items do |t|
+    create_table :items do |t|
       t.string :name, null: false
       t.integer :price, null: false
       t.text :description, null: false
