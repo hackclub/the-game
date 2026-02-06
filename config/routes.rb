@@ -44,14 +44,10 @@ Rails.application.routes.draw do
   end
 
   scope "/auth" do
-    get "account_callback", to: "auth#account_callback"
-    get "start", to: "auth#start"
+    get "hca/callback", to: "auth#account_callback"
     post "logout", to: "auth#logout"
-    post "create_email", to: "auth#create_email"
-    post "create_or_login_user", to: "auth#create_or_login_user"
     get "account_link", to: "auth#account_link"
     get "sent", to: "auth#sent"
-    post "validate", to: "auth#validate"
   end
 
   scope "admin", as: "admin" do

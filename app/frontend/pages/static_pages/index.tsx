@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useForm, Head, usePage } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 import Step from "../../components/rsvp/Step";
 import QuestionAnswer from "../../components/rsvp/QuestionAnswer";
 import DynamicBackgroundLines from "../../components/rsvp/DynamicBackgroundLines";
@@ -16,11 +16,9 @@ export default function RsvpPage() {
   const step3CircleRef = useRef<HTMLDivElement>(null);
 
   const { props, flash } = usePage();
-  const { data, setData, post, reset } = useForm({ email: "" });
 
   useEffect(() => {
     if (showSuccess) {
-      console.log(data);
       const fadeTimer = setTimeout(() => setFadeOut(true), 3000);
       const hideTimer = setTimeout(() => {
         setShowSuccess(false);
@@ -42,16 +40,6 @@ export default function RsvpPage() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    post("/auth/create_or_login_user", {
-      onSuccess: () => {
-        reset();
-        setShowSuccess(true);
-      },
-    });
-  };
 
   return (
     <div
@@ -113,15 +101,15 @@ export default function RsvpPage() {
             </a>
           ) : (
             <form
-              onSubmit={handleSubmit}
+              action="/auth/hca"
+              onSubmit={() => setShowSuccess(true)}
               className="mt-4 flex h-20 w-full flex-col gap-2 sm:flex-row lg:gap-3"
             >
               <div className="flex h-full border-4 border-black bg-white px-4 sm:flex-1 lg:px-6">
                 <input
                   required
+                  name="email"
                   type="email"
-                  value={data.email}
-                  onChange={(e) => setData("email", e.target.value)}
                   placeholder="your@email.com"
                   className="w-full border-none bg-transparent font-[Arial] text-lg tracking-[-0.04em] text-black placeholder-gray-400 outline-none focus:ring-0 lg:text-3xl"
                 />

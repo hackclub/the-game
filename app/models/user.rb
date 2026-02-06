@@ -4,14 +4,21 @@
 #
 #  id                   :bigint           not null, primary key
 #  account_access_token :string
+#  address_country      :string
+#  address_locality     :string
+#  address_postal       :string
+#  address_region       :string
+#  address_street       :string
 #  avatar               :string
 #  ban_type             :integer
 #  birthday             :date
 #  deleted_at           :datetime
 #  email                :string           not null
+#  first_name           :string
 #  internal_notes       :text
 #  is_banned            :boolean          default(FALSE), not null
 #  last_active          :datetime
+#  last_name            :string
 #  referral_code        :string
 #  role                 :string           default("user")
 #  username             :string
@@ -56,33 +63,12 @@ class User < ApplicationRecord
   after_save_commit :fetch_username, if: -> { username.nil? }
   after_save_commit :sync_pyramid_record, if: -> { referral_code_previously_changed? }
 
-  def self.exchange_authorization_code(code, host:)
-    response = Faraday.post("https://account.hackclub.com/oauth/token", { client_id: ENV["ACCOUNT_CLIENT_ID"], client_secret: ENV["ACCOUNT_CLIENT_SECRET"], redirect_uri: Rails.application.routes.url_helpers.account_callback_url(host:), code:, grant_type: "authorization_code" })
-
-    if response.status == 200
-      result = JSON.parse(response.body)
-      result["access_token"]
-    else
-      nil
-    end
-  end
-
   def self.exchange_hackatime_code(code, host:)
     response = Faraday.post("https://hackatime.hackclub.com/oauth/token", { client_id: ENV["HACKATIME_CLIENT_ID"], client_secret: ENV["HACKATIME_CLIENT_SECRET"], redirect_uri: Rails.application.routes.url_helpers.hackatime_callback_url(host:), code:, grant_type: "authorization_code" })
 
     if response.status == 200
       result = JSON.parse(response.body)
       result["access_token"]
-    else
-      nil
-    end
-  end
-
-  def self.account_user_info(access_token)
-    response = account_client(access_token).get("me")
-
-    if response.success?
-      response.body["identity"]
     else
       nil
     end

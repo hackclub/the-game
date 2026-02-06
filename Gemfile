@@ -100,3 +100,6 @@ gem "aasm", "~> 5.5"
 gem "acts_as_paranoid", "~> 0.11.0"
 
 gem "airctiverecord"
+
+gem "omniauth"
+gem "omniauth_openid_connect"
