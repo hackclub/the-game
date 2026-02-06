@@ -1,5 +1,5 @@
 class AuthController < ApplicationController
-  allow_unauthenticated_access only: %i[ account_callback sent ]
+  allow_unauthenticated_access only: %i[ account_callback ]
   skip_before_action :redirect_adults, only: %i[ logout ]
   skip_after_action :verify_authorized
 
