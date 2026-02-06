@@ -183,7 +183,7 @@ class AuthController < ApplicationController
     OneTimePassword.valid?(otp, email)
   end
 
-  def generate_hca_authorize_link(email)
+  def generate_hca_authorize_link(email = nil)
     state = SecureRandom.hex(24)
     session[:auth_state] = state
     "https://account.hackclub.com/oauth/authorize?client_id=#{ENV["ACCOUNT_CLIENT_ID"]}&redirect_uri=#{account_callback_url}&response_type=code&scope=email name slack_id verification_status&state=#{state}#{"&login_hint=#{email}" if email.present?}"
