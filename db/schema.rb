@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_06_041241) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_06_203738) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -162,6 +162,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_06_041241) do
     t.string "ysws"
     t.index ["deleted_at"], name: "index_projects_on_deleted_at"
     t.index ["user_id"], name: "index_projects_on_user_id"
+  end
+
+  create_table "shop_item_purchases", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "shop_item_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["shop_item_id"], name: "index_shop_item_purchases_on_shop_item_id"
+    t.index ["user_id"], name: "index_shop_item_purchases_on_user_id"
+  end
+
+  create_table "shop_items", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description", null: false
+    t.string "name", null: false
+    t.integer "price", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|
