@@ -30,7 +30,7 @@ class ProjectsController < ApplicationController
   def show
     authorize @project
     project_hash = @project.display_hash(reviews: true)
-    hackatime_projects = available_hackatime_projects + @project.hackatime_projects.map(&:display_hash)
+    hackatime_projects = available_hackatime_projects(user: @project.user) + @project.hackatime_projects.map(&:display_hash)
     render inertia: "projects/show", props: {
       project: project_hash,
       hackatime_projects: hackatime_projects
@@ -49,7 +49,7 @@ class ProjectsController < ApplicationController
     flash[:notice] = "Project updated successfully"
     redirect_to projects_path
   rescue
-    hackatime_projects = available_hackatime_projects + @project.hackatime_projects.map(&:display_hash)
+    hackatime_projects = available_hackatime_projects(@project.user) + @project.hackatime_projects.map(&:display_hash)
     render inertia: "projects/show", props: { project: @project.display_hash, hackatime_projects: hackatime_projects, errors: @project.errors }
   end
 
@@ -84,8 +84,8 @@ class ProjectsController < ApplicationController
     HackatimeProject.where(id: keys, user: current_user).pluck(:id)
   end
 
-  def available_hackatime_projects
-    current_user.unassigned_hackatime_projects.map(&:display_hash)
+  def available_hackatime_projects(user: current_user)
+    user.unassigned_hackatime_projects.map(&:display_hash)
   end
 
   def set_project
