@@ -17,4 +17,8 @@ class AdminController < ApplicationController
   def users
     render inertia: "admin/users", props: { users: User.all.map { |user| user.display_hash(private: true) } }
   end
+
+  def items
+    render inertia: "admin/items", props: { items: Item.all.map(&:display_hash) }
+  end
 end

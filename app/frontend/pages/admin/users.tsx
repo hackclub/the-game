@@ -10,7 +10,7 @@ interface Props {
   users: PrivateUser[];
 }
 
-export default function Projects({ users }: Props) {
+export default function Users({ users }: Props) {
   const [rowData, setRowData] = useState(users);
   const [colDefs, setColDefs] = useState([
     {
