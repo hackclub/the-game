@@ -109,10 +109,10 @@ class AuthController < ApplicationController
         end
 
         if current_or_pending_user.present?
-          current_or_pending_user.update!(account_id: user_info["id"], account_access_token: access_token, slack_id: user_info["slack_id"], referral_code: current_user.nil? ? session[:referral_code] : nil)
+          current_or_pending_user.update!(account_id: user_info["id"], account_access_token: access_token, slack_id: user_info["slack_id"], verification_status: user_info["verification_status"], referral_code: current_user.nil? ? session[:referral_code] : nil)
           user = current_or_pending_user
         else
-          user = User.create!(account_id: user_info["id"], account_access_token: access_token, email: user_info["primary_email"], slack_id: user_info["slack_id"], referral_code: session[:referral_code])
+          user = User.create!(account_id: user_info["id"], account_access_token: access_token, email: user_info["primary_email"], slack_id: user_info["slack_id"], verification_status: user_info["verification_status"], referral_code: session[:referral_code])
         end
       end
 
