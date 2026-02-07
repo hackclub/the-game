@@ -1,4 +1,5 @@
 require "sidekiq/web"
+require "sidekiq/cron/web"
 
 Rails.application.routes.draw do
   # Redirect to localhost from 127.0.0.1 to use same IP address with Vite server
