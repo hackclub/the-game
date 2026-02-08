@@ -25,6 +25,7 @@ class AuthController < ApplicationController
       user = User.find_by(account_id:)
 
       data = {
+        account_id:,
         first_name: user_info["given_name"],
         last_name: user_info["family_name"],
         address_street: user_info["address"]&.[]("street_address"),
@@ -47,7 +48,7 @@ class AuthController < ApplicationController
         if current_user.present?
           user = current_user
         else
-          user = User.create!(email: user_info["email"])
+          user = User.find_or_create_by!(email: user_info["email"])
         end
       end
 
