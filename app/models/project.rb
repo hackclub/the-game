@@ -93,6 +93,7 @@ class Project < ApplicationRecord
     hash["reported_seconds"] = reported_seconds
     hash["hackatime_projects"] = hackatime_projects.pluck(:id)
     hash["status"] = display_status
+    hash["tickets"] = tickets
 
     if screenshot.attached? && screenshot.persisted?
       hash["screenshot"] = Rails.application.routes.url_helpers.rails_blob_path(screenshot, disposition: :inline)
@@ -142,5 +143,9 @@ class Project < ApplicationRecord
     end
 
     missing
+  end
+
+  def tickets
+    ((approved_seconds || 0) / 3600.00).floor
   end
 end

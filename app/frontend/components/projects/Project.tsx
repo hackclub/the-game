@@ -35,7 +35,10 @@ export default function Project({ project }: { project: Project }) {
             </span>
           </h2>
           <span className="text-md text-right font-normal">
-            {formatTime(project.total_seconds)}
+            {formatTime(project.total_seconds)}{" "}
+            {project.tickets !== 0 && (
+              <span className="text-green-700">({project.tickets} 🎫)</span>
+            )}
             {project.aasm_state === "approved" &&
               project.reported_seconds > project.total_seconds && (
                 <span className="text-yellow-700">

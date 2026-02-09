@@ -18,4 +18,5 @@ export interface Project {
   reported_seconds: number;
   user_id: number;
   screenshot: string;
+  tickets: number;
 }
