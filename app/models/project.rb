@@ -76,7 +76,7 @@ class Project < ApplicationRecord
   end
 
   def display_seconds
-    return approved_seconds if approved_seconds.present?
+    return approved_seconds if approved_seconds.present? && approved?
     return total_seconds if total_seconds.present?
     reported_seconds
   end
