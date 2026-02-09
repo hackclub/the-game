@@ -37,6 +37,7 @@ class Project < ApplicationRecord
   belongs_to :user
   has_many :hackatime_projects, dependent: :destroy
   has_many :reviews, class_name: "Project::Review"
+  has_one_attached :screenshot
 
   validates :title, :desc, presence: true
   validates :demo_link, format: { with: URI.regexp(%w[http https]), message: "must be a valid URL" }, if: -> { demo_link.present? }
@@ -74,6 +75,10 @@ class Project < ApplicationRecord
     hash["total_seconds"] = display_seconds
     hash["hackatime_projects"] = hackatime_projects.pluck(:id)
     hash["status"] = display_status
+
+    if screenshot.attached? && screenshot.persisted?
+      hash["screenshot"] = Rails.application.routes.url_helpers.rails_blob_path(screenshot, disposition: :inline)
+    end
 
     if reviews
       hash["reviews"] = self.reviews.map { |review| review.display_hash(author: true) }

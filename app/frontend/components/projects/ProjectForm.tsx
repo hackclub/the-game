@@ -10,21 +10,26 @@ interface Props {
 }
 
 export default function ProjectForm({ hackatime_projects, project }: Props) {
-  const { data, setData, post, patch, processing, errors } = useForm({
+  const { data, setData, post, patch, processing, errors, progress } = useForm({
     title: project?.title ?? "",
     desc: project?.desc ?? "",
     repo_link: project?.repo_link ?? "",
     demo_link: project?.demo_link ?? "",
     hackatime_project_keys: project?.hackatime_projects ?? ([] as number[]),
+    screenshot: (project?.screenshot ? 0 : null) as File | 0 | null,
   });
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
 
     if (project) {
-      patch(`/projects/${project.id}`);
+      patch(`/projects/${project.id}`, {
+        forceFormData: true,
+      });
     } else {
-      post("/projects/");
+      post("/projects/", {
+        forceFormData: true,
+      });
     }
   }
 
@@ -89,6 +94,38 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
             />
             {errors.repo_link && (
               <div className="text-red-500">{errors.repo_link}</div>
+            )}
+          </div>
+          <div className="flex flex-col">
+            <label className="font-bold">Screenshot</label>
+            {data.screenshot === 0 && (
+              <div className="relative h-52 w-fit p-2">
+                <img
+                  src={project?.screenshot}
+                  alt="Uploaded screenshot"
+                  className="block max-h-full w-auto max-w-full object-contain"
+                />
+                <button
+                  type="button"
+                  className="absolute top-5 right-5 h-10 w-10 cursor-pointer rounded-full border-2 border-black bg-red-400"
+                  onClick={() => {
+                    setData("screenshot", null);
+                  }}
+                >
+                  X
+                </button>
+              </div>
+            )}
+            <input
+              type="file"
+              onChange={(e) =>
+                setData("screenshot", e.target.files?.[0] ?? null)
+              }
+            />
+            {progress && (
+              <progress value={progress.percentage} max="100">
+                {progress.percentage}%
+              </progress>
             )}
           </div>
           <div className="flex flex-col">

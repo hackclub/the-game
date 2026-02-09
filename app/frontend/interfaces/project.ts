@@ -16,4 +16,5 @@ export interface Project {
   updated_at: string;
   total_seconds: number;
   user_id: number;
+  screenshot: string;
 }

@@ -49,7 +49,7 @@ class ProjectsController < ApplicationController
     flash[:notice] = "Project updated successfully"
     redirect_to projects_path
   rescue
-    hackatime_projects = available_hackatime_projects(@project.user) + @project.hackatime_projects.map(&:display_hash)
+    hackatime_projects = available_hackatime_projects(user: @project.user) + @project.hackatime_projects.map(&:display_hash)
     render inertia: "projects/show", props: { project: @project.display_hash, hackatime_projects: hackatime_projects, errors: @project.errors }
   end
 
@@ -76,12 +76,22 @@ class ProjectsController < ApplicationController
   private
 
   def project_params
-    params.require(:project).permit(:title, :desc, :demo_link, :repo_link, :reported_hours)
+    p = params.permit(:title, :desc, :demo_link, :repo_link)
+
+    unless params[:screenshot] == "0"
+      p[:screenshot] = params[:screenshot]
+    end
+
+    p
   end
 
   def hackatime_project_keys
-    keys = params[:hackatime_project_keys].map(&:to_i)
-    HackatimeProject.where(id: keys, user: current_user).pluck(:id)
+    if params[:hackatime_project_keys].present?
+      keys = params[:hackatime_project_keys].values.map(&:to_i)
+      HackatimeProject.where(id: keys, user: current_user).pluck(:id)
+    else
+      []
+    end
   end
 
   def available_hackatime_projects(user: current_user)
