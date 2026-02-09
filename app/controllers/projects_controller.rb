@@ -47,7 +47,7 @@ class ProjectsController < ApplicationController
     end
 
     flash[:notice] = "Project updated successfully"
-    redirect_to projects_path
+    redirect_back_or_to project_path(@project)
   rescue
     hackatime_projects = available_hackatime_projects(user: @project.user) + @project.hackatime_projects.map(&:display_hash)
     render inertia: "projects/show", props: { project: @project.display_hash, hackatime_projects: hackatime_projects, errors: @project.errors }
