@@ -14,8 +14,7 @@ Rails.application.config.middleware.use OmniAuth::Builder do
           req.params["email"]
       end
     },
-    # scope: [ :openid, :email, :profile, :address, :birthdate, :slack_id, :verification_status ],
-    scope: [ :openid, :email, :profile, :slack_id, :verification_status ],
+    scope: [ :openid, :email, :profile, :address, :birthdate, :slack_id, :verification_status ],
     response_type: :code,
     issuer: "https://auth.hackclub.com",
     discovery: true,

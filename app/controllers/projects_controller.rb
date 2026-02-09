@@ -1,6 +1,6 @@
 class ProjectsController < ApplicationController
   skip_after_action :verify_authorized, only: [ :index, :new, :create ]
-  before_action :set_project, only: [ :show, :update, :destroy ]
+  before_action :set_project, only: [ :show, :update, :destroy, :ship ]
 
   def index
     projects = current_user.projects.map { |project| project.display_hash }
@@ -47,9 +47,9 @@ class ProjectsController < ApplicationController
     end
 
     flash[:notice] = "Project updated successfully"
-    redirect_to projects_path
+    redirect_back_or_to project_path(@project)
   rescue
-    hackatime_projects = available_hackatime_projects(@project.user) + @project.hackatime_projects.map(&:display_hash)
+    hackatime_projects = available_hackatime_projects(user: @project.user) + @project.hackatime_projects.map(&:display_hash)
     render inertia: "projects/show", props: { project: @project.display_hash, hackatime_projects: hackatime_projects, errors: @project.errors }
   end
 
@@ -65,23 +65,38 @@ class ProjectsController < ApplicationController
     end
   end
 
-  # def ship
-  #   authorize @project
+  def ship
+    authorize @project
 
-  #   @project.mark_submitted!
-  #   flash[:notice] = "Shipped #{@project.title}!"
-  #   redirect_to project_path(@project)
-  # end
+    if @project.missing_fields.any?
+      redirect_to project_path(@project), flash: { alert: "Cannot ship without #{@project.missing_fields.join(", ") }" }
+      return
+    end
+
+    @project.mark_submitted!
+    flash[:notice] = "Shipped #{@project.title}!"
+    redirect_back_or_to projects_path
+  end
 
   private
 
   def project_params
-    params.require(:project).permit(:title, :desc, :demo_link, :repo_link, :reported_hours)
+    p = params.permit(:title, :desc, :demo_link, :repo_link)
+
+    unless params[:screenshot] == "0"
+      p[:screenshot] = params[:screenshot]
+    end
+
+    p
   end
 
   def hackatime_project_keys
-    keys = params[:hackatime_project_keys].map(&:to_i)
-    HackatimeProject.where(id: keys, user: current_user).pluck(:id)
+    if params[:hackatime_project_keys].present?
+      keys = params[:hackatime_project_keys].values.map(&:to_i)
+      HackatimeProject.where(id: keys, user: current_user).pluck(:id)
+    else
+      []
+    end
   end
 
   def available_hackatime_projects(user: current_user)

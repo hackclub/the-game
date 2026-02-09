@@ -18,6 +18,12 @@ export default function Sidebar() {
       icon: ProjectsIcon,
       color: "blue-600",
     },
+    // {
+    //   href: "/shop",
+    //   label: "Shop",
+    //   icon: ShopIcon,
+    //   color: "green-600",
+    // },
 
     // {
     //   href: "/explore",
@@ -121,7 +127,7 @@ export default function Sidebar() {
           {/* User Section */}
           <div className="mt-auto border-t border-gray-800 p-4">
             <div className="flex items-center gap-3">
-              <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-gray-700">
+              <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-gray-700">
                 {props.user.avatar ? (
                   <img
                     src={props.user.avatar}
@@ -138,6 +144,7 @@ export default function Sidebar() {
                 <div className="truncate font-semibold text-white">
                   {props.user?.username || "Guest"}
                 </div>
+                <p className="font-bold text-white">{props.user.balance} 🎫</p>
                 <div className="flex items-center gap-2 text-sm">
                   <Link
                     href="/settings"
@@ -252,7 +259,6 @@ function AdminIcon({ className }: { className?: string }) {
   );
 }
 
-// @ts-expect-error future use
 function ShopIcon({ className }: { className?: string }) {
   return (
     <svg

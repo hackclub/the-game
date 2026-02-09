@@ -35,6 +35,12 @@ export default function AdminPage() {
         >
           Users
         </a>
+        <a
+          href="/admin/items"
+          className="block rounded-lg bg-red-300 p-6 shadow-md transition-colors hover:bg-red-200"
+        >
+          Shop Items
+        </a>
       </div>
     </Layout>
   );

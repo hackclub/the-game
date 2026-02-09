@@ -5,6 +5,8 @@
 @source inline("border-blue-600");
 @source inline("{hover:,}bg-gray-500");
 @source inline("border-gray-500");
+@source inline("{hover:,}bg-green-600");
+@source inline("border-green-600");
 
 @source inline("border-green-900");
 

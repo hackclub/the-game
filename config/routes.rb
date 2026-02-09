@@ -37,6 +37,15 @@ Rails.application.routes.draw do
     end
   end
 
+  # temporarily disable shop
+  constraints AdminConstraint.new do
+    resources :shop, controller: :items, only: [ :index, :create, :edit, :update, :destroy ] do
+      member do
+        post "buy"
+      end
+    end
+  end
+
   get "/explore", to: "explore#index"
 
   resources :settings
@@ -53,6 +62,7 @@ Rails.application.routes.draw do
     get "/", to: "admin#index"
     get "/projects", to: "admin#projects"
     get "/users", to: "admin#users"
+    get "/items", to: "admin#items"
   end
 
   get "hackatime/link", to: "auth#hackatime_link"

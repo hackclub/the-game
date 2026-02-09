@@ -49,6 +49,8 @@ class User < ApplicationRecord
   has_many :projects
   has_many :hackatime_projects
   has_many :reviews, class_name: "Project::Review"
+  has_many :purchases, class_name: "Item::Purchase"
+  has_many :items, through: :purchases
 
   encrypts :account_access_token
 
@@ -91,9 +93,12 @@ class User < ApplicationRecord
 
   def display_hash(private: false)
     if private
-      self.as_json.slice("id", "first_name", "last_name", "github_username", "address_street", "address_locality", "address_region", "address_country", "address_postal", "birthday", "avatar", "email", "role", "username", "ysws_verified", "account_id", "hackatime_id", "slack_id")
+      hash = self.as_json.slice("id", "first_name", "last_name", "github_username", "address_street", "address_locality", "address_region", "address_country", "address_postal", "birthday", "avatar", "email", "role", "username", "ysws_verified", "account_id", "hackatime_id", "slack_id")
+      hash["balance"] = self.balance
+
+      hash
     else
-      self.as_json.slice("id", "avatar", "email", "role", "username")
+      self.as_json.slice("id", "avatar", "role", "username")
     end
   end
 
@@ -117,6 +122,13 @@ class User < ApplicationRecord
 
   def total_seconds
     projects.reduce(0) { |acc, project| acc + project.display_seconds }
+  end
+
+  def balance
+    revenue = (projects.reduce(0) { |acc, project| acc + project.tickets })
+    expenses = purchases.includes(:item).reduce(0) { |acc, purchase| acc + purchase.item.price }
+
+    revenue - expenses
   end
 
   private
