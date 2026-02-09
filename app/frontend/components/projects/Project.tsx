@@ -34,7 +34,7 @@ export default function Project({ project }: { project: Project }) {
               {project.status}
             </span>
           </h2>
-          <span className="text-md text-right font-normal">
+          <span className="text-right text-base font-normal">
             {formatTime(project.total_seconds)}{" "}
             {project.tickets !== 0 && (
               <span className="text-green-700">({project.tickets} 🎫)</span>

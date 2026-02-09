@@ -1,6 +1,7 @@
 import { router } from "@inertiajs/react";
 import ProjectForm from "@/components/projects/ProjectForm";
 import ProjectReviews from "@/components/projects/ProjectReviews";
+import formatTime from "@/utils/formatTime";
 import Layout from "@/layouts/layout";
 import type { Project } from "@/interfaces/project";
 import type { ProjectReview } from "@/interfaces/project_review";
@@ -47,6 +48,20 @@ export default function ShowProject({ project, hackatime_projects }: Props) {
         </div>
       </div>
       <p className="italic">{project.status}</p>
+      <p className="font-normal">
+        Time: {formatTime(project.total_seconds)}{" "}
+        {project.tickets !== 0 && (
+          <span className="text-green-700">({project.tickets} 🎫)</span>
+        )}
+        {project.aasm_state === "approved" &&
+          project.reported_seconds > project.total_seconds && (
+            <span className="text-yellow-700">
+              <br />+{" "}
+              {formatTime(project.reported_seconds - project.total_seconds)} not
+              yet approved
+            </span>
+          )}
+      </p>
       <p>
         <a className="text-blue-500 underline" href={project.demo_link ?? "#"}>
           Demo
