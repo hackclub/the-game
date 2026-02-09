@@ -19,6 +19,12 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
     screenshot: (project?.screenshot ? 0 : null) as File | 0 | null,
   });
 
+  const disabled = !(
+    !project ||
+    project?.aasm_state === "pending" ||
+    project?.aasm_state === "rejected"
+  );
+
   function submit(e: React.FormEvent) {
     e.preventDefault();
 
@@ -52,6 +58,7 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
               type="text"
               value={data.title}
               onChange={(e) => setData("title", e.target.value)}
+              disabled={disabled}
             />
 
             {errors.title && <div className="text-red-500">{errors.title}</div>}
@@ -65,6 +72,7 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
               type="text"
               value={data.desc}
               onChange={(e) => setData("desc", e.target.value)}
+              disabled={disabled}
             />
             {errors.desc && <div className="text-red-500">{errors.desc}</div>}
           </div>
@@ -77,6 +85,7 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
               type="url"
               value={data.demo_link}
               onChange={(e) => setData("demo_link", e.target.value)}
+              disabled={disabled}
             />
             {errors.demo_link && (
               <div className="text-red-500">{errors.demo_link}</div>
@@ -91,6 +100,7 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
               type="url"
               value={data.repo_link}
               onChange={(e) => setData("repo_link", e.target.value)}
+              disabled={disabled}
             />
             {errors.repo_link && (
               <div className="text-red-500">{errors.repo_link}</div>
@@ -105,23 +115,27 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
                   alt="Uploaded screenshot"
                   className="block max-h-full w-auto max-w-full object-contain"
                 />
-                <button
-                  type="button"
-                  className="absolute top-5 right-5 h-10 w-10 cursor-pointer rounded-full border-2 border-black bg-red-400"
-                  onClick={() => {
-                    setData("screenshot", null);
-                  }}
-                >
-                  X
-                </button>
+                {!disabled && (
+                  <button
+                    type="button"
+                    className="absolute top-5 right-5 h-10 w-10 cursor-pointer rounded-full border-2 border-black bg-red-400"
+                    onClick={() => {
+                      setData("screenshot", null);
+                    }}
+                  >
+                    X
+                  </button>
+                )}
               </div>
             )}
-            <input
-              type="file"
-              onChange={(e) =>
-                setData("screenshot", e.target.files?.[0] ?? null)
-              }
-            />
+            {!disabled && (
+              <input
+                type="file"
+                onChange={(e) =>
+                  setData("screenshot", e.target.files?.[0] ?? null)
+                }
+              />
+            )}
             {progress && (
               <progress value={progress.percentage} max="100">
                 {progress.percentage}%
@@ -139,6 +153,7 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
                   [...e.target.selectedOptions].map((o) => Number(o.value)),
                 )
               }
+              disabled={disabled}
             >
               <option
                 disabled
@@ -161,15 +176,17 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
             </select>
           </div>
 
-          <div className="mt-4 flex flex-col gap-2">
-            <button
-              className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
-              type="submit"
-              disabled={processing}
-            >
-              {project ? "Update" : "Create"} Project
-            </button>
-          </div>
+          {!disabled && (
+            <div className="mt-4 flex flex-col gap-2">
+              <button
+                className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+                type="submit"
+                disabled={processing}
+              >
+                {project ? "Update" : "Create"} Project
+              </button>
+            </div>
+          )}
         </form>
       </div>
     </>
