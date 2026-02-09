@@ -27,12 +27,26 @@ export default function Project({ project }: { project: Project }) {
     >
       <div className="p-4 pb-0">
         <div className="flex flex-row justify-between">
-          <h2 className="text-lg font-semibold">{project.title}</h2>
-          <span className="text-md font-normal">
+          <h2 className="text-lg font-semibold">
+            {project.title}
+            <br />
+            <span className="text-base font-normal italic">
+              {project.status}
+            </span>
+          </h2>
+          <span className="text-md text-right font-normal">
             {formatTime(project.total_seconds)}
+            {project.aasm_state === "approved" &&
+              project.reported_seconds > project.total_seconds && (
+                <span className="text-yellow-700">
+                  <br />+{" "}
+                  {formatTime(project.reported_seconds - project.total_seconds)}{" "}
+                  not yet approved
+                </span>
+              )}
           </span>
         </div>
-        <span className="italic">{project.status}</span>
+
         <p className="mt-4 text-gray-600">{project.desc}</p>
       </div>
       <div className="relative mt-6 flex w-full transition-all group-hover:bottom-0 md:-bottom-20">
