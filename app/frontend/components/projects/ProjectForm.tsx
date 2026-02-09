@@ -7,9 +7,14 @@ import { useMemo } from "react";
 interface Props {
   hackatime_projects: HackatimeProject[];
   project?: Project;
+  tutorial?: boolean;
 }
 
-export default function ProjectForm({ hackatime_projects, project }: Props) {
+export default function ProjectForm({
+  hackatime_projects,
+  project,
+  tutorial,
+}: Props) {
   const { data, setData, post, patch, processing, errors, progress } = useForm({
     title: project?.title ?? "",
     desc: project?.desc ?? "",
@@ -72,6 +77,12 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
             />
             {errors.desc && <div className="text-red-500">{errors.desc}</div>}
           </div>
+          {tutorial && (
+            <p>
+              You don't need to fill these out right now, but you'll need them
+              before submitting your project!
+            </p>
+          )}
           <div className="flex flex-col">
             <label className="font-bold" htmlFor="demo_link">
               Demo Link

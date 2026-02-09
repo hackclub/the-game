@@ -22,7 +22,7 @@ export default function NewProject({ hackatime_projects }: Props) {
           project's title and a description, and click create!
         </p>
       </div>
-      <ProjectForm hackatime_projects={hackatime_projects} />
+      <ProjectForm hackatime_projects={hackatime_projects} tutorial={true} />
     </Layout>
   );
 }
