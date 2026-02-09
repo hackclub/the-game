@@ -34,6 +34,8 @@ class Project < ApplicationRecord
   acts_as_paranoid
   has_paper_trail
 
+  REQUIRED_FIELDS = [ :title, :desc, :repo_link, :demo_link ]
+
   belongs_to :user
   has_many :hackatime_projects, dependent: :destroy
   has_many :reviews, class_name: "Project::Review"
@@ -104,5 +106,25 @@ class Project < ApplicationRecord
     else
       "Unknown"
     end
+  end
+
+  def missing_fields
+    missing = []
+
+    REQUIRED_FIELDS.each do |field|
+      unless self[field].present?
+        missing.push(field.to_s.humanize.downcase)
+      end
+    end
+
+    unless screenshot.attached?
+      missing.push("screenshot")
+    end
+
+    unless hackatime_projects.any?
+      missing.push("at least one hackatime project")
+    end
+
+    missing
   end
 end

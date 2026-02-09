@@ -68,6 +68,11 @@ class ProjectsController < ApplicationController
   def ship
     authorize @project
 
+    if @project.missing_fields.any?
+      redirect_to project_path(@project), flash: { alert: "Cannot ship without #{@project.missing_fields.join(", ") }" }
+      return
+    end
+
     @project.mark_submitted!
     flash[:notice] = "Shipped #{@project.title}!"
     redirect_back_or_to projects_path
