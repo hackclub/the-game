@@ -19,11 +19,7 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
     screenshot: (project?.screenshot ? 0 : null) as File | 0 | null,
   });
 
-  const disabled = !(
-    !project ||
-    project?.aasm_state === "pending" ||
-    project?.aasm_state === "rejected"
-  );
+  const disabled = project?.aasm_state === "submitted";
 
   function submit(e: React.FormEvent) {
     e.preventDefault();

@@ -4,7 +4,7 @@ class ProjectPolicy < ApplicationPolicy
   end
 
   def update?
-    user.admin? || (record.user == user && (record.pending? || record.rejected?))
+    user.admin? || (record.user == user && !record.submitted?)
   end
 
   alias_method :destroy?, :show?

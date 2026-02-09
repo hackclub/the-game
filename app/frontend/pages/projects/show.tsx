@@ -36,7 +36,7 @@ export default function ShowProject({ project, hackatime_projects }: Props) {
             className="cursor-pointer rounded-md bg-green-500 p-2 font-bold text-white"
             onClick={shipProject}
           >
-            Ship
+            {project.aasm_state === "approved" ? "Re-ship" : "Ship"}
           </button>
           <button
             className="cursor-pointer rounded-md bg-red-500 p-2 font-bold text-white"

@@ -54,14 +54,16 @@ export default function Project({ project }: { project: Project }) {
           href={`/projects/${project.id}`}
           className="grow bg-blue-400 py-2 text-center"
         >
-          Edit
+          {project.aasm_state === "submitted" ? "View" : "Edit"}
         </Link>
-        <button
-          className="grow cursor-pointer bg-green-400 py-2 text-center"
-          onClick={shipProject}
-        >
-          Ship
-        </button>
+        {project.aasm_state !== "submitted" && (
+          <button
+            className="grow cursor-pointer bg-green-400 py-2 text-center"
+            onClick={shipProject}
+          >
+            {project.aasm_state === "approved" ? "Re-ship" : "Ship"}
+          </button>
+        )}
         <button
           className="grow cursor-pointer bg-red-400 py-2 text-center"
           onClick={deleteProject}
