@@ -9,7 +9,8 @@ class ProjectsController < ApplicationController
 
   def new
     render inertia: "projects/new", props: {
-      hackatime_projects: available_hackatime_projects
+      hackatime_projects: available_hackatime_projects,
+      projects_count: current_user.projects.count
     }
   end
 

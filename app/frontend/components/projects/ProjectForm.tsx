@@ -47,7 +47,7 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
           <br></br>
           <div className="flex flex-col">
             <label className="font-bold" htmlFor="title">
-              Title
+              Title <span className="text-red-600">*</span>
             </label>
             <input
               className="rounded-md p-2"
@@ -61,7 +61,7 @@ export default function ProjectForm({ hackatime_projects, project }: Props) {
           </div>
           <div className="flex flex-col">
             <label className="font-bold" htmlFor="desc">
-              Description
+              Description <span className="text-red-600">*</span>
             </label>
             <input
               className="rounded-md p-2"

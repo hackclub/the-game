@@ -76,7 +76,11 @@ class AuthController < ApplicationController
 
     current_user.update!(hackatime_id: user_info.body["id"])
 
-    redirect_to home_path, notice: "Successfully linked Hackatime!"
+    if current_user.projects.any?
+      redirect_to home_path, notice: "Successfully linked Hackatime!"
+    else
+      redirect_to new_project_path
+    end
   rescue StandardError => e
     redirect_to home_path, alert: "Couldn't link hackatime: #{e.message}"
   end

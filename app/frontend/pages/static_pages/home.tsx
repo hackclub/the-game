@@ -35,37 +35,25 @@ export default function Home() {
             <p>{announcement.content}</p>
           </div>
         ))}
-        <div className="flex flex-col items-center gap-5 rounded-md border border-black bg-gray-800 py-10 text-white md:px-10">
-          <div>
-            <h2 className="mb-2 text-center text-4xl font-bold">
-              Welcome to the Platform!
-            </h2>
-            <p className="text-center text-lg italic">{chosenFlavorText}</p>
-          </div>
+        <div className="flex w-full flex-col items-center gap-5 rounded-md border border-black bg-gray-800 py-10 text-white md:max-w-1/2 md:px-10">
+          {!props.user?.hackatime_id ? (
+            <LinkHackatime />
+          ) : props.projectCount === 0 ? (
+            <CreateProject />
+          ) : (
+            <>
+              <div>
+                <h2 className="mb-2 text-center text-4xl font-bold">
+                  Welcome to the Platform!
+                </h2>
+                <p className="text-center text-lg italic">{chosenFlavorText}</p>
+              </div>
 
-          {!props.user?.hackatime_id && (
-            <p className="rounded-md border border-black bg-red-700 p-3 text-lg text-white">
-              Your Hackatime account is not linked, and we cannot track your
-              time.{" "}
-              <Link className="underline" href="/hackatime/link">
-                Click here to link.
-              </Link>
-            </p>
+              <MissingAccountFields />
+
+              <LoggedHours totalProjectTime={props.totalProjectTime} />
+            </>
           )}
-
-          <MissingAccountFields />
-
-          {props.projectCount === 0 && (
-            <p className="rounded-md border border-black bg-red-700 p-3 text-lg text-white">
-              Head over to the{" "}
-              <a className="underline" href="/projects">
-                projects page
-              </a>{" "}
-              to create your first project!
-            </p>
-          )}
-
-          <LoggedHours totalProjectTime={props.totalProjectTime} />
         </div>
       </div>
 
@@ -83,5 +71,51 @@ export default function Home() {
         </a>
       </p>
     </Layout>
+  );
+}
+
+function LinkHackatime() {
+  return (
+    <div className="flex flex-col gap-2 px-5 text-white md:text-lg">
+      <p>
+        <span className="font-bold">Welcome to Hack Club: The Game!</span>
+        <br />
+        Before we get started, you'll need to link your Hackatime account.
+      </p>
+      <p>
+        <span className="italic">What's Hackatime?</span>
+        <br />
+        Hackatime is how we track how long you've been coding! You can use it
+        with any coding editor, and even use{" "}
+        <a href="https://lapse.hackclub.com" className="underline">
+          Lapse
+        </a>{" "}
+        for editors or real-life projects that aren't automatically supported.
+      </p>
+      <Link
+        className="self-center rounded-md bg-blue-600 px-5 py-3"
+        href="/hackatime/link"
+      >
+        Setup Hackatime
+      </Link>
+    </div>
+  );
+}
+
+function CreateProject() {
+  return (
+    <div className="flex flex-col gap-2 px-5 text-white md:text-lg">
+      <p>
+        <span className="font-bold">Welcome to Hack Club: The Game!</span>
+        <br />
+        You're all set up! Get started by creating your first project.
+      </p>
+      <Link
+        className="self-center rounded-md bg-blue-600 px-5 py-3"
+        href="/projects/new"
+      >
+        Create project
+      </Link>
+    </div>
   );
 }
