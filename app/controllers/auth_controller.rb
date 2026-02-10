@@ -6,7 +6,11 @@ class AuthController < ApplicationController
   layout false
 
   def hackatime_link
-    inertia_location generate_hackatime_authorize_link
+    if request.headers["X-Inertia"]
+      inertia_location generate_hackatime_authorize_link
+    else
+      redirect_to generate_hackatime_authorize_link, allow_other_host: true
+    end
   end
 
   def logout
