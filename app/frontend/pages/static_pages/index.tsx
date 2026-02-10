@@ -162,7 +162,7 @@ export default function RsvpPage() {
 
           <Step
             stepNumber="3"
-            title="Play together in April"
+            title="Play together in May"
             circleRef={step3CircleRef}
           >
             <span className="font-normal">
