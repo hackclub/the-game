@@ -4,6 +4,7 @@ class Statistic < AirpplicationRecord
   field :date
 
   field :approved_hours
+  field :project_count
 
   field :user_count
   field :user_account_count
