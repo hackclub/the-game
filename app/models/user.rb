@@ -118,7 +118,7 @@ class User < ApplicationRecord
   end
 
   def sync_airtable_record
-    data = { email:, first_name:, verification_status:, hackatime_linked: hackatime_id.present? }
+    data = { email:, first_name: first_name.presence || username, verification_status:, hackatime_linked: hackatime_id.present? }
 
     if airtable_record.nil?
       Airtable.create(data)
