@@ -63,6 +63,7 @@ Rails.application.routes.draw do
     get "/projects", to: "admin#projects"
     get "/users", to: "admin#users"
     get "/items", to: "admin#items"
+    get "/stats", to: "admin#stats"
   end
 
   get "hackatime/link", to: "auth#hackatime_link"

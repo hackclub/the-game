@@ -21,4 +21,8 @@ class AdminController < ApplicationController
   def items
     render inertia: "admin/items", props: { items: Item.all.map(&:display_hash) }
   end
+
+  def stats
+    render inertia: "admin/stats", props: { stats: Statistic.generate_statistic_data }
+  end
 end
