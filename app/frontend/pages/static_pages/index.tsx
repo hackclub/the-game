@@ -91,7 +91,7 @@ export default function RsvpPage() {
               <div className="flex h-full border-4 border-black bg-white px-4 sm:flex-1 lg:px-6">
                 <input
                   required
-                  name="email"
+                  name="login_hint"
                   type="email"
                   placeholder="your@email.com"
                   className="w-full border-none bg-transparent font-[Arial] text-lg tracking-[-0.04em] text-black placeholder-gray-400 outline-none focus:ring-0 lg:text-3xl"
