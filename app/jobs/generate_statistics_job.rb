@@ -3,6 +3,6 @@ class GenerateStatisticsJob < ApplicationJob
 
   def perform
     data = Statistic.generate_statistic_data
-    Statistic.create!(data)
+    Statistic.create(data)
   end
 end
