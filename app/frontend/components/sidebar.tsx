@@ -124,6 +124,25 @@ export default function Sidebar() {
             </div>
           ))}
 
+          <div className="m-4 rounded-md border-2 border-white p-4">
+            {" "}
+            <p className="text-center text-white">
+              Ask in{" "}
+              <a
+                className="underline"
+                target="_blank"
+                href="https://hackclub.enterprise.slack.com/archives/C0A9XULS1SL"
+              >
+                #hctg-help
+              </a>{" "}
+              or email{" "}
+              <a className="underline" href="mailto:hctg@hackclub.com">
+                hctg@hackclub.com
+              </a>{" "}
+              if you need help!
+            </p>
+          </div>
+
           {/* User Section */}
           <div className="mt-auto border-t border-gray-800 p-4">
             <div className="flex items-center gap-3">
