@@ -32,7 +32,7 @@ interface FieldHeadingProps {
 function FieldHeading({ label, description, required }: FieldHeadingProps) {
   return (
     <div className="flex flex-row items-end gap-3">
-      <label className="text-3xl font-bold tracking-[-0.02em] smoothing-black">
+      <label className="smoothing-black text-3xl font-bold tracking-[-0.02em]">
         {label} {required && <span className="text-red-600">*</span>}
       </label>
       <span className="text-xl text-[#565656]">{description}</span>
@@ -51,11 +51,15 @@ function InputField({
   type = "text",
 }: InputFieldProps) {
   return (
-    <div className="flex flex-col gap-1 w-full">
-      <FieldHeading label={label} description={description} required={required} />
+    <div className="flex w-full flex-col gap-1">
+      <FieldHeading
+        label={label}
+        description={description}
+        required={required}
+      />
 
       <input
-        className="mt-1 h-[48px] bg-[#d9d9d9] px-4 text-xl border-[#cacaca] transition-all"
+        className="mt-1 h-[48px] border-[#cacaca] bg-[#d9d9d9] px-4 text-xl transition-all"
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -88,9 +92,13 @@ function TextareaField({
 }: TextareaFieldProps) {
   return (
     <div className="flex flex-col gap-1">
-      <FieldHeading label={label} description={description} required={required} />
+      <FieldHeading
+        label={label}
+        description={description}
+        required={required}
+      />
       <textarea
-        className="mt-1 h-[117px] resize-none bg-[#d9d9d9] border-[#cacaca] p-4 text-xl outline-none"
+        className="mt-1 h-[117px] resize-none border-[#cacaca] bg-[#d9d9d9] p-4 text-xl outline-none"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
@@ -136,8 +144,8 @@ export default function ProjectForm({
   );
 
   return (
-    <div className="flex flex-col w-full px-16">
-      <form onSubmit={submit} className="flex flex-col gap-6 w-full">
+    <div className="flex w-full flex-col px-16">
+      <form onSubmit={submit} className="flex w-full flex-col gap-6">
         <InputField
           label="Title"
           description="Give your project a name"
@@ -160,7 +168,8 @@ export default function ProjectForm({
 
         {tutorial && (
           <p className="text-lg text-[#565656] italic">
-            You don't need to fill these out right now, but you'll need them before submitting your project!
+            You don't need to fill these out right now, but you'll need them
+            before submitting your project!
           </p>
         )}
 
@@ -209,7 +218,7 @@ export default function ProjectForm({
           )}
           {!disabled && (
             <input
-              className="mt-1 bg-[#d9d9d9] border border-[#cacaca] p-4 font-bold cursor-pointer"
+              className="mt-1 cursor-pointer border border-[#cacaca] bg-[#d9d9d9] p-4 font-bold"
               type="file"
               accept="image/jpeg,image/png,image/gif,image/tiff,image/webp,image/heic"
               onChange={(e) =>
@@ -230,7 +239,7 @@ export default function ProjectForm({
             description="Select Hackatime projects to link"
           />
           <select
-            className="mt-1 bg-[#d9d9d9] border-[#cacaca] p-2 text-xl outline-none"
+            className="mt-1 border-[#cacaca] bg-[#d9d9d9] p-2 text-xl outline-none"
             multiple
             onChange={(e) =>
               setData(
@@ -262,13 +271,17 @@ export default function ProjectForm({
         {!disabled && (
           <button
             className={clsx(
-              "flex h-[59px] w-full cursor-pointer items-center justify-center gap-3 bg-black text-xl font-bold text-white transition-colors group",
-              "hover:bg-white hover:text-black disabled:opacity-50"
+              "group flex h-[59px] w-full cursor-pointer items-center justify-center gap-3 bg-black text-xl font-bold text-white transition-colors",
+              "hover:bg-white hover:text-black disabled:opacity-50",
             )}
             type="submit"
             disabled={processing}
           >
-            <img src={arrowIcon} alt="" className="h-5 w-5 group-hover:invert transition-all" />
+            <img
+              src={arrowIcon}
+              alt=""
+              className="h-5 w-5 transition-all group-hover:invert"
+            />
             {project ? "Update project" : "Create project"}
           </button>
         )}

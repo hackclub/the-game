@@ -17,7 +17,7 @@ export default function QuestionAnswer({
             Q
           </p>
         </div>
-        <p className="text-xl leading-tight font-bold tracking-[-0.04em] text-black lg:text-3xl lg:leading-none smoothing-black">
+        <p className="smoothing-black text-xl leading-tight font-bold tracking-[-0.04em] text-black lg:text-3xl lg:leading-none">
           {question}
         </p>
       </div>

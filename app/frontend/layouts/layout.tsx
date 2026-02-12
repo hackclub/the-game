@@ -18,7 +18,9 @@ export default function Layout({
       >
         <Sidebar />
 
-        <main className="flex-1 px-6 py-10 w-full h-screen overflow-y-scroll -ml-2">{children}</main>
+        <main className="-ml-2 h-screen w-full flex-1 overflow-y-scroll px-6 py-10">
+          {children}
+        </main>
       </div>
     </>
   );

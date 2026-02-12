@@ -14,7 +14,7 @@ export default function SettingsIndex() {
     <Layout>
       <PageHeading title="Settings" />
 
-      <div className="flex flex-col gap-4 text-xl p-8 smoothing-black">
+      <div className="smoothing-black flex flex-col gap-4 p-8 text-xl">
         {props.user.role === "admin" && <p>You are an admin.</p>}
         <p>
           <span className="font-bold">Email: </span>

@@ -7,12 +7,9 @@ export default function ProjectList({ projects }: { projects: Project[] }) {
       {projects.map((project) => (
         <ProjectComponent key={project.id} project={project} />
       ))}
-      <a
-        href="/projects/new"
-        className="group flex flex-col overflow-hidden"
-      >
+      <a href="/projects/new" className="group flex flex-col overflow-hidden">
         <div className="h-8 rounded-tl-2xl rounded-tr-2xl border-2 border-b-0 border-black bg-black" />
-        <div className="flex flex-1 flex-col items-center justify-center rounded-bl-2xl rounded-br-2xl border-2 border-black bg-white p-6 group-hover:bg-gray-200 transition-colors">
+        <div className="flex flex-1 flex-col items-center justify-center rounded-br-2xl rounded-bl-2xl border-2 border-black bg-white p-6 transition-colors group-hover:bg-gray-200">
           <p className="text-6xl font-bold text-[#606060]">+</p>
           <p className="text-xl text-[#606060]">Create new project</p>
         </div>

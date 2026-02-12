@@ -10,7 +10,7 @@ function HeadingSegment({
   text,
   backgroundClass,
   textClass,
-  minWidth = true
+  minWidth = true,
 }: {
   text: string;
   backgroundClass: string;
@@ -22,7 +22,9 @@ function HeadingSegment({
       <div
         className={`relative flex h-full ${minWidth ? "min-w-xl" : ""} items-center px-10 md:px-16 ${backgroundClass}`}
       >
-        <span className={`text-[48px] font-bold tracking-[-0.06em] ${textClass}`}>
+        <span
+          className={`text-[48px] font-bold tracking-[-0.06em] ${textClass}`}
+        >
           {text}
         </span>
       </div>
@@ -51,7 +53,7 @@ export default function PageHeading({
               textClass="text-white smoothing-white"
               minWidth={false}
             />
-            
+
             <HeadingSegment
               text={title}
               backgroundClass="-translate-x-8 z-0 flex-1 bg-[#fecb0d]"
@@ -62,12 +64,12 @@ export default function PageHeading({
           <HeadingSegment
             text={title}
             backgroundClass="bg-[#0f0f0f]"
-            textClass="text-white smoothing-white" 
+            textClass="text-white smoothing-white"
           />
         )}
       </div>
       {subtitle ? (
-        <div className="mt-5 pl-16 text-xl leading-snug text-black/80 smoothing-black">
+        <div className="smoothing-black mt-5 pl-16 text-xl leading-snug text-black/80">
           {subtitle}
         </div>
       ) : null}
