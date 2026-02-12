@@ -2,8 +2,8 @@ export default function HackClubFooter() {
   return (
     <div className="relative z-10 w-full bg-[#1a1a2e] px-6 py-16 lg:px-40 lg:py-24">
       <div className="flex max-w-4xl flex-col gap-6">
-        <h2 className="text-2xl tracking-[-0.04em] text-white lg:text-4xl">
-          <span className="font-normal">A project by </span>
+        <h2 className="text-2xl tracking-[-0.03em] text-white lg:text-4xl font-bold smoothing-white">
+          <span>A project by </span>
           <a
             href="https://hackclub.com"
             target="_blank"
@@ -14,7 +14,7 @@ export default function HackClubFooter() {
           </a>
         </h2>
 
-        <p className="text-lg leading-relaxed tracking-[-0.04em] text-white/90 lg:text-2xl">
+        <p className="text-lg leading-relaxed text-white/90 lg:text-[22px] smoothing-white">
           Hack Club is a 501(c)(3) nonprofit and network of 60k+ technical high
           schoolers. We believe you learn best by building so we're creating
           community and providing grants so you can make awesome projects. In
@@ -48,7 +48,7 @@ export default function HackClubFooter() {
           .
         </p>
 
-        <p className="text-lg leading-relaxed tracking-[-0.04em] text-white/90 lg:text-2xl">
+        <p className="text-lg leading-relaxed tracking-[-0.03em] text-white/90 lg:text-2xl smoothing-white">
           At Hack Club, students aren't just learning, they're shipping.
         </p>
       </div>

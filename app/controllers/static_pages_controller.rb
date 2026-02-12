@@ -22,7 +22,7 @@ class StaticPagesController < ApplicationController
                 request.headers["X-Forwarded-For"]&.split(",")&.first&.strip ||
                 request.remote_ip
 
-    AirtableService.new.create_rsvp(email: email, origin_ip: origin_ip)
+    AirtableService.new.create_rsvp(email: email, origin_ip: origin_ip) if AirtableService.available?
 
     redirect_to root_path, notice: "RSVP received! We'll be in touch soon."
   end

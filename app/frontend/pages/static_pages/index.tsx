@@ -57,12 +57,12 @@ export default function RsvpPage() {
 
             <div className="flex flex-1 flex-col border-t-4 border-black bg-white px-6 py-6 lg:border-t-0 lg:border-l-4 lg:px-10 lg:py-8">
               <div className="mb-4">
-                <p className="text-2xl leading-tight tracking-[-0.05em] whitespace-nowrap sm:text-3xl lg:text-6xl lg:leading-none xl:text-8xl">
+                <p className="text-2xl leading-tight tracking-[-0.05em] whitespace-nowrap sm:text-3xl lg:text-6xl lg:leading-none xl:text-8xl smoothing-black">
                   <span className="font-normal">hack club: </span>
                   <span className="font-bold">the game</span>
                 </p>
               </div>
-              <div className="space-y-1 text-lg leading-tight tracking-[-0.04em] lg:text-2xl lg:leading-none xl:text-3xl">
+              <div className="space-y-1 text-lg leading-tight tracking-[-0.04em] lg:text-2xl lg:leading-none xl:text-3xl smoothing-black">
                 <p>
                   Build projects, then compete in a scavenger hunt adventure
                   game across Manhattan
@@ -79,7 +79,7 @@ export default function RsvpPage() {
               <div className="h-6 w-6 lg:h-7 lg:w-7">
                 <ArrowVector className="block h-full w-full max-w-none" />
               </div>
-              <span className="text-xl font-bold tracking-[-0.09em] lg:text-4xl">
+              <span className="text-xl font-bold tracking-[-0.05em] lg:text-4xl smoothing-black">
                 Enter the Platform
               </span>
             </a>
@@ -175,7 +175,7 @@ export default function RsvpPage() {
       </div>
 
       <div className="relative z-10 flex w-full flex-col gap-12 px-6 pt-12 lg:gap-24 lg:px-48 lg:pt-20">
-        <p className="w-full border-b-4 border-black pb-4 text-4xl font-bold -tracking-widest text-black lg:text-7xl lg:tracking-[-7px]">
+        <p className="w-full border-b-4 border-black smoothing-black pb-4 text-4xl font-bold text-black lg:text-7xl lg:tracking-[-3px]">
           FAQ
         </p>
       </div>
@@ -198,7 +198,7 @@ export default function RsvpPage() {
               Hack Club: The Game will take place from May 22nd to May 25th.
               We'll have more details in the coming weeks - join{" "}
               <a
-                className="text-blue-500 underline"
+                className="text-blue-500 underline font-bold"
                 href="https://hackclub.enterprise.slack.com/archives/C0A7HQZFFNX"
                 target="_blank"
               >
@@ -206,7 +206,7 @@ export default function RsvpPage() {
               </a>{" "}
               on{" "}
               <a
-                className="text-blue-500 underline"
+                className="text-blue-500 underline font-bold"
                 href="https://hackclub.com/slack"
                 target="_blank"
               >
@@ -229,7 +229,7 @@ export default function RsvpPage() {
               Now! We'll have our full platform ready in the coming weeks, but
               you're can start as long as you track your time using{" "}
               <a
-                className="text-blue-500 underline"
+                className="text-blue-500 underline font-bold"
                 href="https://hackatime.hackclub.com/"
                 target="_blank"
               >
@@ -237,7 +237,7 @@ export default function RsvpPage() {
               </a>{" "}
               (coding/art) or{" "}
               <a
-                className="text-blue-500 underline"
+                className="text-blue-500 underline font-bold"
                 href="https://lapse.hackclub.com"
                 target="_blank"
               >
@@ -257,7 +257,7 @@ export default function RsvpPage() {
               Manhattan, inspired by{" "}
               <a
                 href="https://www.youtube.com/@jetlagthegame"
-                className="text-blue-500 underline"
+                className="text-blue-500 underline font-bold"
                 target="_blank"
               >
                 Jet Lag: The Game
@@ -277,7 +277,7 @@ export default function RsvpPage() {
               allowed to freely roam the city outside of game hours, which will
               end before evening. For more information, see our{" "}
               <a
-                className="text-blue-500 underline"
+                className="text-blue-500 underline font-bold"
                 href="https://hack.club/hctg-parents-guide"
                 target="_blank"
               >
@@ -295,7 +295,7 @@ export default function RsvpPage() {
               Hack Club takes the safety and well-being of all participants
               seriously. You can read our full{" "}
               <a
-                className="text-blue-500 underline"
+                className="text-blue-500 underline font-bold"
                 target="_blank"
                 href="https://hackclub.com/safeguarding-policy"
               >

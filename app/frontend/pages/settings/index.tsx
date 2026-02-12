@@ -1,7 +1,8 @@
 import { Link, usePage } from "@inertiajs/react";
 import Layout from "@/layouts/layout";
-import MissingAccountFields from "@/components/settings/missingAccountFields";
+import MissingAccountFields from "@/components/settings/MissingAccountFields";
 import { ACCOUNT_REQUIRED_FIELDS, PrivateUser } from "@/interfaces/user";
+import PageHeading from "@/components/layout/PageHeading";
 
 export default function SettingsIndex() {
   const { props } = usePage();
@@ -11,9 +12,9 @@ export default function SettingsIndex() {
 
   return (
     <Layout>
-      <h1 className="text-2xl font-bold">Settings</h1>
-      <hr />
-      <div className="flex flex-col gap-4 py-3 text-lg">
+      <PageHeading title="Settings" />
+
+      <div className="flex flex-col gap-4 text-xl p-8 smoothing-black">
         {props.user.role === "admin" && <p>You are an admin.</p>}
         <p>
           <span className="font-bold">Email: </span>

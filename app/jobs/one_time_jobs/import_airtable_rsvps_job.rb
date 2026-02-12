@@ -1,8 +1,11 @@
+
 module OneTimeJobs
   class ImportAirtableRsvpsJob < ApplicationJob
     queue_as :default
 
     def perform
+      return unless AirtableService.available?
+
       rsvps = AirtableService.new.get_rsvps
 
       rsvps.each do |rsvp|

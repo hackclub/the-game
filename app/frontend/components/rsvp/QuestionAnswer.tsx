@@ -17,7 +17,7 @@ export default function QuestionAnswer({
             Q
           </p>
         </div>
-        <p className="text-xl leading-tight font-bold tracking-[-0.08em] text-black lg:text-3xl lg:leading-none lg:tracking-[-2.56px]">
+        <p className="text-xl leading-tight font-bold tracking-[-0.04em] text-black lg:text-3xl lg:leading-none smoothing-black">
           {question}
         </p>
       </div>
@@ -27,7 +27,7 @@ export default function QuestionAnswer({
             A
           </p>
         </div>
-        <p className="flex-1 text-lg leading-tight tracking-[-0.04em] text-black lg:text-3xl lg:leading-none lg:tracking-[-1.12px]">
+        <p className="flex-1 text-lg leading-tight tracking-[-0.02em] text-black lg:text-[24px]">
           {answer}
         </p>
       </div>

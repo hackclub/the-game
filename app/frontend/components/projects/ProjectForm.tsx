@@ -3,11 +3,101 @@ import type { HackatimeProject } from "@/interfaces/hackatime_project";
 import type { Project } from "@/interfaces/project";
 import formatTime from "@/utils/formatTime";
 import { useMemo } from "react";
+import arrowIcon from "@/assets/figma/arrow.svg";
+import clsx from "clsx";
 
 interface Props {
   hackatime_projects: HackatimeProject[];
   project?: Project;
   tutorial?: boolean;
+}
+
+interface InputFieldProps {
+  label: string;
+  description: string;
+  value: string;
+  onChange: (value: string) => void;
+  error?: string | string[];
+  disabled?: boolean;
+  required?: boolean;
+  type?: string;
+}
+
+interface FieldHeadingProps {
+  label: string;
+  description: string;
+  required?: boolean;
+}
+
+function FieldHeading({ label, description, required }: FieldHeadingProps) {
+  return (
+    <div className="flex flex-row items-end gap-3">
+      <label className="text-3xl font-bold tracking-[-0.02em] smoothing-black">
+        {label} {required && <span className="text-red-600">*</span>}
+      </label>
+      <span className="text-xl text-[#565656]">{description}</span>
+    </div>
+  );
+}
+
+function InputField({
+  label,
+  description,
+  value,
+  onChange,
+  error,
+  disabled,
+  required,
+  type = "text",
+}: InputFieldProps) {
+  return (
+    <div className="flex flex-col gap-1 w-full">
+      <FieldHeading label={label} description={description} required={required} />
+
+      <input
+        className="mt-1 h-[48px] bg-[#d9d9d9] px-4 text-xl border-[#cacaca] transition-all"
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
+      />
+
+      {error && <div className="text-red-500">{error}</div>}
+    </div>
+  );
+}
+
+interface TextareaFieldProps {
+  label: string;
+  description: string;
+  value: string;
+  onChange: (value: string) => void;
+  error?: string | string[];
+  disabled?: boolean;
+  required?: boolean;
+}
+
+function TextareaField({
+  label,
+  description,
+  value,
+  onChange,
+  error,
+  disabled,
+  required,
+}: TextareaFieldProps) {
+  return (
+    <div className="flex flex-col gap-1">
+      <FieldHeading label={label} description={description} required={required} />
+      <textarea
+        className="mt-1 h-[117px] resize-none bg-[#d9d9d9] border-[#cacaca] p-4 text-xl outline-none"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
+      />
+      {error && <div className="text-red-500">{error}</div>}
+    </div>
+  );
 }
 
 export default function ProjectForm({
@@ -46,156 +136,143 @@ export default function ProjectForm({
   );
 
   return (
-    <>
-      <div className="flex flex-col">
-        <form onSubmit={submit} className="flex max-w-lg flex-col gap-4">
-          <br></br>
-          <div className="flex flex-col">
-            <label className="font-bold" htmlFor="title">
-              Title <span className="text-red-600">*</span>
-            </label>
-            <input
-              className="rounded-md p-2"
-              type="text"
-              value={data.title}
-              onChange={(e) => setData("title", e.target.value)}
-              disabled={disabled}
-            />
+    <div className="flex flex-col w-full px-16">
+      <form onSubmit={submit} className="flex flex-col gap-6 w-full">
+        <InputField
+          label="Title"
+          description="Give your project a name"
+          value={data.title}
+          onChange={(value) => setData("title", value)}
+          error={errors.title}
+          disabled={disabled}
+          required
+        />
 
-            {errors.title && <div className="text-red-500">{errors.title}</div>}
-          </div>
-          <div className="flex flex-col">
-            <label className="font-bold" htmlFor="desc">
-              Description <span className="text-red-600">*</span>
-            </label>
-            <input
-              className="rounded-md p-2"
-              type="text"
-              value={data.desc}
-              onChange={(e) => setData("desc", e.target.value)}
-              disabled={disabled}
-            />
-            {errors.desc && <div className="text-red-500">{errors.desc}</div>}
-          </div>
-          {tutorial && (
-            <p>
-              You don't need to fill these out right now, but you'll need them
-              before submitting your project!
-            </p>
-          )}
-          <div className="flex flex-col">
-            <label className="font-bold" htmlFor="demo_link">
-              Demo Link
-            </label>
-            <input
-              className="rounded-md p-2"
-              type="url"
-              value={data.demo_link}
-              onChange={(e) => setData("demo_link", e.target.value)}
-              disabled={disabled}
-            />
-            {errors.demo_link && (
-              <div className="text-red-500">{errors.demo_link}</div>
-            )}
-          </div>
-          <div className="flex flex-col">
-            <label className="font-bold" htmlFor="repo_link">
-              Repository Link
-            </label>
-            <input
-              className="rounded-md p-2"
-              type="url"
-              value={data.repo_link}
-              onChange={(e) => setData("repo_link", e.target.value)}
-              disabled={disabled}
-            />
-            {errors.repo_link && (
-              <div className="text-red-500">{errors.repo_link}</div>
-            )}
-          </div>
-          <div className="flex flex-col">
-            <label className="font-bold">Screenshot</label>
-            {data.screenshot === 0 && (
-              <div className="relative h-52 w-fit p-2">
-                <img
-                  src={project?.screenshot}
-                  alt="Uploaded screenshot"
-                  className="block max-h-full w-auto max-w-full object-contain"
-                />
-                {!disabled && (
-                  <button
-                    type="button"
-                    className="absolute top-5 right-5 h-10 w-10 cursor-pointer rounded-full border-2 border-black bg-red-400"
-                    onClick={() => {
-                      setData("screenshot", null);
-                    }}
-                  >
-                    X
-                  </button>
-                )}
-              </div>
-            )}
-            {!disabled && (
-              <input
-                type="file"
-                onChange={(e) =>
-                  setData("screenshot", e.target.files?.[0] ?? null)
-                }
+        <TextareaField
+          label="Description"
+          description="Describe what your project does"
+          value={data.desc}
+          onChange={(value) => setData("desc", value)}
+          error={errors.desc}
+          disabled={disabled}
+          required
+        />
+
+        {tutorial && (
+          <p className="text-lg text-[#565656] italic">
+            You don't need to fill these out right now, but you'll need them before submitting your project!
+          </p>
+        )}
+
+        <InputField
+          label="Demo Link"
+          description="A link to your live project demo"
+          value={data.demo_link}
+          onChange={(value) => setData("demo_link", value)}
+          error={errors.demo_link}
+          disabled={disabled}
+          type="url"
+        />
+
+        <InputField
+          label="Repository Link"
+          description="Link to your source code repository"
+          value={data.repo_link}
+          onChange={(value) => setData("repo_link", value)}
+          error={errors.repo_link}
+          disabled={disabled}
+          type="url"
+        />
+
+        <div className="flex flex-col gap-1">
+          <FieldHeading
+            label="Screenshot"
+            description="Upload a screenshot of your project"
+          />
+          {data.screenshot === 0 && (
+            <div className="relative mt-1 h-52 w-fit">
+              <img
+                src={project?.screenshot}
+                alt="Uploaded screenshot"
+                className="block max-h-full w-auto max-w-full object-contain"
               />
-            )}
-            {progress && (
-              <progress value={progress.percentage} max="100">
-                {progress.percentage}%
-              </progress>
-            )}
-          </div>
-          <div className="flex flex-col">
-            <label className="font-bold">Hackatime Projects</label>
-            <select
-              className="rounded-md p-2"
-              multiple
-              onChange={(e) =>
-                setData(
-                  "hackatime_project_keys",
-                  [...e.target.selectedOptions].map((o) => Number(o.value)),
-                )
-              }
-              disabled={disabled}
-            >
-              <option
-                disabled
-                selected={!project?.hackatime_projects?.length}
-                value="-1"
-              >
-                Select a project
-              </option>
-              {sortedHackatimeProjects.map((hp) => {
-                return (
-                  <option
-                    key={hp.id}
-                    value={hp.id}
-                    selected={data.hackatime_project_keys.includes(hp.id)}
-                  >
-                    {hp.name} ({formatTime(hp.total_seconds)})
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-
-          {!disabled && (
-            <div className="mt-4 flex flex-col gap-2">
-              <button
-                className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
-                type="submit"
-                disabled={processing}
-              >
-                {project ? "Update" : "Create"} Project
-              </button>
+              {!disabled && (
+                <button
+                  type="button"
+                  className="absolute top-2 right-2 h-8 w-8 cursor-pointer bg-black text-sm font-bold text-white"
+                  onClick={() => setData("screenshot", null)}
+                >
+                  ✕
+                </button>
+              )}
             </div>
           )}
-        </form>
-      </div>
-    </>
+          {!disabled && (
+            <input
+              className="mt-1 bg-[#d9d9d9] border border-[#cacaca] p-4 font-bold cursor-pointer"
+              type="file"
+              accept="image/jpeg,image/png,image/gif,image/tiff,image/webp,image/heic"
+              onChange={(e) =>
+                setData("screenshot", e.target.files?.[0] ?? null)
+              }
+            />
+          )}
+          {progress && (
+            <progress value={progress.percentage} max="100">
+              {progress.percentage}%
+            </progress>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <FieldHeading
+            label="Hackatime Projects"
+            description="Select Hackatime projects to link"
+          />
+          <select
+            className="mt-1 bg-[#d9d9d9] border-[#cacaca] p-2 text-xl outline-none"
+            multiple
+            onChange={(e) =>
+              setData(
+                "hackatime_project_keys",
+                [...e.target.selectedOptions].map((o) => Number(o.value)),
+              )
+            }
+            disabled={disabled}
+          >
+            <option
+              disabled
+              selected={!project?.hackatime_projects?.length}
+              value="-1"
+            >
+              Select a project
+            </option>
+            {sortedHackatimeProjects.map((hp) => (
+              <option
+                key={hp.id}
+                value={hp.id}
+                selected={data.hackatime_project_keys.includes(hp.id)}
+              >
+                {hp.name} ({formatTime(hp.total_seconds)})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {!disabled && (
+          <button
+            className={clsx(
+              "flex h-[59px] w-full cursor-pointer items-center justify-center gap-3 bg-black text-xl font-bold text-white transition-colors group",
+              "hover:bg-white hover:text-black disabled:opacity-50"
+            )}
+            type="submit"
+            disabled={processing}
+          >
+            <img src={arrowIcon} alt="" className="h-5 w-5 group-hover:invert transition-all" />
+            {project ? "Update project" : "Create project"}
+          </button>
+        )}
+      </form>
+    </div>
   );
 }

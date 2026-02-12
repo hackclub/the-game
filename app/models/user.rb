@@ -118,6 +118,8 @@ class User < ApplicationRecord
   end
 
   def sync_airtable_record
+    return if Airtable.airtable_optional_env? && !Airtable.airtable_enabled?
+
     data = { email:, first_name: first_name.presence || username, verification_status:, hackatime_linked: hackatime_id.present? }
 
     if airtable_record.nil?
@@ -132,6 +134,8 @@ class User < ApplicationRecord
   end
 
   def airtable_record
+    return nil if Airtable.airtable_optional_env? && !Airtable.airtable_enabled?
+
     Airtable.find_by(email:)
   end
 
