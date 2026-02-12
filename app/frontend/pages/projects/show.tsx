@@ -36,7 +36,7 @@ export default function ShowProject({ project, hackatime_projects }: Props) {
         title={project.title ?? "Untitled Project"}
       />
 
-      <div className="mt-6 flex flex-wrap items-center gap-4 px-16">
+      <div className="mt-6 flex flex-wrap items-center gap-4 px-4 md:px-16">
         <div className="flex items-center gap-1.5">
           <img src={clockIcon} alt="Clock" className="h-5 w-5" />
           <span className="text-2xl tracking-[-0.06em]">
@@ -58,7 +58,7 @@ export default function ShowProject({ project, hackatime_projects }: Props) {
           )}
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-3 px-16">
+      <div className="mt-4 flex flex-wrap items-center gap-3 px-4 md:px-16">
         {project.demo_link && (
           <a
             className="text-lg underline"
@@ -84,7 +84,7 @@ export default function ShowProject({ project, hackatime_projects }: Props) {
         )}
       </div>
 
-      <div className="mt-4 flex gap-3 px-16">
+      <div className="mt-4 flex gap-3 px-4 md:px-16">
         {project.aasm_state !== "submitted" && (
           <button
             className="cursor-pointer bg-[#fecb0d] px-6 py-2 text-lg font-bold text-black hover:bg-[#e5b80b]"

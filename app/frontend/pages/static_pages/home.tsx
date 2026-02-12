@@ -16,7 +16,7 @@ export default function Home() {
 
   return (
     <Layout>
-      <div className="flex flex-col gap-16 p-24">
+      <div className="flex flex-col gap-16 px-6 py-8 xl:py-24 xl:px-24">
         <div className="flex flex-col gap-6">
           <div className="flex items-baseline gap-6">
             <img src={iconTransparent} alt="" className="h-16 w-auto invert" />
@@ -76,7 +76,7 @@ export default function Home() {
 
       <Link
         href="/projects/new"
-        className="group fixed right-20 hover:bottom-8 -bottom-2 z-10 rotate-[-10deg] hover:rotate-0 transition-all scale-120 origin-left"
+        className="group fixed right-0 md:right-20 hover:bottom-0 md:hover:bottom-8 -bottom-12 md:-bottom-2 z-10 rotate-[-10deg] hover:rotate-0 transition-all scale-95 md:scale-120 origin-left"
       >
         <div className="relative h-[228px] w-[203px]">
           <img
@@ -131,7 +131,7 @@ function LinkHackatime() {
 
 function CreateProject() {
    return (
-    <div className="flex w-full justify-center bg-[#d9d9d9] p-16 border border-[#c2c2c2] border-dashed">
+    <div className="flex w-full justify-center bg-[#d9d9d9] px-4 py-16 md:px-16 border border-[#c2c2c2] border-dashed">
       <div className="flex flex-col gap-4 text-center max-w-3xl">
         <h1 className="text-4xl font-bold smoothing-black m-0">Next steps</h1>
 

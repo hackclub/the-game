@@ -69,14 +69,14 @@ export default function Sidebar() {
   return (
     <>
       {/* Mobile Toggle */}
-      <div className="fixed top-4 left-4 z-70 lg:hidden">
+      <div className="fixed top-4 right-8 z-70 lg:hidden">
         <button
           type="button"
-          className="inline-flex items-center justify-center gap-x-2 rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm font-medium text-white shadow-lg hover:bg-gray-700"
+          className="inline-flex items-center justify-center cursor-pointer gap-x-2 rounded-sm bg-black px-6 py-6 text-lg font-medium text-white shadow-lg hover:bg-white hover:text-black transition-colors"
           aria-label="Toggle navigation"
-          onClick={() => setIsOpen(true)}
+          onClick={() => setIsOpen(!isOpen)}
         >
-          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
@@ -85,8 +85,8 @@ export default function Sidebar() {
       {/* Sidebar */}
       <div
         className={clsx(
-          "start-0 top-0 bottom-0 z-60 h-screen w-[20vw] transform transition-all duration-300",
-          "lg:end-auto lg:bottom-0 lg:block lg:translate-x-0",
+          "fixed start-0 top-0 bottom-0 z-60 h-screen w-full transform transition-all duration-300",
+          "lg:relative lg:w-96 lg:end-auto lg:bottom-0 lg:block lg:translate-x-0",
           "bg-[#0f0f0f]",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
@@ -123,7 +123,7 @@ export default function Sidebar() {
           ))}
 
           {/* User Info Card */}
-          <div className="relative z-10 mt-auto rounded-2xl bg-[#fecb0d] p-[21px] text-black">
+          <div className="relative z-10 mt-auto rounded-2xl bg-[#fecb0d] p-[21px] text-black mr-16 lg:mr-0">
             <div className="flex items-center gap-3">
               <div className="h-[45px] w-[45px] shrink-0 overflow-hidden rounded-full bg-white">
                 {props.user.avatar ? (
