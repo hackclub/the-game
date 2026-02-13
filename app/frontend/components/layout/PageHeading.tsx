@@ -30,7 +30,7 @@ function HeadingSegment({
       </div>
 
       <div
-        className={`h-full w-8 ${backgroundClass}`}
+        className={`h-full w-8 -translate-x-px ${backgroundClass}`}
         style={{ clipPath: "polygon(100% 50%, 0% 0%, 0% 100%)" }}
       />
     </div>
@@ -56,7 +56,7 @@ export default function PageHeading({
 
             <HeadingSegment
               text={title}
-              backgroundClass="-translate-x-8 z-0 flex-1 bg-[#fecb0d]"
+              backgroundClass="!-translate-x-8 z-0 flex-1 bg-[#fecb0d]"
               textClass="text-black smoothing-black"
             />
           </>
