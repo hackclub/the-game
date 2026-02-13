@@ -1,52 +1,40 @@
 import Layout from "@/layouts/layout";
 
+function AdminNav({ href, title, description }: {
+  href: string,
+  title: string,
+  description: string
+}) {
+  return (
+    <a
+      role="button"
+      href={href}
+      className="flex flex-col rounded-lg bg-[#FECA11] p-6 shadow-md transition-transform hover:scale-105"
+    >
+      <span className="font-bold">{title}</span>
+      <span>{description}</span>
+    </a>
+  )
+}
+
 export default function AdminPage() {
   return (
     <Layout>
-      <h1 className="mb-6 text-3xl font-bold">Admin Dashboard</h1>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <a
-          href="/blazer"
-          className="block rounded-lg bg-red-300 p-6 shadow-md transition-colors hover:bg-red-200"
-        >
-          Blazer
-        </a>
-        <a
-          href="/admin/announcements/"
-          className="block rounded-lg bg-red-300 p-6 shadow-md transition-colors hover:bg-red-200"
-        >
-          Announcements
-        </a>
-        <a
-          href="/admin/stats"
-          className="block rounded-lg bg-red-300 p-6 shadow-md transition-colors hover:bg-red-200"
-        >
-          Stats
-        </a>
-        <a
-          href="https://plausible.io/hctg.hackclub.com"
-          className="block rounded-lg bg-red-300 p-6 shadow-md transition-colors hover:bg-red-200"
-        >
-          Plausible Analytics
-        </a>
-        <a
-          href="/admin/projects"
-          className="block rounded-lg bg-red-300 p-6 shadow-md transition-colors hover:bg-red-200"
-        >
-          Projects
-        </a>
-        <a
-          href="/admin/users"
-          className="block rounded-lg bg-red-300 p-6 shadow-md transition-colors hover:bg-red-200"
-        >
-          Users
-        </a>
-        <a
-          href="/admin/items"
-          className="block rounded-lg bg-red-300 p-6 shadow-md transition-colors hover:bg-red-200"
-        >
-          Shop Items
-        </a>
+      <div className="px-8">
+        <div className="mb-4 flex flex-col gap-1">
+          <h1 className="text-4xl font-bold smoothing-black">Admin Dashboard</h1>
+          <p className="italic text-gray-500">absolute power corrupts absolutely...</p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <AdminNav href="/blazer" title="Blazer" description="Dashboards, charts, SQL" />
+          <AdminNav href="/admin/announcements" title="Announcements" description="Create announcements" />
+          <AdminNav href="/admin/stats" title="Stats" description="User funnel, numbers, and more" />
+          <AdminNav href="https://plausible.io/hctg.hackclub.com" title="Plausible" description="Privacy-friendly analytics" />
+          <AdminNav href="/admin/projects" title="Projects" description="Manage published projects" />
+          <AdminNav href="/admin/users" title="Users" description="View all users" />
+          <AdminNav href="/admin/items" title="Shop Items" description="Create/delete/modify items in the shop" />
+        </div>
       </div>
     </Layout>
   );
