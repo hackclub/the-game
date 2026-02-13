@@ -4,6 +4,8 @@ import ticketIcon from "@/assets/figma/ticket.svg";
 import homeIcon from "@/assets/figma/home.svg";
 import hammerIcon from "@/assets/figma/hammer.svg";
 import compassIcon from "@/assets/figma/compass.svg";
+import adminIcon from "@/assets/figma/admin.svg";
+
 import clsx from "clsx";
 
 interface PageProps {
@@ -131,7 +133,7 @@ export default function Sidebar() {
             <SidebarLink link="/projects" name="Projects" icon={hammerIcon} />
             <SidebarLink link="/explore" name="Gallery" icon={compassIcon} />
             {props.user.role === "admin" && (
-              <SidebarLink link="/admin" name="Admin" icon={hammerIcon} />
+              <SidebarLink link="/admin" name="Admin" icon={adminIcon} />
             )}
           </nav>
 
