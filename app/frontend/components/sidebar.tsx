@@ -141,7 +141,7 @@ export default function Sidebar() {
           {Object.entries(flash ?? {}).map(([key, message]) => (
             <div
               key={key}
-              className={`${key === "alert" ? "border-red-700 bg-red-500" : "bg-[#fecb0d] text-black"} animate-scale-up relative z-10 mt-6 rounded-xl border-2 p-4`}
+              className={`${key === "alert" ? "bg-red-500 text-white" : "bg-[#fecb0d] text-black"} animate-scale-up relative z-10 mt-6 rounded-xl p-4`}
             >
               <h1 className="smoothing-black text-2xl font-bold">
                 {key === "alert" ? "Oops..." : "Nice!"}
