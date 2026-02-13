@@ -37,12 +37,9 @@ Rails.application.routes.draw do
     end
   end
 
-  # temporarily disable shop
-  constraints AdminConstraint.new do
-    resources :shop, controller: :items, only: [ :index, :create, :edit, :update, :destroy ] do
-      member do
-        post "buy"
-      end
+  resources :shop, controller: :items, only: [ :index, :create, :edit, :update, :destroy ] do
+    member do
+      post "buy"
     end
   end
 
