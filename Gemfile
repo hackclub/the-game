@@ -105,3 +105,5 @@ gem "aws-sdk-s3", "~> 1.185", require: false
 
 gem "omniauth"
 gem "omniauth_openid_connect"
+
+gem "kaminari", "~> 1.2"

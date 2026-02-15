@@ -11,7 +11,17 @@ class AdminController < ApplicationController
   end
 
   def projects
-    render inertia: "admin/projects", props: { projects: Project.all.map { |project| project.display_hash(user: true) } }
+    paginated_projects = Project.order(created_at: :desc).page(params[:page]).per(10)
+    render inertia: "admin/projects", props: {
+      projects: paginated_projects.map { |project| project.display_hash(user: true) },
+      pagination: {
+        current_page: paginated_projects.current_page,
+        next_page: paginated_projects.next_page,
+        prev_page: paginated_projects.prev_page,
+        total_pages: paginated_projects.total_pages,
+        total_count: paginated_projects.total_count
+      }
+    }
   end
 
   def users
