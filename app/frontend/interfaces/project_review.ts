@@ -3,4 +3,5 @@ export interface ProjectReview {
   content: string;
   review_type: string;
   author_id: number;
+  admin_only: boolean;
 }

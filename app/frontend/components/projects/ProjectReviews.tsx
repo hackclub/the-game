@@ -11,6 +11,7 @@ export default function ProjectReviews({
   const { data, setData, post, reset, processing } = useForm({
     review_type: "comment",
     content: "",
+    admin_only: false,
   });
   const { props } = usePage();
 
@@ -50,7 +51,8 @@ export default function ProjectReviews({
                           ? "approved"
                           : review.review_type === "rejection"
                             ? "rejected"
-                            : "commented"}
+                            : "commented"}{" "}
+                        {review.admin_only && "to admins"}
                       </span>
                     </p>
                     <p className="max-w-sm wrap-break-word">{review.content}</p>
@@ -65,19 +67,36 @@ export default function ProjectReviews({
               className="mt-5 flex flex-col items-start gap-2"
               onSubmit={submitReview}
             >
-              <select
-                value={data.review_type}
-                onChange={(e) => setData("review_type", e.target.value)}
-              >
-                <option value="comment">Comment</option>
-                <option value="rejection">Rejection</option>
-                <option value="approval">Approval</option>
-              </select>
+              <div className="flex w-md items-center justify-between">
+                <select
+                  value={data.review_type}
+                  onChange={(e) => {
+                    setData("review_type", e.target.value);
+                    if (data.admin_only && e.target.value !== "comment") {
+                      setData("admin_only", false);
+                    }
+                  }}
+                >
+                  <option value="comment">Comment</option>
+                  <option value="rejection">Rejection</option>
+                  <option value="approval">Approval</option>
+                </select>
+                {data.review_type === "comment" && (
+                  <div>
+                    <input
+                      type="checkbox"
+                      checked={data.admin_only}
+                      onChange={(e) => setData("admin_only", e.target.checked)}
+                    />{" "}
+                    <label>Admin only?</label>
+                  </div>
+                )}
+              </div>
               <textarea
                 className="min-w-md rounded-md"
                 value={data.content}
                 onChange={(e) => setData("content", e.target.value)}
-                placeholder="Add your comment here - this will be shown to the author"
+                placeholder={`Add your comment here - this will ${data.admin_only ? "only be visible to admins" : "be shown to the author"}`}
               />
               <button
                 className="rounded-md bg-blue-500 px-4 py-2 font-bold text-white"

@@ -3,6 +3,7 @@
 # Table name: project_reviews
 #
 #  id          :bigint           not null, primary key
+#  admin_only  :boolean          default(FALSE), not null
 #  content     :text
 #  review_type :string
 #  created_at  :datetime         not null
@@ -22,22 +23,34 @@ class Project
 
     enum :review_type, { comment: "comment", rejection: "rejection", approval: "approval" }
 
+    scope :not_admin_only, -> { where(admin_only: false) }
+
+    validate :only_admin_only_comments
+
     after_save_commit do
-      if rejection?
+      if rejection? && !project.rejected?
         project.mark_rejected!
-      elsif approval?
+      elsif approval? && !project.approved?
         project.mark_approved!
       end
     end
 
     def display_hash(author: false)
-      hash = self.as_json.slice("id", "content", "review_type", "author_id")
+      hash = self.as_json.slice("id", "content", "review_type", "author_id", "admin_only")
 
       if author
         hash["author"] = self.author.display_hash
       end
 
       hash
+    end
+
+    private
+
+    def only_admin_only_comments
+      if admin_only && !comment?
+        errors.add(:base, "Only review comments can be admin-only")
+      end
     end
   end
 end

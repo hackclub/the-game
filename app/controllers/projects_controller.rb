@@ -30,7 +30,7 @@ class ProjectsController < ApplicationController
 
   def show
     authorize @project
-    project_hash = @project.display_hash(reviews: true)
+    project_hash = @project.display_hash(reviews: true, admin: current_user.admin?)
     hackatime_projects = available_hackatime_projects(user: @project.user) + @project.hackatime_projects.map(&:display_hash)
     render inertia: "projects/show", props: {
       project: project_hash,
