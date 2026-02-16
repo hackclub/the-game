@@ -33,12 +33,14 @@ export default function ShowProject({ project, hackatime_projects }: Props) {
       <div className="mb-2 flex w-full items-center gap-6">
         <h2 className="text-3xl font-bold">{project.title}</h2>
         <div className="flex gap-4">
-          <button
-            className="cursor-pointer rounded-md bg-green-500 p-2 font-bold text-white"
-            onClick={shipProject}
-          >
-            {project.aasm_state === "approved" ? "Re-ship" : "Ship"}
-          </button>
+          {project.aasm_state !== "submitted" && (
+            <button
+              className="cursor-pointer rounded-md bg-green-500 p-2 font-bold text-white"
+              onClick={shipProject}
+            >
+              {project.aasm_state === "approved" ? "Re-ship" : "Ship"}
+            </button>
+          )}
           <button
             className="cursor-pointer rounded-md bg-red-500 p-2 font-bold text-white"
             onClick={deleteProject}
@@ -76,7 +78,7 @@ export default function ShowProject({ project, hackatime_projects }: Props) {
           project={project}
           hackatime_projects={hackatime_projects}
         />
-        {/* <ProjectReviews project={project} /> */}
+        <ProjectReviews project={project} />
       </div>
     </Layout>
   );

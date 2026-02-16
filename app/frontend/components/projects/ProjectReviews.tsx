@@ -31,7 +31,7 @@ export default function ProjectReviews({
         <>
           <div className="flex flex-col gap-3">
             {project.reviews.length == 0 ? (
-              <p>No reviews on this project yet!</p>
+              <p>We haven't reviewed your project yet - give us some time!</p>
             ) : (
               project.reviews.map((review) => (
                 <div className="flex gap-3" key={review.id}>
