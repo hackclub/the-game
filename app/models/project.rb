@@ -32,6 +32,10 @@
 #
 class Project < ApplicationRecord
   include AASM
+  include PgSearch::Model
+
+  pg_search_scope :search_by_title, against: :title
+
   acts_as_paranoid
   has_paper_trail
 

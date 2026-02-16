@@ -12,7 +12,9 @@
 
 ActiveRecord::Schema[8.1].define(version: 2026_02_16_153617) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "fuzzystrmatch"
   enable_extension "pg_catalog.plpgsql"
+  enable_extension "pg_trgm"
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false

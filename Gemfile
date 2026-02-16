@@ -107,3 +107,5 @@ gem "omniauth"
 gem "omniauth_openid_connect"
 
 gem "kaminari", "~> 1.2"
+
+gem "pg_search", "~> 2.3"
