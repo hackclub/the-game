@@ -2,6 +2,9 @@ class Project
   class Ysws < AirpplicationRecord
     self.table_name = "YSWS Project Submission"
 
+    field :project_id
+    field :review_id
+
     field :first_name, "First Name"
     field :last_name, "Last Name"
     field :email, "Email"
@@ -22,8 +25,8 @@ class Project
     field :playable_url, "Playable URL"
 
     def attach_screenshot(file)
-      data = Base64.encode64(file.read)
-      AirtableService.attach(record_id: self.id, field_name: "Screenshot", type: file.content_type, data:, name: "Screenshot of #{self.name}")
+      data = Base64.encode64(file.download)
+      AirtableService.new.attach(record_id: self.id, field_name: "fldTmg0Sr938GEqjg", type: file.content_type, data:, name: file.filename.sanitized)
     end
   end
 end

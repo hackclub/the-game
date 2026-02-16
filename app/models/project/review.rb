@@ -37,6 +37,10 @@ class Project
       end
     end
 
+    after_create_commit do
+      create_ysws_record if approval?
+    end
+
     def display_hash(author: false, admin: false)
       hash = self.as_json.slice("id", "content", "review_type", "author_id")
 
@@ -49,6 +53,10 @@ class Project
       end
 
       hash
+    end
+
+    def ysws_record
+      Project::Ysws.find_by(review_id: id)
     end
 
     private
@@ -67,6 +75,31 @@ class Project
       if !approval? && approved_seconds.present?
         errors.add(:base, "Only approvals can include approved_seconds")
       end
+    end
+
+    def create_ysws_record
+      ysws_project = Project::Ysws.create(
+        project_id: project.id,
+        review_id: id,
+        first_name: author.first_name,
+        last_name: author.last_name,
+        email: author.email,
+        github_username: project.github_username,
+        address_line1: author.address_street,
+        address_city: author.address_locality,
+        address_state: author.address_region,
+        address_country: author.address_country,
+        address_postal: author.address_postal,
+        birthday: author.birthday,
+        name: project.title,
+        description: project.desc,
+        hours: approved_seconds / 3600.0,
+        review_reason: admin_content,
+        code_url: project.repo_link,
+        playable_url: project.demo_link
+      )
+
+      ysws_project.attach_screenshot(project.screenshot)
     end
   end
 end

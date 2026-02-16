@@ -157,4 +157,11 @@ class Project < ApplicationRecord
   def real_approved_seconds
     reviews.reduce(0) { |acc, review| acc + review.approved_seconds }
   end
+
+  def github_username
+    if repo_link.present?
+      uri = URI.parse(repo_link)
+      uri.path.split("/").second
+    end
+  end
 end
