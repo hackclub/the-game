@@ -52,8 +52,8 @@ class Project
     private
 
     def non_comments_have_justification
-      if !admin_content.present? && !comment?
-        errors.add(:base, "Approvals and rejections must have justification")
+      if (!content.present? || !admin_content.present?) && !comment?
+        errors.add(:base, "Approvals and rejections must have user comments and justification")
       end
     end
   end
