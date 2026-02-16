@@ -155,7 +155,7 @@ class Project < ApplicationRecord
   end
 
   def real_approved_seconds
-    reviews.reduce(0) { |acc, review| acc + review.approved_seconds }
+    reviews.approval.reduce(0) { |acc, review| acc + review.approved_seconds }
   end
 
   def github_username
