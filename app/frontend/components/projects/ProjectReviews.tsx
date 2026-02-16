@@ -83,8 +83,12 @@ export default function ProjectReviews({
                   }}
                 >
                   <option value="comment">Comment</option>
-                  <option value="rejection">Rejection</option>
-                  <option value="approval">Approval</option>
+                  {project.aasm_state === "submitted" && (
+                    <>
+                      <option value="rejection">Rejection</option>
+                      <option value="approval">Approval</option>
+                    </>
+                  )}
                 </select>
                 {data.review_type === "comment" && (
                   <div>
