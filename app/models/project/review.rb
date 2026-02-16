@@ -28,6 +28,7 @@ class Project
 
     validate :non_comments_have_justification
     validate :only_approvals_have_seconds
+    validate :project_is_under_review, on: :create
 
     after_save_commit do
       if rejection? && !project.rejected?
@@ -74,6 +75,12 @@ class Project
 
       if !approval? && approved_seconds.present?
         errors.add(:base, "Only approvals can include approved_seconds")
+      end
+    end
+
+    def project_is_under_review
+      if !comment? && !project.submitted?
+        errors.add(:base, "Project must be under review to approve or reject")
       end
     end
 
