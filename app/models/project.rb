@@ -105,7 +105,7 @@ class Project < ApplicationRecord
 
     if reviews
       if admin
-        hash["reviews"] = self.reviews.map { |review| review.display_hash(author: true) }
+        hash["reviews"] = self.reviews.map { |review| review.display_hash(author: true, admin:) }
       else
         hash["reviews"] = self.reviews.not_admin_only.map { |review| review.display_hash(author: true) }
       end

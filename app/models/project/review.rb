@@ -2,14 +2,14 @@
 #
 # Table name: project_reviews
 #
-#  id          :bigint           not null, primary key
-#  admin_only  :boolean          default(FALSE), not null
-#  content     :text
-#  review_type :string
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  author_id   :bigint           not null
-#  project_id  :bigint           not null
+#  id            :bigint           not null, primary key
+#  admin_content :text
+#  content       :text
+#  review_type   :string
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  author_id     :bigint           not null
+#  project_id    :bigint           not null
 #
 # Indexes
 #
@@ -23,9 +23,9 @@ class Project
 
     enum :review_type, { comment: "comment", rejection: "rejection", approval: "approval" }
 
-    scope :not_admin_only, -> { where(admin_only: false) }
+    scope :not_admin_only, -> { where.not(content: nil).where.not(content: "") }
 
-    validate :only_admin_only_comments
+    validate :non_comments_have_justification
 
     after_save_commit do
       if rejection? && !project.rejected?
@@ -35,11 +35,15 @@ class Project
       end
     end
 
-    def display_hash(author: false)
-      hash = self.as_json.slice("id", "content", "review_type", "author_id", "admin_only")
+    def display_hash(author: false, admin: false)
+      hash = self.as_json.slice("id", "content", "review_type", "author_id")
 
       if author
         hash["author"] = self.author.display_hash
+      end
+
+      if admin
+        hash["admin_content"] = self.admin_content
       end
 
       hash
@@ -47,9 +51,9 @@ class Project
 
     private
 
-    def only_admin_only_comments
-      if admin_only && !comment?
-        errors.add(:base, "Only review comments can be admin-only")
+    def non_comments_have_justification
+      if !admin_content.present? && !comment?
+        errors.add(:base, "Approvals and rejections must have justification")
       end
     end
   end

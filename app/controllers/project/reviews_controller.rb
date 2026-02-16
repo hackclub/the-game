@@ -18,7 +18,7 @@ class Project
     private
 
     def review_params
-      params.require(:review).permit(:content, :review_type, :admin_only)
+      params.require(:review).permit(:content, :review_type, :admin_content)
     end
 
     def set_project

@@ -2,6 +2,7 @@ import type { Project } from "@/interfaces/project";
 import type { ProjectReview } from "@/interfaces/project_review";
 import type { PublicUser } from "@/interfaces/user";
 import { useForm, usePage } from "@inertiajs/react";
+import { useState } from "react";
 
 export default function ProjectReviews({
   project,
@@ -11,8 +12,9 @@ export default function ProjectReviews({
   const { data, setData, post, reset, processing } = useForm({
     review_type: "comment",
     content: "",
-    admin_only: false,
+    admin_content: "",
   });
+  const [adminOnly, setAdminOnly] = useState(false);
   const { props } = usePage();
 
   function submitReview(e: React.FormEvent) {
@@ -52,10 +54,14 @@ export default function ProjectReviews({
                           : review.review_type === "rejection"
                             ? "rejected"
                             : "commented"}{" "}
-                        {review.admin_only && "to admins"}
                       </span>
                     </p>
                     <p className="max-w-sm wrap-break-word">{review.content}</p>
+                    {review.admin_content && (
+                      <p className="rounded-md border-2 border-dashed border-orange-600 bg-orange-200 p-3">
+                        {review.admin_content}
+                      </p>
+                    )}
                   </div>
                 </div>
               ))
@@ -72,9 +78,6 @@ export default function ProjectReviews({
                   value={data.review_type}
                   onChange={(e) => {
                     setData("review_type", e.target.value);
-                    if (data.admin_only && e.target.value !== "comment") {
-                      setData("admin_only", false);
-                    }
                   }}
                 >
                   <option value="comment">Comment</option>
@@ -85,8 +88,17 @@ export default function ProjectReviews({
                   <div>
                     <input
                       type="checkbox"
-                      checked={data.admin_only}
-                      onChange={(e) => setData("admin_only", e.target.checked)}
+                      checked={adminOnly}
+                      onChange={(e) => {
+                        if (adminOnly) {
+                          setData("content", data.admin_content);
+                          setData("admin_content", "");
+                        } else {
+                          setData("admin_content", data.content);
+                          setData("content", "");
+                        }
+                        setAdminOnly(e.target.checked);
+                      }}
                     />{" "}
                     <label>Admin only?</label>
                   </div>
@@ -94,10 +106,30 @@ export default function ProjectReviews({
               </div>
               <textarea
                 className="min-w-md rounded-md"
-                value={data.content}
-                onChange={(e) => setData("content", e.target.value)}
-                placeholder={`Add your comment here - this will ${data.admin_only ? "only be visible to admins" : "be shown to the author"}`}
+                value={
+                  data.review_type === "comment" && adminOnly
+                    ? data.admin_content
+                    : data.content
+                }
+                onChange={(e) => {
+                  if (data.review_type === "comment" && adminOnly) {
+                    setData("admin_content", e.target.value);
+                  } else {
+                    setData("content", e.target.value);
+                  }
+                }}
+                placeholder={`Add your comment here - this will ${adminOnly && data.review_type === "comment" ? "only be visible to admins" : "be shown to the author"}`}
               />
+              {data.review_type !== "comment" && (
+                <textarea
+                  className="min-w-md rounded-md"
+                  value={data.admin_content}
+                  onChange={(e) => {
+                    setData("admin_content", e.target.value);
+                  }}
+                  placeholder="Justify this review - this is only shown to admins"
+                />
+              )}
               <button
                 className="rounded-md bg-blue-500 px-4 py-2 font-bold text-white"
                 disabled={processing}
