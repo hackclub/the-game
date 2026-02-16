@@ -33,14 +33,15 @@ export default function ShowProject({ project, hackatime_projects }: Props) {
       <div className="mb-2 flex w-full items-center gap-6">
         <h2 className="text-3xl font-bold">{project.title}</h2>
         <div className="flex gap-4">
-          {project.aasm_state !== "submitted" && (
-            <button
-              className="cursor-pointer rounded-md bg-green-500 p-2 font-bold text-white"
-              onClick={shipProject}
-            >
-              {project.aasm_state === "approved" ? "Re-ship" : "Ship"}
-            </button>
-          )}
+          {project.aasm_state !== "submitted" &&
+            project.reported_seconds > project.approved_seconds && (
+              <button
+                className="cursor-pointer rounded-md bg-green-500 p-2 font-bold text-white"
+                onClick={shipProject}
+              >
+                {project.approved_seconds > 0 ? "Re-ship" : "Ship"}
+              </button>
+            )}
           <button
             className="cursor-pointer rounded-md bg-red-500 p-2 font-bold text-white"
             onClick={deleteProject}
@@ -50,20 +51,30 @@ export default function ShowProject({ project, hackatime_projects }: Props) {
         </div>
       </div>
       <p className="italic">{project.status}</p>
-      <p className="font-normal">
-        Time: {formatTime(project.total_seconds)}{" "}
-        {project.tickets !== 0 && (
-          <span className="text-green-700">({project.tickets} 🎫)</span>
+      <div className="font-normal">
+        {project.approved_seconds > 0 && (
+          <p className="text-green-700">
+            {formatTime(project.approved_seconds)} approved ({project.tickets}{" "}
+            🎫)
+          </p>
         )}
-        {project.aasm_state === "approved" &&
-          project.reported_seconds > project.total_seconds && (
-            <span className="text-yellow-700">
-              <br />+{" "}
-              {formatTime(project.reported_seconds - project.total_seconds)} not
-              yet approved
-            </span>
+        {project.reported_seconds > project.approved_seconds &&
+          project.aasm_state !== "submitted" && (
+            <p className="text-yellow-700">
+              {project.approved_seconds > 0 && "+"}{" "}
+              {formatTime(project.reported_seconds - project.approved_seconds)}{" "}
+              not yet submitted
+            </p>
           )}
-      </p>
+        {project.total_seconds > project.approved_seconds &&
+          project.aasm_state === "submitted" && (
+            <p className="text-yellow-700">
+              {project.approved_seconds > 0 && "+"}{" "}
+              {formatTime(project.total_seconds - project.approved_seconds)}{" "}
+              under review
+            </p>
+          )}
+      </div>
       <p>
         <a className="text-blue-500 underline" href={project.demo_link ?? "#"}>
           Demo

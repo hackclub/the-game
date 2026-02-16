@@ -34,20 +34,32 @@ export default function Project({ project }: { project: Project }) {
               {project.status}
             </span>
           </h2>
-          <span className="text-right text-base font-normal">
-            {formatTime(project.total_seconds)}{" "}
-            {project.tickets !== 0 && (
-              <span className="text-green-700">({project.tickets} 🎫)</span>
+          <div className="text-right text-base font-normal">
+            {project.approved_seconds > 0 && (
+              <p className="text-green-700">
+                {formatTime(project.approved_seconds)} approved (
+                {project.tickets} 🎫)
+              </p>
             )}
-            {project.aasm_state === "approved" &&
-              project.reported_seconds > project.total_seconds && (
-                <span className="text-yellow-700">
-                  <br />+{" "}
-                  {formatTime(project.reported_seconds - project.total_seconds)}{" "}
-                  not yet approved
-                </span>
+            {project.reported_seconds > project.approved_seconds &&
+              project.aasm_state !== "submitted" && (
+                <p className="text-yellow-700">
+                  {project.approved_seconds > 0 && "+"}{" "}
+                  {formatTime(
+                    project.reported_seconds - project.approved_seconds,
+                  )}{" "}
+                  not yet submitted
+                </p>
               )}
-          </span>
+            {project.total_seconds > project.approved_seconds &&
+              project.aasm_state === "submitted" && (
+                <p className="text-yellow-700">
+                  {project.approved_seconds > 0 && "+"}{" "}
+                  {formatTime(project.total_seconds - project.approved_seconds)}{" "}
+                  under review
+                </p>
+              )}
+          </div>
         </div>
 
         <p className="mt-4 text-gray-600">{project.desc}</p>
@@ -59,14 +71,15 @@ export default function Project({ project }: { project: Project }) {
         >
           {project.aasm_state === "submitted" ? "View" : "Edit"}
         </Link>
-        {project.aasm_state !== "submitted" && (
-          <button
-            className="grow cursor-pointer bg-green-400 py-2 text-center"
-            onClick={shipProject}
-          >
-            {project.aasm_state === "approved" ? "Re-ship" : "Ship"}
-          </button>
-        )}
+        {project.aasm_state !== "submitted" &&
+          project.reported_seconds > project.approved_seconds && (
+            <button
+              className="grow cursor-pointer bg-green-400 py-2 text-center"
+              onClick={shipProject}
+            >
+              {project.approved_seconds > 0 ? "Re-ship" : "Ship"}
+            </button>
+          )}
         <button
           className="grow cursor-pointer bg-red-400 py-2 text-center"
           onClick={deleteProject}
