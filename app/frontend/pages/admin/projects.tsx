@@ -55,7 +55,11 @@ export default function Projects({ projects, q, status, pagination }: Props) {
   ]);
 
   function goToPage(page: number) {
-    router.get("/admin/projects", { page }, { preserveScroll: true });
+    router.get(
+      "/admin/projects",
+      { page, q, status },
+      { preserveScroll: true },
+    );
   }
 
   function search() {
