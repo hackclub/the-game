@@ -67,6 +67,12 @@ export default function ProjectForm({
           <div className="flex flex-col">
             <label className="font-bold" htmlFor="desc">
               Description <span className="text-red-600">*</span>
+              {(project?.approved_seconds || 0) > 0 && (
+                <span className="font-normal italic">
+                  <br />
+                  Add a description of what you've added before re-shipping!
+                </span>
+              )}
             </label>
             <input
               className="rounded-md p-2"
