@@ -37,11 +37,14 @@ class HackatimeService
     end
 
     raw_projects.map do |project|
+      # Hackatime reports projects that have an unknown name as "Other" - this cannot be submitted
+      next if project["name"] == "Other"
+
       db_project = user.hackatime_projects.find_or_create_by!(name: project["name"])
       db_project.total_seconds = project["total_seconds"]
 
       db_project
-    end
+    end.compact
   end
 
   def self.authed_user_stats(access_token)
