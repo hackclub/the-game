@@ -52,10 +52,9 @@ export default function ShowProject({ project, hackatime_projects }: Props) {
       </div>
       <p className="italic">{project.status}</p>
       <div className="font-normal">
-        {project.approved_seconds > 0 && (
+        {project.real_approved_seconds > 0 && (
           <p className="text-green-700">
-            {formatTime(project.approved_seconds)} approved ({project.tickets}{" "}
-            🎫)
+            {formatTime(project.real_approved_seconds)} approved
           </p>
         )}
         {project.reported_seconds > project.approved_seconds &&

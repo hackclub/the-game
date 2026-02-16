@@ -53,6 +53,8 @@ class User < ApplicationRecord
   has_many :purchases, class_name: "Item::Purchase"
   has_many :items, through: :purchases
 
+  has_many :approved_reviews, -> { where(review_type: :approval) }, through: :projects, source: :reviews, class_name: "Project::Review"
+
   encrypts :account_access_token
   encrypts :hackatime_access_token
 
@@ -142,7 +144,7 @@ class User < ApplicationRecord
   end
 
   def balance
-    revenue = (projects.reduce(0) { |acc, project| acc + project.tickets })
+    revenue = ((approved_reviews.reduce(0) { |acc, review| acc + review.approved_seconds }) / 3600.0).floor
     expenses = purchases.includes(:item).reduce(0) { |acc, purchase| acc + purchase.item.price }
 
     revenue - expenses

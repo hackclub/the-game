@@ -18,6 +18,6 @@ export interface Project {
   reported_seconds: number;
   user_id: number;
   screenshot: string;
-  tickets: number;
   approved_seconds: number;
+  real_approved_seconds: number;
 }

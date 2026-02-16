@@ -2,14 +2,15 @@
 #
 # Table name: project_reviews
 #
-#  id            :bigint           not null, primary key
-#  admin_content :text
-#  content       :text
-#  review_type   :string
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  author_id     :bigint           not null
-#  project_id    :bigint           not null
+#  id               :bigint           not null, primary key
+#  admin_content    :text
+#  approved_seconds :integer
+#  content          :text
+#  review_type      :string
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  author_id        :bigint           not null
+#  project_id       :bigint           not null
 #
 # Indexes
 #
@@ -26,6 +27,7 @@ class Project
     scope :not_admin_only, -> { where.not(content: nil).where.not(content: "") }
 
     validate :non_comments_have_justification
+    validate :only_approvals_have_seconds
 
     after_save_commit do
       if rejection? && !project.rejected?
@@ -54,6 +56,16 @@ class Project
     def non_comments_have_justification
       if (!content.present? || !admin_content.present?) && !comment?
         errors.add(:base, "Approvals and rejections must have user comments and justification")
+      end
+    end
+
+    def only_approvals_have_seconds
+      if approval? && approved_seconds.nil?
+        errors.add(:base, "Approvals must include approved_seconds")
+      end
+
+      if !approval? && approved_seconds.present?
+        errors.add(:base, "Only approvals can include approved_seconds")
       end
     end
   end

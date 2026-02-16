@@ -35,10 +35,9 @@ export default function Project({ project }: { project: Project }) {
             </span>
           </h2>
           <div className="text-right text-base font-normal">
-            {project.approved_seconds > 0 && (
+            {project.real_approved_seconds > 0 && (
               <p className="text-green-700">
-                {formatTime(project.approved_seconds)} approved (
-                {project.tickets} 🎫)
+                {formatTime(project.real_approved_seconds)} approved
               </p>
             )}
             {project.reported_seconds > project.approved_seconds &&

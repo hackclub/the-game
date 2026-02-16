@@ -13,6 +13,7 @@ export default function ProjectReviews({
     review_type: "comment",
     content: "",
     admin_content: "",
+    approved_hours: Number((project.total_seconds / 3600).toPrecision(4)),
   });
   const [adminOnly, setAdminOnly] = useState(false);
   const { props } = usePage();
@@ -75,6 +76,7 @@ export default function ProjectReviews({
             >
               <div className="flex w-md items-center justify-between">
                 <select
+                  className="rounded-md"
                   value={data.review_type}
                   onChange={(e) => {
                     setData("review_type", e.target.value);
@@ -101,6 +103,19 @@ export default function ProjectReviews({
                       }}
                     />{" "}
                     <label>Admin only?</label>
+                  </div>
+                )}
+                {data.review_type === "approval" && (
+                  <div className="flex w-min items-center gap-1">
+                    <input
+                      type="number"
+                      value={data.approved_hours}
+                      className="rounded-md"
+                      onChange={(e) => {
+                        setData("approved_hours", Number(e.target.value));
+                      }}
+                    />
+                    <label>hours</label>
                   </div>
                 )}
               </div>
