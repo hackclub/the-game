@@ -7,29 +7,41 @@ class HackatimeService
   end
 
   def self.sync_hackatime_projects(user)
-    projects = []
+    raw_projects = []
 
-    response = hackatime_client.get("users/#{user.hackatime_id}/stats") do |req|
-      req.params = {
-        filter_by_project: "inf-expr",
-        start_date: "2025-12-23T00:00:00Z",
-        end_date: Time.now.utc.iso8601,
-        features: "projects"
-      }
-    end
+    if user.hackatime_access_token.present?
+      response = hackatime_client.get("authenticated/projects") do |req|
+        req.headers["Authorization"] = "Bearer #{user.hackatime_access_token}"
+        req.params = {
+          start_date: "2025-12-23T00:00:00Z",
+          end_date: Time.now.utc.iso8601
+        }
+      end
 
-    if response.success?
-      projects = response.body["data"]["projects"].map do |project|
-        db_project = user.hackatime_projects.find_or_create_by!(name: project["name"])
-        db_project.total_seconds = project["total_seconds"]
-
-        db_project
+      if response.success?
+        raw_projects = response.body["projects"]
       end
     else
-      nil
+      response = hackatime_client.get("users/#{user.hackatime_id}/stats") do |req|
+        req.params = {
+          filter_by_project: "inf-expr",
+          start_date: "2025-12-23T00:00:00Z",
+          end_date: Time.now.utc.iso8601,
+          features: "projects"
+        }
+      end
+
+      if response.success?
+        raw_projects = response.body["data"]["projects"]
+      end
     end
 
-    projects
+    raw_projects.map do |project|
+      db_project = user.hackatime_projects.find_or_create_by!(name: project["name"])
+      db_project.total_seconds = project["total_seconds"]
+
+      db_project
+    end
   end
 
   def self.authed_user_stats(access_token)

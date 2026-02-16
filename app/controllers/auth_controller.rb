@@ -78,7 +78,7 @@ class AuthController < ApplicationController
     access_token = User.exchange_hackatime_code(params[:code], host: request.base_url)
     user_info = User.hackatime_user_info(access_token)
 
-    current_user.update!(hackatime_id: user_info.body["id"])
+    current_user.update!(hackatime_id: user_info.body["id"], hackatime_access_token: access_token)
 
     if current_user.projects.any?
       redirect_to home_path, notice: "Successfully linked Hackatime!"
