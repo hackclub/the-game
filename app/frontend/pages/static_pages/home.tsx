@@ -1,6 +1,7 @@
 import { usePage, Link } from "@inertiajs/react";
 import Layout from "@/layouts/layout";
 import LoggedHours from "@/components/home/LoggedHours";
+import Announcements from "@/components/home/Announcements";
 import { Announcement } from "@/interfaces/announcement";
 import MissingAccountFields from "@/components/settings/MissingAccountFields";
 import iconTransparentHome from "@/assets/figma/icon_transparent_home.svg";
@@ -45,27 +46,7 @@ export default function Home() {
 
             <LoggedHours totalProjectTime={props.totalProjectTime} />
 
-            {props.announcements.length > 0 && (
-              <div className="flex flex-col gap-4">
-                <h2 className="text-5xl font-bold tracking-[-0.06em]">
-                  Announcements
-                </h2>
-                <p className="text-2xl text-[#606060]">
-                  Click on any of them to read the full thing!
-                </p>
-                <div className="flex flex-wrap gap-4">
-                  {props.announcements.map((announcement) => (
-                    <div key={announcement.id} className="w-full sm:w-72">
-                      <div className="h-4 rounded-tl-2xl rounded-tr-2xl bg-black" />
-                      <div className="rounded-br-2xl rounded-bl-2xl border-2 border-t-0 border-black bg-white p-4">
-                        <p className="mb-2 font-bold">{announcement.title}</p>
-                        <p className="text-sm">{announcement.content}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            <Announcements announcements={props.announcements} />
           </>
         )}
       </div>

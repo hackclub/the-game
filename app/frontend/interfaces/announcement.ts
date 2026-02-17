@@ -1,7 +1,7 @@
 export interface Announcement {
-  id: number;
-  title: string;
+  author_name: string;
+  author_avatar_url: string;
   content: string;
-
-  created_at: string;
+  timestamp: string;
+  permalink: string;
 }
