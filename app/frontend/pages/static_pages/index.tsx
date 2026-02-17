@@ -105,7 +105,7 @@ export default function RsvpPage() {
                 <div className="h-6 w-6 lg:h-7 lg:w-7">
                   <ArrowVector className="block h-full w-full max-w-none" />
                 </div>
-                <span className="text-xl font-bold tracking-[-0.05em] lg:text-4xl">
+                <span className="text-xl font-bold tracking-[-0.05em] lg:text-4xl smoothing-black">
                   Get Started
                 </span>
               </button>
