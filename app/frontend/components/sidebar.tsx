@@ -153,10 +153,10 @@ export default function Sidebar() {
           ))}
 
           {/* Bottom Section - Help & User Info */}
-          <div className="relative z-10 mt-auto flex flex-col gap-4 mr-16 lg:mr-0">
+          <div className="relative z-10 mt-auto mr-16 flex flex-col gap-4 lg:mr-0">
             {/* Help Box */}
             <div className="rounded-xl border-2 border-white p-4">
-              <p className="text-center text-white smoothing-white">
+              <p className="smoothing-white text-center text-white">
                 Ask in{" "}
                 <a
                   className="underline"
@@ -175,56 +175,56 @@ export default function Sidebar() {
 
             {/* User Info Card */}
             <div className="rounded-2xl bg-[#fecb0d] p-[21px] text-black">
-            <div className="flex items-center gap-3">
-              <div className="h-[45px] w-[45px] shrink-0 overflow-hidden rounded-full bg-white">
-                {props.user.avatar ? (
-                  <img
-                    src={props.user.avatar}
-                    alt=""
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center text-lg font-bold text-black">
-                    {props.user?.username?.charAt(0) || "?"}
-                  </div>
-                )}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="smoothing-black truncate text-[26px] leading-tight font-bold tracking-[-0.04em]">
-                  {props.user?.username || "Guest"}
+              <div className="flex items-center gap-3">
+                <div className="h-[45px] w-[45px] shrink-0 overflow-hidden rounded-full bg-white">
+                  {props.user.avatar ? (
+                    <img
+                      src={props.user.avatar}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-lg font-bold text-black">
+                      {props.user?.username?.charAt(0) || "?"}
+                    </div>
+                  )}
                 </div>
+                <div className="min-w-0 flex-1">
+                  <div className="smoothing-black truncate text-[26px] leading-tight font-bold tracking-[-0.04em]">
+                    {props.user?.username || "Guest"}
+                  </div>
 
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <img src={ticketIcon} alt="" className="h-4 w-4" />
-                    <span className="smoothing-black text-xl tracking-[-0.06em]">
-                      {props.user.balance}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Link
-                      href="/auth/logout"
-                      method="post"
-                      as="button"
-                      className="cursor-pointer text-black/70 transition-transform hover:scale-110"
-                      title="Logout"
-                    >
-                      <img src="/icons/logout.svg" className="h-5 w-5" />
-                    </Link>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      <img src={ticketIcon} alt="" className="h-4 w-4" />
+                      <span className="smoothing-black text-xl tracking-[-0.06em]">
+                        {props.user.balance}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Link
+                        href="/auth/logout"
+                        method="post"
+                        as="button"
+                        className="cursor-pointer text-black/70 transition-transform hover:scale-110"
+                        title="Logout"
+                      >
+                        <img src="/icons/logout.svg" className="h-5 w-5" />
+                      </Link>
 
-                    <Link
-                      href="/settings"
-                      className="text-black/70 transition-transform hover:scale-110"
-                      title="Settings"
-                    >
-                      <img src="/icons/settings.svg" className="h-5 w-5" />
-                    </Link>
+                      <Link
+                        href="/settings"
+                        className="text-black/70 transition-transform hover:scale-110"
+                        title="Settings"
+                      >
+                        <img src="/icons/settings.svg" className="h-5 w-5" />
+                      </Link>
+                    </div>
                   </div>
-                  </div>
-                  </div>
-                  </div>
-                  </div>
-                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

@@ -1,9 +1,13 @@
 import Layout from "@/layouts/layout";
 
-function AdminNav({ href, title, description }: {
-  href: string,
-  title: string,
-  description: string
+function AdminNav({
+  href,
+  title,
+  description,
+}: {
+  href: string;
+  title: string;
+  description: string;
 }) {
   return (
     <a
@@ -14,7 +18,7 @@ function AdminNav({ href, title, description }: {
       <span className="font-bold">{title}</span>
       <span>{description}</span>
     </a>
-  )
+  );
 }
 
 export default function AdminPage() {
@@ -22,18 +26,50 @@ export default function AdminPage() {
     <Layout>
       <div className="px-8">
         <div className="mb-4 flex flex-col gap-1">
-          <h1 className="text-4xl font-bold smoothing-black">Admin Dashboard</h1>
-          <p className="italic text-gray-500">absolute power corrupts absolutely...</p>
+          <h1 className="smoothing-black text-4xl font-bold">
+            Admin Dashboard
+          </h1>
+          <p className="text-gray-500 italic">
+            absolute power corrupts absolutely...
+          </p>
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <AdminNav href="/blazer" title="Blazer" description="Dashboards, charts, SQL" />
-          <AdminNav href="/admin/announcements" title="Announcements" description="Create announcements" />
-          <AdminNav href="/admin/stats" title="Stats" description="User funnel, numbers, and more" />
-          <AdminNav href="https://plausible.io/hctg.hackclub.com" title="Plausible" description="Privacy-friendly analytics" />
-          <AdminNav href="/admin/projects" title="Projects" description="Manage published projects" />
-          <AdminNav href="/admin/users" title="Users" description="View all users" />
-          <AdminNav href="/admin/items" title="Shop Items" description="Create/delete/modify items in the shop" />
+          <AdminNav
+            href="/blazer"
+            title="Blazer"
+            description="Dashboards, charts, SQL"
+          />
+          <AdminNav
+            href="/admin/announcements"
+            title="Announcements"
+            description="Create announcements"
+          />
+          <AdminNav
+            href="/admin/stats"
+            title="Stats"
+            description="User funnel, numbers, and more"
+          />
+          <AdminNav
+            href="https://plausible.io/hctg.hackclub.com"
+            title="Plausible"
+            description="Privacy-friendly analytics"
+          />
+          <AdminNav
+            href="/admin/projects"
+            title="Projects"
+            description="Manage published projects"
+          />
+          <AdminNav
+            href="/admin/users"
+            title="Users"
+            description="View all users"
+          />
+          <AdminNav
+            href="/admin/items"
+            title="Shop Items"
+            description="Create/delete/modify items in the shop"
+          />
         </div>
       </div>
     </Layout>

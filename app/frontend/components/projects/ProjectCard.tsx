@@ -38,7 +38,7 @@ export default function ProjectCard({
           <h2 className="smoothing-black text-4xl font-bold tracking-[-0.03em]">
             {project.title}
           </h2>
-          <div className="flex items-center gap-1.5 shrink-0">
+          <div className="flex shrink-0 items-center gap-1.5">
             <img src={clockIcon} alt="Clock" className="h-5 w-5" />
             <span className="smoothing-black text-2xl tracking-[-0.03em]">
               {formatTime(project.total_seconds)}
@@ -46,7 +46,9 @@ export default function ProjectCard({
           </div>
         </div>
         {project.username && (
-          <p className="smoothing-gray text-xl text-gray-600">by {project.username}</p>
+          <p className="smoothing-gray text-xl text-gray-600">
+            by {project.username}
+          </p>
         )}
         {project.desc && (
           <p className="smoothing-black mt-2 max-h-14 overflow-hidden text-xl tracking-[-0.02em] wrap-break-word text-ellipsis">

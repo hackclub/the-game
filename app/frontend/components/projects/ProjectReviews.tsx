@@ -28,7 +28,9 @@ export default function ProjectReviews({
 
   return (
     <div className="mt-8 flex w-full flex-col px-16">
-      <h2 className="smoothing-black text-3xl font-bold tracking-[-0.02em]">Reviews</h2>
+      <h2 className="smoothing-black text-3xl font-bold tracking-[-0.02em]">
+        Reviews
+      </h2>
       {project.aasm_state === "pending" ? (
         <p>Ship your project so that we can review it!</p>
       ) : (
@@ -76,7 +78,7 @@ export default function ProjectReviews({
             >
               <div className="flex items-center gap-4">
                 <select
-                  className="border-[#cacaca] bg-[#d9d9d9] pl-6 pr-12 py-2 text-lg outline-none"
+                  className="border-[#cacaca] bg-[#d9d9d9] py-2 pr-12 pl-6 text-lg outline-none"
                   value={data.review_type}
                   onChange={(e) => {
                     setData("review_type", e.target.value);
