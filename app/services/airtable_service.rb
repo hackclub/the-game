@@ -2,6 +2,7 @@ require "date"
 
 class AirtableService
   BASE_URL = "https://api.airtable.com/v0".freeze
+  CONTENT_BASE_URL = "https://content.airtable.com/".freeze
   BASE_ID = "appG8V9462X6QDhpZ".freeze
   TABLE_ID = "tbldCj1zJQS2U5x9N".freeze
 
@@ -66,7 +67,7 @@ class AirtableService
   def attach(record_id:, field_name:, type:, data:, name:)
     return unless self.class.enabled?
 
-    connection.post "/#{record_id}/#{field_name}/uploadAttachment" do |req|
+    content_connection.post "/v0/#{BASE_ID}/#{record_id}/#{field_name}/uploadAttachment" do |req|
       req.body = {
         "contentType" => type,
         "file" => data,
@@ -86,8 +87,8 @@ class AirtableService
     end
   end
 
-  def connection
-    @connection ||= Faraday.new(url: "#{BASE_URL}/#{BASE_ID}") do |f|
+  def content_connection
+    @connection ||= Faraday.new(url: CONTENT_BASE_URL) do |f|
       f.request :json
       f.response :json
       f.headers["Authorization"] = "Bearer #{@api_key}"

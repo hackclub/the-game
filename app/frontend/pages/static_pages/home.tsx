@@ -124,7 +124,7 @@ function LinkHackatime() {
         className="self-start rounded-md bg-black px-5 py-3 font-bold tracking-tight text-white"
         href="/hackatime/link"
       >
-        Setup Hackatime
+        Setup Hackatime (come back here after you've setup!)
       </Link>
     </div>
   );

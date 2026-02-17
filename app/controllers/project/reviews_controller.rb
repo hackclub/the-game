@@ -10,7 +10,7 @@ class Project
 
       skip_authorization
 
-      @project.reviews.create!(review_params.merge(author: current_user))
+      @project.reviews.create!(review_params.merge(author: current_user, approved_seconds: review_params[:review_type] == "approval" ? params[:approved_hours] * 3600 : nil))
 
       redirect_to project_path(@project)
     end
@@ -18,7 +18,7 @@ class Project
     private
 
     def review_params
-      params.require(:review).permit(:content, :review_type)
+      params.require(:review).permit(:content, :review_type, :admin_content)
     end
 
     def set_project

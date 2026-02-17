@@ -2,34 +2,35 @@
 #
 # Table name: users
 #
-#  id                   :bigint           not null, primary key
-#  account_access_token :string
-#  address_country      :string
-#  address_locality     :string
-#  address_postal       :string
-#  address_region       :string
-#  address_street       :string
-#  avatar               :string
-#  ban_type             :integer
-#  birthday             :date
-#  deleted_at           :datetime
-#  email                :string           not null
-#  first_name           :string
-#  internal_notes       :text
-#  is_banned            :boolean          default(FALSE), not null
-#  last_active          :datetime
-#  last_name            :string
-#  referral_code        :string
-#  role                 :string           default("user")
-#  username             :string
-#  verification_status  :string
-#  ysws_verified        :boolean
-#  created_at           :datetime         not null
-#  updated_at           :datetime         not null
-#  account_id           :string
-#  hackatime_id         :string
-#  referrer_id          :bigint
-#  slack_id             :string
+#  id                     :bigint           not null, primary key
+#  account_access_token   :string
+#  address_country        :string
+#  address_locality       :string
+#  address_postal         :string
+#  address_region         :string
+#  address_street         :string
+#  avatar                 :string
+#  ban_type               :integer
+#  birthday               :date
+#  deleted_at             :datetime
+#  email                  :string           not null
+#  first_name             :string
+#  hackatime_access_token :string
+#  internal_notes         :text
+#  is_banned              :boolean          default(FALSE), not null
+#  last_active            :datetime
+#  last_name              :string
+#  referral_code          :string
+#  role                   :string           default("user")
+#  username               :string
+#  verification_status    :string
+#  ysws_verified          :boolean
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  account_id             :string
+#  hackatime_id           :string
+#  referrer_id            :bigint
+#  slack_id               :string
 #
 # Indexes
 #
@@ -52,7 +53,10 @@ class User < ApplicationRecord
   has_many :purchases, class_name: "Item::Purchase"
   has_many :items, through: :purchases
 
+  has_many :approved_reviews, -> { where(review_type: :approval) }, through: :projects, source: :reviews, class_name: "Project::Review"
+
   encrypts :account_access_token
+  encrypts :hackatime_access_token
 
   # Simple referrer: a user may have one referrer (another User)
   belongs_to :referrer, class_name: "User", optional: true
@@ -144,7 +148,7 @@ class User < ApplicationRecord
   end
 
   def balance
-    revenue = (projects.reduce(0) { |acc, project| acc + project.tickets })
+    revenue = ((approved_reviews.reduce(0) { |acc, review| acc + review.approved_seconds }) / 3600.0).floor
     expenses = purchases.includes(:item).reduce(0) { |acc, purchase| acc + purchase.item.price }
 
     revenue - expenses

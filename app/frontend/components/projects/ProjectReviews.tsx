@@ -2,6 +2,7 @@ import type { Project } from "@/interfaces/project";
 import type { ProjectReview } from "@/interfaces/project_review";
 import type { PublicUser } from "@/interfaces/user";
 import { useForm, usePage } from "@inertiajs/react";
+import { useState } from "react";
 
 export default function ProjectReviews({
   project,
@@ -11,7 +12,10 @@ export default function ProjectReviews({
   const { data, setData, post, reset, processing } = useForm({
     review_type: "comment",
     content: "",
+    admin_content: "",
+    approved_hours: Number((project.total_seconds / 3600).toPrecision(4)),
   });
+  const [adminOnly, setAdminOnly] = useState(false);
   const { props } = usePage();
 
   function submitReview(e: React.FormEvent) {
@@ -31,7 +35,7 @@ export default function ProjectReviews({
         <>
           <div className="flex flex-col gap-3">
             {project.reviews.length == 0 ? (
-              <p>No reviews on this project yet!</p>
+              <p>We haven't reviewed your project yet - give us some time!</p>
             ) : (
               project.reviews.map((review) => (
                 <div className="flex gap-3" key={review.id}>
@@ -50,10 +54,15 @@ export default function ProjectReviews({
                           ? "approved"
                           : review.review_type === "rejection"
                             ? "rejected"
-                            : "commented"}
+                            : "commented"}{" "}
                       </span>
                     </p>
                     <p className="max-w-sm wrap-break-word">{review.content}</p>
+                    {review.admin_content && (
+                      <p className="rounded-md border-2 border-dashed border-orange-600 bg-orange-200 p-3">
+                        {review.admin_content}
+                      </p>
+                    )}
                   </div>
                 </div>
               ))
@@ -65,20 +74,81 @@ export default function ProjectReviews({
               className="mt-5 flex flex-col items-start gap-2"
               onSubmit={submitReview}
             >
-              <select
-                value={data.review_type}
-                onChange={(e) => setData("review_type", e.target.value)}
-              >
-                <option value="comment">Comment</option>
-                <option value="rejection">Rejection</option>
-                <option value="approval">Approval</option>
-              </select>
+              <div className="flex w-md items-center justify-between">
+                <select
+                  className="rounded-md"
+                  value={data.review_type}
+                  onChange={(e) => {
+                    setData("review_type", e.target.value);
+                  }}
+                >
+                  <option value="comment">Comment</option>
+                  {project.aasm_state === "submitted" && (
+                    <>
+                      <option value="rejection">Rejection</option>
+                      <option value="approval">Approval</option>
+                    </>
+                  )}
+                </select>
+                {data.review_type === "comment" && (
+                  <div>
+                    <input
+                      type="checkbox"
+                      checked={adminOnly}
+                      onChange={(e) => {
+                        if (adminOnly) {
+                          setData("content", data.admin_content);
+                          setData("admin_content", "");
+                        } else {
+                          setData("admin_content", data.content);
+                          setData("content", "");
+                        }
+                        setAdminOnly(e.target.checked);
+                      }}
+                    />{" "}
+                    <label>Admin only?</label>
+                  </div>
+                )}
+                {data.review_type === "approval" && (
+                  <div className="flex w-min items-center gap-1">
+                    <input
+                      type="number"
+                      value={data.approved_hours}
+                      className="rounded-md"
+                      onChange={(e) => {
+                        setData("approved_hours", Number(e.target.value));
+                      }}
+                    />
+                    <label>hours</label>
+                  </div>
+                )}
+              </div>
               <textarea
                 className="min-w-md rounded-md"
-                value={data.content}
-                onChange={(e) => setData("content", e.target.value)}
-                placeholder="Add your comment here - this will be shown to the author"
+                value={
+                  data.review_type === "comment" && adminOnly
+                    ? data.admin_content
+                    : data.content
+                }
+                onChange={(e) => {
+                  if (data.review_type === "comment" && adminOnly) {
+                    setData("admin_content", e.target.value);
+                  } else {
+                    setData("content", e.target.value);
+                  }
+                }}
+                placeholder={`Add your comment here - this will ${adminOnly && data.review_type === "comment" ? "only be visible to admins" : "be shown to the author"}`}
               />
+              {data.review_type !== "comment" && (
+                <textarea
+                  className="min-w-md rounded-md"
+                  value={data.admin_content}
+                  onChange={(e) => {
+                    setData("admin_content", e.target.value);
+                  }}
+                  placeholder="Justify this review - this is only shown to admins"
+                />
+              )}
               <button
                 className="rounded-md bg-blue-500 px-4 py-2 font-bold text-white"
                 disabled={processing}

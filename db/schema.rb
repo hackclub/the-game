@@ -10,9 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_09_195845) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_16_202336) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "fuzzystrmatch"
   enable_extension "pg_catalog.plpgsql"
+  enable_extension "pg_trgm"
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
@@ -150,6 +152,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_195845) do
   end
 
   create_table "project_reviews", force: :cascade do |t|
+    t.text "admin_content"
+    t.integer "approved_seconds"
     t.bigint "author_id", null: false
     t.text "content"
     t.datetime "created_at", null: false
@@ -197,6 +201,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_195845) do
     t.datetime "deleted_at"
     t.string "email", null: false
     t.string "first_name"
+    t.string "hackatime_access_token"
     t.string "hackatime_id"
     t.text "internal_notes"
     t.boolean "is_banned", default: false, null: false

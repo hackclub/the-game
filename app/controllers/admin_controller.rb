@@ -11,7 +11,29 @@ class AdminController < ApplicationController
   end
 
   def projects
-    render inertia: "admin/projects", props: { projects: Project.all.map { |project| project.display_hash(user: true) } }
+    filtered_projects = Project.all
+
+    if params[:status].present?
+      filtered_projects = filtered_projects.where(aasm_state: params[:status])
+    end
+
+    if params[:q].present?
+      filtered_projects = filtered_projects.search_by_title(params[:q])
+    end
+
+    paginated_projects = filtered_projects.order(created_at: :desc).page(params[:page]).per(10)
+    render inertia: "admin/projects", props: {
+      projects: paginated_projects.map { |project| project.display_hash(user: true) },
+      q: params[:q],
+      status: params[:status],
+      pagination: {
+        current_page: paginated_projects.current_page,
+        next_page: paginated_projects.next_page,
+        prev_page: paginated_projects.prev_page,
+        total_pages: paginated_projects.total_pages,
+        total_count: paginated_projects.total_count
+      }
+    }
   end
 
   def users

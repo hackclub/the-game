@@ -1,5 +1,6 @@
 import { router } from "@inertiajs/react";
 import ProjectForm from "@/components/projects/ProjectForm";
+import ProjectReviews from "@/components/projects/ProjectReviews";
 import PageHeading from "@/components/layout/PageHeading";
 import formatTime from "@/utils/formatTime";
 import Layout from "@/layouts/layout";
@@ -104,6 +105,7 @@ export default function ShowProject({ project, hackatime_projects }: Props) {
           project={project}
           hackatime_projects={hackatime_projects}
         />
+        <ProjectReviews project={project} />
       </div>
     </Layout>
   );

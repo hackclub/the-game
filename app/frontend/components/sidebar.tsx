@@ -150,6 +150,25 @@ export default function Sidebar() {
             </div>
           ))}
 
+          {/* Help Box */}
+          <div className="relative z-10 mt-6 mr-16 rounded-2xl border-2 border-white p-4 lg:mr-0">
+            <p className="text-center text-white">
+              Ask in{" "}
+              <a
+                className="underline"
+                target="_blank"
+                href="https://hackclub.enterprise.slack.com/archives/C0A9XULS1SL"
+              >
+                #hctg-help
+              </a>{" "}
+              or email{" "}
+              <a className="underline" href="mailto:hctg@hackclub.com">
+                hctg@hackclub.com
+              </a>{" "}
+              if you need help!
+            </p>
+          </div>
+
           {/* User Info Card */}
           <div className="relative z-10 mt-auto mr-16 rounded-2xl bg-[#fecb0d] p-[21px] text-black lg:mr-0">
             <div className="flex items-center gap-3">

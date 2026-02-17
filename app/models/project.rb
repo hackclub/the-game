@@ -32,6 +32,10 @@
 #
 class Project < ApplicationRecord
   include AASM
+  include PgSearch::Model
+
+  pg_search_scope :search_by_title, against: :title
+
   acts_as_paranoid
   has_paper_trail
 
@@ -87,20 +91,25 @@ class Project < ApplicationRecord
     end
   end
 
-  def display_hash(reviews: false, user: false)
+  def display_hash(reviews: false, user: false, admin: false)
     hash = self.as_json.slice("id", "aasm_state", "approved_at", "demo_link", "desc", "rejected_at", "repo_link", "submitted_at", "title", "ysws", "created_at", "updated_at", "user_id")
-    hash["total_seconds"] = display_seconds
     hash["reported_seconds"] = reported_seconds
+    hash["total_seconds"] = total_seconds
+    hash["approved_seconds"] = approved_seconds
+    hash["real_approved_seconds"] = real_approved_seconds
     hash["hackatime_projects"] = hackatime_projects.pluck(:id)
     hash["status"] = display_status
-    hash["tickets"] = tickets
 
     if screenshot.attached? && screenshot.persisted?
       hash["screenshot"] = Rails.application.routes.url_helpers.rails_blob_path(screenshot, disposition: :inline)
     end
 
     if reviews
-      hash["reviews"] = self.reviews.map { |review| review.display_hash(author: true) }
+      if admin
+        hash["reviews"] = self.reviews.map { |review| review.display_hash(author: true, admin:) }
+      else
+        hash["reviews"] = self.reviews.not_admin_only.map { |review| review.display_hash(author: true) }
+      end
     end
 
     if user
@@ -145,7 +154,14 @@ class Project < ApplicationRecord
     missing
   end
 
-  def tickets
-    ((approved_seconds || 0) / 3600.00).floor
+  def real_approved_seconds
+    reviews.approval.reduce(0) { |acc, review| acc + review.approved_seconds }
+  end
+
+  def github_username
+    if repo_link.present?
+      uri = URI.parse(repo_link)
+      uri.path.split("/").second
+    end
   end
 end
