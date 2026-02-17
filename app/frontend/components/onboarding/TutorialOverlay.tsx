@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { usePage, router } from "@inertiajs/react";
+import clsx from "clsx";
 interface TutorialStep {
   id: string;
   stepNumber: number | null;
@@ -185,7 +186,10 @@ export default function TutorialOverlay() {
         />
       )}
 
-      <div className="pointer-events-auto absolute right-[40px] bottom-[20px] flex items-end p-16">
+      <div className={clsx(
+        "pointer-events-auto absolute right-[-100px] sm:right-[40px] bottom-[20px] flex items-center sm:items-end p-16",
+        "max-lg:scale-75 max-lg:translate-x-8"
+      )}>
         <div className="relative">
           <div
             className="relative flex h-[200px] w-[660px] items-center bg-contain bg-no-repeat pb-4"
@@ -228,7 +232,7 @@ export default function TutorialOverlay() {
         <img
           src="/images/onboarding/mascot.png"
           alt="Mascot"
-          className="mb-[-20px] ml-[-40px] h-[220px] w-auto"
+          className="mb-[-20px] ml-[-40px] h-[220px] w-auto hidden sm:block"
           style={{ transform: "rotate(-13deg)" }}
         />
       </div>
