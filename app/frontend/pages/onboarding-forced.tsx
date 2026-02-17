@@ -9,11 +9,7 @@ const STEPS = [
   { key: "finish", label: "Finish!" },
 ];
 
-function ProgressCircle({
-  state,
-}: {
-  state: "done" | "current" | "upcoming";
-}) {
+function ProgressCircle({ state }: { state: "done" | "current" | "upcoming" }) {
   return (
     <div className="flex h-[74px] w-[74px] shrink-0 items-center justify-center">
       {state === "current" ? (
@@ -29,10 +25,7 @@ function ProgressCircle({
   );
 }
 
-const ALL_STEPS = [
-  { key: "log_in", label: "Log in" },
-  ...STEPS,
-];
+const ALL_STEPS = [{ key: "log_in", label: "Log in" }, ...STEPS];
 
 function ProgressBar({ currentStep }: { currentStep: string }) {
   const currentIndex = STEPS.findIndex((s) => s.key === currentStep);
@@ -41,7 +34,7 @@ function ProgressBar({ currentStep }: { currentStep: string }) {
 
   return (
     <div className="relative flex w-full max-w-[700px] items-start justify-between">
-      <div className="absolute top-[37px] left-[24px] right-[24px] h-[19px] -translate-y-1/2">
+      <div className="absolute top-[37px] right-[24px] left-[24px] h-[19px] -translate-y-1/2">
         <div className="h-full w-full bg-[#d9d9d9]" />
         <div
           className="absolute top-0 left-0 h-full bg-[#fecb0d] transition-all duration-500"
@@ -52,7 +45,13 @@ function ProgressBar({ currentStep }: { currentStep: string }) {
       {ALL_STEPS.map((step, i) => {
         const stepIndex = i - 1;
         const state: "done" | "current" | "upcoming" =
-          i === 0 ? "done" : stepIndex < currentIndex ? "done" : stepIndex === currentIndex ? "current" : "upcoming";
+          i === 0
+            ? "done"
+            : stepIndex < currentIndex
+              ? "done"
+              : stepIndex === currentIndex
+                ? "current"
+                : "upcoming";
 
         return (
           <div
@@ -85,7 +84,11 @@ export default function Onboarding() {
 
         <div className="flex max-w-[1018px] flex-col items-center gap-[45px]">
           <div className="flex items-center gap-6">
-            <img src={iconTransparent} alt="" className="h-[62px] w-auto invert" />
+            <img
+              src={iconTransparent}
+              alt=""
+              className="h-[62px] w-auto invert"
+            />
             <h1 className="text-5xl tracking-[-0.06em]">
               Welcome to <span className="font-bold">Hack Club: The Game!</span>
             </h1>
@@ -93,22 +96,28 @@ export default function Onboarding() {
 
           <div className="text-center text-2xl leading-relaxed tracking-[-0.01em]">
             <p>
-              Your goal is to get 40 hours of work on <span className="font-bold">any</span> kind
-              of technical project. After that's done, you'll receive an invite to the game!
+              Your goal is to get 40 hours of work on{" "}
+              <span className="font-bold">any</span> kind of technical project.
+              After that's done, you'll receive an invite to the game!
             </p>
             <br />
             <p>
               In order to track these hours, you'll need to link{" "}
-              <span className="font-bold">Hackatime</span> to your Hack Club: The Game account!
-              It's our tool to track time in your favorite code editors or for hardware projects.
+              <span className="font-bold">Hackatime</span> to your Hack Club:
+              The Game account! It's our tool to track time in your favorite
+              code editors or for hardware projects.
             </p>
           </div>
 
           <Link
             href="/hackatime/link"
-            className="flex items-center justify-center gap-4 bg-black px-20 py-5 text-2xl font-bold tracking-[-0.01em] text-white transition-colors hover:bg-white hover:text-black group"
+            className="group flex items-center justify-center gap-4 bg-black px-20 py-5 text-2xl font-bold tracking-[-0.01em] text-white transition-colors hover:bg-white hover:text-black"
           >
-            <img src={arrowIcon} alt="" className="h-7 w-7 transition-all group-hover:invert" />
+            <img
+              src={arrowIcon}
+              alt=""
+              className="h-7 w-7 transition-all group-hover:invert"
+            />
             Onwards to Hackatime!
           </Link>
         </div>

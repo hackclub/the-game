@@ -43,7 +43,7 @@ export default function Home() {
           </p>
         </div>
 
-        { isOnboarding ? null : (
+        {isOnboarding ? null : (
           <>
             <MissingAccountFields />
 
@@ -51,9 +51,8 @@ export default function Home() {
 
             <Announcements announcements={props.announcements} />
           </>
-        ) }
+        )}
       </div>
     </Layout>
   );
 }
-

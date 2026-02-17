@@ -23,7 +23,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     ),
     arrow: {
       pointAt: '[href="/projects"]',
-      angle: 0
+      angle: 0,
     },
     modality: "ALWAYS",
   },
@@ -38,7 +38,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     ),
     arrow: {
       pointAt: '[href="/projects/new"]',
-      angle: -45
+      angle: -45,
     },
     modality: "ALWAYS",
   },
@@ -84,15 +84,18 @@ function inferStep(
   return TUTORIAL_STEPS[3];
 }
 
-function ArrowPointer({ targetSelector, angle }: {
-  targetSelector: string,
-  angle: number
+function ArrowPointer({
+  targetSelector,
+  angle,
+}: {
+  targetSelector: string;
+  angle: number;
 }) {
   const [position, setPosition] = useState<{
     x: number;
     y: number;
   } | null>(null);
-  
+
   const arrowRef = useRef<HTMLDivElement>(null);
 
   const updatePosition = useCallback(() => {
@@ -110,7 +113,7 @@ function ArrowPointer({ targetSelector, angle }: {
 
     setPosition({
       x: targetCenterX + targetRect.width / 4,
-      y: targetCenterY - targetRect.height / 2 + 4
+      y: targetCenterY - targetRect.height / 2 + 4,
     });
   }, [targetSelector, arrowRef.current]);
 
@@ -131,13 +134,13 @@ function ArrowPointer({ targetSelector, angle }: {
       style={{
         left: position?.x,
         top: position?.y,
-        transform: `rotate(${angle}deg)`
+        transform: `rotate(${angle}deg)`,
       }}
     >
       <img
         src="/images/onboarding/arrow.svg"
         alt=""
-        className="h-[60px] w-auto animate-move-right"
+        className="animate-move-right h-[60px] w-auto"
       />
     </div>
   );
@@ -152,7 +155,10 @@ export default function TutorialOverlay() {
   const projectCount = props.user?.project_count ?? 0;
 
   const step = useMemo(
-    () => (onboardingCompleted || dismissed ? null : inferStep(url, hasHackatime, projectCount)),
+    () =>
+      onboardingCompleted || dismissed
+        ? null
+        : inferStep(url, hasHackatime, projectCount),
     [url, hasHackatime, projectCount, onboardingCompleted, dismissed],
   );
 
@@ -173,22 +179,25 @@ export default function TutorialOverlay() {
   return (
     <div className="pointer-events-none fixed inset-0 z-[9999]">
       {step.arrow && (
-        <ArrowPointer targetSelector={step.arrow.pointAt} angle={step.arrow.angle} />
+        <ArrowPointer
+          targetSelector={step.arrow.pointAt}
+          angle={step.arrow.angle}
+        />
       )}
 
       <div className="pointer-events-auto absolute right-[40px] bottom-[20px] flex items-end p-16">
         <div className="relative">
           <div
-            className="relative h-[200px] w-[660px] bg-contain bg-no-repeat flex pb-4 items-center"
+            className="relative flex h-[200px] w-[660px] items-center bg-contain bg-no-repeat pb-4"
             style={{
               backgroundImage: `url("/images/onboarding/speech-bubble.svg")`,
-              filter: "drop-shadow(16px 16px 0px #000)"
+              filter: "drop-shadow(16px 16px 0px #000)",
             }}
           >
             <div className="inset-0 flex gap-4 px-10 pr-[120px]">
               {step.stepNumber !== null && (
                 <div className="flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-full bg-black">
-                  <span className="text-[32px] font-bold leading-none text-white">
+                  <span className="text-[32px] leading-none font-bold text-white">
                     {step.stepNumber}
                   </span>
                 </div>
