@@ -47,9 +47,8 @@
 
 html,
 body {
-  font-family:
-    "HelveticaNowText", "Helvetica Now", "HelveticaNow", "Inter", "Helvetica",
-    Arial, sans-serif;
+  font-family: "HelveticaNowText", "Helvetica Now", "HelveticaNow", "Inter",
+    "Helvetica", Arial, sans-serif;
   min-height: 100%;
   margin: 0;
   padding: 0;

@@ -23,22 +23,22 @@ export default function Announcements({
             rel="noopener noreferrer"
             className="w-full sm:w-[367px]"
           >
-            <div className="bg-black h-[37px] rounded-tl-2xl rounded-tr-2xl" />
-            <div className="bg-white border-2 border-black border-t-0 rounded-bl-2xl rounded-br-2xl overflow-clip px-5 py-5">
-              <div className="flex gap-1 items-center mb-4">
+            <div className="h-[37px] rounded-tl-2xl rounded-tr-2xl bg-black" />
+            <div className="overflow-clip rounded-br-2xl rounded-bl-2xl border-2 border-t-0 border-black bg-white px-5 py-5">
+              <div className="mb-4 flex items-center gap-1">
                 <img
                   src={announcement.author_avatar_url}
-                  className="w-8 h-8 rounded-full object-cover"
+                  className="h-8 w-8 rounded-full object-cover"
                   alt={announcement.author_name}
                 />
 
-                <span className="font-bold text-2xl tracking-[-0.02em] smoothing-black">
+                <span className="smoothing-black text-2xl font-bold tracking-[-0.02em]">
                   @{announcement.author_name}
                 </span>
               </div>
 
               <div
-                className="text-xl tracking-[-0.02em] line-clamp-4 [&_a]:underline smoothing-black"
+                className="smoothing-black line-clamp-4 text-xl tracking-[-0.02em] [&_a]:underline"
                 dangerouslySetInnerHTML={{ __html: announcement.content }}
               />
             </div>
