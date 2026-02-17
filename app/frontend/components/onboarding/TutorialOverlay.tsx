@@ -186,10 +186,12 @@ export default function TutorialOverlay() {
         />
       )}
 
-      <div className={clsx(
-        "pointer-events-auto absolute right-[-100px] sm:right-[40px] bottom-[20px] flex items-center sm:items-end p-16",
-        "max-lg:scale-75 max-lg:translate-x-8"
-      )}>
+      <div
+        className={clsx(
+          "pointer-events-auto absolute right-[-100px] bottom-[20px] flex items-center p-16 sm:right-[40px] sm:items-end",
+          "max-lg:translate-x-8 max-lg:scale-75",
+        )}
+      >
         <div className="relative">
           <div
             className="relative flex h-[200px] w-[660px] items-center bg-contain bg-no-repeat pb-4"
@@ -232,7 +234,7 @@ export default function TutorialOverlay() {
         <img
           src="/images/onboarding/mascot.png"
           alt="Mascot"
-          className="mb-[-20px] ml-[-40px] h-[220px] w-auto hidden sm:block"
+          className="mb-[-20px] ml-[-40px] hidden h-[220px] w-auto sm:block"
           style={{ transform: "rotate(-13deg)" }}
         />
       </div>
