@@ -43,8 +43,13 @@ export default function Projects({ projects, q, status, pagination }: Props) {
       headerName: "Status",
     },
     {
-      field: "total_seconds" as const,
-      headerName: "Hours",
+      field: "reported_seconds" as const,
+      headerName: "Reported Hours",
+      valueFormatter: (field: any) => (field.value / 3600).toPrecision(4),
+    },
+    {
+      field: "approved_seconds" as const,
+      headerName: "Approved Hours",
       valueFormatter: (field: any) => (field.value / 3600).toPrecision(4),
     },
     {

@@ -37,7 +37,30 @@ class AdminController < ApplicationController
   end
 
   def users
-    render inertia: "admin/users", props: { users: User.all.map { |user| user.display_hash(private: true) } }
+    filtered_users = User.all
+
+    if params[:q].present?
+      filtered_users = filtered_users.search_by_name(params[:q])
+    end
+
+    if params[:role].present?
+      filtered_users = filtered_users.where(role: params[:role])
+    end
+
+    paginated_users = filtered_users.order(created_at: :desc).page(params[:page]).per(10)
+
+    render inertia: "admin/users", props: {
+      users: paginated_users.map { |user| user.display_hash(private: true) },
+      role: params[:role],
+      q: params[:q],
+      pagination: {
+        current_page: paginated_users.current_page,
+        next_page: paginated_users.next_page,
+        prev_page: paginated_users.prev_page,
+        total_pages: paginated_users.total_pages,
+        total_count: paginated_users.total_count
+      }
+    }
   end
 
   def items

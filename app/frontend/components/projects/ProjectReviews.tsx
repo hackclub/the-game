@@ -35,7 +35,7 @@ export default function ProjectReviews({
         <p>Ship your project so that we can review it!</p>
       ) : (
         <>
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-5">
             {project.reviews.length == 0 ? (
               <p>We haven't reviewed your project yet - give us some time!</p>
             ) : (
@@ -46,8 +46,8 @@ export default function ProjectReviews({
                     alt={`Avatar of ${review.author.username}`}
                     className="h-10 w-10 rounded-md"
                   />
-                  <div>
-                    <p>
+                  <div className="flex flex-col gap-1">
+                    <p className="leading-0.5">
                       <span className="font-bold">
                         {review.author.username}
                       </span>{" "}
@@ -57,6 +57,10 @@ export default function ProjectReviews({
                           : review.review_type === "rejection"
                             ? "rejected"
                             : "commented"}{" "}
+                      </span>
+                      <span className="text-sm">
+                        <br></br>on{" "}
+                        {new Date(review.created_at).toLocaleString()}
                       </span>
                     </p>
                     <p className="max-w-sm wrap-break-word">{review.content}</p>

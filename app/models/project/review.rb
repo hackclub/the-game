@@ -43,7 +43,7 @@ class Project
     end
 
     def display_hash(author: false, admin: false)
-      hash = self.as_json.slice("id", "content", "review_type", "author_id")
+      hash = self.as_json.slice("id", "content", "review_type", "author_id", "created_at")
 
       if author
         hash["author"] = self.author.display_hash
@@ -88,16 +88,16 @@ class Project
       ysws_project = Project::Ysws.create(
         project_id: project.id,
         review_id: id,
-        first_name: author.first_name,
-        last_name: author.last_name,
-        email: author.email,
+        first_name: project.user.first_name,
+        last_name: project.user.last_name,
+        email: project.user.email,
         github_username: project.github_username,
-        address_line1: author.address_street,
-        address_city: author.address_locality,
-        address_state: author.address_region,
-        address_country: author.address_country,
-        address_postal: author.address_postal,
-        birthday: author.birthday,
+        address_line1: project.user.address_street,
+        address_city: project.user.address_locality,
+        address_state: project.user.address_region,
+        address_country: project.user.address_country,
+        address_postal: project.user.address_postal,
+        birthday: project.user.birthday,
         name: project.title,
         description: project.desc,
         hours: approved_seconds / 3600.0,

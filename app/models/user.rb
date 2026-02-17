@@ -44,6 +44,10 @@ class User < ApplicationRecord
     "User##{id}"
   end
 
+  include PgSearch::Model
+
+  pg_search_scope :search_by_name, against: [ :username, :first_name, :last_name, :email ]
+
   acts_as_paranoid
   has_paper_trail
 
