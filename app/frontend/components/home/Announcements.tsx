@@ -6,11 +6,14 @@ export default function Announcements({
   announcements: Announcement[];
 }) {
   return (
-    <div className="flex flex-col gap-4">
-      <h2 className="text-5xl font-bold tracking-[-0.06em]">Announcements</h2>
-      <p className="text-2xl text-[#606060]">
-        Click on any of them to read the full thing!
-      </p>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-2">
+        <h2 className="text-5xl font-bold tracking-[-0.06em]">Announcements</h2>
+        <p className="text-2xl text-[#606060]">
+          Click on any of them to read the full thing!
+        </p>
+      </div>
+
       <div className="flex flex-wrap gap-4">
         {announcements.map((announcement, index) => (
           <a
@@ -28,12 +31,14 @@ export default function Announcements({
                   className="w-8 h-8 rounded-full object-cover"
                   alt={announcement.author_name}
                 />
-                <span className="font-bold text-2xl tracking-[-0.02em]">
+
+                <span className="font-bold text-2xl tracking-[-0.02em] smoothing-black">
                   @{announcement.author_name}
                 </span>
               </div>
+
               <div
-                className="text-xl tracking-[-0.02em] overflow-hidden text-ellipsis h-24 [&_a]:underline"
+                className="text-xl tracking-[-0.02em] line-clamp-4 [&_a]:underline smoothing-black"
                 dangerouslySetInnerHTML={{ __html: announcement.content }}
               />
             </div>
