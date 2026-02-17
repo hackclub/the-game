@@ -8,7 +8,7 @@ import type { Project } from "@/interfaces/project";
 import type { ProjectReview } from "@/interfaces/project_review";
 import type { HackatimeProject } from "@/interfaces/hackatime_project";
 import type { PublicUser } from "@/interfaces/user";
-import clockIcon from "@/assets/figma/clock.svg";
+import clockIcon from "@/assets/icons/clock.svg";
 
 interface Props {
   project: Project & { reviews: (ProjectReview & { author: PublicUser })[] };

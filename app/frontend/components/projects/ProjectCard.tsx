@@ -1,7 +1,7 @@
 import { router } from "@inertiajs/react";
 import type { Project } from "@/interfaces/project";
 import formatTime from "@/utils/formatTime";
-import clockIcon from "@/assets/figma/clock.svg";
+import clockIcon from "@/assets/icons/clock.svg";
 
 interface ProjectCardProps {
   project: Project & { username?: string };

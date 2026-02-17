@@ -3,7 +3,7 @@ import type { HackatimeProject } from "@/interfaces/hackatime_project";
 import type { Project } from "@/interfaces/project";
 import formatTime from "@/utils/formatTime";
 import { useMemo } from "react";
-import arrowIcon from "@/assets/figma/arrow.svg";
+import arrowIcon from "@/assets/icons/arrow.svg";
 import clsx from "clsx";
 
 interface Props {

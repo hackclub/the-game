@@ -4,9 +4,9 @@ import LoggedHours from "@/components/home/LoggedHours";
 import Announcements from "@/components/home/Announcements";
 import { Announcement } from "@/interfaces/announcement";
 import MissingAccountFields from "@/components/settings/MissingAccountFields";
-import iconTransparentHome from "@/assets/figma/icon_transparent_home.svg";
-import blankTicket from "@/assets/figma/blank_ticket.svg";
-import iconTransparent from "@/assets/figma/icon_transparent.svg";
+import iconTransparentHome from "@/assets/icons/icon_transparent_home.svg";
+import blankTicket from "@/assets/icons/blank_ticket.svg";
+import iconTransparent from "@/assets/icons/icon_transparent.svg";
 
 export default function Home() {
   const { props } = usePage<{

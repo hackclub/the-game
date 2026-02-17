@@ -1,11 +1,11 @@
 import { useState, useMemo } from "react";
 import { Link, usePage } from "@inertiajs/react";
-import ticketIcon from "@/assets/figma/ticket.svg";
-import homeIcon from "@/assets/figma/home.svg";
-import hammerIcon from "@/assets/figma/hammer.svg";
-import compassIcon from "@/assets/figma/compass.svg";
-import adminIcon from "@/assets/figma/admin.svg";
-import shopIcon from "@/assets/figma/shop.svg";
+import ticketIcon from "@/assets/icons/ticket.svg";
+import homeIcon from "@/assets/icons/home.svg";
+import hammerIcon from "@/assets/icons/hammer.svg";
+import compassIcon from "@/assets/icons/compass.svg";
+import adminIcon from "@/assets/icons/admin.svg";
+import shopIcon from "@/assets/icons/shop.svg";
 
 import clsx from "clsx";
 

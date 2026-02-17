@@ -1,6 +1,6 @@
 import { usePage, Link } from "@inertiajs/react";
 import type { Item } from "@/interfaces/item";
-import ticketIcon from "@/assets/figma/ticket.svg";
+import ticketIcon from "@/assets/icons/ticket.svg";
 
 export default function Item({ item }: { item: Item }) {
   const { props } = usePage();
