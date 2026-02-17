@@ -27,8 +27,8 @@ export default function ProjectReviews({
   }
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold">Reviews</h2>
+    <div className="mt-8 flex w-full flex-col px-16">
+      <h2 className="smoothing-black text-3xl font-bold tracking-[-0.02em]">Reviews</h2>
       {project.aasm_state === "pending" ? (
         <p>Ship your project so that we can review it!</p>
       ) : (
@@ -71,12 +71,12 @@ export default function ProjectReviews({
 
           {props.user.role === "admin" && (
             <form
-              className="mt-5 flex flex-col items-start gap-2"
+              className="mt-6 flex w-full flex-col gap-4 px-4 md:px-0"
               onSubmit={submitReview}
             >
-              <div className="flex w-md items-center justify-between">
+              <div className="flex items-center gap-4">
                 <select
-                  className="rounded-md"
+                  className="border-[#cacaca] bg-[#d9d9d9] pl-6 pr-12 py-2 text-lg outline-none"
                   value={data.review_type}
                   onChange={(e) => {
                     setData("review_type", e.target.value);
@@ -91,7 +91,7 @@ export default function ProjectReviews({
                   )}
                 </select>
                 {data.review_type === "comment" && (
-                  <div>
+                  <div className="flex items-center gap-2">
                     <input
                       type="checkbox"
                       checked={adminOnly}
@@ -105,16 +105,16 @@ export default function ProjectReviews({
                         }
                         setAdminOnly(e.target.checked);
                       }}
-                    />{" "}
+                    />
                     <label>Admin only?</label>
                   </div>
                 )}
                 {data.review_type === "approval" && (
-                  <div className="flex w-min items-center gap-1">
+                  <div className="flex items-center gap-2">
                     <input
                       type="number"
                       value={data.approved_hours}
-                      className="rounded-md"
+                      className="border-[#cacaca] bg-[#d9d9d9] px-4 py-2 text-xl outline-none"
                       onChange={(e) => {
                         setData("approved_hours", Number(e.target.value));
                       }}
@@ -124,7 +124,7 @@ export default function ProjectReviews({
                 )}
               </div>
               <textarea
-                className="min-w-md rounded-md"
+                className="h-[117px] resize-none border-[#cacaca] bg-[#d9d9d9] p-4 text-xl outline-none"
                 value={
                   data.review_type === "comment" && adminOnly
                     ? data.admin_content
@@ -141,7 +141,7 @@ export default function ProjectReviews({
               />
               {data.review_type !== "comment" && (
                 <textarea
-                  className="min-w-md rounded-md"
+                  className="h-[117px] resize-none border-[#cacaca] bg-[#d9d9d9] p-4 text-xl outline-none"
                   value={data.admin_content}
                   onChange={(e) => {
                     setData("admin_content", e.target.value);
@@ -150,7 +150,7 @@ export default function ProjectReviews({
                 />
               )}
               <button
-                className="rounded-md bg-blue-500 px-4 py-2 font-bold text-white"
+                className="cursor-pointer bg-black px-6 py-2 text-lg font-bold text-white hover:bg-gray-800"
                 disabled={processing}
               >
                 Add review

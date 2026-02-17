@@ -73,6 +73,10 @@ body {
   filter: drop-shadow(0px 0px 1px #ffffff22);
 }
 
+.smoothing-gray {
+  filter: drop-shadow(0px 0px 1px #80808022);
+}
+
 @keyframes scale-up {
   from {
     opacity: 0;

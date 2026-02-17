@@ -15,7 +15,7 @@ Rails.application.config.middleware.use OmniAuth::Builder do
     #   end
     # },
     allow_authorize_params: [ :login_hint ],
-    scope: [ :openid, :email, :profile, :address, :birthdate, :slack_id, :verification_status ],
+    scope: Rails.env.production? ? [ :openid, :email, :profile, :address, :birthdate, :slack_id, :verification_status ] : [ :openid, :profile, :email, :name, :slack_id, :verification_status ],
     response_type: :code,
     issuer: ENV.fetch("HCA_URL", "https://auth.hackclub.com"),
     discovery: true,

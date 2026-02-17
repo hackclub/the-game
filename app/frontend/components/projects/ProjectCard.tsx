@@ -33,19 +33,21 @@ export default function ProjectCard({
       ) : (
         <div className="h-[105px] w-full rounded-tl-2xl rounded-tr-2xl border-2 border-b-0 border-black bg-gradient-to-br from-gray-300 to-gray-400" />
       )}
-      <div className="rounded-br-2xl rounded-bl-2xl border-2 border-black bg-white p-4">
-        {project.username && (
-          <p className="text-sm text-black/60">by {project.username}</p>
-        )}
-        <h2 className="smoothing-black text-4xl font-bold tracking-[-0.03em]">
-          {project.title}
-        </h2>
-        <div className="mt-1 flex items-center gap-1.5">
-          <img src={clockIcon} alt="Clock" className="h-5 w-5" />
-          <span className="smoothing-black text-2xl tracking-[-0.03em]">
-            {formatTime(project.total_seconds)}
-          </span>
+      <div className="rounded-br-2xl rounded-bl-2xl border-2 border-black bg-white p-6">
+        <div className="flex items-start justify-between gap-2">
+          <h2 className="smoothing-black text-4xl font-bold tracking-[-0.03em]">
+            {project.title}
+          </h2>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <img src={clockIcon} alt="Clock" className="h-5 w-5" />
+            <span className="smoothing-black text-2xl tracking-[-0.03em]">
+              {formatTime(project.total_seconds)}
+            </span>
+          </div>
         </div>
+        {project.username && (
+          <p className="smoothing-gray text-xl text-gray-600">by {project.username}</p>
+        )}
         {project.desc && (
           <p className="smoothing-black mt-2 max-h-14 overflow-hidden text-xl tracking-[-0.02em] wrap-break-word text-ellipsis">
             {project.desc}

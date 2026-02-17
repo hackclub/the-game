@@ -5,6 +5,7 @@ import homeIcon from "@/assets/figma/home.svg";
 import hammerIcon from "@/assets/figma/hammer.svg";
 import compassIcon from "@/assets/figma/compass.svg";
 import adminIcon from "@/assets/figma/admin.svg";
+import shopIcon from "@/assets/figma/shop.svg";
 
 import clsx from "clsx";
 
@@ -132,6 +133,7 @@ export default function Sidebar() {
             <SidebarLink link="/home" name="Home" icon={homeIcon} />
             <SidebarLink link="/projects" name="Projects" icon={hammerIcon} />
             <SidebarLink link="/explore" name="Gallery" icon={compassIcon} />
+            <SidebarLink link="/shop" name="Shop" icon={shopIcon} />
             {props.user.role === "admin" && (
               <SidebarLink link="/admin" name="Admin" icon={adminIcon} />
             )}
@@ -150,27 +152,29 @@ export default function Sidebar() {
             </div>
           ))}
 
-          {/* Help Box */}
-          <div className="relative z-10 mt-6 mr-16 rounded-2xl border-2 border-white p-4 lg:mr-0">
-            <p className="text-center text-white">
-              Ask in{" "}
-              <a
-                className="underline"
-                target="_blank"
-                href="https://hackclub.enterprise.slack.com/archives/C0A9XULS1SL"
-              >
-                #hctg-help
-              </a>{" "}
-              or email{" "}
-              <a className="underline" href="mailto:hctg@hackclub.com">
-                hctg@hackclub.com
-              </a>{" "}
-              if you need help!
-            </p>
-          </div>
+          {/* Bottom Section - Help & User Info */}
+          <div className="relative z-10 mt-auto flex flex-col gap-4 mr-16 lg:mr-0">
+            {/* Help Box */}
+            <div className="rounded-xl border-2 border-white p-4">
+              <p className="text-center text-white smoothing-white">
+                Ask in{" "}
+                <a
+                  className="underline"
+                  target="_blank"
+                  href="https://hackclub.enterprise.slack.com/archives/C0A9XULS1SL"
+                >
+                  #hctg-help
+                </a>{" "}
+                or email{" "}
+                <a className="underline" href="mailto:hctg@hackclub.com">
+                  hctg@hackclub.com
+                </a>{" "}
+                if you need help!
+              </p>
+            </div>
 
-          {/* User Info Card */}
-          <div className="relative z-10 mt-auto mr-16 rounded-2xl bg-[#fecb0d] p-[21px] text-black lg:mr-0">
+            {/* User Info Card */}
+            <div className="rounded-2xl bg-[#fecb0d] p-[21px] text-black">
             <div className="flex items-center gap-3">
               <div className="h-[45px] w-[45px] shrink-0 overflow-hidden rounded-full bg-white">
                 {props.user.avatar ? (
@@ -216,10 +220,11 @@ export default function Sidebar() {
                       <img src="/icons/settings.svg" className="h-5 w-5" />
                     </Link>
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
+                  </div>
+                  </div>
+                  </div>
+                  </div>
+                  </div>
         </div>
       </div>
 
