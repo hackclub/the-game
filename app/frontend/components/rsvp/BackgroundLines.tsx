@@ -2,7 +2,6 @@ export default function BackgroundLines({ className }: { className?: string }) {
   return (
     <svg
       className={className}
-      preserveAspectRatio="none"
       width="100%"
       height="100%"
       overflow="visible"

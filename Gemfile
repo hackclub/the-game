@@ -91,7 +91,7 @@ gem "paper_trail", "~> 17.0"
 
 gem "byebug", "~> 12.0", groups: [ :development, :test ]
 
-gem "faraday"
+gem "faraday", ">= 2.14.1"
 
 gem "pundit", "~> 2.5"
 

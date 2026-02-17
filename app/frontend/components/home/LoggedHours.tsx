@@ -1,3 +1,5 @@
+const QUALIFIED_HOURS = 40;
+
 export default function LoggedHours({
   totalProjectTime,
 }: {
@@ -5,51 +7,37 @@ export default function LoggedHours({
 }) {
   const hours = Math.floor(totalProjectTime / 3600);
   const minutes = Math.floor((totalProjectTime % 3600) / 60);
-  const seconds = totalProjectTime % 60;
-
-  const digits = [
-    Math.floor(hours / 10),
-    hours % 10,
-    Math.floor(minutes / 10),
-    minutes % 10,
-    Math.floor(seconds / 10),
-    seconds % 10,
-  ];
+  const progress = Math.min(totalProjectTime / (QUALIFIED_HOURS * 3600), 1);
 
   return (
-    <div className="rounded-lg">
-      <h2 className="mb-4 text-center text-lg font-semibold">Time Logged</h2>
-      <div className="flex items-center justify-center gap-1">
-        <FlipDigit digit={digits[0]} />
-        <FlipDigit digit={digits[1]} />
-        <Colon />
-        <FlipDigit digit={digits[2]} />
-        <FlipDigit digit={digits[3]} />
-        <Colon />
-        <FlipDigit digit={digits[4]} />
-        <FlipDigit digit={digits[5]} />
+    <div className="flex w-full flex-col">
+      <div className="relative flex items-center">
+        <div className="relative z-10 h-16 w-16 shrink-0 rounded-full bg-[#fecb0d]" />
+        <div className="relative -mx-3 h-5 flex-1 overflow-hidden rounded-full bg-black">
+          <div
+            className="absolute inset-y-0 left-0 bg-[#fecb0d]"
+            style={{ width: `${progress * 100}%` }}
+          />
+        </div>
+        <div
+          className={`relative z-10 h-16 w-16 shrink-0 rounded-full ${progress == 1 ? "bg-[#fecb0d]" : "bg-black"}`}
+        />
       </div>
-      <p className="mt-3 text-center text-sm text-gray-300">
-        hours : minutes : seconds
-      </p>
-    </div>
-  );
-}
 
-function FlipDigit({ digit }: { digit: number }) {
-  return (
-    <div className="relative flex h-14 w-10 items-center justify-center overflow-hidden rounded bg-gray-900 sm:h-16 sm:w-12">
-      <div className="absolute inset-x-0 top-1/2 h-px bg-gray-700" />
-      <span className="text-3xl font-bold text-white sm:text-4xl">{digit}</span>
-    </div>
-  );
-}
-
-function Colon() {
-  return (
-    <div className="flex flex-col gap-2 px-1">
-      <div className="h-1.5 w-1.5 rounded-full bg-gray-400" />
-      <div className="h-1.5 w-1.5 rounded-full bg-gray-400" />
+      <div className="mt-1 flex items-start justify-between px-1">
+        <span className="smoothing-black pl-12 text-2xl font-bold tracking-tight">
+          Begin
+        </span>
+        <p className="smoothing-black text-center text-2xl tracking-[-0.04em]">
+          You've logged{" "}
+          <span className="font-bold">
+            {hours} hours and {minutes} minutes{progress == 1 ? "!" : "."}
+          </span>
+        </p>
+        <span className="smoothing-black pr-12 text-2xl font-bold tracking-tight">
+          Qualified
+        </span>
+      </div>
     </div>
   );
 }

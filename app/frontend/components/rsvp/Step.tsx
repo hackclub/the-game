@@ -23,10 +23,10 @@ export default function Step({
       </div>
       <div className="flex flex-1 flex-col items-start gap-2 lg:gap-3">
         <div className="flex w-full flex-col items-start gap-2 text-black lg:gap-3">
-          <p className="text-4xl leading-none font-bold tracking-[-0.1em] lg:text-7xl lg:tracking-[-7px]">
+          <p className="smoothing-black text-4xl leading-none font-bold tracking-[-0.1em] lg:text-7xl lg:tracking-[-0.05em]">
             {title}
           </p>
-          <p className="max-w-3xl text-xl leading-tight tracking-[-0.06em] lg:text-3xl lg:leading-none lg:tracking-[-1.92px]">
+          <p className="smoothing-black max-w-3xl text-xl leading-tight tracking-[-0.06em] lg:text-3xl lg:leading-none lg:tracking-[-1.92px]">
             {children}
           </p>
         </div>

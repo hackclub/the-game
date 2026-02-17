@@ -1,32 +1,43 @@
 import { usePage, Link } from "@inertiajs/react";
 import type { Item } from "@/interfaces/item";
+import ticketIcon from "@/assets/icons/ticket.svg";
 
 export default function Item({ item }: { item: Item }) {
   const { props } = usePage();
+  const canAfford = props.user.balance >= item.price;
 
   return (
-    <div
-      className="overflow-hidden rounded-lg border border-gray-300 bg-white pt-4 shadow-sm"
-      key={item.id}
-    >
-      <div className="flex items-center justify-between px-4 font-bold">
-        <p className="text-xl">{item.name}</p>
-        <p className="text-lg">{item.price} 🎫</p>
-      </div>
-      <p className="p-4">{item.description}</p>
-      {props.user.balance < item.price ? (
-        <p className="block w-full bg-gray-600 px-3 py-2 text-center text-white">
-          Not enough tickets :(
+    <div>
+      <div className="h-8 rounded-tl-2xl rounded-tr-2xl bg-black" />
+      <div className="rounded-br-2xl rounded-bl-2xl border-2 border-t-0 border-black bg-white px-6 py-4">
+        <div className="flex items-start justify-between gap-6">
+          <h2 className="smoothing-black text-4xl font-bold tracking-[-0.03em]">
+            {item.name}
+          </h2>
+          <div className="flex items-center gap-1.5">
+            <img src={ticketIcon} alt="Tickets" className="h-5 w-5" />
+            <span className="smoothing-black text-2xl tracking-[-0.03em]">
+              {item.price}
+            </span>
+          </div>
+        </div>
+        <p className="smoothing-black mt-2 text-xl tracking-[-0.02em]">
+          {item.description}
         </p>
-      ) : (
-        <Link
-          className="block w-full cursor-pointer bg-green-600 px-3 py-2 text-center text-white"
-          href={`/shop/${item.id}/buy`}
-          method="post"
-        >
-          Buy
-        </Link>
-      )}
+        {canAfford ? (
+          <Link
+            className="smoothing-white mt-4 block w-full bg-black px-5 py-3 text-center text-xl font-bold tracking-tight text-white transition-colors hover:bg-[#fecb0d] hover:text-black"
+            href={`/shop/${item.id}/buy`}
+            method="post"
+          >
+            Buy
+          </Link>
+        ) : (
+          <p className="smoothing-black mt-4 block w-full bg-[#d9d9d9] px-5 py-3 text-center text-xl font-bold tracking-tight text-black/50">
+            Not enough tickets
+          </p>
+        )}
+      </div>
     </div>
   );
 }

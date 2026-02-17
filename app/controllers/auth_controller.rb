@@ -61,6 +61,10 @@ class AuthController < ApplicationController
       session[:user_id] = user.id
       session.delete(:referral_code)
     rescue StandardError => e
+      Rails.logger.error(
+        "HCA login failed: #{e.class}: #{e.message}\n#{e.backtrace&.first(10)&.join("\n")}"
+      )
+
       return redirect_to root_path, alert: "Couldn't log in: #{e.message}"
     end
 

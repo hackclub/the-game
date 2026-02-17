@@ -25,8 +25,10 @@ class Project
     field :playable_url, "Playable URL"
 
     def attach_screenshot(file)
+      return if self.class.airtable_optional_env? && !self.class.airtable_enabled?
+
       data = Base64.encode64(file.download)
-      AirtableService.new.attach(record_id: self.id, field_name: "fldTmg0Sr938GEqjg", type: file.content_type, data:, name: file.filename.sanitized)
+      AirtableService.new.attach(record_id: self.id, field_name: "Screenshot", type: file.content_type, data:, name: "Screenshot of #{self.name}")
     end
   end
 end

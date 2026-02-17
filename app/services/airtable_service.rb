@@ -6,11 +6,29 @@ class AirtableService
   BASE_ID = "appG8V9462X6QDhpZ".freeze
   TABLE_ID = "tbldCj1zJQS2U5x9N".freeze
 
+  def self.enabled?
+    ENV["AIRTABLE_API_KEY"].present?
+  end
+
+  def self.optional_env?
+    Rails.env.development? || Rails.env.test?
+  end
+
+  def self.available?
+    enabled? || !optional_env?
+  end
+
   def initialize
-    @api_key = ENV.fetch("AIRTABLE_API_KEY")
+    @api_key = ENV["AIRTABLE_API_KEY"]
+    return if @api_key.present?
+    return if self.class.optional_env?
+
+    raise KeyError, "AIRTABLE_API_KEY is not set"
   end
 
   def create_rsvp(email:, origin_ip:)
+    return unless self.class.enabled?
+
     rsvp_connection.post do |req|
       req.body = {
         fields: {
@@ -23,6 +41,8 @@ class AirtableService
   end
 
   def get_rsvps
+    return [] unless self.class.enabled?
+
     records = []
     result = { offset: nil }
 
@@ -45,7 +65,9 @@ class AirtableService
   end
 
   def attach(record_id:, field_name:, type:, data:, name:)
-    res = content_connection.post "/v0/#{BASE_ID}/#{record_id}/#{field_name}/uploadAttachment" do |req|
+    return unless self.class.enabled?
+
+    content_connection.post "/v0/#{BASE_ID}/#{record_id}/#{field_name}/uploadAttachment" do |req|
       req.body = {
         "contentType" => type,
         "file" => data,

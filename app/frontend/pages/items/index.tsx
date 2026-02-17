@@ -1,14 +1,18 @@
 import Layout from "@/layouts/layout";
+import PageHeading from "@/components/layout/PageHeading";
 import ItemComponent from "@/components/shop/Item";
 import type { Item } from "@/interfaces/item";
 
 export default function Shop({ items }: { items: Item[] }) {
   return (
     <Layout>
-      <h2 className="mb-1 text-3xl font-bold">Shop</h2>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <PageHeading
+        title="Shop"
+        subtitle="Spend your hard-earned tickets on cool stuff!"
+      />
+      <div className="mt-8 grid grid-cols-1 gap-4 pl-8 md:grid-cols-2 lg:grid-cols-3">
         {items.map((item) => (
-          <ItemComponent item={item} />
+          <ItemComponent key={item.id} item={item} />
         ))}
       </div>
     </Layout>

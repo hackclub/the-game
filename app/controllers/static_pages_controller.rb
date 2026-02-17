@@ -9,7 +9,8 @@ class StaticPagesController < ApplicationController
     end
 
     totalProjectTime = current_user.total_seconds
-    render inertia: { totalProjectTime: totalProjectTime, projectCount: current_user.projects.count, announcements: Announcement.all.map(&:display_hash) }
+    announcements = SlackAnnouncementsService.available? ? SlackAnnouncementsService.fetch_announcements : []
+    render inertia: { totalProjectTime: totalProjectTime, projectCount: current_user.projects.count, announcements: announcements }
   end
 
   def index
@@ -22,7 +23,7 @@ class StaticPagesController < ApplicationController
                 request.headers["X-Forwarded-For"]&.split(",")&.first&.strip ||
                 request.remote_ip
 
-    AirtableService.new.create_rsvp(email: email, origin_ip: origin_ip)
+    AirtableService.new.create_rsvp(email: email, origin_ip: origin_ip) if AirtableService.available?
 
     redirect_to root_path, notice: "RSVP received! We'll be in touch soon."
   end

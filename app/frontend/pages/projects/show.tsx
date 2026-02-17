@@ -1,12 +1,14 @@
 import { router } from "@inertiajs/react";
 import ProjectForm from "@/components/projects/ProjectForm";
 import ProjectReviews from "@/components/projects/ProjectReviews";
+import PageHeading from "@/components/layout/PageHeading";
 import formatTime from "@/utils/formatTime";
 import Layout from "@/layouts/layout";
 import type { Project } from "@/interfaces/project";
 import type { ProjectReview } from "@/interfaces/project_review";
 import type { HackatimeProject } from "@/interfaces/hackatime_project";
 import type { PublicUser } from "@/interfaces/user";
+import clockIcon from "@/assets/icons/clock.svg";
 
 interface Props {
   project: Project & { reviews: (ProjectReview & { author: PublicUser })[] };
@@ -30,60 +32,75 @@ export default function ShowProject({ project, hackatime_projects }: Props) {
 
   return (
     <Layout>
-      <div className="mb-2 flex w-full items-center gap-6">
-        <h2 className="text-3xl font-bold">{project.title}</h2>
-        <div className="flex gap-4">
-          {project.aasm_state !== "submitted" &&
-            project.reported_seconds > project.approved_seconds && (
-              <button
-                className="cursor-pointer rounded-md bg-green-500 p-2 font-bold text-white"
-                onClick={shipProject}
-              >
-                {project.approved_seconds > 0 ? "Re-ship" : "Ship"}
-              </button>
-            )}
-          <button
-            className="cursor-pointer rounded-md bg-red-500 p-2 font-bold text-white"
-            onClick={deleteProject}
-          >
-            Delete
-          </button>
+      <PageHeading
+        eyebrow="Projects"
+        title={project.title ?? "Untitled Project"}
+      />
+
+      <div className="mt-6 flex flex-wrap items-center gap-4 px-4 md:px-16">
+        <div className="flex items-center gap-1.5">
+          <img src={clockIcon} alt="Clock" className="h-5 w-5" />
+          <span className="text-2xl tracking-[-0.06em]">
+            {formatTime(project.total_seconds)}
+          </span>
         </div>
-      </div>
-      <p className="italic">{project.status}</p>
-      <div className="font-normal">
-        {project.real_approved_seconds > 0 && (
-          <p className="text-green-700">
-            {formatTime(project.real_approved_seconds)} approved
-          </p>
+        <span className="text-lg text-gray-600 italic">{project.status}</span>
+        {project.tickets !== 0 && (
+          <span className="text-lg text-green-700">({project.tickets} 🎫)</span>
         )}
-        {project.reported_seconds > project.approved_seconds &&
-          project.aasm_state !== "submitted" && (
-            <p className="text-yellow-700">
-              {project.approved_seconds > 0 && "+"}{" "}
-              {formatTime(project.reported_seconds - project.approved_seconds)}{" "}
-              not yet submitted
-            </p>
-          )}
-        {project.total_seconds > project.approved_seconds &&
-          project.aasm_state === "submitted" && (
-            <p className="text-yellow-700">
-              {project.approved_seconds > 0 && "+"}{" "}
-              {formatTime(project.total_seconds - project.approved_seconds)}{" "}
-              under review
-            </p>
+        {project.aasm_state === "approved" &&
+          project.reported_seconds > project.total_seconds && (
+            <span className="text-lg text-yellow-700">
+              + {formatTime(project.reported_seconds - project.total_seconds)}{" "}
+              not yet approved
+            </span>
           )}
       </div>
-      <p>
-        <a className="text-blue-500 underline" href={project.demo_link ?? "#"}>
-          Demo
-        </a>{" "}
-        |{" "}
-        <a className="text-blue-500 underline" href={project.repo_link ?? "#"}>
-          Repo
-        </a>
-      </p>
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+
+      <div className="mt-4 flex flex-wrap items-center gap-3 px-4 md:px-16">
+        {project.demo_link && (
+          <a
+            className="text-lg underline"
+            href={project.demo_link}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Demo
+          </a>
+        )}
+        {project.demo_link && project.repo_link && (
+          <span className="text-gray-400">|</span>
+        )}
+        {project.repo_link && (
+          <a
+            className="text-lg underline"
+            href={project.repo_link}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Repo
+          </a>
+        )}
+      </div>
+
+      <div className="mt-4 flex gap-3 px-4 md:px-16">
+        {project.aasm_state !== "submitted" && (
+          <button
+            className="cursor-pointer bg-[#fecb0d] px-6 py-2 text-lg font-bold text-black hover:bg-[#e5b80b]"
+            onClick={shipProject}
+          >
+            {project.aasm_state === "approved" ? "Re-ship" : "Ship"}
+          </button>
+        )}
+        <button
+          className="cursor-pointer bg-black px-6 py-2 text-lg font-bold text-white hover:bg-gray-800"
+          onClick={deleteProject}
+        >
+          Delete
+        </button>
+      </div>
+
+      <div className="mt-8">
         <ProjectForm
           project={project}
           hackatime_projects={hackatime_projects}
