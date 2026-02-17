@@ -20,6 +20,8 @@ export interface PrivateUser {
   account_id: string;
   hackatime_id: string;
   slack_id: string;
+  onboarding_completed: boolean;
+  project_count?: number;
 }
 
 export interface PublicUser {

@@ -87,7 +87,7 @@ class AuthController < ApplicationController
     if current_user.projects.any?
       redirect_to home_path, notice: "Successfully linked Hackatime!"
     else
-      redirect_to new_project_path
+      redirect_to home_path, notice: "Successfully linked Hackatime!"
     end
   rescue StandardError => e
     redirect_to home_path, alert: "Couldn't link hackatime: #{e.message}"

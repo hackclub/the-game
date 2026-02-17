@@ -1,4 +1,5 @@
 import Sidebar from "@/components/sidebar";
+import TutorialOverlay from "@/components/onboarding/TutorialOverlay";
 import { Head } from "@inertiajs/react";
 
 export default function Layout({
@@ -21,6 +22,8 @@ export default function Layout({
         <main className="-ml-2 h-screen w-full flex-1 overflow-y-scroll px-6 py-10">
           {children}
         </main>
+
+        <TutorialOverlay />
       </div>
     </>
   );
