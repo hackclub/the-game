@@ -143,6 +143,7 @@ export default function ProjectReviews({
                     setData("content", e.target.value);
                   }
                 }}
+                required={data.review_type !== "comment"}
                 placeholder={`Add your comment here - this will ${adminOnly && data.review_type === "comment" ? "only be visible to admins" : "be shown to the author"}`}
               />
               {data.review_type !== "comment" && (
@@ -152,6 +153,7 @@ export default function ProjectReviews({
                   onChange={(e) => {
                     setData("admin_content", e.target.value);
                   }}
+                  required
                   placeholder="Justify this review - this is only shown to admins"
                 />
               )}
