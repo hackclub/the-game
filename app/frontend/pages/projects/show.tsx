@@ -45,9 +45,6 @@ export default function ShowProject({ project, hackatime_projects }: Props) {
           </span>
         </div>
         <span className="text-lg text-gray-600 italic">{project.status}</span>
-        {project.tickets !== 0 && (
-          <span className="text-lg text-green-700">({project.tickets} 🎫)</span>
-        )}
         {project.aasm_state === "approved" &&
           project.reported_seconds > project.total_seconds && (
             <span className="text-lg text-yellow-700">
