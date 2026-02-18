@@ -16,7 +16,9 @@ class ApplicationController < ActionController::Base
 
   inertia_share do
     if user_logged_in?
-      { user: current_user.display_hash(private: true) }
+      user_hash = current_user.display_hash(private: true)
+      user_hash["project_count"] = current_user.projects.count unless current_user.onboarding_completed?
+      { user: user_hash }
     else
       {}
     end

@@ -63,6 +63,8 @@ Rails.application.routes.draw do
     get "/stats", to: "admin#stats"
   end
 
+  post "onboarding/complete", to: "onboarding#complete"
+
   get "hackatime/link", to: "auth#hackatime_link"
   get "hackatime/callback", to: "auth#hackatime_callback"
 end

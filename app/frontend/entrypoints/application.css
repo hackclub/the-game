@@ -91,3 +91,16 @@ body {
 .animate-scale-up {
   animation: scale-up 0.1s ease-out;
 }
+
+@keyframes move-right {
+  from {
+    transform: translateX(0px);
+  }
+  to {
+    transform: translateX(12px);
+  }
+}
+
+.animate-move-right {
+  animation: move-right 0.75s ease-in-out infinite alternate-reverse;
+}
