@@ -50,6 +50,8 @@ Rails.application.routes.draw do
     resources :announcements, only: [ :index, :create, :edit, :update, :destroy ]
   end
 
+  get "/review", to: "review#index"
+
   scope "/auth" do
     get "hca/callback", to: "auth#account_callback"
     post "logout", to: "auth#logout"

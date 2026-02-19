@@ -1,10 +1,10 @@
 class ProjectPolicy < ApplicationPolicy
   def show?
-    record.user == user || user.admin?
+    record.user == user || user.admin? || user.reviewer?
   end
 
   def update?
-    user.admin? || (record.user == user && !record.submitted?)
+    user.admin? || user.reviewer? || (record.user == user && !record.submitted?)
   end
 
   alias_method :destroy?, :show?

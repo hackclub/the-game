@@ -81,7 +81,13 @@ module Authentication
 
   def signed_in_admin
     unless current_user.admin?
-      redirect_to home_path, flash: { alert: "You'll need to sign in as an admin" }
+      redirect_back_or_to home_path, flash: { alert: "You'll need to sign in as an admin" }
+    end
+  end
+
+  def signed_in_reviewer
+    unless current_user.admin? || current_user.reviewer?
+      redirect_back_or_to home_path, flash: { alert: "You'll need to sign in as an admin/reviewer" }
     end
   end
 end

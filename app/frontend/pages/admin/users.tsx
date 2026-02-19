@@ -67,7 +67,7 @@ export default function Users({ users, q, role, pagination }: Props) {
           onChange={(e) => setNewQuery(e.target.value)}
         />
 
-        {["user", "admin"].map((r) => (
+        {["user", "reviewer", "admin"].map((r) => (
           <button
             className={`cursor-pointer rounded-full border px-3 py-2 ${newRole === r ? "bg-blue-300" : "bg-white"}`}
             onClick={() => {
