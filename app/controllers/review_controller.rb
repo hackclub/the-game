@@ -4,8 +4,10 @@ class ReviewController < ApplicationController
 
   def index
     queue = Project.submitted.order(submitted_at: :asc).first(3)
+    reviews_by_user = Project::Review.where.not(review_type: :comment).where("created_at > '#{1.week.ago.iso8601}'").group(:author_id).count
     render inertia: "review/index", props: {
-      queue: queue.map { |project| project.display_hash.merge(username: project.user&.username) }
+      queue: queue.map { |project| project.display_hash.merge(username: project.user&.username) },
+      leaderboard: reviews_by_user.to_a.map { |entry| { id: entry[0], name: User.find(entry[0]).username, count: entry[1] } }
     }
   end
 end
