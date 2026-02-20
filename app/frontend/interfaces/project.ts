@@ -20,4 +20,5 @@ export interface Project {
   screenshot: string;
   approved_seconds: number;
   real_approved_seconds: number;
+  high_quality: boolean;
 }

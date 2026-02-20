@@ -70,6 +70,12 @@ export default function ShowProject() {
               )}
           </div>
 
+          {project.high_quality && (
+            <p className="px-4 font-semibold text-yellow-600 italic md:px-16">
+              🎫 Golden ticket winner!
+            </p>
+          )}
+
           <div className="mt-4 flex flex-wrap items-center gap-3 px-4 md:px-16">
             {project.demo_link && (
               <a

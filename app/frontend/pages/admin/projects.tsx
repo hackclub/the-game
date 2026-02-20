@@ -13,12 +13,20 @@ interface Props {
   projects: (Project & { user: PublicUser })[];
   q: string;
   status: string;
+  high_quality: boolean;
   pagination: Pagination;
 }
 
-export default function Projects({ projects, q, status, pagination }: Props) {
+export default function Projects({
+  projects,
+  q,
+  status,
+  high_quality,
+  pagination,
+}: Props) {
   const [newQuery, setNewQuery] = useState(q || "");
   const [newStatus, setNewStatus] = useState(status || "");
+  const [newHighQuality, setNewHighQuality] = useState(high_quality || false);
 
   const [rowData, setRowData] = useState(projects);
   const [colDefs, setColDefs] = useState([
@@ -53,6 +61,10 @@ export default function Projects({ projects, q, status, pagination }: Props) {
       valueFormatter: (field: any) => (field.value / 3600).toPrecision(4),
     },
     {
+      field: "high_quality" as const,
+      headerName: "High Quality?",
+    },
+    {
       field: "created_at" as const,
       headerName: "Created At",
       valueFormatter: (field: any) => new Date(field.value).toLocaleString(),
@@ -62,7 +74,7 @@ export default function Projects({ projects, q, status, pagination }: Props) {
   function goToPage(page: number) {
     router.get(
       "/admin/projects",
-      { page, q, status },
+      { page, q, status, high_quality },
       { preserveScroll: true },
     );
   }
@@ -70,7 +82,7 @@ export default function Projects({ projects, q, status, pagination }: Props) {
   function search() {
     router.get(
       "/admin/projects",
-      { q: newQuery, status: newStatus },
+      { q: newQuery, status: newStatus, high_quality: newHighQuality },
       { preserveScroll: true },
     );
   }
@@ -102,6 +114,15 @@ export default function Projects({ projects, q, status, pagination }: Props) {
             {s[0].toUpperCase() + s.slice(1)}
           </button>
         ))}
+
+        <button
+          className={`mx-4 cursor-pointer rounded-full border px-3 py-2 ${newHighQuality ? "bg-blue-300" : "bg-white"}`}
+          onClick={() => {
+            setNewHighQuality((b) => !b);
+          }}
+        >
+          High Quality
+        </button>
 
         <button
           className="cursor-pointer rounded-md border bg-white px-3 py-2"

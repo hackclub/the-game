@@ -14,6 +14,7 @@ export default function ProjectReviews({
     content: "",
     admin_content: "",
     approved_hours: Number((project.total_seconds / 3600).toPrecision(4)),
+    high_quality: null as boolean | null,
   });
   const [adminOnly, setAdminOnly] = useState(false);
   const { props } = usePage();
@@ -118,17 +119,29 @@ export default function ProjectReviews({
                   </div>
                 )}
                 {data.review_type === "approval" && (
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="number"
-                      value={data.approved_hours}
-                      className="border-[#cacaca] bg-[#d9d9d9] px-4 py-2 text-xl outline-none"
-                      onChange={(e) => {
-                        setData("approved_hours", Number(e.target.value));
-                      }}
-                    />
-                    <label className="text-lg">hours</label>
-                  </div>
+                  <>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        value={data.approved_hours}
+                        className="border-[#cacaca] bg-[#d9d9d9] px-4 py-2 text-xl outline-none"
+                        onChange={(e) => {
+                          setData("approved_hours", Number(e.target.value));
+                        }}
+                      />
+                      <label className="text-lg">hours</label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        value={(data.high_quality || false).toString()}
+                        onChange={(e) =>
+                          setData("high_quality", e.target.checked)
+                        }
+                      />
+                      <label className="text-lg">High quality?</label>
+                    </div>
+                  </>
                 )}
               </div>
               <textarea

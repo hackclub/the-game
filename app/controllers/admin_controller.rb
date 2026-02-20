@@ -17,6 +17,10 @@ class AdminController < ApplicationController
       filtered_projects = filtered_projects.where(aasm_state: params[:status])
     end
 
+    if params[:high_quality] == "true"
+      filtered_projects = filtered_projects.where(high_quality: true)
+    end
+
     if params[:q].present?
       filtered_projects = filtered_projects.search_by_title(params[:q])
     end
@@ -26,6 +30,7 @@ class AdminController < ApplicationController
       projects: paginated_projects.map { |project| project.display_hash(user: true) },
       q: params[:q],
       status: params[:status],
+      high_quality: params[:high_quality] == "true",
       pagination: {
         current_page: paginated_projects.current_page,
         next_page: paginated_projects.next_page,
