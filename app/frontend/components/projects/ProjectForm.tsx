@@ -31,7 +31,7 @@ interface FieldHeadingProps {
 
 function FieldHeading({ label, description, required }: FieldHeadingProps) {
   return (
-    <div className="flex flex-row items-end gap-3">
+    <div className="flex flex-row flex-wrap items-end gap-3">
       <label className="smoothing-black text-3xl font-bold tracking-[-0.02em]">
         {label} {required && <span className="text-red-600">*</span>}
       </label>

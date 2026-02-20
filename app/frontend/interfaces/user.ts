@@ -22,12 +22,23 @@ export interface PrivateUser {
   slack_id: string;
   onboarding_completed: boolean;
   project_count?: number;
+  verification_status: string;
+}
+
+export interface ReviewerUser {
+  id: number;
+  avatar: string;
+  role: string;
+  username: string;
+
+  email: string;
+  hackatime_id: string;
+  verification_status: string;
 }
 
 export interface PublicUser {
   id: number;
   avatar: string;
-  email: string;
   role: string;
   username: string;
 }
