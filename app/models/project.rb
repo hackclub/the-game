@@ -125,11 +125,11 @@ class Project < ApplicationRecord
     when "pending"
       "In progress"
     when "submitted"
-      "Under review"
+      "Under review on #{submitted_at.strftime("%Y-%m-%d")}"
     when "approved"
-      "Approved!"
+      "Approved on #{approved_at.strftime("%Y-%m-%d")}"
     when "rejected"
-      "Rejected"
+      "Rejected on #{rejected_at.strftime("%Y-%m-%d")}"
     else
       "Unknown"
     end
