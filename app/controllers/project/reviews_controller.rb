@@ -12,6 +12,8 @@ class Project
 
       @project.reviews.create!(review_params.merge(author: current_user, approved_seconds: review_params[:review_type] == "approval" ? params[:approved_hours] * 3600 : nil))
 
+      @project.update!(high_quality: params[:high_quality]) if params[:high_quality].present?
+
       redirect_to project_path(@project)
     end
 

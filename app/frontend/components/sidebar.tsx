@@ -6,6 +6,7 @@ import hammerIcon from "@/assets/icons/hammer.svg";
 import compassIcon from "@/assets/icons/compass.svg";
 import adminIcon from "@/assets/icons/admin.svg";
 import shopIcon from "@/assets/icons/shop.svg";
+import reviewIcon from "@/assets/icons/review.svg";
 
 import clsx from "clsx";
 
@@ -134,6 +135,10 @@ export default function Sidebar() {
             <SidebarLink link="/projects" name="Projects" icon={hammerIcon} />
             <SidebarLink link="/explore" name="Gallery" icon={compassIcon} />
             <SidebarLink link="/shop" name="Shop" icon={shopIcon} />
+            {(props.user.role === "admin" ||
+              props.user.role === "reviewer") && (
+              <SidebarLink link="/review" name="Review" icon={reviewIcon} />
+            )}
             {props.user.role === "admin" && (
               <SidebarLink link="/admin" name="Admin" icon={adminIcon} />
             )}

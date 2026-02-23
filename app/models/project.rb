@@ -9,6 +9,7 @@
 #  deleted_at       :datetime
 #  demo_link        :string
 #  desc             :text
+#  high_quality     :boolean          default(FALSE), not null
 #  internal_notes   :text
 #  project_type     :string
 #  rejected_at      :datetime
@@ -91,8 +92,8 @@ class Project < ApplicationRecord
     end
   end
 
-  def display_hash(reviews: false, user: false, admin: false)
-    hash = self.as_json.slice("id", "aasm_state", "approved_at", "demo_link", "desc", "rejected_at", "repo_link", "submitted_at", "title", "ysws", "created_at", "updated_at", "user_id")
+  def display_hash(reviews: false, user: false, admin: false, reviewer: false)
+    hash = self.as_json.slice("id", "aasm_state", "approved_at", "demo_link", "desc", "rejected_at", "repo_link", "submitted_at", "title", "ysws", "created_at", "updated_at", "user_id", "high_quality")
     hash["reported_seconds"] = reported_seconds
     hash["total_seconds"] = display_seconds
     hash["approved_seconds"] = approved_seconds
@@ -105,15 +106,15 @@ class Project < ApplicationRecord
     end
 
     if reviews
-      if admin
-        hash["reviews"] = self.reviews.map { |review| review.display_hash(author: true, admin:) }
+      if admin || reviewer
+        hash["reviews"] = self.reviews.map { |review| review.display_hash(author: true, admin: true) }
       else
         hash["reviews"] = self.reviews.not_admin_only.map { |review| review.display_hash(author: true) }
       end
     end
 
     if user
-      hash["user"] = self.user.display_hash
+      hash["user"] = self.user.display_hash(review: reviewer || admin)
     end
 
     hash
@@ -124,11 +125,11 @@ class Project < ApplicationRecord
     when "pending"
       "In progress"
     when "submitted"
-      "Under review"
+      "Under review on #{submitted_at.strftime("%Y-%m-%d")}"
     when "approved"
-      "Approved!"
+      "Approved on #{approved_at.strftime("%Y-%m-%d")}"
     when "rejected"
-      "Rejected"
+      "Rejected on #{rejected_at.strftime("%Y-%m-%d")}"
     else
       "Unknown"
     end

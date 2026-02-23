@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_17_201737) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_20_012617) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
   enable_extension "pg_catalog.plpgsql"
@@ -172,6 +172,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_17_201737) do
     t.datetime "deleted_at"
     t.string "demo_link"
     t.text "desc"
+    t.boolean "high_quality", default: false, null: false
     t.text "internal_notes"
     t.string "project_type"
     t.datetime "rejected_at"

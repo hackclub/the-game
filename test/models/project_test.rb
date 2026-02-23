@@ -9,6 +9,7 @@
 #  deleted_at       :datetime
 #  demo_link        :string
 #  desc             :text
+#  high_quality     :boolean          default(FALSE), not null
 #  internal_notes   :text
 #  project_type     :string
 #  rejected_at      :datetime

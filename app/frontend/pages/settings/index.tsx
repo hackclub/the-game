@@ -16,6 +16,7 @@ export default function SettingsIndex() {
 
       <div className="smoothing-black flex flex-col gap-4 p-8 text-xl">
         {props.user.role === "admin" && <p>You are an admin.</p>}
+        {props.user.role === "reviewer" && <p>You are a reviewer.</p>}
         <p>
           <span className="font-bold">Email: </span>
           {props.user.email}
