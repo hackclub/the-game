@@ -33,6 +33,7 @@ export interface ReviewerUser {
 
   email: string;
   hackatime_id: string;
+  slack_id: string;
   verification_status: string;
 }
 

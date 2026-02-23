@@ -134,7 +134,9 @@ export default function ShowProject() {
                 className="h-28 w-28"
               />
               <div>
-                <p className="font-bold">{project.user!.username}</p>
+                <p className="font-bold">
+                  {project.user!.username} ({project.user!.id})
+                </p>
                 <p>{project.user!.email}</p>
                 <p>
                   <span className="font-semibold">Hackatime ID:</span>{" "}
@@ -153,6 +155,10 @@ export default function ShowProject() {
                     Billy
                   </a>
                   )
+                </p>
+                <p>
+                  <span className="font-semibold">Slack ID:</span>{" "}
+                  {project.user!.slack_id}
                 </p>
               </div>
             </div>

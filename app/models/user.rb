@@ -108,7 +108,7 @@ class User < ApplicationRecord
 
       hash
     elsif review
-      self.as_json.slice("id", "avatar", "role", "username", "email", "hackatime_id", "verification_status")
+      self.as_json.slice("id", "avatar", "role", "username", "email", "hackatime_id", "slack_id", "verification_status")
     else
       self.as_json.slice("id", "avatar", "role", "username")
     end
