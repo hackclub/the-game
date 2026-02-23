@@ -4,16 +4,6 @@ OmniAuth.config.silence_get_warning = true
 Rails.application.config.middleware.use OmniAuth::Builder do
   provider :openid_connect,
     name: :hca,
-    # setup: lambda { |env|
-    #   req = Rack::Request.new(env)
-    #   strat = env["omniauth.strategy"]
-
-    #   if req.params["email"].present?
-    #     strat.options[:authorize_params] ||= {}
-    #     strat.options[:authorize_params][:login_hint] =
-    #       req.params["email"]
-    #   end
-    # },
     allow_authorize_params: [ :login_hint ],
     scope: Rails.env.production? ? [ :openid, :email, :profile, :address, :birthdate, :slack_id, :verification_status ] : [ :openid, :profile, :email, :name, :slack_id, :verification_status ],
     response_type: :code,
