@@ -114,7 +114,7 @@ class Project < ApplicationRecord
     end
 
     if user
-      hash["user"] = self.user.display_hash(review: reviewer)
+      hash["user"] = self.user.display_hash(review: reviewer || admin)
     end
 
     hash
