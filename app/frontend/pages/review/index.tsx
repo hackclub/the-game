@@ -4,12 +4,14 @@ import ProjectCard from "@/components/projects/ProjectCard";
 
 interface Props {
   queue: (Project & { username: string })[];
+  total_queue_count: number;
   week_leaderboard: { id: number; name: string; count: number }[];
   alltime_leaderboard: { id: number; name: string; count: number }[];
 }
 
 export default function Review({
   queue,
+  total_queue_count,
   week_leaderboard,
   alltime_leaderboard,
 }: Props) {
@@ -29,7 +31,10 @@ export default function Review({
         </div>
 
         <div className="py-5">
-          <h2 className="mb-2 text-3xl font-semibold">Next up to review!</h2>
+          <h2 className="text-3xl font-semibold">Next up to review!</h2>
+          <p className="mb-2 text-gray-500 italic">
+            showing {queue.length} projects, {total_queue_count} in total
+          </p>
           <div className="grid grid-cols-3 gap-5">
             {queue.map((project) => (
               <ProjectCard project={project} />
