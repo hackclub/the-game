@@ -28,8 +28,8 @@ export default function ProjectReviews({
   }
 
   return (
-    <div className="mt-8 flex w-full flex-col px-16">
-      <h2 className="smoothing-black text-3xl font-bold tracking-[-0.02em]">
+    <div className="mt-8 flex w-full flex-col px-16 text-lg">
+      <h2 className="smoothing-black mb-2 text-3xl font-bold tracking-[-0.02em]">
         Reviews
       </h2>
       {project.aasm_state === "pending" ? (
