@@ -77,6 +77,9 @@ class AdminController < ApplicationController
   end
 
   def orders
-    render inertia: "admin/items", props: { items: Item::Purchase.all.display(&:display_hash) }
+    Rails.logger.warn("I am here")
+    order = Item::Purchase
+    Rails.logger.warn(order)
+    render inertia: "admin/orders", props: { orders: order.all }
   end
 end

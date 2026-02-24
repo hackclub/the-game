@@ -1,18 +1,21 @@
 import Layout from "@/layouts/layout";
-import { Item } from "@/interfaces/item";
+import { Order } from "@/interfaces/orders";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import { useState } from "react";
 import ItemForm from "@/components/admin/items/ItemForm";
 
+
 ModuleRegistry.registerModules([AllCommunityModule]);
 
+
 interface Props {
-  items: Item[];
+  orders: Order[];
 }
 
-export default function Items({ items }: Props) {
-  const [rowData, setRowData] = useState(items);
+
+export default function Orders({ orders }: Props) {
+  const [rowData, setRowData] = useState(orders);
   const [colDefs, setColDefs] = useState([
     {
       field: "id" as const,
@@ -29,25 +32,15 @@ export default function Items({ items }: Props) {
       },
     },
     {
-      field: "name" as const,
+      field: "user_id" as const,
     },
     {
-      field: "description" as const,
-    },
-    {
-      field: "price" as const,
-    },
+      field: "item_id" as const,
+    }
   ]);
-
   return (
     <Layout>
-      <h1 className="text-3xl font-bold">Items</h1>
-
-      <div className="py-6">
-        <h2 className="text-2xl font-bold">Create Item</h2>
-        <ItemForm />
-      </div>
-
+      <h1 className="text-3xl font-bold">Orders</h1>
       <div style={{ height: 500 }}>
         <AgGridReact
           rowData={rowData}
@@ -56,5 +49,5 @@ export default function Items({ items }: Props) {
         />
       </div>
     </Layout>
-  );
+  )
 }
