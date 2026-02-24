@@ -18,9 +18,17 @@ class Item
     belongs_to :user
     belongs_to :item
 
+    has_paper_trail
+
+    
     validate :check_balance, on: :create
 
+    include AASM
+
+
     private
+
+   
 
     def check_balance
       if user.balance < item.price
