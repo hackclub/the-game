@@ -19,6 +19,9 @@ export default function ShowOrder({ orders, order_user, item }: Props) {
       function handleFulfill() {
         router.patch(`/orders/${orders.id}/fulfill`)
       }
+      function handleCancel() {
+        router.patch(`/orders/${orders.id}/cancel`)
+      }
     
   return (
     <Layout>
@@ -118,7 +121,8 @@ export default function ShowOrder({ orders, order_user, item }: Props) {
               onClick={handleFulfill}>
                 Fulfilled
               </button>
-              <button className="cursor-pointer rounded-md bg-red-300 px-4 py-2 font-bold text-white">
+              <button className="cursor-pointer rounded-md bg-red-300 px-4 py-2 font-bold text-white"
+              onClick={handleCancel}>
                 Cancel
               </button>
               <button className="cursor-pointer rounded-md bg-red-500 px-4 py-2 font-bold text-white"

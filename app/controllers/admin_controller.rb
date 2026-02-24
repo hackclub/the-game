@@ -77,9 +77,24 @@ class AdminController < ApplicationController
   end
 
   def orders
-    Rails.logger.warn("I am here")
-    order = Item::Purchase
-    Rails.logger.warn(order)
-    render inertia: "admin/orders", props: { orders: order.all }
+    filtered_orders = Item::Purchase.includes(:user, :item)
+
+    if params[:status].present?
+      filtered_orders = filtered_orders.where(aasm_state: params[:status])
+    end
+
+    paginated_orders = filtered_orders.order(created_at: :desc).page(params[:page]).per(10)
+
+    render inertia: "admin/orders", props: {
+      orders: paginated_orders,
+      status: params[:status],
+      pagination: {
+        current_page: paginated_orders.current_page,
+        next_page: paginated_orders.next_page,
+        prev_page: paginated_orders.prev_page,
+        total_pages: paginated_orders.total_pages,
+        total_count: paginated_orders.total_count
+      }
+    }
   end
 end
