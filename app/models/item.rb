@@ -11,8 +11,15 @@
 #
 class Item < ApplicationRecord
   has_many :purchases, dependent: :destroy
+  has_one_attached :image
 
   def display_hash
-    self.as_json.slice("id", "description", "name", "price")
+    hash = self.as_json.slice("id", "description", "name", "price")
+
+    if image.attached? && image.persisted?
+      hash["image"] = Rails.application.routes.url_helpers.rails_blob_path(image, disposition: :inline)
+    end
+
+    hash
   end
 end

@@ -10,6 +10,13 @@ export default function Item({ item }: { item: Item }) {
     <div>
       <div className="h-8 rounded-tl-2xl rounded-tr-2xl bg-black" />
       <div className="rounded-br-2xl rounded-bl-2xl border-2 border-t-0 border-black bg-white px-6 py-4">
+        {item.image && (
+          <img
+            src={item.image}
+            alt={item.name}
+            className="mb-4 h-40 w-full object-contain"
+          />
+        )}
         <div className="flex items-start justify-between gap-6">
           <h2 className="smoothing-black text-4xl font-bold tracking-[-0.03em]">
             {item.name}

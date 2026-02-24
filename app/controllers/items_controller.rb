@@ -4,7 +4,7 @@ class ItemsController < ApplicationController
   skip_after_action :verify_authorized, only: [ :index, :buy, :create, :edit, :update, :destroy ]
 
   def index
-    render inertia: "items/index", props: { items: Item.all.map(&:display_hash) }
+    render inertia: "items/index", props: { items: Item.with_attached_image.map(&:display_hash) }
   end
 
   def buy
@@ -48,6 +48,12 @@ class ItemsController < ApplicationController
   end
 
   def item_params
-    params.require(:item).permit(:name, :description, :price)
+    p = params.permit(:name, :description, :price)
+
+    unless params[:image] == "0"
+      p[:image] = params[:image]
+    end
+
+    p
   end
 end
