@@ -1,6 +1,6 @@
 class OrdersController < ApplicationController
   before_action :signed_in_admin
-  before_action :get_order, only: [ :show, :destroy ]
+  before_action :get_order, only: [ :show, :destroy, :cancel, :fulfill ]
   skip_after_action :verify_authorized
 
 
