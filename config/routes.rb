@@ -47,7 +47,7 @@ Rails.application.routes.draw do
 
   resources :settings
   namespace :admin do
-    resources :announcements, only: [ :index, :create, :edit, :update, :destroy ]
+  resources :announcements, only: [ :index, :create, :edit, :update, :destroy ]
   end
 
   get "/review", to: "review#index"

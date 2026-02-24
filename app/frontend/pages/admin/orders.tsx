@@ -19,12 +19,16 @@ export default function Orders({ orders }: Props) {
   const [colDefs, setColDefs] = useState([
     {
       field: "id" as const,
-      headerName: "ID",
+      headerName: "Order ID"
+    },
+    {
+      field: "item_id" as const,
+      headerName: "Item ID",
       cellRenderer: (field: any) => {
         return (
           <a
             className="text-blue-500 underline"
-            href={`/shop/${field.value}/edit`}
+            href={`/shop/view`}
           >
             {field.value}
           </a>
@@ -33,10 +37,8 @@ export default function Orders({ orders }: Props) {
     },
     {
       field: "user_id" as const,
+      headerName: "User ID"
     },
-    {
-      field: "item_id" as const,
-    }
   ]);
   return (
     <Layout>
