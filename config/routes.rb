@@ -44,6 +44,10 @@ Rails.application.routes.draw do
   end
 
  resources :orders, only: [ :index, :create, :edit, :update, :show, :destroy ] do
+  member do
+    patch :cancel
+    patch :fulfill
+  end
  end
 
 
