@@ -11,7 +11,7 @@ interface ProjectCardProps {
 
 export default function ProjectCard({
   project,
-  link = `/projects/${project.id}`,
+  link = `${project.demo_link}`,
   onClick,
 }: ProjectCardProps) {
   const handleClick = () => {
@@ -68,7 +68,7 @@ export default function ProjectCard({
         {content}
       </div>
     );
-  }
+  } 
 
   return (
     <a
