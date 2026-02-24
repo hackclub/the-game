@@ -43,6 +43,11 @@ Rails.application.routes.draw do
     end
   end
 
+ resources :orders, only: [ :index, :create, :edit, :update, :show, :destroy ] do
+ end
+
+
+
   get "/explore", to: "explore#index"
 
   resources :settings
