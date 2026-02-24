@@ -70,6 +70,11 @@ export default function AdminPage() {
             title="Shop Items"
             description="Create/delete/modify items in the shop"
           />
+          <AdminNav
+            href="/admin/orders"
+            title="Shop Orders"
+            description="View and fulfill shop orders"
+          />
         </div>
       </div>
     </Layout>

@@ -63,6 +63,7 @@ Rails.application.routes.draw do
     get "/users", to: "admin#users"
     get "/items", to: "admin#items"
     get "/stats", to: "admin#stats"
+    get "/orders", to: "admin#orders"
   end
 
   post "onboarding/complete", to: "onboarding#complete"

@@ -75,4 +75,8 @@ class AdminController < ApplicationController
   def stats
     render inertia: "admin/stats", props: { stats: Statistic.generate_statistic_data }
   end
+
+  def orders
+    render inertia: "admin/items", props: { items: Item::Purchase.all.display(&:display_hash) }
+  end
 end
