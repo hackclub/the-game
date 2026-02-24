@@ -1,8 +1,16 @@
 class OrdersController < ApplicationController
   before_action :signed_in_admin
-  before_action :get_order, only: [:show, :destroy, :cancel, :fulfill]
+  before_action :get_order, only: [ :show, :destroy ]
   skip_after_action :verify_authorized
- 
+
+
+  def index
+    @orders = Item::Purchase.where(user_id: current_user.id).includes(:item)
+    render inertia: "orders/index", props: {
+      orders: @orders.map { |order| order.as_json.merge(item: order.item.display_hash) }
+    }
+  end
+
   def show
     render inertia: "orders/show", props: {
       orders: @order,
@@ -11,19 +19,19 @@ class OrdersController < ApplicationController
     }
   end
 
+  def destroy
+    @order.destroy!
+    redirect_to admin_orders_path, notice: "Order Deleted"
+  end
+
   def cancel
     @order.cancel!
-    redirect_to order_path(@order), notice: "Order cancelled"
+    redirect_to admin_orders_path(@order), notice: "Order cancelled"
   end
 
   def fulfill
     @order.fulfill!
-    redirect_to order_path(@order), notice: "Order fulfilled"
-  end
-
-  def destroy
-    @order.destroy!
-    redirect_to admin_orders_path, notice: "Order deleted"
+    redirect_to admin_orders_pathh(@order), notice: "Order fulfilled"
   end
 
   private
