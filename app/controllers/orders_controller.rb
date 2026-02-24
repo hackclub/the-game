@@ -1,11 +1,10 @@
 class OrdersController < ApplicationController
   before_action :signed_in_admin
+  before_action :get_order, only: [:show]
   skip_after_action :verify_authorized
  
   def show
-  orders = @order.all
-  Rails.logger.warn(orders)
-  render inertia: "orders/show", props: { orders: orders}
+  render inertia: "orders/show", props: { orders: @order }
   end
 
 
