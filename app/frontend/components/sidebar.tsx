@@ -139,9 +139,6 @@ export default function Sidebar() {
               props.user.role === "reviewer") && (
               <SidebarLink link="/review" name="Review" icon={reviewIcon} />
             )}
-             {props.user.role == "admin" && (
-              <SidebarLink link="/orders" name="Orders" icon={shopIcon} />
-            )}
             {props.user.role === "admin" && (
               <SidebarLink link="/admin" name="Admin" icon={adminIcon} />
             )}

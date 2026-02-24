@@ -98,6 +98,7 @@ export default function RsvpPage() {
                 />
               </div>
 
+        
               <button
                 type="submit"
                 className="flex h-full w-full cursor-pointer items-center justify-center gap-3 border-4 border-black bg-white px-4 py-4 transition-colors hover:bg-black hover:text-white sm:w-auto lg:gap-4 lg:px-6 lg:py-6"
