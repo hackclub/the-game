@@ -2,12 +2,14 @@
 #
 # Table name: item_purchases
 #
-#  id         :bigint           not null, primary key
-#  aasm_state :string           default("pending"), not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  item_id    :bigint           not null
-#  user_id    :bigint           not null
+#  id            :bigint           not null, primary key
+#  aasm_state    :string           default("pending"), not null
+#  fulfilled_at  :datetime
+#  processing_at :datetime
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  item_id       :bigint           not null
+#  user_id       :bigint           not null
 #
 # Indexes
 #
