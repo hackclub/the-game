@@ -13,7 +13,10 @@ export default function Shop({ items }: { items: Item[] }) {
           <>
             Spend your hard-earned tickets on cool stuff!
             <br />
-            <Link href="/orders" className="mt-2 inline-block bg-black px-4 py-1.5 font-bold text-white no-underline transition-colors hover:bg-[#fecb0d] hover:text-black">
+            <Link
+              href="/orders"
+              className="mt-2 inline-block bg-black px-4 py-1.5 font-bold text-white no-underline transition-colors hover:bg-[#fecb0d] hover:text-black"
+            >
               View Orders
             </Link>
           </>
@@ -24,7 +27,6 @@ export default function Shop({ items }: { items: Item[] }) {
           <ItemComponent key={item.id} item={item} />
         ))}
       </div>
-
     </Layout>
   );
 }

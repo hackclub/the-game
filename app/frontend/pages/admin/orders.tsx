@@ -1,5 +1,5 @@
 import Layout from "@/layouts/layout";
-import { Order } from "@/interfaces/orders";
+import { Order } from "@/interfaces/order";
 import { Pagination } from "@/interfaces/pagination";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";

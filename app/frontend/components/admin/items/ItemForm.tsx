@@ -6,7 +6,7 @@ export default function ItemForm({ item }: { item?: Item }) {
     name: item?.name,
     description: item?.description,
     price: item?.price,
-    image: item?.image ? 0 : null as File | null | 0
+    image: item?.image ? 0 : (null as File | null | 0),
   });
 
   function handleSubmit(e: React.FormEvent) {

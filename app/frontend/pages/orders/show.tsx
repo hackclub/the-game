@@ -1,10 +1,9 @@
 import Layout from "@/layouts/layout";
 import PageHeading from "@/components/layout/PageHeading";
-import type { Order } from "@/interfaces/orders";
+import type { Order } from "@/interfaces/order";
 import type { PrivateUser } from "@/interfaces/user";
 import type { Item } from "@/interfaces/item";
-import { router } from '@inertiajs/react'
-
+import { router } from "@inertiajs/react";
 
 interface Props {
   orders: Order;
@@ -13,22 +12,22 @@ interface Props {
 }
 
 export default function ShowOrder({ orders, order_user, item }: Props) {
-    function handleDelete() {
-        router.delete(`/orders/${orders.id}`)
-      }
-      function handleFulfill() {
-        router.patch(`/orders/${orders.id}/fulfill`)
-      }
-      function handleCancel() {
-        router.patch(`/orders/${orders.id}/cancel`)
-      }
-    
+  function handleDelete() {
+    router.delete(`/orders/${orders.id}`);
+  }
+  function handleFulfill() {
+    router.patch(`/orders/${orders.id}/fulfill`);
+  }
+  function handleCancel() {
+    router.patch(`/orders/${orders.id}/cancel`);
+  }
+
   return (
     <Layout>
       <PageHeading eyebrow="Orders" title={`Order #${orders.id}`} />
 
       <div className="grid grid-cols-2">
-        <div className="py-5 px-4 text-xl md:px-16">
+        <div className="px-4 py-5 text-xl md:px-16">
           <h2 className="mb-2 text-3xl font-bold">Item</h2>
           {item.image && (
             <img
@@ -59,7 +58,7 @@ export default function ShowOrder({ orders, order_user, item }: Props) {
           </p>
         </div>
 
-        <div className="py-5 px-4 text-xl md:px-16">
+        <div className="px-4 py-5 text-xl md:px-16">
           <h2 className="mb-2 text-3xl font-bold">User info</h2>
           <div className="flex gap-2">
             <img
@@ -116,20 +115,25 @@ export default function ShowOrder({ orders, order_user, item }: Props) {
           <div className="mt-4">
             <h3 className="text-2xl font-bold">Mark Progress</h3>
             <div className="flex gap-2">
-              <button 
-              className="cursor-pointer rounded-md bg-blue-500 px-4 py-2 font-bold text-white"
-              onClick={handleFulfill}>
+              <button
+                className="cursor-pointer rounded-md bg-blue-500 px-4 py-2 font-bold text-white"
+                onClick={handleFulfill}
+              >
                 Fulfilled
               </button>
-              <button className="cursor-pointer rounded-md bg-red-300 px-4 py-2 font-bold text-white"
-              onClick={handleCancel}>
+              <button
+                className="cursor-pointer rounded-md bg-red-300 px-4 py-2 font-bold text-white"
+                onClick={handleCancel}
+              >
                 Cancel
               </button>
-              <button className="cursor-pointer rounded-md bg-red-500 px-4 py-2 font-bold text-white"
-              onClick={handleDelete}>
+              <button
+                className="cursor-pointer rounded-md bg-red-500 px-4 py-2 font-bold text-white"
+                onClick={handleDelete}
+              >
                 Delete
-              </button>            
-              </div>
+              </button>
+            </div>
           </div>
         </div>
       </div>
