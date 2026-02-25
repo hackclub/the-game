@@ -43,20 +43,19 @@ Rails.application.routes.draw do
     end
   end
 
- resources :orders, only: [ :index, :show, :destroy ] do
-  member do
-    patch :cancel
-    patch :fulfill
+  resources :orders, only: [ :index, :show, :destroy ] do
+    member do
+      patch :cancel
+      patch :fulfill
+    end
   end
- end
-
-
 
   get "/explore", to: "explore#index"
 
   resources :settings
+
   namespace :admin do
-  resources :announcements, only: [ :index, :create, :edit, :update, :destroy ]
+    resources :announcements, only: [ :index, :create, :edit, :update, :destroy ]
   end
 
   get "/review", to: "review#index"
