@@ -31,7 +31,7 @@ class OrdersController < ApplicationController
 
   def fulfill
     @order.fulfill!
-    redirect_to admin_orders_pathh(@order), notice: "Order fulfilled"
+    redirect_to admin_orders_path, notice: "Order fulfilled"
   end
 
   private
