@@ -17,6 +17,7 @@
 class Item
   class Purchase < ApplicationRecord
     include AASM
+    has_paper_trail
 
     belongs_to :user
     belongs_to :item
@@ -36,20 +37,13 @@ class Item
       end
 
       event :cancel do
-        transitions from: [:pending, :processing], to: :cancelled
+        transitions from: [ :pending, :processing ], to: :cancelled
       end
     end
 
-    has_paper_trail
-
-    
     validate :check_balance, on: :create
 
-
-
     private
-
-   
 
     def check_balance
       if user.balance < item.price
