@@ -3,7 +3,6 @@ class OrdersController < ApplicationController
   before_action :get_order, only: [ :show, :destroy, :cancel, :fulfill ]
   skip_after_action :verify_authorized
 
-
   def index
     @orders = Item::Purchase.where(user_id: current_user.id).includes(:item)
     render inertia: "orders/index", props: {
