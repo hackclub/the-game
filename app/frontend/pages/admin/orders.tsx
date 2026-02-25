@@ -25,7 +25,7 @@ export default function Orders({ orders, status, pagination }: Props) {
         return (
           <a
             className="text-blue-500 underline"
-            href={`/orders/${field.value}`}
+            href={`/shop/orders/${field.value}`}
           >
             {field.value}
           </a>

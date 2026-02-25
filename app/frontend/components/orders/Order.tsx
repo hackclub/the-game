@@ -46,7 +46,7 @@ export default function OrderCard({
     return (
       <a
         key={order.id}
-        href={`/orders/${order.id}`}
+        href={`/shop/orders/${order.id}`}
         className="mb-4 flex items-center gap-4 rounded-md border bg-gray-50 p-4 transition-colors"
       >
         {content}

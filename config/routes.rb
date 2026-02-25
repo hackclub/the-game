@@ -43,10 +43,12 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :orders, only: [ :index, :show, :destroy ] do
-    member do
-      patch :cancel
-      patch :fulfill
+  scope :shop do
+    resources :orders, only: [ :index, :show, :destroy ] do
+      member do
+        patch :cancel
+        patch :fulfill
+      end
     end
   end
 

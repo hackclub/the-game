@@ -13,13 +13,13 @@ interface Props {
 
 export default function ShowOrder({ order, order_user, item }: Props) {
   function handleDelete() {
-    router.delete(`/orders/${order.id}`);
+    router.delete(`/shop/orders/${order.id}`);
   }
   function handleFulfill() {
-    router.patch(`/orders/${order.id}/fulfill`);
+    router.patch(`/shop/orders/${order.id}/fulfill`);
   }
   function handleCancel() {
-    router.patch(`/orders/${order.id}/cancel`);
+    router.patch(`/shop/orders/${order.id}/cancel`);
   }
 
   return (
