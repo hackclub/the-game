@@ -39,10 +39,4 @@ class OrdersController < ApplicationController
   def get_order
     @order = Item::Purchase.find(params[:id])
   end
-
-  def authorize_order_access
-    unless current_user&.role == "admin" || current_user == @order.user
-      redirect_to root_path, alert: "Not authorized"
-    end
-  end
 end
