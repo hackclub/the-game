@@ -6,25 +6,25 @@ import type { Item } from "@/interfaces/item";
 import { router } from "@inertiajs/react";
 
 interface Props {
-  orders: Order;
+  order: Order;
   order_user: PrivateUser;
   item: Item;
 }
 
-export default function ShowOrder({ orders, order_user, item }: Props) {
+export default function ShowOrder({ order, order_user, item }: Props) {
   function handleDelete() {
-    router.delete(`/orders/${orders.id}`);
+    router.delete(`/orders/${order.id}`);
   }
   function handleFulfill() {
-    router.patch(`/orders/${orders.id}/fulfill`);
+    router.patch(`/orders/${order.id}/fulfill`);
   }
   function handleCancel() {
-    router.patch(`/orders/${orders.id}/cancel`);
+    router.patch(`/orders/${order.id}/cancel`);
   }
 
   return (
     <Layout>
-      <PageHeading eyebrow="Orders" title={`Order #${orders.id}`} />
+      <PageHeading eyebrow="Orders" title={`Order #${order.id}`} />
 
       <div className="grid grid-cols-2">
         <div className="px-4 py-5 text-xl md:px-16">
@@ -50,10 +50,10 @@ export default function ShowOrder({ orders, order_user, item }: Props) {
                   processing: "bg-blue-100 text-blue-800",
                   fulfilled: "bg-green-100 text-green-800",
                   cancelled: "bg-red-100 text-red-800",
-                }[orders.aasm_state] ?? "bg-gray-100 text-gray-800"
+                }[order.aasm_state] ?? "bg-gray-100 text-gray-800"
               }`}
             >
-              {orders.aasm_state}
+              {order.aasm_state}
             </span>
           </p>
         </div>

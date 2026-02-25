@@ -43,6 +43,16 @@ class Item
 
     validate :check_balance, on: :create
 
+    def display_hash(item: false)
+      hash = self.as_json.slice("id", "aasm_state", "created_at", "updated_at", "item_id", "user_id")
+
+      if item
+        hash["item"] = self.item.display_hash
+      end
+
+      hash
+    end
+
     private
 
     def check_balance

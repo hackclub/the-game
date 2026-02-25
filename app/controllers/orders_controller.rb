@@ -6,13 +6,13 @@ class OrdersController < ApplicationController
   def index
     @orders = Item::Purchase.where(user_id: current_user.id).includes(:item)
     render inertia: "orders/index", props: {
-      orders: @orders.map { |order| order.as_json.merge(item: order.item.display_hash) }
+      orders: @orders.map { |order| order.display_hash(item: true) }
     }
   end
 
   def show
     render inertia: "orders/show", props: {
-      orders: @order,
+      order: @order.display_hash,
       order_user: @order.user.display_hash(private: true),
       item: @order.item.display_hash
     }
