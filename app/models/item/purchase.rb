@@ -22,22 +22,22 @@ class Item
     belongs_to :user
     belongs_to :item
 
-    aasm do
+    aasm timestamps: true do
       state :pending, initial: true
       state :processing
       state :fulfilled
-      state :cancelled
+      state :on_hold
 
       event :process do
-        transitions from: :pending, to: :fulfill
+        transitions from: :pending, to: :fulfilled
       end
 
       event :fulfill do
         transitions from: :pending, to: :fulfilled
       end
 
-      event :cancel do
-        transitions from: [ :pending, :processing ], to: :cancelled
+      event :on_hold do
+        transitions from: [ :pending, :processing, :fulfilled ], to: :on_hold
       end
     end
 
