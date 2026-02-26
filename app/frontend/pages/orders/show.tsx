@@ -59,12 +59,12 @@ export default function ShowOrder({ order, order_user, item }: Props) {
           <div className="mt-4">
             <div className="grid grid-rows-2">
               <p>
-              <span className="font-semibold"> Created on:  </span> {order.created_at}
+              <span className="font-semibold"> Created on:  </span> {new Date(order.created_at).toLocaleString()}
               </p>
               <p>
               {order.fulfilled_at &&
         <h2>
-          You have {order.fulfilled_at} unread messages.
+      <span className="font-semibold"> Fulfilled at: </span> {order.fulfilled_at} 
         </h2>
       }
             </p>
