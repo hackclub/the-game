@@ -31,10 +31,6 @@ class Item
       state :fulfilled
       state :hold
 
-      event :process do
-        transitions from: :pending, to: :fulfilled
-      end
-
       event :fulfill do
         transitions from: [ :pending, :hold ], to: :fulfilled
       end
