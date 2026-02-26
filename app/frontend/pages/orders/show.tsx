@@ -12,6 +12,8 @@ interface Props {
 }
 
 export default function ShowOrder({ order, order_user, item }: Props) {
+
+  console.log(order)
   function handleDelete() {
     router.delete(`/shop/orders/${order.id}`);
   }
@@ -60,14 +62,24 @@ export default function ShowOrder({ order, order_user, item }: Props) {
             <div className="grid grid-rows-2">
               <p>
               <span className="font-semibold"> Created on:  </span> {new Date(order.created_at).toLocaleString()}
+          
               </p>
-              <p>
+  
               {order.fulfilled_at &&
-        <h2>
-      <span className="font-semibold"> Fulfilled at: </span> {order.fulfilled_at} 
-        </h2>
+
+<p>
+        
+      <span className="font-semibold"> Fulfilled at: </span> {new Date(order.fulfilled_at).toLocaleString()} 
+        </p>
       }
-            </p>
+  
+              {order.hold_at &&
+        
+        <p>
+      <span className="font-semibold"> Hold at: </span> {new Date(order.hold_at).toLocaleString()} 
+        </p>
+      }
+        
             </div>
           </div>
           <div className="mt-4">
@@ -77,7 +89,7 @@ export default function ShowOrder({ order, order_user, item }: Props) {
                 className="cursor-pointer rounded-md bg-blue-500 px-4 py-2 font-bold text-white"
                 onClick={handleFulfill}
               >
-                Fulfilled
+                Fulfilled 
               </button>
               <button
                 className="cursor-pointer rounded-md bg-orange-500 px-4 py-2 font-bold text-white"

@@ -6,7 +6,6 @@
 #  aasm_state   :string           default("pending"), not null
 #  fulfilled_at :datetime
 #  hold_at      :datetime
-#  pending_at   :datetime
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  item_id      :bigint           not null
@@ -27,13 +26,8 @@ class Item
 
     aasm timestamps: true do
       state :pending, initial: true
-      state :processing
       state :fulfilled
       state :hold
-
-      event :process do
-        transitions from: :pending, to: :fulfilled
-      end
 
       event :fulfill do
         transitions from: [ :pending, :hold ], to: :fulfilled
@@ -47,7 +41,7 @@ class Item
     validate :check_balance, on: :create
 
     def display_hash(item: false)
-      hash = self.as_json.slice("id", "aasm_state", "created_at", "updated_at", "item_id", "user_id")
+      hash = self.as_json.slice("id", "aasm_state", "created_at", "updated_at", "item_id", "user_id", "fulfilled_at", "hold_at")
 
       if item
         hash["item"] = self.item.display_hash
