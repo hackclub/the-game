@@ -2,14 +2,15 @@
 #
 # Table name: item_purchases
 #
-#  id            :bigint           not null, primary key
-#  aasm_state    :string           default("pending"), not null
-#  fulfilled_at  :datetime
-#  processing_at :datetime
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  item_id       :bigint           not null
-#  user_id       :bigint           not null
+#  id           :bigint           not null, primary key
+#  aasm_state   :string           default("pending"), not null
+#  fulfilled_at :datetime
+#  hold_at      :datetime
+#  pending_at   :datetime
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  item_id      :bigint           not null
+#  user_id      :bigint           not null
 #
 # Indexes
 #
@@ -28,7 +29,7 @@ class Item
       state :pending, initial: true
       state :processing
       state :fulfilled
-      state :on_hold
+      state :hold
 
       event :process do
         transitions from: :pending, to: :fulfilled
@@ -38,8 +39,8 @@ class Item
         transitions from: :pending, to: :fulfilled
       end
 
-      event :on_hold do
-        transitions from: [ :pending, :processing, :fulfilled ], to: :on_hold
+      event :hold do
+        transitions from: [ :pending, :processing, :fulfilled ], to: :hold
       end
     end
 

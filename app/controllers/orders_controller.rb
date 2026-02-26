@@ -1,6 +1,6 @@
 class OrdersController < ApplicationController
-  before_action :signed_in_admin, only: [ :show, :destroy, :cancel, :fulfill ]
-  before_action :get_order, only: [ :show, :destroy, :cancel, :fulfill ]
+  before_action :signed_in_admin, only: [ :show, :destroy, :hold, :fulfill ]
+  before_action :get_order, only: [ :show, :destroy, :hold, :fulfill ]
   skip_after_action :verify_authorized
 
   def index
@@ -23,9 +23,9 @@ class OrdersController < ApplicationController
     redirect_to admin_orders_path, notice: "Order Deleted"
   end
 
-  def cancel
-    @order.cancel!
-    redirect_to admin_orders_path(@order), notice: "Order cancelled"
+  def hold
+    @order.hold!
+    redirect_to admin_orders_path(@order), notice: "Order placed on hold"
   end
 
   def fulfill

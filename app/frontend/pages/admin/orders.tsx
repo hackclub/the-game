@@ -67,7 +67,7 @@ export default function Orders({ orders, status, pagination }: Props) {
       <h1 className="text-3xl font-bold">Orders</h1>
 
       <div className="my-6 flex gap-3">
-        {["pending", "processing", "fulfilled", "cancelled"].map((s) => (
+        {["pending", "fulfilled", "hold"].map((s) => (
           <button
             key={s}
             className={`cursor-pointer rounded-full border px-3 py-2 ${newStatus === s ? "bg-blue-300" : "bg-white"}`}

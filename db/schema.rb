@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_25_200413) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_26_040746) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
   enable_extension "pg_catalog.plpgsql"
@@ -124,8 +124,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_25_200413) do
     t.string "aasm_state", default: "pending", null: false
     t.datetime "created_at", null: false
     t.datetime "fulfilled_at"
+    t.datetime "hold_at"
     t.bigint "item_id", null: false
-    t.datetime "processing_at"
+    t.datetime "pending_at"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["item_id"], name: "index_item_purchases_on_item_id"

@@ -18,8 +18,8 @@ export default function ShowOrder({ order, order_user, item }: Props) {
   function handleFulfill() {
     router.patch(`/shop/orders/${order.id}/fulfill`);
   }
-  function handleCancel() {
-    router.patch(`/shop/orders/${order.id}/cancel`);
+  function handleOnHold() {
+    router.patch(`/shop/orders/${order.id}/hold`);
   }
 
   return (
@@ -49,14 +49,48 @@ export default function ShowOrder({ order, order_user, item }: Props) {
                   pending: "bg-yellow-100 text-yellow-800",
                   processing: "bg-blue-100 text-blue-800",
                   fulfilled: "bg-green-100 text-green-800",
-                  cancelled: "bg-red-100 text-red-800",
+                  hold: "bg-orange-100 text-orange-800",
                 }[order.aasm_state] ?? "bg-gray-100 text-gray-800"
               }`}
             >
               {order.aasm_state}
             </span>
           </p>
+          <div className="mt-4">
+            <div className="grid grid-rows-2">
+              <p>
+              <span className="font-semibold"> Created on:  </span> {order.created_at}
+              </p>
+              <p>
+            <span className="font-semibold"> Fulfilled at:  </span> {order.fulfilled_at}
+            </p>
+            </div>
+          </div>
+          <div className="mt-4">
+            <h3 className="text-2xl font-bold">Mark Progress</h3>
+            <div className="flex gap-2">
+              <button
+                className="cursor-pointer rounded-md bg-blue-500 px-4 py-2 font-bold text-white"
+                onClick={handleFulfill}
+              >
+                Fulfilled
+              </button>
+              <button
+                className="cursor-pointer rounded-md bg-orange-500 px-4 py-2 font-bold text-white"
+                onClick={handleOnHold}
+              >
+                Place On Hold
+              </button>
+              <button
+                className="cursor-pointer rounded-md bg-red-500 px-4 py-2 font-bold text-white"
+                onClick={handleDelete}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
         </div>
+
 
         <div className="px-4 py-5 text-xl md:px-16">
           <h2 className="mb-2 text-3xl font-bold">User info</h2>
@@ -112,29 +146,7 @@ export default function ShowOrder({ order, order_user, item }: Props) {
             </p>
             <p>{order_user.address_country}</p>
           </div>
-          <div className="mt-4">
-            <h3 className="text-2xl font-bold">Mark Progress</h3>
-            <div className="flex gap-2">
-              <button
-                className="cursor-pointer rounded-md bg-blue-500 px-4 py-2 font-bold text-white"
-                onClick={handleFulfill}
-              >
-                Fulfilled
-              </button>
-              <button
-                className="cursor-pointer rounded-md bg-red-300 px-4 py-2 font-bold text-white"
-                onClick={handleCancel}
-              >
-                Cancel
-              </button>
-              <button
-                className="cursor-pointer rounded-md bg-red-500 px-4 py-2 font-bold text-white"
-                onClick={handleDelete}
-              >
-                Delete
-              </button>
-            </div>
-          </div>
+         
         </div>
       </div>
     </Layout>
