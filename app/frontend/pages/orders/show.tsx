@@ -62,7 +62,11 @@ export default function ShowOrder({ order, order_user, item }: Props) {
               <span className="font-semibold"> Created on:  </span> {order.created_at}
               </p>
               <p>
-            <span className="font-semibold"> Fulfilled at:  </span> {order.fulfilled_at}
+              {order.fulfilled_at &&
+        <h2>
+          You have {order.fulfilled_at} unread messages.
+        </h2>
+      }
             </p>
             </div>
           </div>

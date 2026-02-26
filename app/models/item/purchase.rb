@@ -36,7 +36,7 @@ class Item
       end
 
       event :fulfill do
-        transitions from: :pending, to: :fulfilled
+        transitions from: [ :pending, :hold ], to: :fulfilled
       end
 
       event :hold do
