@@ -32,6 +32,7 @@ class ProjectsController < ApplicationController
     authorize @project
     project_hash = @project.display_hash(user: true, reviews: true, admin: current_user.admin?, reviewer: current_user.reviewer?)
     hackatime_projects = available_hackatime_projects(user: @project.user) + @project.hackatime_projects.map(&:display_hash)
+    @project.mark_notifications_read
     render inertia: "projects/show", props: {
       project: project_hash,
       hackatime_projects: hackatime_projects

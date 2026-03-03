@@ -165,4 +165,8 @@ class Project < ApplicationRecord
       uri.path.split("/").second
     end
   end
+
+  def mark_notifications_read
+    Notification.where(notifiable: reviews, read: false).each(&:mark_read)
+  end
 end

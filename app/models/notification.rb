@@ -20,7 +20,9 @@ class Notification < ApplicationRecord
   belongs_to :user, required: true
   belongs_to :notifiable, polymorphic: true, required: true
 
-  validate :unqiue_notification
+  scope :unread, -> { where(read: false) }
+
+  validate :unqiue_notification, if: -> { notifiable_changed? || message_changed? }
 
   def display_hash(notifiable: false)
     hash = self.as_json.slice("id", "message", "notifiable_type", "notifiable_id", "read", "created_at")
@@ -32,10 +34,14 @@ class Notification < ApplicationRecord
     hash
   end
 
+  def mark_read
+    update!(read: true)
+  end
+
   private
 
   def unqiue_notification
-    if where(notifiable:, message:).exists?
+    if Notification.where(notifiable:, message:).exists?
       errors.add(:base, "This notification already exists")
     end
   end

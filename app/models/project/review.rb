@@ -24,6 +24,8 @@ class Project
     belongs_to :author, class_name: "User"
     belongs_to :project
 
+    has_one :notification, required: false, as: :notifiable
+
     enum :review_type, { comment: "comment", rejection: "rejection", approval: "approval" }
 
     scope :not_admin_only, -> { where.not(content: nil).where.not(content: "") }

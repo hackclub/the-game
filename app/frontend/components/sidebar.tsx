@@ -223,7 +223,11 @@ export default function Sidebar() {
                         title="Notifications"
                       >
                         <img
-                          src="/icons/notification.svg"
+                          src={
+                            props.user.unread_notification_count > 0
+                              ? "/icons/notification-red.svg"
+                              : "/icons/notification-black.svg"
+                          }
                           className="h-5 w-5"
                         />
                       </Link>

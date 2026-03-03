@@ -23,6 +23,8 @@ export interface PrivateUser {
   onboarding_completed: boolean;
   project_count?: number;
   verification_status: string;
+
+  unread_notification_count: number;
 }
 
 export interface ReviewerUser {
