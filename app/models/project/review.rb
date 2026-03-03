@@ -19,6 +19,8 @@
 #
 class Project
   class Review < ApplicationRecord
+    include ActionView::Helpers::DateHelper
+
     belongs_to :author, class_name: "User"
     belongs_to :project
 
@@ -39,6 +41,7 @@ class Project
     end
 
     after_create_commit do
+      create_notification
       create_ysws_record if approval?
     end
 
@@ -82,6 +85,19 @@ class Project
       if !comment? && !project.submitted?
         errors.add(:base, "Project must be under review to approve or reject")
       end
+    end
+
+    def create_notification
+      message = case review_type
+      when "comment"
+                  "A comment has been added to your project \"#{project.title}\""
+      when "rejection"
+                  "Your project \"#{project.title}\" has been rejected"
+      when "approval"
+                  "Your project \"#{project.title}\" has been approved for #{distance_of_time_in_words(approved_seconds)}"
+      end
+
+      Notification.create!(user: project.user, notifiable: self, message:)
     end
 
     def create_ysws_record
