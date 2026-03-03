@@ -20,9 +20,23 @@ class Notification < ApplicationRecord
   belongs_to :user, required: true
   belongs_to :notifiable, polymorphic: true, required: true
 
-  after_create_commit :send
+  validate :unqiue_notification
 
-  def send
-    # send to slack
+  def display_hash(notifiable: false)
+    hash = self.as_json.slice("id", "message", "notifiable_type", "notifiable_id", "read", "created_at")
+
+    if notifiable
+      hash["notifiable"] = self.notifiable.display_hash
+    end
+
+    hash
+  end
+
+  private
+
+  def unqiue_notification
+    if where(notifiable:, message:).exists?
+      errors.add(:base, "This notification already exists")
+    end
   end
 end

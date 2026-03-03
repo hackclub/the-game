@@ -5,4 +5,5 @@ export interface ProjectReview {
   review_type: string;
   author_id: number;
   created_at: string;
+  project_id: number;
 }

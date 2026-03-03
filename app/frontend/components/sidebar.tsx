@@ -218,6 +218,17 @@ export default function Sidebar() {
                       </Link>
 
                       <Link
+                        href="/notifications"
+                        className="cursor-pointer text-black/70 transition-transform hover:scale-110"
+                        title="Notifications"
+                      >
+                        <img
+                          src="/icons/notification.svg"
+                          className="h-5 w-5"
+                        />
+                      </Link>
+
+                      <Link
                         href="/settings"
                         className="text-black/70 transition-transform hover:scale-110"
                         title="Settings"

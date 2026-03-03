@@ -46,7 +46,7 @@ class Project
     end
 
     def display_hash(author: false, admin: false)
-      hash = self.as_json.slice("id", "content", "review_type", "author_id", "created_at")
+      hash = self.as_json.slice("id", "content", "review_type", "author_id", "created_at", "project_id")
 
       if author
         hash["author"] = self.author.display_hash
