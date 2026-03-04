@@ -83,7 +83,7 @@ export default function UserPage() {
                     <Link
                       href={`/users/${props.user.id}/adjustments/${adjustment.id}`}
                       method="delete"
-                      className="text-red-500 underline"
+                      className="cursor-pointer text-red-500 underline"
                     >
                       Delete
                     </Link>

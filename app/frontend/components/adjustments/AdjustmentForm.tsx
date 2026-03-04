@@ -39,7 +39,7 @@ export default function AdjustmentForm({ user_id }: { user_id: number }) {
           />
         </div>
 
-        <button className="w-min rounded-md bg-blue-500 px-4 py-2 font-semibold text-white">
+        <button className="w-min cursor-pointer rounded-md bg-blue-500 px-4 py-2 font-semibold text-white">
           Add
         </button>
       </form>
