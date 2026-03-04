@@ -4,40 +4,50 @@ import MissingAccountFields from "@/components/settings/MissingAccountFields";
 import { ACCOUNT_REQUIRED_FIELDS, PrivateUser } from "@/interfaces/user";
 import PageHeading from "@/components/layout/PageHeading";
 
-export default function SettingsIndex() {
-  const { props } = usePage();
+interface Props {
+  page_user: PrivateUser;
+  custom: boolean;
+  [_: string]: unknown;
+}
+
+export default function UserPage() {
+  const { props } = usePage<Props>();
   const missingFields = ACCOUNT_REQUIRED_FIELDS.filter(
-    (f) => !props.user[f as keyof PrivateUser],
+    (f) => !props.page_user[f as keyof PrivateUser],
   );
 
   return (
     <Layout>
-      <PageHeading title="Settings" />
+      <PageHeading
+        title={props.custom ? props.page_user.username : "Settings"}
+      />
 
       <div className="smoothing-black flex flex-col gap-4 p-8 text-xl">
-        {props.user.role === "admin" && <p>You are an admin.</p>}
-        {props.user.role === "reviewer" && <p>You are a reviewer.</p>}
+        {props.page_user.role === "admin" && <p>You are an admin.</p>}
+        {props.page_user.role === "reviewer" && <p>You are a reviewer.</p>}
         <p>
           <span className="font-bold">Email: </span>
-          {props.user.email}
+          {props.page_user.email}
         </p>
         <p>
           <span className="font-bold">Hack Club Account:</span>{" "}
-          {props.user.account_id && missingFields.length == 0 ? (
+          {props.page_user.account_id && missingFields.length == 0 ? (
             <span className="text-green-600">Linked</span>
           ) : (
             <Link
-              className={`${props.user.account_id ? "text-yellow-600" : "text-red-500"} underline`}
+              className={`${props.page_user.account_id ? "text-yellow-600" : "text-red-500"} underline`}
               href="/auth/hca"
             >
-              {props.user.account_id ? "Reauthenticate" : "Click here to link"}
+              {props.page_user.account_id
+                ? "Reauthenticate"
+                : "Click here to link"}
             </Link>
           )}
         </p>
         <MissingAccountFields />
         <p>
           <span className="font-bold">Hackatime:</span>{" "}
-          {props.user.hackatime_id ? (
+          {props.page_user.hackatime_id ? (
             <span className="text-green-600">Linked</span>
           ) : (
             <Link className="text-red-500 underline" href="/hackatime/link">

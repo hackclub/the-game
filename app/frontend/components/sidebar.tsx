@@ -245,7 +245,7 @@ export default function Sidebar() {
                       </Link>
 
                       <Link
-                        href="/settings"
+                        href="/me"
                         className="text-black/70 transition-transform hover:scale-110"
                         title="Settings"
                       >
