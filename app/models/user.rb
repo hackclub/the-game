@@ -165,6 +165,14 @@ class User < ApplicationRecord
     revenue + adjustments - expenses
   end
 
+  def mark_adjustment_notifications_read
+    unread_adjustment_notifications.each(&:mark_read)
+  end
+
+  def unread_adjustment_notifications
+    Notification.where(notifiable: ticket_adjustments, read: false)
+  end
+
   private
 
   def self.account_client(access_token)

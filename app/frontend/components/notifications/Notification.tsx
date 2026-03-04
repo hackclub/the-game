@@ -14,6 +14,10 @@ export default function Notification({
       type = "Review";
       path = `/projects/${notification.notifiable.project_id}`;
       break;
+    case "TicketAdjustment":
+      type = "Tickets";
+      path = `/me`;
+      break;
     default:
       type = "Other";
       path = "#";

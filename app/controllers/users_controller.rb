@@ -8,6 +8,8 @@ class UsersController < ApplicationController
 
     user = params[:id].present? ? User.find(params[:id]) : current_user
 
+    user.mark_adjustment_notifications_read
+
     render inertia: "users/show", props: { page_user: user.display_hash(private: true), custom: params[:id].present? }
   end
 end
