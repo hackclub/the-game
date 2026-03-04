@@ -99,9 +99,9 @@ class Project
                   "Your project \"#{project.title}\" has been approved for #{distance_of_time_in_words(approved_seconds)}!"
       end
 
-      message = "#{base_message}#{"\n>#{content}\n" if content.present?}<#{Rails.application.routes.url_helpers.project_url(project)}|Open project on the platform>"
+      message = "#{base_message}#{"\n>#{content}" if content.present?}"
 
-      Notification.create!(user: project.user, notifiable: self, message:)
+      Notification.create!(user: project.user, notifiable: self, message:, link: Rails.application.routes.url_helpers.project_url(project))
     end
 
     def create_ysws_record

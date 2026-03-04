@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_03_145232) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_04_170638) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
   enable_extension "pg_catalog.plpgsql"
@@ -145,6 +145,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_03_145232) do
 
   create_table "notifications", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.string "link"
     t.string "message", null: false
     t.bigint "notifiable_id", null: false
     t.string "notifiable_type", null: false

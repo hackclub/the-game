@@ -3,6 +3,7 @@
 # Table name: notifications
 #
 #  id              :bigint           not null, primary key
+#  link            :string
 #  message         :string           not null
 #  notifiable_type :string           not null
 #  read            :boolean          default(FALSE), not null
@@ -46,7 +47,9 @@ class Notification < ApplicationRecord
     return if user.slack_id.nil?
 
     client = Slack::Web::Client.new
-    client.chat_postMessage(channel: user.slack_id, text: message)
+
+    message_with_link = "#{message}\n#{"<#{link}|Open project on the platform>" if link.present?}"
+    client.chat_postMessage(channel: user.slack_id, text: message_with_link)
   end
 
   def unqiue_notification
