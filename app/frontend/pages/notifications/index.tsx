@@ -17,6 +17,9 @@ export default function Notifications({
         {notifications.map((notification) => (
           <NotificationCard notification={notification} />
         ))}
+        {notifications.length === 0 && (
+          <p className="text-lg">No notifications yet.</p>
+        )}
       </div>
     </Layout>
   );
