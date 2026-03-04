@@ -1,3 +1,5 @@
+import type { TicketAdjustment } from "./ticket_adjustment";
+
 export interface PrivateUser {
   id: number;
   first_name: string;
@@ -26,6 +28,8 @@ export interface PrivateUser {
 
   unread_notification_count: number;
   unread_project_notification_count: number;
+
+  ticket_adjustments: TicketAdjustment[];
 }
 
 export interface ReviewerUser {

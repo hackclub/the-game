@@ -58,6 +58,7 @@ class User < ApplicationRecord
   has_many :purchases, class_name: "Item::Purchase"
   has_many :items, through: :purchases
   has_many :notifications
+  has_many :ticket_adjustments
 
   has_many :approved_reviews, -> { where(review_type: :approval) }, through: :projects, source: :reviews, class_name: "Project::Review"
 
@@ -106,6 +107,7 @@ class User < ApplicationRecord
     if private
       hash = self.as_json.slice("id", "first_name", "last_name", "github_username", "address_street", "address_locality", "address_region", "address_country", "address_postal", "birthday", "avatar", "email", "role", "username", "ysws_verified", "verification_status", "account_id", "hackatime_id", "slack_id", "onboarding_completed")
       hash["balance"] = self.balance
+      hash["ticket_adjustments"] = self.ticket_adjustments.order(created_at: :desc).map(&:display_hash)
 
       hash
     elsif review
@@ -158,8 +160,9 @@ class User < ApplicationRecord
   def balance
     revenue = ((approved_reviews.reduce(0) { |acc, review| acc + review.approved_seconds }) / 3600.0).floor
     expenses = purchases.includes(:item).reduce(0) { |acc, purchase| acc + purchase.item.price }
+    adjustments = ticket_adjustments.reduce(0) { |acc, adjustment | acc + adjustment.amount }
 
-    revenue - expenses
+    revenue + adjustments - expenses
   end
 
   private

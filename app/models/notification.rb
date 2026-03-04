@@ -48,7 +48,7 @@ class Notification < ApplicationRecord
 
     client = Slack::Web::Client.new
 
-    message_with_link = "#{message}\n#{"<#{link}|Open project on the platform>" if link.present?}"
+    message_with_link = "#{message}\n#{"<#{link}|See more on the platform>" if link.present?}"
     client.chat_postMessage(channel: user.slack_id, text: message_with_link)
   end
 
