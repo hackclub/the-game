@@ -24,6 +24,8 @@ class Notification < ApplicationRecord
 
   validate :unqiue_notification, if: -> { notifiable_changed? || message_changed? }
 
+  after_create_commit :notify_slack
+
   def display_hash(notifiable: false)
     hash = self.as_json.slice("id", "message", "notifiable_type", "notifiable_id", "read", "created_at")
 
@@ -39,6 +41,13 @@ class Notification < ApplicationRecord
   end
 
   private
+
+  def notify_slack
+    return if user.slack_id.nil?
+
+    client = Slack::Web::Client.new
+    client.chat_postMessage(channel: user.slack_id, text: message)
+  end
 
   def unqiue_notification
     if Notification.where(notifiable:, message:).exists?
