@@ -16,7 +16,17 @@
 class TicketAdjustment < ApplicationRecord
   belongs_to :user, required: true
 
+  validate :nonzero_amount
+
   def display_hash
     self.as_json.slice("id", "amount", "reason", "created_at")
+  end
+
+  private
+
+  def nonzero_amount
+    if amount == 0
+      errors.add(:amount, "cannot be zero")
+    end
   end
 end
