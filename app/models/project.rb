@@ -100,6 +100,7 @@ class Project < ApplicationRecord
     hash["real_approved_seconds"] = real_approved_seconds
     hash["hackatime_projects"] = hackatime_projects.pluck(:id)
     hash["status"] = display_status
+    hash["unread_notification_count"] = unread_notifications.count
 
     if screenshot.attached? && screenshot.persisted?
       hash["screenshot"] = Rails.application.routes.url_helpers.rails_blob_path(screenshot, disposition: :inline)
@@ -166,7 +167,11 @@ class Project < ApplicationRecord
     end
   end
 
+  def unread_notifications
+    Notification.where(notifiable: reviews, read: false)
+  end
+
   def mark_notifications_read
-    Notification.where(notifiable: reviews, read: false).each(&:mark_read)
+    unread_notifications.each(&:mark_read)
   end
 end

@@ -25,6 +25,7 @@ export interface PrivateUser {
   verification_status: string;
 
   unread_notification_count: number;
+  unread_project_notification_count: number;
 }
 
 export interface ReviewerUser {
