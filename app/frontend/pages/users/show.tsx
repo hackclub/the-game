@@ -24,8 +24,18 @@ export default function UserPage() {
       />
 
       <div className="smoothing-black flex flex-col gap-4 p-8 text-xl">
-        {props.page_user.role === "admin" && <p>You are an admin.</p>}
-        {props.page_user.role === "reviewer" && <p>You are a reviewer.</p>}
+        {props.page_user.role === "admin" && (
+          <p>
+            {props.custom ? `${props.page_user.username} is ` : "You are"} an
+            admin.
+          </p>
+        )}
+        {props.page_user.role === "reviewer" && (
+          <p>
+            {props.custom ? `${props.page_user.username} is ` : "You are"} a
+            reviewer.
+          </p>
+        )}
         <p>
           <span className="font-bold">Email: </span>
           {props.page_user.email}
@@ -34,6 +44,10 @@ export default function UserPage() {
           <span className="font-bold">Hack Club Account:</span>{" "}
           {props.page_user.account_id && missingFields.length == 0 ? (
             <span className="text-green-600">Linked</span>
+          ) : props.custom ? (
+            <span>
+              {props.page_user.account_id ? "Missing fields" : "Unlinked"}
+            </span>
           ) : (
             <Link
               className={`${props.page_user.account_id ? "text-yellow-600" : "text-red-500"} underline`}
@@ -50,6 +64,8 @@ export default function UserPage() {
           <span className="font-bold">Hackatime:</span>{" "}
           {props.page_user.hackatime_id ? (
             <span className="text-green-600">Linked</span>
+          ) : props.custom ? (
+            <span>Unlinked</span>
           ) : (
             <Link className="text-red-500 underline" href="/hackatime/link">
               Click here to link
