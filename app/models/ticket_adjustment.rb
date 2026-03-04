@@ -18,6 +18,8 @@ class TicketAdjustment < ApplicationRecord
 
   validate :nonzero_amount
 
+  after_create_commit :create_notification
+
   def display_hash
     self.as_json.slice("id", "amount", "reason", "created_at")
   end
@@ -28,5 +30,15 @@ class TicketAdjustment < ApplicationRecord
     if amount == 0
       errors.add(:amount, "cannot be zero")
     end
+  end
+
+  def create_notification
+    message = if amount > 0
+      "You have been awarded #{amount} extra #{"ticket".pluralize(amount)} for \"#{reason}\"!"
+    else
+      "You have been deducted #{amount} tickets for \"#{reason}\"."
+    end
+
+    Notification.create!(user:, notifiable: self, message:, link: Rails.application.routes.url_helpers.me_url)
   end
 end

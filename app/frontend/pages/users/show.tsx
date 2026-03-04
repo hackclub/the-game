@@ -58,7 +58,10 @@ export default function UserPage() {
         </p>
 
         <div>
-          <p className="mb-2 text-2xl font-bold">Ticket adjustments</p>
+          {(props.page_user.ticket_adjustments.length > 0 ||
+            props.user.role === "admin") && (
+            <p className="mb-2 text-2xl font-bold">Ticket adjustments</p>
+          )}
           <div className="flex flex-col gap-3">
             {props.user.ticket_adjustments.map((adjustment) => (
               <div className="flex max-w-md flex-col rounded-md border bg-white p-4 text-lg">
