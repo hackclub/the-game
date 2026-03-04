@@ -99,7 +99,7 @@ class Project
                   "Your project \"#{project.title}\" has been approved for #{distance_of_time_in_words(approved_seconds)}!"
       end
 
-      message = "#{base_message} See more at #{Rails.application.routes.url_helpers.project_url(project)}"
+      message = "#{base_message}#{"\n>#{content}\n" if content.present?}<#{Rails.application.routes.url_helpers.project_url(project)}|Open project on the platform>"
 
       Notification.create!(user: project.user, notifiable: self, message:)
     end
