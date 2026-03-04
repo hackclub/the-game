@@ -19,8 +19,12 @@
 #
 class Project
   class Review < ApplicationRecord
+    include ActionView::Helpers::DateHelper
+
     belongs_to :author, class_name: "User"
     belongs_to :project
+
+    has_one :notification, required: false, as: :notifiable
 
     enum :review_type, { comment: "comment", rejection: "rejection", approval: "approval" }
 
@@ -39,11 +43,12 @@ class Project
     end
 
     after_create_commit do
+      create_notification
       create_ysws_record if approval?
     end
 
     def display_hash(author: false, admin: false)
-      hash = self.as_json.slice("id", "content", "review_type", "author_id", "created_at")
+      hash = self.as_json.slice("id", "content", "review_type", "author_id", "created_at", "project_id")
 
       if author
         hash["author"] = self.author.display_hash
@@ -82,6 +87,21 @@ class Project
       if !comment? && !project.submitted?
         errors.add(:base, "Project must be under review to approve or reject")
       end
+    end
+
+    def create_notification
+      base_message = case review_type
+      when "comment"
+                  "A comment has been added to your project \"#{project.title}\"."
+      when "rejection"
+                  "Your project \"#{project.title}\" has been rejected."
+      when "approval"
+                  "Your project \"#{project.title}\" has been approved for #{distance_of_time_in_words(approved_seconds)}!"
+      end
+
+      message = "#{base_message}#{"\n>#{content}\n" if content.present?}<#{Rails.application.routes.url_helpers.project_url(project)}|Open project on the platform>"
+
+      Notification.create!(user: project.user, notifiable: self, message:)
     end
 
     def create_ysws_record

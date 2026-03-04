@@ -21,4 +21,5 @@ export interface Project {
   approved_seconds: number;
   real_approved_seconds: number;
   high_quality: boolean;
+  unread_notification_count: number;
 }

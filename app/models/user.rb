@@ -57,6 +57,7 @@ class User < ApplicationRecord
   has_many :reviews, class_name: "Project::Review"
   has_many :purchases, class_name: "Item::Purchase"
   has_many :items, through: :purchases
+  has_many :notifications
 
   has_many :approved_reviews, -> { where(review_type: :approval) }, through: :projects, source: :reviews, class_name: "Project::Review"
 

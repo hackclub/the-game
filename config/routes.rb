@@ -45,6 +45,8 @@ Rails.application.routes.draw do
 
   get "/explore", to: "explore#index"
 
+  resources :notifications, only: [ :index ]
+
   resources :settings
   namespace :admin do
     resources :announcements, only: [ :index, :create, :edit, :update, :destroy ]
