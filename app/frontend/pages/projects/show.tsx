@@ -1,4 +1,4 @@
-import { router, usePage } from "@inertiajs/react";
+import { router, usePage, Link } from "@inertiajs/react";
 import ProjectForm from "@/components/projects/ProjectForm";
 import ProjectReviews from "@/components/projects/ProjectReviews";
 import PageHeading from "@/components/layout/PageHeading";
@@ -134,9 +134,18 @@ export default function ShowProject() {
                 className="h-28 w-28"
               />
               <div>
-                <p className="font-bold">
-                  {project.user!.username} ({project.user!.id})
-                </p>
+                {props.user.role === "admin" ? (
+                  <Link
+                    href={`/users/${project.user!.id}`}
+                    className="font-bold text-blue-500 underline"
+                  >
+                    {project.user!.username} ({project.user!.id})
+                  </Link>
+                ) : (
+                  <p className="font-bold">
+                    {project.user!.username} ({project.user!.id})
+                  </p>
+                )}
                 <p>{project.user!.email}</p>
                 <p>
                   <span className="font-semibold">Hackatime ID:</span>{" "}
