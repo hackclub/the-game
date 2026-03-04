@@ -3,6 +3,7 @@ import Layout from "@/layouts/layout";
 import MissingAccountFields from "@/components/settings/MissingAccountFields";
 import { ACCOUNT_REQUIRED_FIELDS, PrivateUser } from "@/interfaces/user";
 import PageHeading from "@/components/layout/PageHeading";
+import AdjustmentForm from "@/components/adjustments/AdjustmentForm";
 
 interface Props {
   page_user: PrivateUser;
@@ -55,6 +56,44 @@ export default function UserPage() {
             </Link>
           )}
         </p>
+
+        <div>
+          <p className="mb-2 text-2xl font-bold">Ticket adjustments</p>
+          <div className="flex flex-col gap-3">
+            {props.user.ticket_adjustments.map((adjustment) => (
+              <div className="flex max-w-md flex-col rounded-md border bg-white p-4 text-lg">
+                <div className="flex justify-between">
+                  <p>
+                    <span
+                      className={
+                        adjustment.amount > 0
+                          ? "text-green-500"
+                          : "text-red-500"
+                      }
+                    >
+                      {adjustment.amount > 0 && "+"}
+                      {adjustment.amount}
+                    </span>{" "}
+                    on {new Date(adjustment.created_at).toLocaleString()}
+                  </p>
+                  {props.user.role === "admin" && (
+                    <Link
+                      href={`/users/${props.user.id}/adjustments/${adjustment.id}`}
+                      method="delete"
+                      className="text-red-500 underline"
+                    >
+                      Delete
+                    </Link>
+                  )}
+                </div>
+                <p>{adjustment.reason}</p>
+              </div>
+            ))}
+          </div>
+          {props.user.role === "admin" && (
+            <AdjustmentForm user_id={props.page_user.id} />
+          )}
+        </div>
       </div>
     </Layout>
   );

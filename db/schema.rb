@@ -203,6 +203,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_04_171225) do
   create_table "ticket_adjustments", force: :cascade do |t|
     t.integer "amount", null: false
     t.datetime "created_at", null: false
+    t.string "reason"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["user_id"], name: "index_ticket_adjustments_on_user_id"
