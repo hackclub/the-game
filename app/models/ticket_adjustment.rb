@@ -14,6 +14,8 @@
 #  index_ticket_adjustments_on_user_id  (user_id)
 #
 class TicketAdjustment < ApplicationRecord
+  has_paper_trail
+
   belongs_to :user, required: true
 
   validate :nonzero_amount
