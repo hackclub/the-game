@@ -90,14 +90,16 @@ class Project
     end
 
     def create_notification
-      message = case review_type
+      base_message = case review_type
       when "comment"
-                  "A comment has been added to your project \"#{project.title}\""
+                  "A comment has been added to your project \"#{project.title}\"."
       when "rejection"
-                  "Your project \"#{project.title}\" has been rejected"
+                  "Your project \"#{project.title}\" has been rejected."
       when "approval"
-                  "Your project \"#{project.title}\" has been approved for #{distance_of_time_in_words(approved_seconds)}"
+                  "Your project \"#{project.title}\" has been approved for #{distance_of_time_in_words(approved_seconds)}!"
       end
+
+      message = "#{base_message} See more at #{Rails.application.routes.url_helpers.project_url(project)}"
 
       Notification.create!(user: project.user, notifiable: self, message:)
     end
