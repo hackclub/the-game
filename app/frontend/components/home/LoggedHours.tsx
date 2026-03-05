@@ -35,7 +35,7 @@ export default function LoggedHours({
           </span>
         </p>
         <span className="smoothing-black pr-12 text-2xl font-bold tracking-tight">
-          Qualified
+          Eligible to Qualify
         </span>
       </div>
     </div>
