@@ -33,18 +33,21 @@ export default function LoggedHours({
         <span className="smoothing-black pl-12 text-2xl font-bold tracking-tight">
           Begin
         </span>
-        <p className="smoothing-black text-center text-2xl tracking-[-0.04em]">
-          You've logged{" "}
-          <span className="font-bold">
-            {hours} hours and {minutes} minutes{progress == 1 ? "!" : "."}
-          </span>
-        </p>
-        <p className="smoothing-black text-center text-2xl tracking-[-0.04em]">
-          Of that,{" "}
-          <span className="font-bold">
-            {approved_hours} hours and {approved_minutes} minutes are approved.
-          </span>
-        </p>
+        <div>
+          <p className="smoothing-black text-center text-2xl tracking-[-0.04em]">
+            You've logged{" "}
+            <span className="font-bold">
+              {hours} hours and {minutes} minutes{progress == 1 ? "!" : "."}
+            </span>
+          </p>
+          <p className="smoothing-black text-center text-2xl tracking-[-0.04em]">
+            Of that,{" "}
+            <span className="font-bold">
+              {approved_hours} hours and {approved_minutes} minutes are
+              approved.
+            </span>
+          </p>
+        </div>
         <span className="smoothing-black pr-12 text-2xl font-bold tracking-tight">
           Eligible to Qualify
         </span>
