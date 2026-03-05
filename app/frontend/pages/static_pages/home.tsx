@@ -48,7 +48,10 @@ export default function Home() {
           <>
             <MissingAccountFields />
 
-            <LoggedHours totalProjectTime={props.totalProjectTime} totalApprovedProjectTime={props.totalApprovedProjectTime} />
+            <LoggedHours
+              totalProjectTime={props.totalProjectTime}
+              totalApprovedProjectTime={props.totalApprovedProjectTime}
+            />
 
             <Announcements announcements={props.announcements} />
           </>

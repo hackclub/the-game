@@ -157,7 +157,7 @@ class User < ApplicationRecord
     projects.reduce(0) { |acc, project| acc + project.display_seconds }
   end
 
-  def total_approved_seconds 
+  def total_approved_seconds
     projects.reduce(0) { |acc, project| acc + project.real_approved_seconds }
   end
 

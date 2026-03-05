@@ -12,7 +12,7 @@ export default function LoggedHours({
   const progress = Math.min(totalProjectTime / (QUALIFIED_HOURS * 3600), 1);
 
   const approved_hours = Math.floor(totalApprovedProjectTime / 3600);
-  const approved_minutes = Math.floor((totalApprovedProjectTime % 3600) / 60);  
+  const approved_minutes = Math.floor((totalApprovedProjectTime % 3600) / 60);
 
   return (
     <div className="flex w-full flex-col">
