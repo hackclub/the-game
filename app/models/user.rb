@@ -157,6 +157,10 @@ class User < ApplicationRecord
     projects.reduce(0) { |acc, project| acc + project.display_seconds }
   end
 
+  def total_approved_seconds 
+    projects.reduce(0) { |acc, project| acc + project.real_approved_seconds }
+  end
+
   def balance
     revenue = ((approved_reviews.reduce(0) { |acc, review| acc + review.approved_seconds }) / 3600.0).floor
     expenses = purchases.includes(:item).reduce(0) { |acc, purchase| acc + purchase.item.price }
