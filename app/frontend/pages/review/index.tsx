@@ -5,12 +5,16 @@ import { router } from "@inertiajs/react";
 
 interface Props {
   queue: (Project & { username: string })[];
+  all_queued: (Project & { username: string })[];
+  queue_count: number;
   week_leaderboard: { id: number; name: string; count: number }[];
   alltime_leaderboard: { id: number; name: string; count: number }[];
 }
 
 export default function Review({
   queue,
+  all_queued,
+  queue_count,
   week_leaderboard,
   alltime_leaderboard,
 }: Props) {
@@ -36,6 +40,41 @@ export default function Review({
               <ProjectCard project={project} link={`/projects/${project.id}`} />
             ))}
           </div>
+        </div>
+
+        <div className="py-5">
+          <div className="mb-3 flex items-baseline gap-4">
+            <h2 className="text-3xl font-semibold">Review Queue</h2>
+            <span className="text-gray-500">
+              {queue_count} project{queue_count !== 1 && "s"} remaining
+            </span>
+          </div>
+          <table className="w-full border-collapse text-left text-sm">
+            <thead>
+              <tr className="border-b border-gray-200 text-gray-500">
+                <th className="py-2 pr-4 font-semibold">#</th>
+                <th className="py-2 pr-4 font-semibold">Title</th>
+                <th className="py-2 pr-4 font-semibold">Author</th>
+                <th className="py-2 pr-4 font-semibold">Submitted</th>
+              </tr>
+            </thead>
+            <tbody>
+              {all_queued.map((project, index) => (
+                <tr
+                  key={project.id}
+                  className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
+                  onClick={() => router.visit(`/projects/${project.id}`)}
+                >
+                  <td className="py-2 pr-4 text-gray-400">{index + 1}</td>
+                  <td className="py-2 pr-4 font-medium">{project.title}</td>
+                  <td className="py-2 pr-4 text-gray-600">{project.username}</td>
+                  <td className="py-2 pr-4 text-gray-500">
+                    {new Date(project.submitted_at).toLocaleDateString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
         <div className="py-5">
