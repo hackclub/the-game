@@ -2,6 +2,7 @@ import Layout from "@/layouts/layout";
 import type { Project } from "@/interfaces/project";
 import ProjectCard from "@/components/projects/ProjectCard";
 import { router } from "@inertiajs/react";
+import formatTime from "@/utils/formatTime";
 
 interface Props {
   queue: (Project & { username: string })[];
@@ -56,20 +57,26 @@ export default function Review({
                 <th className="py-2 pr-4 font-semibold">Title</th>
                 <th className="py-2 pr-4 font-semibold">Author</th>
                 <th className="py-2 pr-4 font-semibold">Submitted</th>
+                <th className="py-2 pr-4 font-semibold">Reported Hours</th>
               </tr>
             </thead>
             <tbody>
               {all_queued.map((project, index) => (
                 <tr
                   key={project.id}
-                  className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
+                  className="cursor-pointer border-b border-gray-100 hover:bg-gray-50"
                   onClick={() => router.visit(`/projects/${project.id}`)}
                 >
                   <td className="py-2 pr-4 text-gray-400">{index + 1}</td>
                   <td className="py-2 pr-4 font-medium">{project.title}</td>
-                  <td className="py-2 pr-4 text-gray-600">{project.username}</td>
+                  <td className="py-2 pr-4 text-gray-600">
+                    {project.username}
+                  </td>
                   <td className="py-2 pr-4 text-gray-500">
-                    {new Date(project.submitted_at).toLocaleDateString()}
+                    {new Date(project.submitted_at!).toLocaleDateString()}
+                  </td>
+                  <td className="py-2 pr-4 text-gray-500">
+                    {formatTime(project.reported_seconds)}
                   </td>
                 </tr>
               ))}
