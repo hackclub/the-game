@@ -10,7 +10,7 @@ export default function Item({ item }: { item: Item }) {
     <div>
       <div className="relative h-8 rounded-tl-2xl rounded-tr-2xl bg-black">
         {item.featured && (
-          <span className="absolute top-1 right-3 text-sm font-bold text-[#fecb0d]">
+          <span className="absolute top-2 right-3 text-sm font-bold text-[#fecb0d]">
             ★ Featured
           </span>
         )}
