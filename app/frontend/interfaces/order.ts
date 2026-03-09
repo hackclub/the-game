@@ -5,7 +5,7 @@ export interface Order {
   aasm_state: string;
   created_at: string;
   updated_at: string;
-  hold_at: string,
-  fulfilled_at: string,
+  hold_at: string;
+  fulfilled_at: string;
   pending_at: string;
 }

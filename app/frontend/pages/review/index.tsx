@@ -38,10 +38,6 @@ export default function Review({
           <h2 className="mb-2 text-3xl font-semibold">Next up to review!</h2>
           <div className="grid grid-cols-3 gap-5">
             {queue.map((project) => (
-              <ProjectCard
-                project={project}
-                onClick={() => router.visit(`/projects/${project.id}`)}
-              />
               <ProjectCard project={project} link={`/projects/${project.id}`} />
             ))}
           </div>
