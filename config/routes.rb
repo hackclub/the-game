@@ -55,6 +55,12 @@ Rails.application.routes.draw do
   get "/explore", to: "explore#index"
 
   resources :settings
+  resources :notifications, only: [ :index ]
+
+  resources :users, only: :show do
+    resources :ticket_adjustments, path: "adjustments", only: [ :create, :destroy ]
+  end
+  get "/me", to: "users#show"
 
   namespace :admin do
     resources :announcements, only: [ :index, :create, :edit, :update, :destroy ]

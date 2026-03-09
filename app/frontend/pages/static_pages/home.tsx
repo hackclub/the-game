@@ -12,6 +12,7 @@ import OnboardingForced from "@/pages/onboarding-forced";
 export default function Home() {
   const { props } = usePage<{
     totalProjectTime: number;
+    totalApprovedProjectTime: number;
     projectCount: number;
     announcements: Announcement[];
   }>();
@@ -47,7 +48,10 @@ export default function Home() {
           <>
             <MissingAccountFields />
 
-            <LoggedHours totalProjectTime={props.totalProjectTime} />
+            <LoggedHours
+              totalProjectTime={props.totalProjectTime}
+              totalApprovedProjectTime={props.totalApprovedProjectTime}
+            />
 
             <Announcements announcements={props.announcements} />
           </>

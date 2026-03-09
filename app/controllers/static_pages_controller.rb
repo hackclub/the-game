@@ -9,8 +9,9 @@ class StaticPagesController < ApplicationController
     end
 
     totalProjectTime = current_user.total_seconds
+    totalApprovedProjectTime = current_user.total_approved_seconds
     announcements = SlackAnnouncementsService.available? ? SlackAnnouncementsService.fetch_announcements : []
-    render inertia: { totalProjectTime: totalProjectTime, projectCount: current_user.projects.count, announcements: announcements }
+    render inertia: { totalProjectTime: totalProjectTime, totalApprovedProjectTime: totalApprovedProjectTime, projectCount: current_user.projects.count, announcements: announcements }
   end
 
   def index

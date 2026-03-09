@@ -1,3 +1,5 @@
+import type { TicketAdjustment } from "./ticket_adjustment";
+
 export interface PrivateUser {
   id: number;
   first_name: string;
@@ -23,6 +25,11 @@ export interface PrivateUser {
   onboarding_completed: boolean;
   project_count?: number;
   verification_status: string;
+
+  unread_notification_count: number;
+  unread_project_notification_count: number;
+
+  ticket_adjustments: TicketAdjustment[];
 }
 
 export interface ReviewerUser {

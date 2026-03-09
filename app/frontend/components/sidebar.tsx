@@ -18,10 +18,12 @@ function SidebarLink({
   name,
   link,
   icon,
+  notification_count,
 }: {
   name: string;
   link: string;
   icon: string;
+  notification_count?: number;
 }) {
   const { url } = usePage<PageProps>();
 
@@ -50,11 +52,16 @@ function SidebarLink({
           <div
             className={clsx(
               "transition-all",
-              "flex h-[52px] w-[52px] items-center justify-center rounded-full bg-white",
+              "relative flex h-[52px] w-[52px] items-center justify-center rounded-full bg-white",
               !active && "shrink-0 group-hover:bg-[#fecb0d]",
             )}
           >
             <img src={icon} alt="" className="h-7 w-7" />
+            {(notification_count || 0) > 0 && (
+              <p className="absolute top-0 -right-2 ml-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-500 align-top text-sm font-semibold text-white">
+                {notification_count}
+              </p>
+            )}
           </div>
         </div>
 
@@ -132,7 +139,12 @@ export default function Sidebar() {
             <div className="pointer-events-none absolute top-2 left-[30px] z-0 h-[90%] w-[15px] rounded-full bg-white" />
 
             <SidebarLink link="/home" name="Home" icon={homeIcon} />
-            <SidebarLink link="/projects" name="Projects" icon={hammerIcon} />
+            <SidebarLink
+              link="/projects"
+              name="Projects"
+              icon={hammerIcon}
+              notification_count={props.user.unread_project_notification_count}
+            />
             <SidebarLink link="/explore" name="Gallery" icon={compassIcon} />
             <SidebarLink link="/shop" name="Shop" icon={shopIcon} />
             {(props.user.role === "admin" ||
@@ -218,7 +230,22 @@ export default function Sidebar() {
                       </Link>
 
                       <Link
-                        href="/settings"
+                        href="/notifications"
+                        className="cursor-pointer text-black/70 transition-transform hover:scale-110"
+                        title="Notifications"
+                      >
+                        <img
+                          src={
+                            props.user.unread_notification_count > 0
+                              ? "/icons/notification-red.svg"
+                              : "/icons/notification-black.svg"
+                          }
+                          className="h-5 w-5"
+                        />
+                      </Link>
+
+                      <Link
+                        href="/me"
                         className="text-black/70 transition-transform hover:scale-110"
                         title="Settings"
                       >

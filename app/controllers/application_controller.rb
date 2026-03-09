@@ -18,6 +18,8 @@ class ApplicationController < ActionController::Base
     if user_logged_in?
       user_hash = current_user.display_hash(private: true)
       user_hash["project_count"] = current_user.projects.count unless current_user.onboarding_completed?
+      user_hash["unread_notification_count"] = current_user.notifications.unread.count
+      user_hash["unread_project_notification_count"] = current_user.notifications.unread.where(notifiable_type: "Project::Review").count
       { user: user_hash }
     else
       {}
