@@ -43,8 +43,18 @@ Rails.application.routes.draw do
     end
   end
 
+  scope :shop do
+    resources :orders, only: [ :index, :show, :destroy ] do
+      member do
+        patch :hold
+        patch :fulfill
+      end
+    end
+  end
+
   get "/explore", to: "explore#index"
 
+  resources :settings
   resources :notifications, only: [ :index ]
 
   resources :users, only: :show do
@@ -69,6 +79,7 @@ Rails.application.routes.draw do
     get "/users", to: "admin#users"
     get "/items", to: "admin#items"
     get "/stats", to: "admin#stats"
+    get "/orders", to: "admin#orders"
   end
 
   post "onboarding/complete", to: "onboarding#complete"
