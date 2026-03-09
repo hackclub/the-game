@@ -22,7 +22,8 @@ export default function OrderCard({
         <div>
           <p className="font-bold">{order.item.name}</p>
           <p className="text-sm text-gray-500">
-            Order #{order.id} · {order.item.price} tickets
+            Order #{order.id} · {order.item.price} ticket
+            {order.item.price !== 1 && "s"}
           </p>
         </div>
         <span
