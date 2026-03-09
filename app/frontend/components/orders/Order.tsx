@@ -11,7 +11,6 @@ export default function OrderCard({
 
   const content = (
     <>
-      {" "}
       {order.item.image && (
         <img
           src={order.item.image}
