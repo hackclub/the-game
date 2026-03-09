@@ -12,8 +12,6 @@ interface Props {
 }
 
 export default function ShowOrder({ order, order_user, item }: Props) {
-
-    console.log(order)
     function handleDelete() {
         router.delete(`/shop/orders/${order.id}`);
     }
