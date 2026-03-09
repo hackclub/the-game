@@ -7,6 +7,7 @@ export default function ItemForm({ item }: { item?: Item }) {
     description: item?.description,
     price: item?.price,
     image: item?.image ? 0 : (null as File | null | 0),
+    featurted: item?.featurted
   });
 
   function handleSubmit(e: React.FormEvent) {
@@ -48,6 +49,16 @@ export default function ItemForm({ item }: { item?: Item }) {
           value={data.price}
           onChange={(e) => setData("price", parseInt(e.target.value))}
         />
+      </div>
+      
+      <div className="flex items-center gap-2">
+        <input
+          id="featurted"
+          type="checkbox"
+          checked={data.featurted || false}
+          onChange={(e) => setData("featurted", e.target.checked)}
+        />
+        <label htmlFor="featurted" className="font-bold">Featured</label>
       </div>
 
       <div className="flex flex-col">

@@ -8,7 +8,13 @@ export default function Item({ item }: { item: Item }) {
 
   return (
     <div>
-      <div className="h-8 rounded-tl-2xl rounded-tr-2xl bg-black" />
+      <div className="relative h-8 rounded-tl-2xl rounded-tr-2xl bg-black">
+        {item.featurted && (
+          <span className="absolute top-1 right-3 text-sm font-bold text-[#fecb0d]">
+            ★ Featured
+          </span>
+        )}
+      </div>
       <div className="rounded-br-2xl rounded-bl-2xl border-2 border-t-0 border-black bg-white px-6 py-4">
         {item.image && (
           <img
