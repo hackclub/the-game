@@ -7,7 +7,7 @@ export default function ItemForm({ item }: { item?: Item }) {
     description: item?.description,
     price: item?.price,
     image: item?.image ? 0 : (null as File | null | 0),
-    featurted: item?.featurted,
+    featured: item?.featured,
   });
 
   function handleSubmit(e: React.FormEvent) {
@@ -53,12 +53,12 @@ export default function ItemForm({ item }: { item?: Item }) {
 
       <div className="flex items-center gap-2">
         <input
-          id="featurted"
+          id="featured"
           type="checkbox"
-          checked={data.featurted || false}
-          onChange={(e) => setData("featurted", e.target.checked)}
+          checked={data.featured || false}
+          onChange={(e) => setData("featured", e.target.checked)}
         />
-        <label htmlFor="featurted" className="font-bold">
+        <label htmlFor="featured" className="font-bold">
           Featured
         </label>
       </div>

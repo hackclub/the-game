@@ -4,5 +4,5 @@ export interface Item {
   description: string;
   price: number;
   image?: string;
-  featurted: boolean;
+  featured: boolean;
 }

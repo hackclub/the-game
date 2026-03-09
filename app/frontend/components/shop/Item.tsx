@@ -9,7 +9,7 @@ export default function Item({ item }: { item: Item }) {
   return (
     <div>
       <div className="relative h-8 rounded-tl-2xl rounded-tr-2xl bg-black">
-        {item.featurted && (
+        {item.featured && (
           <span className="absolute top-1 right-3 text-sm font-bold text-[#fecb0d]">
             ★ Featured
           </span>
