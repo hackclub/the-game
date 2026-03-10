@@ -57,6 +57,11 @@ export default function Projects({
     },
     {
       field: "approved_seconds" as const,
+      headerName: "Reviewed Hours",
+      valueFormatter: (field: any) => (field.value / 3600).toPrecision(4),
+    },
+    {
+      field: "real_approved_seconds" as const,
       headerName: "Approved Hours",
       valueFormatter: (field: any) => (field.value / 3600).toPrecision(4),
     },
