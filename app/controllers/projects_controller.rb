@@ -8,6 +8,10 @@ class ProjectsController < ApplicationController
   end
 
   def new
+    track_event("project_creation_started", {
+      projects_count: current_user.projects.count
+    })
+
     render inertia: "projects/new", props: {
       hackatime_projects: available_hackatime_projects,
       projects_count: current_user.projects.count
@@ -18,11 +22,22 @@ class ProjectsController < ApplicationController
     project = current_user.projects.new(project_params)
 
     if !project.save
+      track_event("project_creation_failed", {
+        errors: project.errors.full_messages
+      })
       redirect_to new_project_path, inertia: { project: project, hackatime_projects: available_hackatime_projects, errors: project.errors }
       return
     end
 
     current_user.hackatime_projects.where(id: hackatime_project_keys).update_all(project_id: project.id)
+
+    track_event("project_created", {
+      project_id: project.id,
+      has_repo_link: project.repo_link.present?,
+      has_demo_link: project.demo_link.present?,
+      has_screenshot: project.screenshot.attached?,
+      hackatime_project_count: hackatime_project_keys.count
+    })
 
     flash[:notice] = "Project created successfully"
     redirect_to projects_path
@@ -48,6 +63,11 @@ class ProjectsController < ApplicationController
       @project.user.hackatime_projects.where(id: hackatime_project_keys).update_all(project_id: @project.id)
     end
 
+    track_event("project_updated", {
+      project_id: @project.id,
+      missing_fields: @project.missing_fields
+    })
+
     flash[:notice] = "Project updated successfully"
     redirect_back_or_to project_path(@project)
   rescue
@@ -59,6 +79,10 @@ class ProjectsController < ApplicationController
     authorize @project
 
     if @project.destroy
+      track_event("project_deleted", {
+        project_id: @project.id,
+        project_state: @project.aasm_state
+      })
       flash[:notice] = "Project deleted successfully"
       redirect_to projects_path
     else
@@ -71,11 +95,22 @@ class ProjectsController < ApplicationController
     authorize @project
 
     if @project.missing_fields.any?
+      track_event("project_ship_failed", {
+        project_id: @project.id,
+        missing_fields: @project.missing_fields
+      })
       redirect_to project_path(@project), flash: { alert: "Cannot ship without #{@project.missing_fields.join(", ") }" }
       return
     end
 
     @project.mark_submitted!
+
+    track_event("project_shipped", {
+      project_id: @project.id,
+      total_seconds: @project.total_seconds,
+      hackatime_project_count: @project.hackatime_projects.count
+    })
+
     flash[:notice] = "Shipped #{@project.title}!"
     redirect_back_or_to projects_path
   end

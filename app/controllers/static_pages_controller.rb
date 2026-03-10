@@ -8,6 +8,12 @@ class StaticPagesController < ApplicationController
       return
     end
 
+    track_event("dashboard_viewed", {
+      project_count: current_user.projects.count,
+      onboarding_completed: current_user.onboarding_completed?,
+      hackatime_linked: current_user.hackatime_id.present?
+    })
+
     totalProjectTime = current_user.total_seconds
     inProgressTime = current_user.total_seconds - current_user.total_reviewed_seconds
     reviewTime = current_user.total_in_review_seconds
@@ -32,6 +38,12 @@ class StaticPagesController < ApplicationController
 
   def signup
     email = params[:email]
+
+    PostHog.capture({
+      distinct_id: email,
+      event: "signup_started",
+      properties: { referral_code: session[:referral_code], platform: "web" }
+    })
 
     if request.inertia?
       render inertia: "Redirect", props: { url: "/auth/start?email=" + email }

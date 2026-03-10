@@ -14,6 +14,8 @@ class AuthController < ApplicationController
   end
 
   def logout
+    track_event("user_logged_out")
+
     session.delete(:original_id) if session[:original_id]
     terminate_session
 
@@ -56,10 +58,23 @@ class AuthController < ApplicationController
         end
       end
 
+      is_new_user = user.new_record? || user.account_id.blank?
+
       user.update!(data)
 
       session[:user_id] = user.id
       session.delete(:referral_code)
+
+      PostHog.capture({
+        distinct_id: user.id.to_s,
+        event: is_new_user ? "user_signed_up" : "user_logged_in",
+        properties: {
+          has_slack: user.slack_id.present?,
+          verification_status: user.verification_status,
+          referral_code: data[:referral_code],
+          platform: "web"
+        }
+      })
     rescue StandardError => e
       Rails.logger.error(
         "HCA login failed: #{e.class}: #{e.message}\n#{e.backtrace&.first(10)&.join("\n")}"
@@ -83,6 +98,10 @@ class AuthController < ApplicationController
     user_info = User.hackatime_user_info(access_token)
 
     current_user.update!(hackatime_id: user_info.body["id"], hackatime_access_token: access_token)
+
+    track_event("hackatime_linked", {
+      project_count: current_user.projects.count
+    })
 
     if current_user.projects.any?
       redirect_to home_path, notice: "Successfully linked Hackatime!"

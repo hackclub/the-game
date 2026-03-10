@@ -11,8 +11,18 @@ class ItemsController < ApplicationController
     purchase = Item::Purchase.create(user: current_user, item: @item)
 
     if purchase.errors.empty?
+      track_event("item_purchased", {
+        item_id: @item.id,
+        item_name: @item.name,
+        item_price: @item.price
+      })
       flash[:notice] = "Purchased #{@item.name}!"
     else
+      track_event("item_purchase_failed", {
+        item_id: @item.id,
+        item_name: @item.name,
+        reason: "insufficient_tickets"
+      })
       flash[:alert] = "You do not have enough tickets to purchase #{@item.name}"
     end
 
