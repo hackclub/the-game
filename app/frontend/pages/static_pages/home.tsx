@@ -12,7 +12,8 @@ import OnboardingForced from "@/pages/onboarding-forced";
 export default function Home() {
   const { props } = usePage<{
     totalProjectTime: number;
-    totalApprovedProjectTime: number;
+    inProgressTime: number;
+    reviewTime: number;
     projectCount: number;
     announcements: Announcement[];
   }>();
@@ -50,7 +51,9 @@ export default function Home() {
 
             <LoggedHours
               totalProjectTime={props.totalProjectTime}
-              totalApprovedProjectTime={props.totalApprovedProjectTime}
+              inProgressTime={props.inProgressTime}
+              reviewTime={props.reviewTime}
+              tickets={props.user.balance}
             />
 
             <Announcements announcements={props.announcements} />

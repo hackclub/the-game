@@ -92,6 +92,12 @@ class Project < ApplicationRecord
     end
   end
 
+  def in_review_seconds
+    return 0 unless submitted?
+
+    (total_seconds || 0) - (approved_seconds || 0)
+  end
+
   def display_hash(reviews: false, user: false, admin: false, reviewer: false)
     hash = self.as_json.slice("id", "aasm_state", "approved_at", "demo_link", "desc", "rejected_at", "repo_link", "submitted_at", "title", "ysws", "created_at", "updated_at", "user_id", "high_quality")
     hash["reported_seconds"] = reported_seconds
