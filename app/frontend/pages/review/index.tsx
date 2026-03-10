@@ -58,7 +58,9 @@ export default function Review({
                 <th className="py-2 pr-4 font-semibold">Author</th>
                 <th className="py-2 pr-4 font-semibold">Submitted</th>
                 <th className="py-2 pr-4 font-semibold">Reported Hours</th>
-                <th className="py-2 pr-4 font-semibold">Prior Approved Hours</th>
+                <th className="py-2 pr-4 font-semibold">
+                  Prior Approved Hours
+                </th>
               </tr>
             </thead>
             <tbody>
