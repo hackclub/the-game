@@ -58,6 +58,9 @@ export default function Review({
                 <th className="py-2 pr-4 font-semibold">Author</th>
                 <th className="py-2 pr-4 font-semibold">Submitted</th>
                 <th className="py-2 pr-4 font-semibold">Reported Hours</th>
+                <th className="py-2 pr-4 font-semibold">
+                  Prior Approved Hours
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -77,6 +80,11 @@ export default function Review({
                   </td>
                   <td className="py-2 pr-4 text-gray-500">
                     {formatTime(project.reported_seconds)}
+                  </td>
+                  <td className="py-2 pr-4 text-gray-500">
+                    {project.real_approved_seconds > 0
+                      ? formatTime(project.real_approved_seconds)
+                      : "—"}
                   </td>
                 </tr>
               ))}
