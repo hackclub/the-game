@@ -349,6 +349,11 @@ GEM
     pg_search (2.3.7)
       activerecord (>= 6.1)
       activesupport (>= 6.1)
+    posthog-rails (3.5.4)
+      posthog-ruby (~> 3.5)
+      railties (>= 5.2.0)
+    posthog-ruby (3.5.5)
+      concurrent-ruby (~> 1)
     pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
@@ -600,6 +605,8 @@ DEPENDENCIES
   paper_trail (~> 17.0)
   pg (~> 1.5)
   pg_search (~> 2.3)
+  posthog-rails
+  posthog-ruby
   propshaft
   puma (>= 5.0)
   pundit (~> 2.5)

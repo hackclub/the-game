@@ -4,6 +4,7 @@ class ApplicationController < ActionController::Base
 
   include Authentication
   include Pundit::Authorization
+  include PosthogTrackable
 
   before_action :set_paper_trail_whodunnit
   before_action :update_last_active

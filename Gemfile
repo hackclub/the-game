@@ -111,3 +111,7 @@ gem "kaminari", "~> 1.2"
 gem "pg_search", "~> 2.3"
 
 gem "slack-ruby-client"
+
+# Posthog - for user analysis and error monitoring
+gem "posthog-ruby"
+gem "posthog-rails"

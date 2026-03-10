@@ -69,6 +69,11 @@ class Project < ApplicationRecord
       transitions from: [ :submitted, :rejected ], to: :approved
       after do
         update!(approved_seconds: total_seconds, total_seconds: nil)
+        PostHog.capture({
+          distinct_id: user_id.to_s,
+          event: "project_approved",
+          properties: { project_id: id, approved_seconds: approved_seconds, platform: "web" }
+        })
       end
     end
 
@@ -76,6 +81,11 @@ class Project < ApplicationRecord
       transitions from: :submitted, to: :rejected
       after do
         update!(total_seconds: nil)
+        PostHog.capture({
+          distinct_id: user_id.to_s,
+          event: "project_rejected",
+          properties: { project_id: id, platform: "web" }
+        })
       end
     end
   end
