@@ -54,21 +54,43 @@ export default function ShowProject() {
             <div className="flex items-center gap-1.5">
               <img src={clockIcon} alt="Clock" className="h-5 w-5" />
               <span className="text-2xl tracking-[-0.06em]">
-                {formatTime(project.total_seconds)}
+                {formatTime(project.reported_seconds)}
               </span>
             </div>
             <span className="text-lg text-gray-600 italic">
               {project.status}
             </span>
-            {project.aasm_state === "approved" &&
-              project.reported_seconds > project.total_seconds && (
-                <span className="text-lg text-yellow-700">
-                  +{" "}
-                  {formatTime(project.reported_seconds - project.total_seconds)}{" "}
-                  not yet approved
-                </span>
-              )}
           </div>
+
+          {project.approved_seconds > 0 && (
+            <p className="px-4 text-lg text-green-600 md:px-16">
+              {formatTime(project.approved_seconds)} approved{" "}
+              {project.aasm_state === "approved" &&
+                project.reported_seconds > project.approved_seconds && (
+                  <span className="text-yellow-600">
+                    (
+                    {formatTime(
+                      project.reported_seconds - project.approved_seconds,
+                    )}{" "}
+                    not yet shipped)
+                  </span>
+                )}
+            </p>
+          )}
+
+          {project.aasm_state === "submitted" && (
+            <p className="px-4 text-lg text-yellow-600 md:px-16">
+              + {formatTime(project.total_seconds - project.approved_seconds)}{" "}
+              under review{" "}
+              {project.reported_seconds > project.total_seconds && (
+                <>
+                  (
+                  {formatTime(project.reported_seconds - project.total_seconds)}{" "}
+                  not yet shipped)
+                </>
+              )}
+            </p>
+          )}
 
           {project.high_quality && (
             <p className="px-4 font-semibold text-yellow-600 italic md:px-16">
@@ -76,31 +98,33 @@ export default function ShowProject() {
             </p>
           )}
 
-          <div className="mt-4 flex flex-wrap items-center gap-3 px-4 md:px-16">
-            {project.demo_link && (
-              <a
-                className="text-lg underline"
-                href={project.demo_link}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Demo
-              </a>
-            )}
-            {project.demo_link && project.repo_link && (
-              <span className="text-gray-400">|</span>
-            )}
-            {project.repo_link && (
-              <a
-                className="text-lg underline"
-                href={project.repo_link}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Repo
-              </a>
-            )}
-          </div>
+          {(project.demo_link || project.repo_link) && (
+            <div className="mt-4 flex flex-wrap items-center gap-3 px-4 md:px-16">
+              {project.demo_link && (
+                <a
+                  className="text-lg underline"
+                  href={project.demo_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Demo
+                </a>
+              )}
+              {project.demo_link && project.repo_link && (
+                <span className="text-gray-400">|</span>
+              )}
+              {project.repo_link && (
+                <a
+                  className="text-lg underline"
+                  href={project.repo_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Repo
+                </a>
+              )}
+            </div>
+          )}
 
           <div className="mt-4 flex gap-3 px-4 md:px-16">
             {project.aasm_state !== "submitted" && (

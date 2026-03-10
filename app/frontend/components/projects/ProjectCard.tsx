@@ -39,7 +39,7 @@ export default function ProjectCard({
           <div className="flex shrink-0 items-center gap-1.5">
             <img src={clockIcon} alt="Clock" className="h-5 w-5" />
             <span className="smoothing-black text-2xl tracking-[-0.03em]">
-              {formatTime(project.total_seconds)}
+              {formatTime(project.reported_seconds)}
             </span>
           </div>
         </div>
