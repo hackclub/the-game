@@ -34,8 +34,8 @@ PostHog::Rails.configure do |config|
   # Additional exception classes to exclude from reporting
   # These are added to the default excluded exceptions
   # config.excluded_exceptions = [
-  #   # 'MyCustom404Error',
-  #   # 'MyCustomValidationError'
+  #   # "MyCustom404Error",
+  #   # "MyCustomValidationError"
   # ]
 end
 
@@ -55,19 +55,19 @@ PostHog.init do |config|
   # Your PostHog project API key (required)
   # Get this from: PostHog Project Settings > API Keys
   # https://app.posthog.com/settings/project-details#variables
-  config.api_key = ENV.fetch('POSTHOG_API_KEY', nil)
+  config.api_key = ENV.fetch("POSTHOG_API_KEY", nil)
 
   # ============================================================================
   # OPTIONAL CONFIGURATION
   # ============================================================================
 
   # For PostHog Cloud, use: https://us.i.posthog.com or https://eu.i.posthog.com
-  config.host = ENV.fetch('POSTHOG_HOST', 'https://us.i.posthog.com')
+  config.host = ENV.fetch("POSTHOG_HOST", "https://us.i.posthog.com")
 
   # Personal API key (optional, but required for local feature flag evaluation)
   # Get this from: PostHog Settings > Personal API Keys
   # https://app.posthog.com/settings/user-api-keys
-  config.personal_api_key = ENV.fetch('POSTHOG_PERSONAL_API_KEY', nil)
+  config.personal_api_key = ENV.fetch("POSTHOG_PERSONAL_API_KEY", nil)
 
   # Maximum number of events to queue before dropping (default: 10000)
   config.max_queue_size = 10_000
@@ -87,11 +87,11 @@ PostHog.init do |config|
   # Return nil to prevent the event from being sent
   # config.before_send = proc { |event|
   #   # Filter out test users
-  #   return nil if event[:properties]&.dig('$user_email')&.end_with?('@test.com')
+  #   return nil if event[:properties]&.dig("$user_email")&.end_with?("@test.com")
   #
   #   # Add custom properties to all events
   #   event[:properties] ||= {}
-  #   event[:properties]['environment'] = Rails.env
+  #   event[:properties]["environment"] = Rails.env
   #
   #   event
   # }
