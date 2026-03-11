@@ -55,7 +55,7 @@ PostHog.init do |config|
   # Your PostHog project API key (required)
   # Get this from: PostHog Project Settings > API Keys
   # https://app.posthog.com/settings/project-details#variables
-  config.api_key = ENV.fetch("POSTHOG_API_KEY", nil)
+  config.api_key = ENV.fetch("POSTHOG_API_KEY", "")
 
   # ============================================================================
   # OPTIONAL CONFIGURATION
