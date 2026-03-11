@@ -59,6 +59,7 @@ class ItemsController < ApplicationController
 
   def item_params
     p = params.permit(:name, :description, :price, :featured)
+    p[:featured] = p.fetch(:featured, false)
 
     unless params[:image] == "0"
       p[:image] = params[:image]
