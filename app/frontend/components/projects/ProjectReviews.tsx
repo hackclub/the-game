@@ -13,7 +13,11 @@ export default function ProjectReviews({
     review_type: "comment",
     content: "",
     admin_content: "",
-    approved_hours: Number((project.total_seconds / 3600).toPrecision(4)),
+    approved_hours: Number(
+      ((project.total_seconds - project.approved_seconds) / 3600).toPrecision(
+        4,
+      ),
+    ),
     high_quality: null as boolean | null,
   });
   const [adminOnly, setAdminOnly] = useState(false);
