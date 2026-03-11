@@ -100,11 +100,8 @@ PostHog.init do |config|
   # ENVIRONMENT-SPECIFIC CONFIGURATION
   # ============================================================================
 
-  # Disable in test environment
-  config.test_mode = true if Rails.env.test?
-
-  # Optional: Disable in development
-  # config.test_mode = true if Rails.env.test? || Rails.env.development?
+  # Disable in test and development environments
+  config.test_mode = true if Rails.env.test? || Rails.env.development?
 end
 
 # ============================================================================
