@@ -48,7 +48,7 @@ class SlackAnnouncementsService
         next unless msg["text"]&.match?(/<!channel>|<!here>/)
         
         # If message has @here and is less than 8 chars, use previous message instead
-        if msg["text"].include?("<!here>") && msg["text"].length < 8
+        if msg["text"].include?("<!here>") && msg["text"].length < 16
           prev_msg = all_messages[all_messages.index(msg) + 1]
           messages << prev_msg if prev_msg
         else
