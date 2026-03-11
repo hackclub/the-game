@@ -34,7 +34,7 @@ class Project
     validate :only_approvals_have_seconds
     validate :project_is_under_review, on: :create
 
-    after_save_commit do
+    after_create_commit do
       if rejection? && !project.rejected?
         project.mark_rejected!
       elsif approval? && !project.approved?
@@ -48,7 +48,7 @@ class Project
     end
 
     def display_hash(author: false, admin: false)
-      hash = self.as_json.slice("id", "content", "review_type", "author_id", "created_at", "project_id")
+      hash = self.as_json.slice("id", "content", "review_type", "author_id", "created_at", "project_id", "approved_seconds")
 
       if author
         hash["author"] = self.author.display_hash

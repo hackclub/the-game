@@ -30,7 +30,7 @@ Rails.application.routes.draw do
   post "/signup", to: "static_pages#signup"
 
   resources :projects, only: [ :index, :new, :create, :show, :update, :destroy ] do
-    resources :reviews, only: [ :create, :destroy ], module: :project
+    resources :reviews, only: [ :create, :edit, :update ], module: :project
 
     member do
       patch :ship

@@ -59,7 +59,7 @@ function InputField({
       />
 
       <input
-        className="mt-1 h-[48px] border-[#cacaca] bg-[#d9d9d9] px-4 text-xl transition-all"
+        className="mt-1 h-12 border-[#cacaca] bg-[#d9d9d9] px-4 text-xl transition-all"
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
