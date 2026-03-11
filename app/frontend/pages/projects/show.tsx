@@ -80,7 +80,7 @@ export default function ShowProject() {
 
           {project.aasm_state === "submitted" && (
             <p className="px-4 text-lg text-yellow-600 md:px-16">
-              + {formatTime(project.total_seconds - project.approved_seconds)}{" "}
+              {formatTime(project.total_seconds - project.approved_seconds)}{" "}
               under review{" "}
               {project.reported_seconds > project.total_seconds && (
                 <>
