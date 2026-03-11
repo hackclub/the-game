@@ -41,9 +41,22 @@ class SlackAnnouncementsService
 
       return [] unless response.success? && response.body["ok"]
 
-      messages = response.body["messages"]
-        .select { |m| m["text"]&.include?("<!channel>") }
-        .first(MAX_ANNOUNCEMENTS)
+      all_messages = response.body["messages"]
+      messages = []
+      
+      all_messages.each do |msg|
+        next unless msg["text"]&.match?(/<!channel>|<!here>/)
+        
+        # If message has @here and is less than 8 chars, use previous message instead
+        if msg["text"].include?("<!here>") && msg["text"].length < 8
+          prev_msg = all_messages[all_messages.index(msg) + 1]
+          messages << prev_msg if prev_msg
+        else
+          messages << msg
+        end
+        
+        break if messages.length >= MAX_ANNOUNCEMENTS
+      end
 
       messages.map { |m| build_announcement(m) }
     end
