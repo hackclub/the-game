@@ -65,6 +65,10 @@ class Project
       Project::Ysws.find_by(review_id: id)
     end
 
+    def approved_words
+      approved_seconds.present? ? distance_of_time_in_words(approved_seconds) : nil
+    end
+
     private
 
     def non_comments_have_justification
@@ -96,7 +100,7 @@ class Project
       when "rejection"
                   "Your project \"#{project.title}\" has been rejected."
       when "approval"
-                  "Your project \"#{project.title}\" has been approved for #{distance_of_time_in_words(approved_seconds)}!"
+                  "Your project \"#{project.title}\" has been approved for #{approved_words}!"
       end
 
       message = "#{base_message}#{"\n>#{content}" if content.present?}"
