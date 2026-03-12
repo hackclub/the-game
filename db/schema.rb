@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_09_133217) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_12_143222) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
   enable_extension "pg_catalog.plpgsql"
@@ -253,8 +253,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_09_133217) do
     t.string "event", null: false
     t.bigint "item_id", null: false
     t.string "item_type", null: false
-    t.text "object"
-    t.text "object_changes"
+    t.jsonb "object"
+    t.jsonb "object_changes"
     t.string "whodunnit"
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end
