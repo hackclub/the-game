@@ -3,12 +3,20 @@ class SlackAnnouncementsService
   CHANNEL_ID = "C0A7HQZFFNX"
   CACHE_TTL = 5.minutes
   MAX_ANNOUNCEMENTS = 10
+  CHANNEL_NAMES = {
+    "C0AJ70Q994L" => "hctg-tracker",
+    "C0A7HQZFFNX" => "hctg-bulletin",
+    "C088DT8P7B8" => "hack-club-the-game",
+    "C0A9XULS1SL" => "hctg-help"
+  }.freeze
 
   @cache_mutex = Mutex.new
   @announcements_cache = nil
   @announcements_cached_at = nil
   @user_cache = {}
   @user_cache_times = {}
+  @channel_cache = {}
+  @channel_cache_times = {}
 
   class << self
     def available?
@@ -43,10 +51,10 @@ class SlackAnnouncementsService
 
       all_messages = response.body["messages"]
       messages = []
-      
+
       all_messages.each do |msg|
         next unless msg["text"]&.match?(/<!channel>|<!here>/)
-        
+
         # If message has @here and is less than 8 chars, use previous message instead
         if msg["text"].include?("<!here>") && msg["text"].length < 16
           prev_msg = all_messages[all_messages.index(msg) + 1]
@@ -54,7 +62,7 @@ class SlackAnnouncementsService
         else
           messages << msg
         end
-        
+
         break if messages.length >= MAX_ANNOUNCEMENTS
       end
 
@@ -118,6 +126,7 @@ class SlackAnnouncementsService
     def format_message(text)
       return "" if text.blank?
 
+      text = text.gsub(/<#([A-Z0-9]+)(?:\|[^>]+)?>/) { "##{fetch_channel_name($1)}" }
       text = text.gsub(/<@U[A-Z0-9]+>/, "")
       text = text.gsub(/<!channel>|<!here>|<!everyone>/, "")
       text = text.gsub(/:[a-zA-Z0-9_+-]+:/, "")
@@ -128,6 +137,44 @@ class SlackAnnouncementsService
       text = text.gsub(/(?<!\w)_([^_]+)_(?!\w)/) { "<em>#{$1}</em>" }
       text = text.gsub(/`([^`]+)`/) { "<code>#{$1}</code>" }
       text.strip
+    end
+
+    def fetch_channel_name(channel_id)
+      return channel_id if channel_id.blank?
+
+      @cache_mutex.synchronize do
+        if @channel_cache[channel_id] && @channel_cache_times[channel_id] && @channel_cache_times[channel_id] > CACHE_TTL.ago
+          return @channel_cache[channel_id]
+        end
+      end
+
+      if CHANNEL_NAMES.key?(channel_id)
+        channel_name = CHANNEL_NAMES[channel_id]
+
+        @cache_mutex.synchronize do
+          @channel_cache[channel_id] = channel_name
+          @channel_cache_times[channel_id] = Time.current
+        end
+
+        return channel_name
+      end
+
+      response = slack_client.get("conversations.info") do |req|
+        req.params = { channel: channel_id }
+      end
+
+      channel_name = if response.success? && response.body["ok"]
+        response.body.dig("channel", "name").presence || channel_id
+      else
+        channel_id
+      end
+
+      @cache_mutex.synchronize do
+        @channel_cache[channel_id] = channel_name
+        @channel_cache_times[channel_id] = Time.current
+      end
+
+      channel_name
     end
 
     def slack_client

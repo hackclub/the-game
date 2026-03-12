@@ -1,4 +1,6 @@
 class UsersController < ApplicationController
+  include ActionView::Helpers::TextHelper
+
   def show
     if params[:id].present? && !current_user.admin?
       raise Pundit::NotAuthorizedError
@@ -10,6 +12,13 @@ class UsersController < ApplicationController
 
     user.mark_adjustment_notifications_read
 
-    render inertia: "users/show", props: { page_user: user.display_hash(private: true), custom: params[:id].present? }
+    approved_items = user.approved_reviews.map { |review| { name: "\"#{review.project.title}\" was approved for #{review.approved_words}", date: review.created_at, link: project_path(review.project) } }
+    adjustment_items = user.ticket_adjustments.map { |adjustment| { name: "#{adjustment.amount.positive? ? "Extra" : "Deducted"} #{pluralize(adjustment.amount, "ticket")}", date: adjustment.created_at } }
+    purchase_items = user.purchases.map { |purchase| { name: "Purchased \"#{purchase.item.name}\" for #{pluralize(purchase.item.price, "ticket")}", date: purchase.created_at, link: orders_path } }
+
+    unsorted_timeline = approved_items + adjustment_items + purchase_items
+    timeline = unsorted_timeline.sort_by { |item| item[:date] }
+
+    render inertia: "users/show", props: { page_user: user.display_hash(private: true), custom: params[:id].present?, timeline: }
   end
 end
