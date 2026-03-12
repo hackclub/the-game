@@ -43,10 +43,10 @@ class SlackAnnouncementsService
 
       all_messages = response.body["messages"]
       messages = []
-      
+
       all_messages.each do |msg|
         next unless msg["text"]&.match?(/<!channel>|<!here>/)
-        
+
         # If message has @here and is less than 8 chars, use previous message instead
         if msg["text"].include?("<!here>") && msg["text"].length < 16
           prev_msg = all_messages[all_messages.index(msg) + 1]
@@ -54,7 +54,7 @@ class SlackAnnouncementsService
         else
           messages << msg
         end
-        
+
         break if messages.length >= MAX_ANNOUNCEMENTS
       end
 
