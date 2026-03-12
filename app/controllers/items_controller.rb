@@ -8,15 +8,17 @@ class ItemsController < ApplicationController
   end
 
   def buy
-    purchase = Item::Purchase.create(user: current_user, item: @item)
+    quantity = [ params.fetch(:quantity, 1).to_i, 1 ].max
+    purchase = Item::Purchase.create(user: current_user, item: @item, quantity: quantity)
 
     if purchase.errors.empty?
       track_event("item_purchased", {
         item_id: @item.id,
         item_name: @item.name,
-        item_price: @item.price
+        item_price: @item.price,
+        quantity: quantity
       })
-      flash[:notice] = "Purchased #{@item.name}!"
+      flash[:notice] = "Purchased #{quantity}x #{@item.name}!"
     else
       track_event("item_purchase_failed", {
         item_id: @item.id,

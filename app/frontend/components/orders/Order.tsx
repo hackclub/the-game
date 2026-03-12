@@ -20,10 +20,13 @@ export default function OrderCard({
       )}
       <div className="flex flex-1 items-center justify-between">
         <div>
-          <p className="font-bold">{order.item.name}</p>
+          <p className="font-bold">
+            {order.quantity > 1 ? `${order.quantity}x ` : ""}
+            {order.item.name}
+          </p>
           <p className="text-sm text-gray-500">
-            Order #{order.id} · {order.item.price} ticket
-            {order.item.price !== 1 && "s"}
+            Order #{order.id} · {order.item.price * order.quantity} ticket
+            {order.item.price * order.quantity !== 1 && "s"}
           </p>
         </div>
         <span

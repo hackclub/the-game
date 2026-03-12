@@ -1,10 +1,14 @@
 import { usePage, Link } from "@inertiajs/react";
+import { useState } from "react";
 import type { Item } from "@/interfaces/item";
 import ticketIcon from "@/assets/icons/ticket.svg";
 
 export default function Item({ item }: { item: Item }) {
   const { props } = usePage();
-  const canAfford = props.user.balance >= item.price;
+  const [quantity, setQuantity] = useState(1);
+  const totalCost = item.price * quantity;
+  const canAfford = props.user.balance >= totalCost;
+  const maxQuantity = Math.max(1, Math.floor(props.user.balance / item.price));
 
   return (
     <div>
@@ -30,20 +34,42 @@ export default function Item({ item }: { item: Item }) {
           <div className="flex items-center gap-1.5">
             <img src={ticketIcon} alt="Tickets" className="h-5 w-5" />
             <span className="smoothing-black text-2xl tracking-[-0.03em]">
-              {item.price}
+              {totalCost}
             </span>
           </div>
         </div>
         <p className="smoothing-black mt-2 text-xl tracking-[-0.02em]">
           {item.description}
         </p>
+        <div className="mt-4 flex items-center gap-2">
+          <button
+            type="button"
+            className="flex h-10 w-10 cursor-pointer items-center justify-center rounded border-2 border-black bg-white text-xl font-bold transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
+            onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+            disabled={quantity <= 1}
+          >
+            −
+          </button>
+          <span className="smoothing-black w-10 text-center text-xl font-bold">
+            {quantity}
+          </span>
+          <button
+            type="button"
+            className="flex h-10 w-10 cursor-pointer items-center justify-center rounded border-2 border-black bg-white text-xl font-bold transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
+            onClick={() => setQuantity((q) => q + 1)}
+            disabled={quantity >= maxQuantity}
+          >
+            +
+          </button>
+        </div>
         {canAfford ? (
           <Link
             className="smoothing-white mt-4 block w-full bg-black px-5 py-3 text-center text-xl font-bold tracking-tight text-white transition-colors hover:bg-[#fecb0d] hover:text-black"
             href={`/shop/${item.id}/buy`}
             method="post"
+            data={{ quantity }}
           >
-            Buy
+            Buy{quantity > 1 ? ` (${quantity})` : ""}
           </Link>
         ) : (
           <p className="smoothing-black mt-4 block w-full bg-[#d9d9d9] px-5 py-3 text-center text-xl font-bold tracking-tight text-black/50">

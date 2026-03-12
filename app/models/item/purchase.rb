@@ -6,6 +6,7 @@
 #  aasm_state   :string           default("pending"), not null
 #  fulfilled_at :datetime
 #  hold_at      :datetime
+#  quantity     :integer          default(1), not null
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  item_id      :bigint           not null
@@ -38,10 +39,11 @@ class Item
       end
     end
 
+    validates :quantity, numericality: { greater_than: 0 }
     validate :check_balance, on: :create
 
     def display_hash(item: false)
-      hash = self.as_json.slice("id", "aasm_state", "created_at", "updated_at", "item_id", "user_id", "fulfilled_at", "hold_at")
+      hash = self.as_json.slice("id", "aasm_state", "created_at", "updated_at", "item_id", "user_id", "fulfilled_at", "hold_at", "quantity")
 
       if item
         hash["item"] = self.item.display_hash
@@ -53,8 +55,9 @@ class Item
     private
 
     def check_balance
-      if user.balance < item.price
-        errors.add(:base, "User ##{user.id} (#{user.balance} tickets) does not have sufficient tickets to purchase #{item.name} (#{item.price} tickets)")
+      total_cost = item.price * quantity
+      if user.balance < total_cost
+        errors.add(:base, "User ##{user.id} (#{user.balance} tickets) does not have sufficient tickets to purchase #{quantity}x #{item.name} (#{total_cost} tickets)")
       end
     end
   end

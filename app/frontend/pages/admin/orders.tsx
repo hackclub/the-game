@@ -41,6 +41,10 @@ export default function Orders({ orders, status, pagination }: Props) {
       headerName: "Item ID",
     },
     {
+      field: "quantity" as const,
+      headerName: "Qty",
+    },
+    {
       field: "aasm_state" as const,
       headerName: "Status",
     },

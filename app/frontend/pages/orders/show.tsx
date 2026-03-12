@@ -39,7 +39,12 @@ export default function ShowOrder({ order, order_user, item }: Props) {
           <p className="font-bold">{item.name}</p>
           <p className="text-lg text-gray-600">{item.description}</p>
           <p>
-            <span className="font-semibold">Price:</span> {item.price} tickets
+            <span className="font-semibold">Quantity:</span> {order.quantity}
+          </p>
+          <p>
+            <span className="font-semibold">Price:</span>{" "}
+            {item.price * order.quantity} tickets
+            {order.quantity > 1 && ` (${item.price} each)`}
           </p>
           <p className="mt-4 flex items-center gap-2">
             <span className="font-semibold">Status:</span>
