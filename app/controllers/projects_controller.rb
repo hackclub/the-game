@@ -48,6 +48,11 @@ class ProjectsController < ApplicationController
     project_hash = @project.display_hash(user: true, reviews: true, admin: current_user.admin?, reviewer: current_user.reviewer?)
     hackatime_projects = available_hackatime_projects(user: @project.user) + @project.hackatime_projects.map(&:display_hash)
     @project.mark_notifications_read
+
+    @og_title = @project.title.present? ? "#{@project.title} – Hack Club: The Game" : "Hack Club: The Game"
+    @og_description = @project.desc.presence || "A project on Hack Club: The Game"
+    @og_image = rails_blob_url(@project.screenshot, disposition: :inline) if @project.screenshot.attached?
+
     render inertia: "projects/show", props: {
       project: project_hash,
       hackatime_projects: hackatime_projects

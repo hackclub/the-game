@@ -10,15 +10,15 @@
 
     <%# Open Graph / Facebook %>
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Hack Club: The Game">
-    <meta property="og:description" content="Build projects, then compete in an IRL adventure game across Manhattan">
-    <meta property="og:image" content="https://cdn.hackclub.com/019cc5c8-3799-757b-94ae-48f2b75d5260/poster.png">
+    <meta property="og:title" content="<%= @og_title || "Hack Club: The Game" %>">
+    <meta property="og:description" content="<%= @og_description || "Build projects, then compete in an IRL adventure game across Manhattan" %>">
+    <meta property="og:image" content="<%= @og_image || "https://cdn.hackclub.com/019cc5c8-3799-757b-94ae-48f2b75d5260/poster.png" %>">
 
     <%# Twitter %>
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Hack Club: The Game">
-    <meta name="twitter:description" content="Build projects, then compete in an IRL adventure game across Manhattan">
-    <meta name="twitter:image" content="https://cdn.hackclub.com/019cc5c8-3799-757b-94ae-48f2b75d5260/poster.png">
+    <meta name="twitter:title" content="<%= @og_title || "Hack Club: The Game" %>">
+    <meta name="twitter:description" content="<%= @og_description || "Build projects, then compete in an IRL adventure game across Manhattan" %>">
+    <meta name="twitter:image" content="<%= @og_image || "https://cdn.hackclub.com/019cc5c8-3799-757b-94ae-48f2b75d5260/poster.png" %>">
 
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
