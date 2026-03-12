@@ -61,7 +61,7 @@ class ItemsController < ApplicationController
 
   def item_params
     p = params.permit(:name, :description, :price, :featured)
-    p[:featured] = p[:featured] || false
+    p[:featured] = ActiveModel::Type::Boolean.new.cast(p[:featured]) || false
 
     unless params[:image] == "0"
       p[:image] = params[:image]
