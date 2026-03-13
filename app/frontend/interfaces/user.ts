@@ -6,6 +6,8 @@ export interface PrivateUser {
   last_name: string;
   github_username: string;
   balance: number;
+  total_seconds: number;
+  total_approved_seconds: number;
 
   address_street: string;
   address_locality: string;

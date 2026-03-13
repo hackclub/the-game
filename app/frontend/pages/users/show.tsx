@@ -48,6 +48,18 @@ export default function UserPage() {
             {props.page_user.email}
           </p>
           <p>
+            <span className="font-bold">Ticket balance: </span>
+            {props.page_user.balance}
+          </p>
+          <p>
+            <span className="font-bold">Submitted hours: </span>
+            {(props.page_user.total_seconds / 3600).toFixed(1)}
+          </p>
+          <p>
+            <span className="font-bold">Approved hours: </span>
+            {(props.page_user.total_approved_seconds / 3600).toFixed(1)}
+          </p>
+          <p>
             <span className="font-bold">Hack Club Account:</span>{" "}
             {props.page_user.account_id && missingFields.length == 0 ? (
               <span className="text-green-600">Linked</span>
