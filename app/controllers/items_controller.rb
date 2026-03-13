@@ -38,7 +38,7 @@ class ItemsController < ApplicationController
   end
 
   def edit
-    render inertia: "items/edit", props: { item: @item }
+    render inertia: "items/edit", props: { item: @item.display_hash }
   end
 
   def update
