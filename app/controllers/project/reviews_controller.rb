@@ -7,9 +7,20 @@ class Project
     skip_after_action :verify_authorized
 
     def create
-      @project.reviews.create!(review_params)
+      review = @project.reviews.create!(review_params)
 
       @project.update!(high_quality: params[:high_quality]) if params[:high_quality].present?
+
+      human_review_desc = case review.review_type
+      when "comment"
+        "Added comment on"
+      when "approval"
+        "Approved"
+      when "rejection"
+        "Rejected"
+      end
+
+      flash[:notice] = "#{human_review_desc} \"#{@project.title}\"#{" for #{params[:approved_hours]} hours" if review.approval? && params[:approved_hours].present?}"
 
       redirect_to project_path(@project)
     end
@@ -20,6 +31,8 @@ class Project
 
     def update
       @review.update!(review_params)
+
+      flash[:notice] = "Edited review"
 
       redirect_to project_path(@project)
     end
