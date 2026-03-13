@@ -21,8 +21,8 @@ class AdminController < ApplicationController
       filtered_projects = filtered_projects.where(high_quality: true)
     end
 
-    if params[:tag].present?
-      filtered_projects = filtered_projects.where(tags: [])
+    if params[:tag].presence.present?
+      filtered_projects = filtered_projects.joins(:tags).where(tags: { id: Project::Tag.find_by(name: params[:tag]) })
     end
 
     if params[:q].present?
@@ -35,6 +35,8 @@ class AdminController < ApplicationController
       q: params[:q],
       status: params[:status],
       high_quality: params[:high_quality] == "true",
+      tag: params[:tag],
+      available_tags: Project::Tag.all.map(&:display_hash),
       pagination: {
         current_page: paginated_projects.current_page,
         next_page: paginated_projects.next_page,

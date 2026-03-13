@@ -2,6 +2,7 @@ import Layout from "@/layouts/layout";
 import { Project } from "@/interfaces/project";
 import { PublicUser } from "@/interfaces/user";
 import { Pagination } from "@/interfaces/pagination";
+import { ProjectTag } from "@/interfaces/project_tag";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import { useState } from "react";
@@ -14,6 +15,8 @@ interface Props {
   q: string;
   status: string;
   high_quality: boolean;
+  tag: string;
+  available_tags: ProjectTag[];
   pagination: Pagination;
 }
 
@@ -22,11 +25,14 @@ export default function Projects({
   q,
   status,
   high_quality,
+  tag,
+  available_tags,
   pagination,
 }: Props) {
   const [newQuery, setNewQuery] = useState(q || "");
   const [newStatus, setNewStatus] = useState(status || "");
   const [newHighQuality, setNewHighQuality] = useState(high_quality || false);
+  const [newTag, setNewTag] = useState(tag || "");
 
   const [rowData, setRowData] = useState(projects);
   const [colDefs, setColDefs] = useState([
@@ -70,6 +76,14 @@ export default function Projects({
       headerName: "High Quality?",
     },
     {
+      field: "tags" as const,
+      headerName: "Tags",
+      valueFormatter: (field: any) =>
+        field.value
+          .map((v: number) => available_tags.find((t) => t.id == v)?.name)
+          .join(", "),
+    },
+    {
       field: "created_at" as const,
       headerName: "Created At",
       valueFormatter: (field: any) => new Date(field.value).toLocaleString(),
@@ -79,7 +93,7 @@ export default function Projects({
   function goToPage(page: number) {
     router.get(
       "/admin/projects",
-      { page, q, status, high_quality },
+      { page, q, status, tag, high_quality },
       { preserveScroll: true },
     );
   }
@@ -87,7 +101,12 @@ export default function Projects({
   function search() {
     router.get(
       "/admin/projects",
-      { q: newQuery, status: newStatus, high_quality: newHighQuality },
+      {
+        q: newQuery,
+        status: newStatus,
+        tag: newTag,
+        high_quality: newHighQuality,
+      },
       { preserveScroll: true },
     );
   }
@@ -119,6 +138,24 @@ export default function Projects({
             {s[0].toUpperCase() + s.slice(1)}
           </button>
         ))}
+
+        <select
+          className="ml-4 rounded-md border border-black"
+          onChange={(e) => {
+            setNewTag(e.target.value);
+          }}
+        >
+          <option value="">All tags</option>
+          {available_tags.map((t) => (
+            <option
+              value={t.name}
+              className={`cursor-pointer rounded-full border px-3 py-2 ${newTag === t.name ? "bg-blue-300" : "bg-white"}`}
+              selected={t.name == tag}
+            >
+              {t.name}
+            </option>
+          ))}
+        </select>
 
         <button
           className={`mx-4 cursor-pointer rounded-full border px-3 py-2 ${newHighQuality ? "bg-blue-300" : "bg-white"}`}
