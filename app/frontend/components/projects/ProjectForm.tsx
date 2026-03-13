@@ -304,20 +304,22 @@ export default function ProjectForm({
             </button>
             {project && (
               <div className="flex gap-3">
-                <button
-                  className={clsx(
-                    "group flex h-[59px] w-full cursor-pointer items-center justify-center gap-3 bg-[#fecb0d] text-xl font-bold text-black transition-colors",
-                    "hover:bg-[#e5b80b] disabled:opacity-50",
-                  )}
-                  type="button"
-                  onClick={shipProject}
-                  disabled={processing}
-                >
-                  {project.aasm_state === "approved" ||
-                  project.aasm_state === "rejected"
-                    ? "Re-ship"
-                    : "Ship"}
-                </button>
+                {project.reported_seconds > project.approved_seconds && (
+                  <button
+                    className={clsx(
+                      "group flex h-[59px] w-full cursor-pointer items-center justify-center gap-3 bg-[#fecb0d] text-xl font-bold text-black transition-colors",
+                      "hover:bg-[#e5b80b] disabled:opacity-50",
+                    )}
+                    type="button"
+                    onClick={shipProject}
+                    disabled={processing}
+                  >
+                    {project.aasm_state === "approved" ||
+                    project.aasm_state === "rejected"
+                      ? "Re-ship"
+                      : "Ship"}
+                  </button>
+                )}
                 <button
                   className={clsx(
                     "group flex h-[59px] w-full cursor-pointer items-center justify-center gap-3 bg-red-500 text-xl font-bold text-white transition-colors",
