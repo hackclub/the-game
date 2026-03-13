@@ -15,7 +15,7 @@ class StaticPagesController < ApplicationController
     })
 
     totalProjectTime = current_user.total_seconds
-    inProgressTime = current_user.total_seconds - current_user.total_reviewed_seconds
+    inProgressTime = current_user.total_seconds - (current_user.total_reviewed_seconds + current_user.total_in_review_seconds)
     reviewTime = current_user.total_in_review_seconds
     announcements = SlackAnnouncementsService.available? ? SlackAnnouncementsService.fetch_announcements : []
     render inertia: { totalProjectTime:, inProgressTime:, reviewTime:, projectCount: current_user.projects.count, announcements: announcements }

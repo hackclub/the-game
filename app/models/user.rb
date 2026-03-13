@@ -154,7 +154,7 @@ class User < ApplicationRecord
   end
 
   def total_seconds
-    projects.reduce(0) { |acc, project| acc + project.display_seconds }
+    projects.reduce(0) { |acc, project| acc + project.reported_seconds }
   end
 
   def total_in_review_seconds
