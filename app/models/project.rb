@@ -32,6 +32,8 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Project < ApplicationRecord
+  DIFF_FIELDS = [ "title", "desc", "demo_link", "repo_link" ].freeze
+
   include AASM
   include PgSearch::Model
 
@@ -190,5 +192,17 @@ class Project < ApplicationRecord
 
   def mark_notifications_read
     unread_notifications.each(&:mark_read)
+  end
+
+  def diff(version)
+    diffs = {}
+
+    DIFF_FIELDS.each do |field|
+      if self[field] != version[field]
+        diffs[field] = [ version[field], self[field] ]
+      end
+    end
+
+    diffs
   end
 end

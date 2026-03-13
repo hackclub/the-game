@@ -46,6 +46,14 @@ class ProjectsController < ApplicationController
   def show
     authorize @project
     project_hash = @project.display_hash(user: true, reviews: true, admin: current_user.admin?, reviewer: current_user.reviewer?)
+
+    ship_versions = @project.versions.where_object_changes_to(aasm_state: :submitted)
+    ships = ship_versions.map.with_index do |version, index|
+      diff = index == 0 ? {} : @project.diff(ship_versions[index - 1].object)
+
+      { id: version.id, date: version.created_at.to_s, diff: }
+    end
+
     hackatime_projects = available_hackatime_projects(user: @project.user) + @project.hackatime_projects.map(&:display_hash)
     @project.mark_notifications_read
 
@@ -55,6 +63,7 @@ class ProjectsController < ApplicationController
 
     render inertia: "projects/show", props: {
       project: project_hash,
+      ships:,
       hackatime_projects: hackatime_projects
     }
   end

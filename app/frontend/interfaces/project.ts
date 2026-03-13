@@ -24,3 +24,18 @@ export interface Project {
   high_quality: boolean;
   unread_notification_count: number;
 }
+
+export interface ProjectChange {
+  id: number;
+  date: string;
+  diff: {
+    [key in keyof Diff]?: Diff[key];
+  };
+}
+
+export interface Diff {
+  title: [string, string];
+  desc: [string, string];
+  repo_link: [string, string];
+  demo_link: [string, string];
+}

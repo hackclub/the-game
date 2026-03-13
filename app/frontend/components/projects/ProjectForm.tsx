@@ -1,4 +1,4 @@
-import { useForm } from "@inertiajs/react";
+import { useForm, router } from "@inertiajs/react";
 import type { HackatimeProject } from "@/interfaces/hackatime_project";
 import type { Project } from "@/interfaces/project";
 import formatTime from "@/utils/formatTime";
@@ -138,6 +138,23 @@ export default function ProjectForm({
     }
   }
 
+  function shipProject(e: React.MouseEvent) {
+    e.stopPropagation();
+    if (confirm("Are you sure you want to ship this project?")) {
+      patch(`/projects/${project!.id}`, {
+        forceFormData: true,
+        onFinish: () => router.patch(`/projects/${project!.id}/ship`),
+      });
+    }
+  }
+
+  function deleteProject(e: React.MouseEvent) {
+    e.stopPropagation();
+    if (confirm("Are you sure you want to delete this project?")) {
+      router.delete(`/projects/${project!.id}`);
+    }
+  }
+
   const sortedHackatimeProjects = useMemo(
     () => hackatime_projects.sort((a, b) => b.total_seconds - a.total_seconds),
     [hackatime_projects],
@@ -269,21 +286,52 @@ export default function ProjectForm({
         </div>
 
         {!disabled && (
-          <button
-            className={clsx(
-              "group flex h-[59px] w-full cursor-pointer items-center justify-center gap-3 bg-black text-xl font-bold text-white transition-colors",
-              "hover:bg-white hover:text-black disabled:opacity-50",
+          <>
+            <button
+              className={clsx(
+                "group flex h-[59px] w-full cursor-pointer items-center justify-center gap-3 bg-black text-xl font-bold text-white transition-colors",
+                "hover:border-4 hover:bg-white hover:text-black disabled:opacity-50",
+              )}
+              type="submit"
+              disabled={processing}
+            >
+              <img
+                src={arrowIcon}
+                alt=""
+                className="h-5 w-5 transition-all group-hover:invert"
+              />
+              {project ? "Update project" : "Create project"}
+            </button>
+            {project && (
+              <div className="flex gap-3">
+                <button
+                  className={clsx(
+                    "group flex h-[59px] w-full cursor-pointer items-center justify-center gap-3 bg-[#fecb0d] text-xl font-bold text-black transition-colors",
+                    "hover:bg-[#e5b80b] disabled:opacity-50",
+                  )}
+                  type="button"
+                  onClick={shipProject}
+                  disabled={processing}
+                >
+                  {project.aasm_state === "approved" ||
+                  project.aasm_state === "rejected"
+                    ? "Re-ship"
+                    : "Ship"}
+                </button>
+                <button
+                  className={clsx(
+                    "group flex h-[59px] w-full cursor-pointer items-center justify-center gap-3 bg-red-500 text-xl font-bold text-white transition-colors",
+                    "hover:bg-red-600 disabled:opacity-50",
+                  )}
+                  type="button"
+                  onClick={deleteProject}
+                  disabled={processing}
+                >
+                  Delete
+                </button>
+              </div>
             )}
-            type="submit"
-            disabled={processing}
-          >
-            <img
-              src={arrowIcon}
-              alt=""
-              className="h-5 w-5 transition-all group-hover:invert"
-            />
-            {project ? "Update project" : "Create project"}
-          </button>
+          </>
         )}
       </form>
     </div>

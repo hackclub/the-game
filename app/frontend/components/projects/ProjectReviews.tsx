@@ -1,16 +1,41 @@
-import type { Project } from "@/interfaces/project";
+import type { Project, ProjectChange } from "@/interfaces/project";
 import type { ProjectReview } from "@/interfaces/project_review";
 import type { PublicUser } from "@/interfaces/user";
 import { usePage, Link } from "@inertiajs/react";
 import formatTime from "@/utils/formatTime";
 import ReviewForm from "./ReviewForm";
+import { humanize } from "@/utils/humanize";
 
 export default function ProjectReviews({
   project,
+  ships,
 }: {
-  project: Project & { reviews: (ProjectReview & { author: PublicUser })[] };
+  project: Project & {
+    user: PublicUser;
+    reviews: (ProjectReview & { author: PublicUser })[];
+  };
+  ships: ProjectChange[];
 }) {
   const { props } = usePage();
+
+  const timeline = [
+    ...project.reviews.map((review) => ({
+      review,
+    })),
+    ...ships.map((ship) => ({
+      ship,
+    })),
+  ];
+  timeline.sort((a, b) => {
+    const aDate = new Date(
+      "review" in a ? a.review.created_at : a.ship.date,
+    ).valueOf();
+    const bDate = new Date(
+      "review" in b ? b.review.created_at : b.ship.date,
+    ).valueOf();
+
+    return aDate - bDate;
+  });
 
   return (
     <div className="mt-8 flex w-full flex-col px-16 text-lg">
@@ -27,50 +52,95 @@ export default function ProjectReviews({
                 We haven't reviewed your project yet - give us some time!
               </p>
             ) : (
-              project.reviews.map((review) => (
-                <div className="flex gap-3" key={review.id}>
-                  <img
-                    src={review.author.avatar}
-                    alt={`Avatar of ${review.author.username}`}
-                    className="h-10 w-10 rounded-md"
-                  />
-                  <div className="flex flex-col gap-1">
-                    <p className="leading-0.5">
-                      <span className="font-bold">
-                        {review.author.username}
-                      </span>{" "}
-                      <span className="italic">
-                        {review.review_type === "approval"
-                          ? "approved"
-                          : review.review_type === "rejection"
-                            ? "rejected"
-                            : "commented"}{" "}
-                        {review.review_type === "approval" &&
-                          `for ${formatTime(review.approved_seconds)}`}
-                      </span>
-                      <span className="text-sm">
-                        <br></br>on{" "}
-                        {new Date(review.created_at).toLocaleString()}
-                      </span>
-                    </p>
-                    <p className="max-w-sm wrap-break-word">{review.content}</p>
-                    {review.admin_content && (
-                      <p className="rounded-md border-2 border-dashed border-orange-600 bg-orange-200 p-3">
-                        {review.admin_content}
-                      </p>
-                    )}
-                    {(props.user.role === "reviewer" ||
-                      props.user.role === "admin") && (
-                      <Link
-                        href={`/projects/${project.id}/reviews/${review.id}/edit`}
-                        className="text-blue-500 underline"
-                      >
-                        Edit review
-                      </Link>
-                    )}
-                  </div>
-                </div>
-              ))
+              timeline.map((item) => {
+                if ("ship" in item) {
+                  const ship = item.ship;
+
+                  return (
+                    <div className="flex gap-3" key={ship.id}>
+                      <img
+                        src={project.user.avatar}
+                        alt={`Avatar of ${project.user.username}`}
+                        className="h-10 w-10 rounded-md"
+                      />
+                      <div className="flex flex-col gap-1">
+                        <p className="leading-0.5">
+                          <span className="font-bold">
+                            {project.user.username}
+                          </span>{" "}
+                          <span className="italic">shipped</span>
+                          <span className="text-sm">
+                            <br></br>on {new Date(ship.date).toLocaleString()}
+                          </span>
+                        </p>
+                        <p className="max-w-sm wrap-break-word">
+                          {Object.entries(ship.diff).map((entry) => (
+                            <p className="leading-tight">
+                              <span className="text-base font-bold">
+                                {humanize(entry[0])}
+                              </span>
+                              <br />{" "}
+                              {entry[1][0] ? `"${entry[1][0]}"` : "empty"} -&gt;
+                              "{entry[1][1]}"
+                            </p>
+                          ))}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                }
+
+                if ("review" in item) {
+                  const review = item.review;
+
+                  return (
+                    <div className="flex gap-3" key={review.id}>
+                      <img
+                        src={review.author.avatar}
+                        alt={`Avatar of ${review.author.username}`}
+                        className="h-10 w-10 rounded-md"
+                      />
+                      <div className="flex flex-col gap-1">
+                        <p className="leading-0.5">
+                          <span className="font-bold">
+                            {review.author.username}
+                          </span>{" "}
+                          <span className="italic">
+                            {review.review_type === "approval"
+                              ? "approved"
+                              : review.review_type === "rejection"
+                                ? "rejected"
+                                : "commented"}{" "}
+                            {review.review_type === "approval" &&
+                              `for ${formatTime(review.approved_seconds)}`}
+                          </span>
+                          <span className="text-sm">
+                            <br></br>on{" "}
+                            {new Date(review.created_at).toLocaleString()}
+                          </span>
+                        </p>
+                        <p className="max-w-sm wrap-break-word">
+                          {review.content}
+                        </p>
+                        {review.admin_content && (
+                          <p className="rounded-md border-2 border-dashed border-orange-600 bg-orange-200 p-3">
+                            {review.admin_content}
+                          </p>
+                        )}
+                        {(props.user.role === "reviewer" ||
+                          props.user.role === "admin") && (
+                          <Link
+                            href={`/projects/${project.id}/reviews/${review.id}/edit`}
+                            className="text-blue-500 underline"
+                          >
+                            Edit review
+                          </Link>
+                        )}
+                      </div>
+                    </div>
+                  );
+                }
+              })
             )}
           </div>
 
