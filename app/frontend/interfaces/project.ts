@@ -22,6 +22,7 @@ export interface Project {
   real_approved_seconds: number;
   high_quality: boolean;
   unread_notification_count: number;
+  tags: number[];
 }
 
 export interface ProjectChange {

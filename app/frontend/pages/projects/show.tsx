@@ -8,6 +8,7 @@ import type { Project, ProjectChange } from "@/interfaces/project";
 import type { ProjectReview } from "@/interfaces/project_review";
 import type { HackatimeProject } from "@/interfaces/hackatime_project";
 import type { PublicUser, ReviewerUser } from "@/interfaces/user";
+import type { ProjectTag } from "@/interfaces/project_tag";
 import clockIcon from "@/assets/icons/clock.svg";
 
 interface Props {
@@ -17,12 +18,13 @@ interface Props {
   };
   ships: ProjectChange[];
   hackatime_projects: HackatimeProject[];
+  tags: ProjectTag[];
   [key: string]: unknown;
 }
 
 export default function ShowProject() {
   const { props } = usePage<Props>();
-  const { project, ships, hackatime_projects, user } = props;
+  const { project, ships, hackatime_projects, tags, user } = props;
 
   const showUserInfo =
     (user.role === "admin" || user.role === "reviewer") &&
@@ -116,6 +118,7 @@ export default function ShowProject() {
           <ProjectForm
             project={project}
             hackatime_projects={hackatime_projects}
+            tags={tags}
           />
         </div>
         {showUserInfo && (

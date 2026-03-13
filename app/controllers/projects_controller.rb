@@ -14,6 +14,7 @@ class ProjectsController < ApplicationController
 
     render inertia: "projects/new", props: {
       hackatime_projects: available_hackatime_projects,
+      tags: Project::Tag.all.map(&:display_hash),
       projects_count: current_user.projects.count
     }
   end
@@ -64,6 +65,7 @@ class ProjectsController < ApplicationController
     render inertia: "projects/show", props: {
       project: project_hash,
       ships:,
+      tags: Project::Tag.all.map(&:display_hash),
       hackatime_projects: hackatime_projects
     }
   end
@@ -136,6 +138,12 @@ class ProjectsController < ApplicationController
 
     unless params[:screenshot] == "0"
       p[:screenshot] = params[:screenshot]
+    end
+
+    if params[:tags].present?
+      p[:tags] = Project::Tag.where(id: params[:tags].values.map(&:to_i))
+    else
+      p[:tags] = []
     end
 
     p

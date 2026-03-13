@@ -1,6 +1,7 @@
 import { useForm, router } from "@inertiajs/react";
 import type { HackatimeProject } from "@/interfaces/hackatime_project";
 import type { Project } from "@/interfaces/project";
+import type { ProjectTag } from "@/interfaces/project_tag";
 import formatTime from "@/utils/formatTime";
 import { useMemo } from "react";
 import arrowIcon from "@/assets/icons/arrow.svg";
@@ -8,6 +9,7 @@ import clsx from "clsx";
 
 interface Props {
   hackatime_projects: HackatimeProject[];
+  tags: ProjectTag[];
   project?: Project;
   tutorial?: boolean;
 }
@@ -110,6 +112,7 @@ function TextareaField({
 
 export default function ProjectForm({
   hackatime_projects,
+  tags,
   project,
   tutorial,
 }: Props) {
@@ -120,6 +123,7 @@ export default function ProjectForm({
     demo_link: project?.demo_link ?? "",
     hackatime_project_keys: project?.hackatime_projects ?? ([] as number[]),
     screenshot: (project?.screenshot ? 0 : null) as File | 0 | null,
+    tags: project?.tags ?? ([] as number[]),
   });
 
   const disabled = project?.aasm_state === "submitted";
@@ -280,6 +284,34 @@ export default function ProjectForm({
                 selected={data.hackatime_project_keys.includes(hp.id)}
               >
                 {hp.name} ({formatTime(hp.total_seconds)})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <FieldHeading
+            label="Tags"
+            description="Select applicable tags for this project"
+          />
+          <select
+            className="mt-1 border-[#cacaca] bg-[#d9d9d9] p-2 text-xl outline-none"
+            multiple
+            onChange={(e) =>
+              setData(
+                "tags",
+                [...e.target.selectedOptions].map((o) => Number(o.value)),
+              )
+            }
+            disabled={disabled}
+          >
+            {tags.map((tag) => (
+              <option
+                key={tag.id}
+                value={tag.id}
+                selected={data.tags.includes(tag.id)}
+              >
+                {tag.name}
               </option>
             ))}
           </select>

@@ -112,6 +112,7 @@ class Project < ApplicationRecord
     hash["approved_seconds"] = approved_seconds
     hash["real_approved_seconds"] = real_approved_seconds
     hash["hackatime_projects"] = hackatime_projects.pluck(:id)
+    hash["tags"] = tags.pluck(:id)
     hash["status"] = display_status
     hash["unread_notification_count"] = unread_notifications.count
 
