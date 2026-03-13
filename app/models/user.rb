@@ -107,7 +107,7 @@ class User < ApplicationRecord
     if private
       hash = self.as_json.slice("id", "first_name", "last_name", "github_username", "address_street", "address_locality", "address_region", "address_country", "address_postal", "birthday", "avatar", "email", "role", "username", "ysws_verified", "verification_status", "account_id", "hackatime_id", "slack_id", "onboarding_completed")
       hash["balance"] = self.balance
-      hash["total_seconds"] = self.total_seconds
+      hash["total_reported_seconds"] = self.total_reported_seconds
       hash["total_in_review_seconds"] = self.total_in_review_seconds
       hash["total_approved_seconds"] = self.total_approved_seconds
       hash["ticket_adjustments"] = self.ticket_adjustments.order(created_at: :desc).map(&:display_hash)
@@ -125,7 +125,7 @@ class User < ApplicationRecord
   end
 
   def sync_pyramid_record
-    data = { email:, referral_code:, projects_count: projects.count, idv_status: verification_status, hours: (total_seconds / 3600.00) }
+    data = { email:, referral_code:, projects_count: projects.count, idv_status: verification_status, hours: (total_reported_seconds / 3600.00) }
 
     if pyramid_record.nil?
       Pyramid.create(data)
@@ -156,7 +156,7 @@ class User < ApplicationRecord
     Airtable.find_by(email:)
   end
 
-  def total_seconds
+  def total_reported_seconds
     projects.reduce(0) { |acc, project| acc + project.reported_seconds }
   end
 
