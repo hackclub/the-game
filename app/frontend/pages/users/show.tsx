@@ -52,8 +52,8 @@ export default function UserPage() {
             {props.page_user.balance}
           </p>
           <p>
-            <span className="font-bold">Submitted hours: </span>
-            {(props.page_user.total_submitted_seconds / 3600).toFixed(1)}
+            <span className="font-bold">Hours in review: </span>
+            {(props.page_user.total_in_review_seconds / 3600).toFixed(1)}
           </p>
           <p>
             <span className="font-bold">Approved hours: </span>
