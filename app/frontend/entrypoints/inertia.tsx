@@ -1,6 +1,8 @@
 import { createInertiaApp, type ResolvedComponent } from "@inertiajs/react";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import posthog from "posthog-js";
+import { PostHogProvider } from "@posthog/react";
 import "./application.css";
 
 void createInertiaApp({
@@ -34,9 +36,16 @@ void createInertiaApp({
   },
 
   setup({ el, App, props }) {
+    posthog.init(import.meta.env.VITE_PUBLIC_POSTHOG_TOKEN, {
+      api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
+      defaults: "2026-01-30",
+    });
+    
     createRoot(el).render(
       <StrictMode>
-        <App {...props} />
+        <PostHogProvider client={posthog}>
+          <App {...props} />
+        </PostHogProvider>
       </StrictMode>,
     );
   },
