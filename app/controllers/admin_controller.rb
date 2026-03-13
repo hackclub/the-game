@@ -21,6 +21,10 @@ class AdminController < ApplicationController
       filtered_projects = filtered_projects.where(high_quality: true)
     end
 
+    if params[:tag].present?
+      filtered_projects = filtered_projects.where(tags: [])
+    end
+
     if params[:q].present?
       filtered_projects = filtered_projects.search_by_title(params[:q])
     end

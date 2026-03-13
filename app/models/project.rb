@@ -47,6 +47,7 @@ class Project < ApplicationRecord
   belongs_to :user
   has_many :hackatime_projects, dependent: :destroy
   has_many :reviews, class_name: "Project::Review"
+  has_and_belongs_to_many :tags, join_table: :project_tags_projects, association_foreign_key: :project_tag_id
   has_one_attached :screenshot
 
   validates :title, :desc, presence: true
