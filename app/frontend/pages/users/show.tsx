@@ -53,7 +53,7 @@ export default function UserPage() {
           </p>
           <p>
             <span className="font-bold">Submitted hours: </span>
-            {(props.page_user.total_seconds / 3600).toFixed(1)}
+            {(props.page_user.total_submitted_seconds / 3600).toFixed(1)}
           </p>
           <p>
             <span className="font-bold">Approved hours: </span>
