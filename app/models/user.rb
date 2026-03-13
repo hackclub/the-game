@@ -107,6 +107,9 @@ class User < ApplicationRecord
     if private
       hash = self.as_json.slice("id", "first_name", "last_name", "github_username", "address_street", "address_locality", "address_region", "address_country", "address_postal", "birthday", "avatar", "email", "role", "username", "ysws_verified", "verification_status", "account_id", "hackatime_id", "slack_id", "onboarding_completed")
       hash["balance"] = self.balance
+      hash["total_seconds"] = self.total_seconds
+      hash["total_in_review_seconds"] = self.total_in_review_seconds
+      hash["total_approved_seconds"] = self.total_approved_seconds
       hash["ticket_adjustments"] = self.ticket_adjustments.order(created_at: :desc).map(&:display_hash)
 
       hash
@@ -159,6 +162,10 @@ class User < ApplicationRecord
 
   def total_in_review_seconds
     projects.submitted.reduce(0) { |acc, project| acc + project.in_review_seconds }
+  end
+
+  def total_ever_submitted_seconds
+    total_in_review_seconds + total_reviewed_seconds
   end
 
   def total_reviewed_seconds
