@@ -23,7 +23,7 @@ function HeadingSegment({
         className={`relative flex h-full ${minWidth ? "min-w-xl" : ""} items-center px-10 md:px-16 ${backgroundClass}`}
       >
         <span
-          className={`text-[48px] font-bold tracking-[-0.06em] ${textClass}`}
+          className={`text-[48px] font-bold tracking-[-0.06em] text-nowrap ${textClass}`}
         >
           {text}
         </span>
@@ -56,7 +56,7 @@ export default function PageHeading({
 
             <HeadingSegment
               text={title}
-              backgroundClass="!-translate-x-8 z-0 flex-1 bg-[#fecb0d]"
+              backgroundClass="!-translate-x-8 z-0 bg-[#fecb0d]"
               textClass="text-black smoothing-black"
             />
           </>
