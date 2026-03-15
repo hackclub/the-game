@@ -4,7 +4,7 @@ class ItemsController < ApplicationController
   skip_after_action :verify_authorized, only: [ :index, :buy, :create, :edit, :update, :destroy ]
 
   def index
-    render inertia: "items/index", props: { items: Item.with_attached_image.order(featured: :desc).map(&:display_hash), has_purchased: current_user.purchases.any? }
+    render inertia: "items/index", props: { items: Item.with_attached_image.order(featured: :desc, price: :asc).map(&:display_hash), has_purchased: current_user.purchases.any? }
   end
 
   def buy
