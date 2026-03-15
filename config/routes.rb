@@ -57,6 +57,9 @@ Rails.application.routes.draw do
   resources :settings
   resources :notifications, only: [ :index ]
 
+  get "/invite", to: "invite#index"
+  get "/invite/:code", to: "invite#show", as: :invite_show
+
   resources :users, only: :show do
     resources :ticket_adjustments, path: "adjustments", only: [ :create, :destroy ]
   end
@@ -65,6 +68,13 @@ Rails.application.routes.draw do
   namespace :admin do
     resources :announcements, only: [ :index, :create, :edit, :update, :destroy ]
     resources :tags, only: [ :index, :create, :edit, :update, :destroy ]
+    resources :referrals, only: [ :index ] do
+      collection do
+        patch :update_program
+        post :start_rollout
+        post :pause_rollout
+      end
+    end
   end
 
   get "/review", to: "review#index"

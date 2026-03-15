@@ -59,6 +59,8 @@ class User < ApplicationRecord
   has_many :items, through: :purchases
   has_many :notifications
   has_many :ticket_adjustments
+  has_many :referrals, foreign_key: :referrer_id
+  has_many :referred_users, through: :referrals, source: :referred_user
 
   has_many :approved_reviews, -> { where(review_type: :approval) }, through: :projects, source: :reviews, class_name: "Project::Review"
 
@@ -190,6 +192,10 @@ class User < ApplicationRecord
 
   def unread_adjustment_notifications
     Notification.where(notifiable: ticket_adjustments, read: false)
+  end
+
+  def referral_link_code
+    @referral_link_code ||= Digest::SHA256.hexdigest("referral-#{id}-#{created_at}")[0, 8]
   end
 
   private

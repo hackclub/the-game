@@ -77,6 +77,7 @@ class Project < ApplicationRecord
           event: "project_approved",
           properties: { project_id: id, approved_seconds: approved_seconds, platform: "web" }
         })
+        ReferralRewardService.process_approval(self)
       end
     end
 

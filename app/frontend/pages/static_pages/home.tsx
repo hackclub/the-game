@@ -45,6 +45,23 @@ export default function Home() {
           </p>
         </div>
 
+        {props.user?.referral_eligible && (
+          <Link
+            href="/invite"
+            className="flex items-center justify-between rounded-2xl bg-[#fecb0d] p-6 transition-transform hover:scale-[1.01]"
+          >
+            <div>
+              <p className="smoothing-black text-2xl font-bold tracking-[-0.02em]">
+                🎟️ Invite your friends!
+              </p>
+              <p className="smoothing-black text-lg">
+                Share your referral link and earn bonus tickets when they ship.
+              </p>
+            </div>
+            <span className="smoothing-black text-xl font-bold">→</span>
+          </Link>
+        )}
+
         {isOnboarding ? null : (
           <>
             <MissingAccountFields />
