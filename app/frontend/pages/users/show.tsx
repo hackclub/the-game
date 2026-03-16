@@ -4,7 +4,7 @@ import MissingAccountFields from "@/components/settings/MissingAccountFields";
 import { ACCOUNT_REQUIRED_FIELDS, PrivateUser } from "@/interfaces/user";
 import PageHeading from "@/components/layout/PageHeading";
 import AdjustmentForm from "@/components/adjustments/AdjustmentForm";
-import linkIcon from "@/assets/icons/link.svg";
+import inviteIcon from "@/assets/icons/invite.svg";
 
 interface Props {
   page_user: PrivateUser;
@@ -151,7 +151,7 @@ export default function UserPage() {
                     <a href={item.link}>
                       <img
                         className="inline h-5 w-5 align-middle"
-                        src={linkIcon}
+                        src={inviteIcon}
                       />
                     </a>
                   )}

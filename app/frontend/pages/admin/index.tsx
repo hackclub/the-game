@@ -80,6 +80,11 @@ export default function AdminPage() {
             title="Project Tags"
             description="Create/delete/modify project tags"
           />
+          <AdminNav
+            href="/admin/referrals"
+            title="Referral Program"
+            description="Manage referral rollout, settings, and stats"
+          />
         </div>
       </div>
     </Layout>

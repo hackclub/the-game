@@ -40,6 +40,7 @@ Rails.application.routes.draw do
   resources :shop, controller: :items, only: [ :index, :create, :edit, :update, :destroy ] do
     member do
       post "buy"
+      post "claim_referral_item"
     end
   end
 
@@ -57,6 +58,9 @@ Rails.application.routes.draw do
   resources :settings
   resources :notifications, only: [ :index ]
 
+  get "/invite", to: "invite#index"
+  get "/invite/:code", to: "invite#show", as: :invite_show
+
   resources :users, only: :show do
     resources :ticket_adjustments, path: "adjustments", only: [ :create, :destroy ]
   end
@@ -65,6 +69,12 @@ Rails.application.routes.draw do
   namespace :admin do
     resources :announcements, only: [ :index, :create, :edit, :update, :destroy ]
     resources :tags, only: [ :index, :create, :edit, :update, :destroy ]
+    resources :referrals, only: [ :index ] do
+      collection do
+        patch :update_program
+        post :roll_raffle
+      end
+    end
   end
 
   get "/review", to: "review#index"
