@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_13_134916) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_16_205944) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
   enable_extension "pg_catalog.plpgsql"
@@ -138,6 +138,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_13_134916) do
     t.text "description", null: false
     t.boolean "featured", default: false, null: false
     t.string "name", null: false
+    t.boolean "one_per_user", default: false, null: false
     t.integer "price", null: false
     t.datetime "updated_at", null: false
   end
@@ -218,6 +219,35 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_13_134916) do
     t.index ["user_id"], name: "index_projects_on_user_id"
   end
 
+  create_table "referral_program", force: :cascade do |t|
+    t.boolean "active", default: false
+    t.datetime "created_at", null: false
+    t.text "homepage_alert_description"
+    t.string "homepage_alert_title"
+    t.text "invite_page_description"
+    t.text "og_description_template"
+    t.text "raffle_description"
+    t.string "raffle_image_url"
+    t.string "raffle_title"
+    t.bigint "referred_item_id"
+    t.integer "referred_raffle_entries", default: 1
+    t.integer "referrer_raffle_entries", default: 1
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "referrals", force: :cascade do |t|
+    t.string "code", null: false
+    t.datetime "created_at", null: false
+    t.integer "raffle_entries", default: 0
+    t.bigint "referred_user_id", null: false
+    t.bigint "referrer_id", null: false
+    t.boolean "shipped", default: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_referrals_on_code"
+    t.index ["referred_user_id"], name: "index_referrals_on_referred_user_id", unique: true
+    t.index ["referrer_id"], name: "index_referrals_on_referrer_id"
+  end
+
   create_table "ticket_adjustments", force: :cascade do |t|
     t.integer "amount", null: false
     t.datetime "created_at", null: false
@@ -277,4 +307,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_13_134916) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "hackatime_projects", "users"
   add_foreign_key "projects", "users"
+  add_foreign_key "referral_program", "items", column: "referred_item_id"
+  add_foreign_key "referrals", "users", column: "referred_user_id"
+  add_foreign_key "referrals", "users", column: "referrer_id"
 end

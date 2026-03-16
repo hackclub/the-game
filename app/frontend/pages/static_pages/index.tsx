@@ -46,6 +46,19 @@ export default function RsvpPage() {
         ))}
       </div>
 
+      {props.referrer_name && (
+        <div className="fixed top-8 right-8 z-50">
+          <div className="rounded-md border-2 bg-[#fecb0d] px-8 pr-32 py-4">
+            <p className="text-2xl font-bold text-black">
+              {String(props.referrer_name)} invited you!
+            </p>
+            <p className="text-lg">
+              Sign up now and get free stickers!
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="relative z-10 flex min-h-screen w-full items-center justify-center px-4 py-12 lg:py-24">
         <div className="flex w-full max-w-none flex-col items-end lg:max-w-6xl">
           <div className="flex w-full flex-col border-t-30 border-r-4 border-b-4 border-l-4 border-solid border-black bg-white lg:flex-row">

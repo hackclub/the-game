@@ -24,6 +24,7 @@ module Admin
 
       render inertia: "admin/referrals", props: {
         program: program.display_hash,
+        items: Item.with_attached_image.order(:name).map(&:display_hash),
         leaderboard: leaderboard,
         stats: {
           total_referrals: Referral.count,
@@ -40,13 +41,45 @@ module Admin
       redirect_to admin_referrals_path, notice: "Referral program settings updated."
     end
 
+    def roll_raffle
+      entries = User.joins(:referrals)
+                    .where(referrals: { shipped: true })
+                    .where("referrals.raffle_entries > 0")
+                    .select("users.id, users.username, users.avatar, COALESCE(SUM(referrals.raffle_entries), 0) as total_entries")
+                    .group("users.id, users.username, users.avatar")
+                    .having("SUM(referrals.raffle_entries) > 0")
+
+      if entries.empty?
+        redirect_to admin_referrals_path, alert: "No raffle entries to pick from."
+        return
+      end
+
+      total = entries.sum(&:total_entries)
+      roll = rand(total)
+      cumulative = 0
+      winner = nil
+
+      entries.each do |entry|
+        cumulative += entry.total_entries
+        if roll < cumulative
+          winner = entry
+          break
+        end
+      end
+
+      chance = ((winner.total_entries.to_f / total) * 100).round(2)
+
+      redirect_to admin_referrals_path, notice: "🎉 Raffle winner: #{winner.username || 'User #' + winner.id.to_s} — #{winner.total_entries} entries out of #{total} total (#{chance}% chance)"
+    end
+
     private
 
     def program_params
       params.require(:referral_program).permit(
         :active, :referrer_raffle_entries, :referred_raffle_entries,
         :raffle_title, :raffle_description, :raffle_image_url,
-        :homepage_alert_title, :homepage_alert_description, :invite_page_description
+        :homepage_alert_title, :homepage_alert_description, :invite_page_description,
+        :referred_item_id, :og_description_template
       )
     end
   end

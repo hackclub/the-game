@@ -23,7 +23,14 @@ class StaticPagesController < ApplicationController
   end
 
   def index
-    render inertia: { signed_in: user_logged_in? }
+    referrer_name = nil
+    ref_code = params[:ref] || session[:referral_code]
+    if ref_code.present?
+      referrer = find_referrer_by_code(ref_code)
+      referrer_name = referrer&.username
+    end
+
+    render inertia: { signed_in: user_logged_in?, referrer_name: referrer_name }
   end
 
   def create_rsvp
@@ -51,5 +58,16 @@ class StaticPagesController < ApplicationController
     else
       redirect_to "/auth/start"
     end
+  end
+
+  private
+
+  def find_referrer_by_code(code)
+    return nil if code.blank?
+
+    User.where(is_banned: false).find_each do |u|
+      return u if u.referral_link_code == code
+    end
+    nil
   end
 end

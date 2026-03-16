@@ -1,6 +1,11 @@
-import { useState } from "react";
-import { router } from "@inertiajs/react";
+import { useState, useMemo } from "react";
+import { router, usePage } from "@inertiajs/react";
 import Layout from "@/layouts/layout";
+
+interface AdminItem {
+  id: number;
+  name: string;
+}
 
 interface Program {
   id: number;
@@ -13,6 +18,8 @@ interface Program {
   homepage_alert_title: string | null;
   homepage_alert_description: string | null;
   invite_page_description: string | null;
+  referred_item_id: number | null;
+  og_description_template: string | null;
 }
 
 interface LeaderboardEntry {
@@ -32,11 +39,118 @@ interface Stats {
 
 interface Props {
   program: Program;
+  items: AdminItem[];
   leaderboard: LeaderboardEntry[];
   stats: Stats;
 }
 
-export default function AdminReferrals({ program, leaderboard, stats }: Props) {
+function RaffleSection({
+  leaderboard,
+  stats,
+}: {
+  leaderboard: LeaderboardEntry[];
+  stats: Stats;
+}) {
+  const [rolling, setRolling] = useState(false);
+
+  const participants = useMemo(() => {
+    return leaderboard
+      .filter((e) => e.total_raffle_entries > 0)
+      .map((e) => ({
+        ...e,
+        chance:
+          stats.total_raffle_entries > 0
+            ? (e.total_raffle_entries / stats.total_raffle_entries) * 100
+            : 0,
+      }));
+  }, [leaderboard, stats.total_raffle_entries]);
+
+  const rollRaffle = () => {
+    setRolling(true);
+    router.post("/admin/referrals/roll_raffle", {}, {
+      onFinish: () => setRolling(false),
+    });
+  };
+
+  return (
+    <div className="mb-8 rounded-lg bg-white p-6 shadow">
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-2xl font-bold">🎲 Raffle Roller</h2>
+        <button
+          onClick={rollRaffle}
+          disabled={rolling || participants.length === 0}
+          className="cursor-pointer rounded-lg bg-purple-600 px-6 py-2 font-bold text-white transition-colors hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {rolling ? "Rolling..." : "Roll Raffle"}
+        </button>
+      </div>
+
+      {participants.length === 0 ? (
+        <p className="text-gray-400">No users with raffle entries yet.</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b-2">
+                <th className="px-3 py-2 text-left">User</th>
+                <th className="px-3 py-2 text-right">Entries</th>
+                <th className="px-3 py-2 text-right">Chance</th>
+                <th className="px-3 py-2 text-left">Probability</th>
+              </tr>
+            </thead>
+            <tbody>
+              {participants.map((p) => (
+                <tr key={p.id} className="border-b">
+                  <td className="px-3 py-2">
+                    <div className="flex items-center gap-2">
+                      {p.avatar ? (
+                        <img
+                          src={p.avatar}
+                          alt=""
+                          className="h-6 w-6 rounded-full"
+                        />
+                      ) : (
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-200 text-xs font-bold">
+                          {p.username?.charAt(0) || "?"}
+                        </div>
+                      )}
+                      <span>{p.username || "Anonymous"}</span>
+                    </div>
+                  </td>
+                  <td className="px-3 py-2 text-right font-bold">
+                    {p.total_raffle_entries}
+                  </td>
+                  <td className="px-3 py-2 text-right">
+                    {p.chance.toFixed(2)}%
+                  </td>
+                  <td className="px-3 py-2">
+                    <div className="h-2 w-full rounded-full bg-gray-200">
+                      <div
+                        className="h-2 rounded-full bg-purple-500"
+                        style={{ width: `${Math.max(p.chance, 1)}%` }}
+                      />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="mt-3 text-sm text-gray-500">
+            {participants.length} participant{participants.length !== 1 && "s"} •{" "}
+            {stats.total_raffle_entries} total entries
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function AdminReferrals({
+  program,
+  items,
+  leaderboard,
+  stats,
+}: Props) {
   const [form, setForm] = useState({
     active: program.active,
     referrer_raffle_entries: program.referrer_raffle_entries,
@@ -47,6 +161,8 @@ export default function AdminReferrals({ program, leaderboard, stats }: Props) {
     homepage_alert_title: program.homepage_alert_title || "",
     homepage_alert_description: program.homepage_alert_description || "",
     invite_page_description: program.invite_page_description || "",
+    referred_item_id: program.referred_item_id || "",
+    og_description_template: program.og_description_template || "",
   });
 
   const updateField = (field: string, value: string | number | boolean) => {
@@ -102,6 +218,9 @@ export default function AdminReferrals({ program, leaderboard, stats }: Props) {
           </div>
         </div>
 
+        {/* Raffle Roller */}
+        <RaffleSection leaderboard={leaderboard} stats={stats} />
+
         {/* Settings */}
         <div className="mb-8 rounded-lg bg-white p-6 shadow">
           <h2 className="mb-4 text-2xl font-bold">Settings</h2>
@@ -132,22 +251,6 @@ export default function AdminReferrals({ program, leaderboard, stats }: Props) {
                 onChange={(e) =>
                   updateField(
                     "referrer_raffle_entries",
-                    parseInt(e.target.value),
-                  )
-                }
-                className="w-full rounded-lg border px-3 py-2"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-bold">
-                Referred Raffle Entries
-              </label>
-              <input
-                type="number"
-                value={form.referred_raffle_entries}
-                onChange={(e) =>
-                  updateField(
-                    "referred_raffle_entries",
                     parseInt(e.target.value),
                   )
                 }
@@ -233,6 +336,52 @@ export default function AdminReferrals({ program, leaderboard, stats }: Props) {
               className="w-full rounded-lg border px-3 py-2"
             />
           </div>
+
+          <h3 className="mt-6 mb-2 text-lg font-bold">
+            Referred User Reward
+          </h3>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label className="mb-1 block text-sm font-bold">
+                Free Item for Referred Users
+              </label>
+              <select
+                value={form.referred_item_id}
+                onChange={(e) =>
+                  updateField(
+                    "referred_item_id",
+                    e.target.value === "" ? "" : parseInt(e.target.value),
+                  )
+                }
+                className="w-full rounded-lg border px-3 py-2"
+              >
+                <option value="">None</option>
+                {items.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-bold">
+                OG Description Template
+              </label>
+              <input
+                type="text"
+                value={form.og_description_template}
+                onChange={(e) =>
+                  updateField("og_description_template", e.target.value)
+                }
+                className="w-full rounded-lg border px-3 py-2"
+                placeholder="<USER> invited you to Hack Club: The Game!"
+              />
+              <p className="mt-1 text-xs text-gray-500">
+                Use &lt;USER&gt; as a placeholder for the referrer's name
+              </p>
+            </div>
+          </div>
+
           <button
             onClick={saveSettings}
             className="mt-4 cursor-pointer rounded-lg bg-black px-6 py-2 font-bold text-white hover:bg-gray-800"

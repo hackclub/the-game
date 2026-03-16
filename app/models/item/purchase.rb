@@ -39,8 +39,11 @@ class Item
       end
     end
 
+    attr_accessor :skip_balance_check
+
     validates :quantity, numericality: { greater_than: 0 }
-    validate :check_balance, on: :create
+    validate :check_balance, on: :create, unless: :skip_balance_check
+    validate :check_one_per_user, on: :create
 
     def display_hash(item: false)
       hash = self.as_json.slice("id", "aasm_state", "created_at", "updated_at", "item_id", "user_id", "fulfilled_at", "hold_at", "quantity")
@@ -59,6 +62,12 @@ class Item
       if user.balance < total_cost
         errors.add(:base, "User ##{user.id} (#{user.balance} tickets) does not have sufficient tickets to purchase #{quantity}x #{item.name} (#{total_cost} tickets)")
       end
+    end
+
+    def check_one_per_user
+      return unless item.one_per_user? && self.class.where(user: user, item: item).exists?
+
+      errors.add(:base, "You have already purchased #{item.name}")
     end
   end
 end

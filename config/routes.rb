@@ -40,6 +40,7 @@ Rails.application.routes.draw do
   resources :shop, controller: :items, only: [ :index, :create, :edit, :update, :destroy ] do
     member do
       post "buy"
+      post "claim_referral_item"
     end
   end
 
@@ -71,6 +72,7 @@ Rails.application.routes.draw do
     resources :referrals, only: [ :index ] do
       collection do
         patch :update_program
+        post :roll_raffle
       end
     end
   end

@@ -5,4 +5,5 @@ export interface Item {
   price: number;
   image?: string;
   featured: boolean;
+  one_per_user: boolean;
 }

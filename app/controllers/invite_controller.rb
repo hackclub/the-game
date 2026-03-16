@@ -31,8 +31,9 @@ class InviteController < ApplicationController
     referrer = find_referrer_by_code(code)
 
     if referrer
+      program = ReferralProgram.instance
       @og_title = "#{referrer.username || 'Someone'} invited you to Hack Club: The Game!"
-      @og_description = "Join Hack Club: The Game and earn raffle entries when you ship your first project!"
+      @og_description = program.og_description_for(referrer)
     end
 
     redirect_to root_path(ref: code)

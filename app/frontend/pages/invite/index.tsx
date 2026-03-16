@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Layout from "@/layouts/layout";
+import PageHeading from "@/components/layout/PageHeading";
 
 interface Referral {
   id: number;
@@ -67,16 +68,12 @@ export default function InvitePage({
 
   return (
     <Layout>
-      <div className="flex flex-col gap-10 px-6 py-8 xl:px-24 xl:py-16">
-        <div>
-          <h1 className="smoothing-black text-5xl font-bold tracking-[-0.04em]">
-            Invite Friends
-          </h1>
-          <p className="smoothing-black mt-2 text-xl tracking-[-0.01em]">
-            {program.invite_page_description}
-          </p>
-        </div>
+      <PageHeading
+        title="Invite Friends"
+        subtitle={program.invite_page_description}
+      />
 
+      <div className="flex flex-col gap-10 px-6 py-8 xl:px-24 xl:py-16">
         {/* Raffle Info */}
         <div className="flex items-center gap-6 rounded-2xl border-2 border-black bg-white p-6">
           {program.raffle_image_url && (
@@ -88,7 +85,7 @@ export default function InvitePage({
           )}
           <div>
             <h2 className="smoothing-black text-2xl font-bold">
-              🎟️ {program.raffle_title}
+              {program.raffle_title}
             </h2>
             <p className="smoothing-black mt-1 text-lg text-gray-700">
               {program.raffle_description}
@@ -134,7 +131,6 @@ export default function InvitePage({
           <div className="rounded-2xl border-2 border-black bg-white p-6">
             <div className="flex items-center gap-2">
               <p className="smoothing-black text-lg">Raffle Entries</p>
-              <span>🎟️</span>
             </div>
             <p className="smoothing-black text-4xl font-bold">
               {stats.total_raffle_entries}
@@ -260,7 +256,6 @@ export default function InvitePage({
                     )}
                     {referral.raffle_entries > 0 && (
                       <div className="flex items-center gap-1">
-                        <span>🎟️</span>
                         <span className="font-bold">
                           +{referral.raffle_entries}
                         </span>
