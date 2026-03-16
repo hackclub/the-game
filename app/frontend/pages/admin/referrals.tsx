@@ -27,13 +27,13 @@ interface LeaderboardEntry {
   username: string;
   avatar: string;
   referral_count: number;
-  shipped_count: number;
+  verified_count: number;
   total_raffle_entries: number;
 }
 
 interface Stats {
   total_referrals: number;
-  shipped_referrals: number;
+  verified_referrals: number;
   total_raffle_entries: number;
 }
 
@@ -209,8 +209,8 @@ export default function AdminReferrals({
             <p className="text-3xl font-bold">{stats.total_referrals}</p>
           </div>
           <div className="rounded-lg bg-white p-4 shadow">
-            <p className="text-sm text-gray-500">Shipped</p>
-            <p className="text-3xl font-bold">{stats.shipped_referrals}</p>
+            <p className="text-sm text-gray-500">Verified</p>
+            <p className="text-3xl font-bold">{stats.verified_referrals}</p>
           </div>
           <div className="rounded-lg bg-white p-4 shadow">
             <p className="text-sm text-gray-500">Total Raffle Entries</p>
@@ -399,7 +399,7 @@ export default function AdminReferrals({
                 <th className="px-3 py-2 text-left">#</th>
                 <th className="px-3 py-2 text-left">User</th>
                 <th className="px-3 py-2 text-right">Referrals</th>
-                <th className="px-3 py-2 text-right">Shipped</th>
+                <th className="px-3 py-2 text-right">Verified</th>
                 <th className="px-3 py-2 text-right">Entries</th>
               </tr>
             </thead>
@@ -437,7 +437,7 @@ export default function AdminReferrals({
                       {entry.referral_count}
                     </td>
                     <td className="px-3 py-2 text-right">
-                      {entry.shipped_count}
+                      {entry.verified_count}
                     </td>
                     <td className="px-3 py-2 text-right font-bold">
                       {entry.total_raffle_entries}

@@ -7,7 +7,7 @@ module Admin
       program = ReferralProgram.instance
 
       leaderboard = User.joins(:referrals)
-                        .select("users.id, users.username, users.avatar, COUNT(referrals.id) as referral_count, COALESCE(SUM(CASE WHEN referrals.shipped THEN 1 ELSE 0 END), 0) as shipped_count, COALESCE(SUM(referrals.raffle_entries), 0) as total_raffle_entries")
+                        .select("users.id, users.username, users.avatar, COUNT(referrals.id) as referral_count, COALESCE(SUM(CASE WHEN referrals.shipped THEN 1 ELSE 0 END), 0) as verified_count, COALESCE(SUM(referrals.raffle_entries), 0) as total_raffle_entries")
                         .group("users.id, users.username, users.avatar")
                         .order("total_raffle_entries DESC")
                         .limit(50)
@@ -17,7 +17,7 @@ module Admin
                             username: u.username,
                             avatar: u.avatar,
                             referral_count: u.referral_count,
-                            shipped_count: u.shipped_count,
+                            verified_count: u.verified_count,
                             total_raffle_entries: u.total_raffle_entries
                           }
                         end
@@ -28,7 +28,7 @@ module Admin
         leaderboard: leaderboard,
         stats: {
           total_referrals: Referral.count,
-          shipped_referrals: Referral.shipped.count,
+          verified_referrals: Referral.verified.count,
           total_raffle_entries: Referral.sum(:raffle_entries)
         }
       }

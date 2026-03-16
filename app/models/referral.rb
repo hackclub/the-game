@@ -30,9 +30,15 @@ class Referral < ApplicationRecord
   validates :referred_user_id, uniqueness: true
 
   scope :shipped, -> { where(shipped: true) }
+  scope :verified, -> { where(shipped: true) }
+
+  def verified?
+    shipped?
+  end
 
   def display_hash
-    hash = as_json.slice("id", "code", "raffle_entries", "shipped", "created_at")
+    hash = as_json.slice("id", "code", "raffle_entries", "created_at")
+    hash["verified"] = verified?
     hash["referred_user"] = referred_user.display_hash
     hash
   end

@@ -37,7 +37,7 @@ class ReferralProgram < ApplicationRecord
       raffle_description: "Invite friends and earn raffle entries!",
       homepage_alert_title: "🎟️ Invite your friends!",
       homepage_alert_description: "Share your referral link and earn raffle entries for prizes!",
-      invite_page_description: "Share your link and earn raffle entries! For each person you invite that ships a project, you'll both earn entries into the raffle.",
+      invite_page_description: "Share your link and earn raffle entries! When someone you invite verifies with Hack Club Auth, you'll earn entries into the raffle.",
       og_description_template: "<USER> invited you to Hack Club: The Game! Join and get free stickers!"
     )
   end

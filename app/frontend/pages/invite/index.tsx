@@ -6,7 +6,7 @@ interface Referral {
   id: number;
   code: string;
   raffle_entries: number;
-  shipped: boolean;
+  verified: boolean;
   created_at: string;
   referred_user: {
     id: number;
@@ -20,7 +20,7 @@ interface LeaderboardEntry {
   username: string;
   avatar: string;
   referral_count: number;
-  shipped_count: number;
+  verified_count: number;
   total_entries: number;
 }
 
@@ -45,7 +45,7 @@ interface Props {
   program: Program;
   stats: {
     total_referrals: number;
-    shipped_referrals: number;
+    verified_referrals: number;
     total_raffle_entries: number;
   };
 }
@@ -123,9 +123,9 @@ export default function InvitePage({
             </p>
           </div>
           <div className="rounded-2xl border-2 border-black bg-white p-6">
-            <p className="smoothing-black text-lg">Shipped</p>
+            <p className="smoothing-black text-lg">Verified</p>
             <p className="smoothing-black text-4xl font-bold">
-              {stats.shipped_referrals}
+              {stats.verified_referrals}
             </p>
           </div>
           <div className="rounded-2xl border-2 border-black bg-white p-6">
@@ -150,7 +150,7 @@ export default function InvitePage({
                   <th className="px-4 py-3 text-left">#</th>
                   <th className="px-4 py-3 text-left">User</th>
                   <th className="px-4 py-3 text-right">Referrals</th>
-                  <th className="px-4 py-3 text-right">Shipped</th>
+                  <th className="px-4 py-3 text-right">Verified</th>
                   <th className="px-4 py-3 text-right">Entries</th>
                 </tr>
               </thead>
@@ -193,7 +193,7 @@ export default function InvitePage({
                         {entry.referral_count}
                       </td>
                       <td className="px-4 py-3 text-right">
-                        {entry.shipped_count}
+                        {entry.verified_count}
                       </td>
                       <td className="px-4 py-3 text-right font-bold">
                         {entry.total_entries}
@@ -245,13 +245,13 @@ export default function InvitePage({
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    {referral.shipped ? (
+                    {referral.verified ? (
                       <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-bold text-green-800">
-                        Shipped
+                        Verified
                       </span>
                     ) : (
                       <span className="rounded-full bg-gray-100 px-3 py-1 text-sm font-bold text-gray-600">
-                        Pending
+                        Pending verification
                       </span>
                     )}
                     {referral.raffle_entries > 0 && (

@@ -20,7 +20,7 @@ class InviteController < ApplicationController
       program: program.display_hash,
       stats: {
         total_referrals: my_referrals.count,
-        shipped_referrals: my_referrals.shipped.count,
+        verified_referrals: my_referrals.verified.count,
         total_raffle_entries: my_referrals.sum(:raffle_entries)
       }
     }
@@ -52,7 +52,7 @@ class InviteController < ApplicationController
 
   def referral_leaderboard
     User.joins(:referrals)
-        .select("users.id, users.username, users.avatar, COUNT(referrals.id) as referral_count, COALESCE(SUM(CASE WHEN referrals.shipped THEN 1 ELSE 0 END), 0) as shipped_count, COALESCE(SUM(referrals.raffle_entries), 0) as total_entries")
+        .select("users.id, users.username, users.avatar, COUNT(referrals.id) as referral_count, COALESCE(SUM(CASE WHEN referrals.shipped THEN 1 ELSE 0 END), 0) as verified_count, COALESCE(SUM(referrals.raffle_entries), 0) as total_entries")
         .group("users.id, users.username, users.avatar")
         .order("total_entries DESC")
         .limit(50)
@@ -62,7 +62,7 @@ class InviteController < ApplicationController
             username: u.username,
             avatar: u.avatar,
             referral_count: u.referral_count,
-            shipped_count: u.shipped_count,
+            verified_count: u.verified_count,
             total_entries: u.total_entries
           }
         end
