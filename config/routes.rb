@@ -71,8 +71,6 @@ Rails.application.routes.draw do
     resources :referrals, only: [ :index ] do
       collection do
         patch :update_program
-        post :start_rollout
-        post :pause_rollout
       end
     end
   end

@@ -8,7 +8,7 @@ class Referral < ApplicationRecord
   scope :shipped, -> { where(shipped: true) }
 
   def display_hash
-    hash = as_json.slice("id", "code", "tickets_awarded", "shipped", "created_at")
+    hash = as_json.slice("id", "code", "raffle_entries", "shipped", "created_at")
     hash["referred_user"] = referred_user.display_hash
     hash
   end

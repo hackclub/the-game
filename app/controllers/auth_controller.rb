@@ -148,7 +148,7 @@ class AuthController < ApplicationController
   end
 
   def create_referral_record(user, code)
-    referrer = User.where(referral_eligible: true).find_each { |u| break u if u.referral_link_code == code }
+    referrer = User.where(is_banned: false).find_each { |u| break u if u.referral_link_code == code }
     return unless referrer.is_a?(User)
     return if referrer.id == user.id
 

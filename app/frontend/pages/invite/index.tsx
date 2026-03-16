@@ -1,11 +1,10 @@
 import { useState } from "react";
 import Layout from "@/layouts/layout";
-import ticketIcon from "@/assets/icons/ticket.svg";
 
 interface Referral {
   id: number;
   code: string;
-  tickets_awarded: number;
+  raffle_entries: number;
   shipped: boolean;
   created_at: string;
   referred_user: {
@@ -21,7 +20,20 @@ interface LeaderboardEntry {
   avatar: string;
   referral_count: number;
   shipped_count: number;
-  total_tickets: number;
+  total_entries: number;
+}
+
+interface Program {
+  id: number;
+  active: boolean;
+  referrer_raffle_entries: number;
+  referred_raffle_entries: number;
+  raffle_title: string;
+  raffle_description: string;
+  raffle_image_url: string | null;
+  homepage_alert_title: string;
+  homepage_alert_description: string;
+  invite_page_description: string;
 }
 
 interface Props {
@@ -29,12 +41,11 @@ interface Props {
   referral_link: string;
   referrals: Referral[];
   leaderboard: LeaderboardEntry[];
-  referrer_bonus_percentage: number;
-  referred_bonus_tickets: number;
+  program: Program;
   stats: {
     total_referrals: number;
     shipped_referrals: number;
-    total_tickets_earned: number;
+    total_raffle_entries: number;
   };
 }
 
@@ -43,8 +54,7 @@ export default function InvitePage({
   referral_link,
   referrals,
   leaderboard,
-  referrer_bonus_percentage,
-  referred_bonus_tickets,
+  program,
   stats,
 }: Props) {
   const [copied, setCopied] = useState(false);
@@ -63,14 +73,27 @@ export default function InvitePage({
             Invite Friends
           </h1>
           <p className="smoothing-black mt-2 text-xl tracking-[-0.01em]">
-            Share your link and earn{" "}
-            <span className="font-bold">{referrer_bonus_percentage}%</span> of
-            the tickets your friends earn when they ship! They also get{" "}
-            <span className="font-bold">
-              {referred_bonus_tickets} bonus tickets
-            </span>{" "}
-            after shipping their first project.
+            {program.invite_page_description}
           </p>
+        </div>
+
+        {/* Raffle Info */}
+        <div className="flex items-center gap-6 rounded-2xl border-2 border-black bg-white p-6">
+          {program.raffle_image_url && (
+            <img
+              src={program.raffle_image_url}
+              alt={program.raffle_title}
+              className="h-24 w-24 shrink-0 rounded-xl object-cover"
+            />
+          )}
+          <div>
+            <h2 className="smoothing-black text-2xl font-bold">
+              🎟️ {program.raffle_title}
+            </h2>
+            <p className="smoothing-black mt-1 text-lg text-gray-700">
+              {program.raffle_description}
+            </p>
+          </div>
         </div>
 
         {/* Referral Link */}
@@ -110,11 +133,11 @@ export default function InvitePage({
           </div>
           <div className="rounded-2xl border-2 border-black bg-white p-6">
             <div className="flex items-center gap-2">
-              <p className="smoothing-black text-lg">Tickets Earned</p>
-              <img src={ticketIcon} alt="" className="h-5 w-5" />
+              <p className="smoothing-black text-lg">Raffle Entries</p>
+              <span>🎟️</span>
             </div>
             <p className="smoothing-black text-4xl font-bold">
-              {stats.total_tickets_earned}
+              {stats.total_raffle_entries}
             </p>
           </div>
         </div>
@@ -132,7 +155,7 @@ export default function InvitePage({
                   <th className="px-4 py-3 text-left">User</th>
                   <th className="px-4 py-3 text-right">Referrals</th>
                   <th className="px-4 py-3 text-right">Shipped</th>
-                  <th className="px-4 py-3 text-right">Tickets</th>
+                  <th className="px-4 py-3 text-right">Entries</th>
                 </tr>
               </thead>
               <tbody>
@@ -177,7 +200,7 @@ export default function InvitePage({
                         {entry.shipped_count}
                       </td>
                       <td className="px-4 py-3 text-right font-bold">
-                        {entry.total_tickets}
+                        {entry.total_entries}
                       </td>
                     </tr>
                   ))
@@ -235,11 +258,11 @@ export default function InvitePage({
                         Pending
                       </span>
                     )}
-                    {referral.tickets_awarded > 0 && (
+                    {referral.raffle_entries > 0 && (
                       <div className="flex items-center gap-1">
-                        <img src={ticketIcon} alt="" className="h-4 w-4" />
+                        <span>🎟️</span>
                         <span className="font-bold">
-                          +{referral.tickets_awarded}
+                          +{referral.raffle_entries}
                         </span>
                       </div>
                     )}

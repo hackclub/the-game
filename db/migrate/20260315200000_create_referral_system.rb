@@ -4,7 +4,7 @@ class CreateReferralSystem < ActiveRecord::Migration[8.1]
       t.references :referrer, null: false, foreign_key: { to_table: :users }
       t.references :referred_user, null: false, foreign_key: { to_table: :users }, index: { unique: true }
       t.string :code, null: false
-      t.integer :tickets_awarded, default: 0
+      t.integer :raffle_entries, default: 0
       t.boolean :shipped, default: false
 
       t.timestamps
@@ -13,19 +13,17 @@ class CreateReferralSystem < ActiveRecord::Migration[8.1]
     add_index :referrals, :code
 
     create_table :referral_program do |t|
-      t.integer :referrer_bonus_percentage, default: 10
-      t.integer :referred_bonus_tickets, default: 5
-      t.integer :max_referrers, default: 100
-      t.integer :rollout_batch_size, default: 10
-      t.integer :rollout_interval_hours, default: 24
-      t.string :rollout_status, default: "paused"
-      t.datetime :last_rollout_at
-      t.integer :rollout_count, default: 0
-      t.text :slack_message_template
+      t.boolean :active, default: false
+      t.integer :referrer_raffle_entries, default: 1
+      t.integer :referred_raffle_entries, default: 1
+      t.string :raffle_title
+      t.text :raffle_description
+      t.string :raffle_image_url
+      t.string :homepage_alert_title
+      t.text :homepage_alert_description
+      t.text :invite_page_description
 
       t.timestamps
     end
-
-    add_column :users, :referral_eligible, :boolean, default: false
   end
 end

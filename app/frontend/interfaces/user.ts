@@ -31,7 +31,7 @@ export interface PrivateUser {
 
   unread_notification_count: number;
   unread_project_notification_count: number;
-  referral_eligible: boolean;
+  referral_program_active: boolean;
 
   ticket_adjustments: TicketAdjustment[];
 }

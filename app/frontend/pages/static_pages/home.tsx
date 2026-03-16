@@ -16,6 +16,10 @@ export default function Home() {
     reviewTime: number;
     projectCount: number;
     announcements: Announcement[];
+    referralProgram: {
+      homepage_alert_title: string;
+      homepage_alert_description: string;
+    } | null;
   }>();
 
   if (!props.user?.onboarding_completed && !props.user?.hackatime_id) {
@@ -45,17 +49,17 @@ export default function Home() {
           </p>
         </div>
 
-        {props.user?.referral_eligible && (
+        {props.referralProgram && (
           <Link
             href="/invite"
             className="flex items-center justify-between rounded-2xl bg-[#fecb0d] p-6 transition-transform hover:scale-[1.01]"
           >
             <div>
               <p className="smoothing-black text-2xl font-bold tracking-[-0.02em]">
-                🎟️ Invite your friends!
+                {props.referralProgram.homepage_alert_title}
               </p>
               <p className="smoothing-black text-lg">
-                Share your referral link and earn bonus tickets when they ship.
+                {props.referralProgram.homepage_alert_description}
               </p>
             </div>
             <span className="smoothing-black text-xl font-bold">→</span>

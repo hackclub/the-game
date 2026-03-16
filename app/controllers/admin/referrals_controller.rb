@@ -6,11 +6,10 @@ module Admin
     def index
       program = ReferralProgram.instance
 
-      leaderboard = User.where(referral_eligible: true)
-                        .joins(:referrals)
-                        .select("users.id, users.username, users.avatar, COUNT(referrals.id) as referral_count, COALESCE(SUM(CASE WHEN referrals.shipped THEN 1 ELSE 0 END), 0) as shipped_count, COALESCE(SUM(referrals.tickets_awarded), 0) as total_tickets")
+      leaderboard = User.joins(:referrals)
+                        .select("users.id, users.username, users.avatar, COUNT(referrals.id) as referral_count, COALESCE(SUM(CASE WHEN referrals.shipped THEN 1 ELSE 0 END), 0) as shipped_count, COALESCE(SUM(referrals.raffle_entries), 0) as total_raffle_entries")
                         .group("users.id, users.username, users.avatar")
-                        .order("total_tickets DESC")
+                        .order("total_raffle_entries DESC")
                         .limit(50)
                         .map do |u|
                           {
@@ -19,7 +18,7 @@ module Admin
                             avatar: u.avatar,
                             referral_count: u.referral_count,
                             shipped_count: u.shipped_count,
-                            total_tickets: u.total_tickets
+                            total_raffle_entries: u.total_raffle_entries
                           }
                         end
 
@@ -27,10 +26,9 @@ module Admin
         program: program.display_hash,
         leaderboard: leaderboard,
         stats: {
-          total_eligible_users: User.where(referral_eligible: true).count,
           total_referrals: Referral.count,
           shipped_referrals: Referral.shipped.count,
-          total_tickets_awarded: Referral.sum(:tickets_awarded)
+          total_raffle_entries: Referral.sum(:raffle_entries)
         }
       }
     end
@@ -42,28 +40,13 @@ module Admin
       redirect_to admin_referrals_path, notice: "Referral program settings updated."
     end
 
-    def start_rollout
-      program = ReferralProgram.instance
-      program.update!(rollout_status: "running")
-      ReferralRolloutJob.perform_later
-
-      redirect_to admin_referrals_path, notice: "Rollout started!"
-    end
-
-    def pause_rollout
-      program = ReferralProgram.instance
-      program.update!(rollout_status: "paused")
-
-      redirect_to admin_referrals_path, notice: "Rollout paused."
-    end
-
     private
 
     def program_params
       params.require(:referral_program).permit(
-        :referrer_bonus_percentage, :referred_bonus_tickets,
-        :max_referrers, :rollout_batch_size, :rollout_interval_hours,
-        :slack_message_template
+        :active, :referrer_raffle_entries, :referred_raffle_entries,
+        :raffle_title, :raffle_description, :raffle_image_url,
+        :homepage_alert_title, :homepage_alert_description, :invite_page_description
       )
     end
   end

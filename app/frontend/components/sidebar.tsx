@@ -148,7 +148,7 @@ export default function Sidebar() {
             />
             <SidebarLink link="/explore" name="Gallery" icon={compassIcon} />
             <SidebarLink link="/shop" name="Shop" icon={shopIcon} />
-            {props.user.referral_eligible && (
+            {props.user.referral_program_active && (
               <SidebarLink link="/invite" name="Invite" icon={linkIcon} />
             )}
             {(props.user.role === "admin" ||
