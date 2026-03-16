@@ -26,7 +26,8 @@ module Authentication
   end
 
   def set_referral_code
-    session[:referral_code] = params[:ref] if params[:ref].present?
+    referral_code = params[:r] || params[:ref]
+    session[:referral_code] = referral_code if referral_code.present?
   end
 
   def ensure_allowed_user!

@@ -24,7 +24,7 @@ class StaticPagesController < ApplicationController
 
   def index
     referrer_name = nil
-    ref_code = params[:ref] || session[:referral_code]
+    ref_code = params[:r] || params[:ref] || session[:referral_code]
     if ref_code.present?
       referrer = find_referrer_by_code(ref_code)
       referrer_name = referrer&.username

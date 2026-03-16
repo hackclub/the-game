@@ -7,13 +7,14 @@ import HackClubLogo from "../../components/rsvp/HackClubLogo";
 import ArrowVector from "../../components/rsvp/ArrowVector";
 
 import HackClubFooter from "../../components/rsvp/HackClubFooter";
+
 export default function RsvpPage() {
   const [showScrollArrow, setShowScrollArrow] = useState(true);
   const step1CircleRef = useRef<HTMLDivElement>(null);
   const step2CircleRef = useRef<HTMLDivElement>(null);
   const step3CircleRef = useRef<HTMLDivElement>(null);
 
-  const { props, flash } = usePage();
+  const { props, flash } = usePage<{ referrer_name: string | null }>();
 
   useEffect(() => {
     const handleScroll = () => {

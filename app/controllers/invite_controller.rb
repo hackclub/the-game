@@ -14,7 +14,7 @@ class InviteController < ApplicationController
 
     render inertia: "invite/index", props: {
       referral_code: current_user.referral_link_code,
-      referral_link: root_url(ref: current_user.referral_link_code),
+      referral_link: root_url(r: current_user.referral_link_code),
       referrals: my_referrals.map(&:display_hash),
       leaderboard: referral_leaderboard,
       program: program.display_hash,
@@ -36,7 +36,7 @@ class InviteController < ApplicationController
       @og_description = program.og_description_for(referrer)
     end
 
-    redirect_to root_path(ref: code)
+    redirect_to root_path(r: code)
   end
 
   private
