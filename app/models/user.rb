@@ -126,6 +126,10 @@ class User < ApplicationRecord
     HackatimeProject.where(id: cached_hackatime_projects.map { |hp| hp["id"] }, project: nil)
   end
 
+  def idv_verified?
+    verification_status == "verified"
+  end
+
   def sync_pyramid_record
     data = { email:, referral_code:, projects_count: projects.count, idv_status: verification_status, hours: (total_reported_seconds / 3600.00) }
 

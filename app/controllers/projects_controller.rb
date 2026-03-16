@@ -110,6 +110,15 @@ class ProjectsController < ApplicationController
   def ship
     authorize @project
 
+    unless current_user.idv_verified?
+      track_event("project_ship_failed", {
+        project_id: @project.id,
+        reason: "idv_not_verified"
+      })
+      redirect_to project_path(@project), flash: { alert: "Verify your identity to be able to get your projects reviewed." }
+      return
+    end
+
     if @project.missing_fields.any?
       track_event("project_ship_failed", {
         project_id: @project.id,

@@ -1,7 +1,8 @@
-import { useForm, router } from "@inertiajs/react";
+import { useForm, router, usePage } from "@inertiajs/react";
 import type { HackatimeProject } from "@/interfaces/hackatime_project";
 import type { Project } from "@/interfaces/project";
 import type { ProjectTag } from "@/interfaces/project_tag";
+import type { SharedProps } from "@/types";
 import formatTime from "@/utils/formatTime";
 import { useMemo } from "react";
 import arrowIcon from "@/assets/icons/arrow.svg";
@@ -116,6 +117,7 @@ export default function ProjectForm({
   project,
   tutorial,
 }: Props) {
+  const { props } = usePage<SharedProps>();
   const { data, setData, post, patch, processing, errors, progress } = useForm({
     title: project?.title ?? "",
     desc: project?.desc ?? "",
@@ -127,6 +129,7 @@ export default function ProjectForm({
   });
 
   const disabled = project?.aasm_state === "submitted";
+  const idvVerified = props.user.verification_status === "verified";
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -340,16 +343,18 @@ export default function ProjectForm({
                   <button
                     className={clsx(
                       "group flex h-[59px] w-full cursor-pointer items-center justify-center gap-3 bg-[#fecb0d] text-xl font-bold text-black transition-colors",
-                      "hover:bg-[#e5b80b] disabled:opacity-50",
+                      "hover:bg-[#e5b80b] disabled:cursor-not-allowed disabled:opacity-50",
                     )}
                     type="button"
                     onClick={shipProject}
-                    disabled={processing}
+                    disabled={processing || !idvVerified}
                   >
-                    {project.aasm_state === "approved" ||
-                    project.aasm_state === "rejected"
-                      ? "Re-ship"
-                      : "Ship"}
+                    {!idvVerified
+                      ? "Verify to ship"
+                      : project.aasm_state === "approved" ||
+                          project.aasm_state === "rejected"
+                        ? "Re-ship"
+                        : "Ship"}
                   </button>
                 )}
                 <button

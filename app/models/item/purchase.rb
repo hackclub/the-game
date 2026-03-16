@@ -42,6 +42,7 @@ class Item
     attr_accessor :skip_balance_check
 
     validates :quantity, numericality: { greater_than: 0 }
+    validate :user_is_verified, on: :create
     validate :check_balance, on: :create, unless: :skip_balance_check
     validate :check_one_per_user, on: :create
 
@@ -56,6 +57,12 @@ class Item
     end
 
     private
+
+    def user_is_verified
+      return if user.idv_verified?
+
+      errors.add(:base, "User ##{user.id} must complete ID verification before purchasing shop items")
+    end
 
     def check_balance
       total_cost = item.price * quantity

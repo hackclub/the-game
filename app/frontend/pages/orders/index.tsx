@@ -1,4 +1,5 @@
 import Layout from "@/layouts/layout";
+import IdvVerificationAlert from "@/components/IdvVerificationAlert";
 import PageHeading from "@/components/layout/PageHeading";
 import { Order } from "@/interfaces/order";
 import type { Item } from "@/interfaces/item";
@@ -17,7 +18,9 @@ export default function ViewOrders({ orders }: Props) {
   return (
     <Layout>
       <PageHeading eyebrow="Shop" title="My Orders" />
-      <div className="mt-8 px-8">
+      <div className="mt-8 flex flex-col gap-8 px-8">
+        <IdvVerificationAlert />
+
         {orders.length === 0 && (
           <p className="text-xl">
             No orders yet! Head over to the{" "}

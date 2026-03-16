@@ -1,4 +1,5 @@
 import { usePage, Link } from "@inertiajs/react";
+import IdvVerificationAlert from "@/components/IdvVerificationAlert";
 import Layout from "@/layouts/layout";
 import LoggedHours from "@/components/home/LoggedHours";
 import Announcements from "@/components/home/Announcements";
@@ -76,6 +77,8 @@ export default function Home() {
               reviewTime={props.reviewTime}
               tickets={props.user.balance}
             />
+
+            <IdvVerificationAlert />
 
             <Announcements announcements={props.announcements} />
           </>

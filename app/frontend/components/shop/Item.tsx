@@ -1,6 +1,7 @@
 import { usePage, Link } from "@inertiajs/react";
 import { useState } from "react";
 import type { Item } from "@/interfaces/item";
+import type { SharedProps } from "@/types";
 import ticketIcon from "@/assets/icons/ticket.svg";
 
 export default function Item({
@@ -10,10 +11,11 @@ export default function Item({
   item: Item;
   alreadyPurchased: boolean;
 }) {
-  const { props } = usePage();
+  const { props } = usePage<SharedProps>();
   const [quantity, setQuantity] = useState(1);
   const totalCost = item.price * quantity;
   const canAfford = props.user.balance >= totalCost;
+  const idvVerified = props.user.verification_status === "verified";
   const maxQuantity = Math.max(1, Math.floor(props.user.balance / item.price));
 
   return (
@@ -59,7 +61,7 @@ export default function Item({
                   type="button"
                   className="flex h-10 w-10 cursor-pointer items-center justify-center rounded border-2 border-black bg-white text-xl font-bold transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  disabled={quantity <= 1}
+                  disabled={!idvVerified || quantity <= 1}
                 >
                   −
                 </button>
@@ -70,13 +72,21 @@ export default function Item({
                   type="button"
                   className="flex h-10 w-10 cursor-pointer items-center justify-center rounded border-2 border-black bg-white text-xl font-bold transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
                   onClick={() => setQuantity((q) => q + 1)}
-                  disabled={quantity >= maxQuantity}
+                  disabled={!idvVerified || quantity >= maxQuantity}
                 >
                   +
                 </button>
               </div>
             )}
-            {canAfford ? (
+            {!idvVerified ? (
+              <button
+                type="button"
+                disabled
+                className="smoothing-black mt-4 block w-full cursor-not-allowed bg-[#d9d9d9] px-5 py-3 text-center text-xl font-bold tracking-tight text-black/50"
+              >
+                Verify to buy
+              </button>
+            ) : canAfford ? (
               <Link
                 className="smoothing-white mt-4 block w-full bg-black px-5 py-3 text-center text-xl font-bold tracking-tight text-white transition-colors hover:bg-[#fecb0d] hover:text-black"
                 href={`/shop/${item.id}/buy`}

@@ -41,6 +41,11 @@ class ItemsController < ApplicationController
       return
     end
 
+    unless current_user.idv_verified?
+      redirect_to shop_index_path, alert: "Verify your identity to be able to buy items from the shop."
+      return
+    end
+
     Item::Purchase.create!(user: current_user, item: @item, quantity: 1, skip_balance_check: true)
     track_event("referral_item_claimed", { item_id: @item.id, item_name: @item.name })
     redirect_to shop_index_path, notice: "Claimed #{@item.name}!"
@@ -58,6 +63,13 @@ class ItemsController < ApplicationController
         quantity: quantity
       })
       flash[:notice] = "Purchased #{quantity}x #{@item.name}!"
+    elsif !current_user.idv_verified?
+      track_event("item_purchase_failed", {
+        item_id: @item.id,
+        item_name: @item.name,
+        reason: "idv_not_verified"
+      })
+      flash[:alert] = "Verify your identity to be able to buy items from the shop."
     else
       reason = @item.one_per_user? && current_user.purchases.where(item: @item).exists? ? "already_purchased" : "insufficient_tickets"
       track_event("item_purchase_failed", {
