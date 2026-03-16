@@ -48,13 +48,11 @@ export default function RsvpPage() {
 
       {props.referrer_name && (
         <div className="fixed top-8 right-8 z-50">
-          <div className="rounded-md border-2 bg-[#fecb0d] px-8 pr-32 py-4">
+          <div className="rounded-md border-2 bg-[#fecb0d] px-8 py-4 pr-32">
             <p className="text-2xl font-bold text-black">
               {String(props.referrer_name)} invited you!
             </p>
-            <p className="text-lg">
-              Sign up now and get free stickers!
-            </p>
+            <p className="text-lg">Sign up now and get free stickers!</p>
           </div>
         </div>
       )}

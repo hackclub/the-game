@@ -67,9 +67,13 @@ function RaffleSection({
 
   const rollRaffle = () => {
     setRolling(true);
-    router.post("/admin/referrals/roll_raffle", {}, {
-      onFinish: () => setRolling(false),
-    });
+    router.post(
+      "/admin/referrals/roll_raffle",
+      {},
+      {
+        onFinish: () => setRolling(false),
+      },
+    );
   };
 
   return (
@@ -136,8 +140,8 @@ function RaffleSection({
             </tbody>
           </table>
           <p className="mt-3 text-sm text-gray-500">
-            {participants.length} participant{participants.length !== 1 && "s"} •{" "}
-            {stats.total_raffle_entries} total entries
+            {participants.length} participant{participants.length !== 1 && "s"}{" "}
+            • {stats.total_raffle_entries} total entries
           </p>
         </div>
       )}
@@ -337,9 +341,7 @@ export default function AdminReferrals({
             />
           </div>
 
-          <h3 className="mt-6 mb-2 text-lg font-bold">
-            Referred User Reward
-          </h3>
+          <h3 className="mt-6 mb-2 text-lg font-bold">Referred User Reward</h3>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <label className="mb-1 block text-sm font-bold">
