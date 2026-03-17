@@ -47,6 +47,13 @@ class Project
       create_ysws_record if approval?
     end
 
+    # undo
+    after_destroy_commit do
+      project_version = project.versions.where_object_changes_to(aasm_state: project.aasm_state).last
+      project_version.reify.save!
+      project.versions.last.delete
+    end
+
     def display_hash(author: false, admin: false)
       hash = self.as_json.slice("id", "content", "review_type", "author_id", "created_at", "project_id", "approved_seconds")
 

@@ -2,7 +2,7 @@ class Project
   class ReviewsController < ApplicationController
     before_action :signed_in_reviewer
     before_action :set_project
-    before_action :set_review, only: [ :edit, :update ]
+    before_action :set_review, only: [ :edit, :update, :destroy ]
 
     skip_after_action :verify_authorized
 
@@ -33,6 +33,14 @@ class Project
       @review.update!(review_params)
 
       flash[:notice] = "Edited review"
+
+      redirect_to project_path(@project)
+    end
+
+    def destroy
+      @review.destroy!
+
+      flash[:notice] = "Deleted review"
 
       redirect_to project_path(@project)
     end

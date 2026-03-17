@@ -52,7 +52,7 @@ export default function ProjectReviews({
                 We haven't reviewed your project yet - give us some time!
               </p>
             ) : (
-              timeline.map((item) => {
+              timeline.map((item, index) => {
                 if ("ship" in item) {
                   const ship = item.ship;
 
@@ -129,12 +129,23 @@ export default function ProjectReviews({
                         )}
                         {(props.user.role === "reviewer" ||
                           props.user.role === "admin") && (
-                          <Link
-                            href={`/projects/${project.id}/reviews/${review.id}/edit`}
-                            className="text-blue-500 underline"
-                          >
-                            Edit review
-                          </Link>
+                          <div className="flex gap-3">
+                            <Link
+                              href={`/projects/${project.id}/reviews/${review.id}/edit`}
+                              className="text-blue-500 underline"
+                            >
+                              Edit
+                            </Link>
+                            {index == timeline.length - 1 && (
+                              <Link
+                                href={`/projects/${project.id}/reviews/${review.id}`}
+                                className="cursor-pointer text-red-500 underline"
+                                method="delete"
+                              >
+                                Undo
+                              </Link>
+                            )}
+                          </div>
                         )}
                       </div>
                     </div>
