@@ -75,9 +75,17 @@ export default function Review({
                       <span className="text-gray-400">{index + 1}</span>,
                       <span className="font-medium">{project.title}</span>,
                       <span className="text-gray-600">{project.username}</span>,
-                      <span className="text-gray-500">{new Date(project.submitted_at!).toLocaleDateString()}</span>,
-                      <span className="text-gray-500">{formatTime(project.reported_seconds)}</span>,
-                      <span className="text-gray-500">{project.real_approved_seconds > 0 ? formatTime(project.real_approved_seconds) : "—"}</span>,
+                      <span className="text-gray-500">
+                        {new Date(project.submitted_at!).toLocaleDateString()}
+                      </span>,
+                      <span className="text-gray-500">
+                        {formatTime(project.reported_seconds)}
+                      </span>,
+                      <span className="text-gray-500">
+                        {project.real_approved_seconds > 0
+                          ? formatTime(project.real_approved_seconds)
+                          : "—"}
+                      </span>,
                     ] as React.ReactNode[]
                   ).map((cell, i) => (
                     <td key={i} className="py-0 pr-4">

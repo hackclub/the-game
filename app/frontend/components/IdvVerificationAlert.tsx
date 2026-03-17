@@ -1,8 +1,7 @@
 import { usePage } from "@inertiajs/react";
 import type { SharedProps } from "@/types";
 
-const IDV_VERIFICATION_URL =
-  "https://auth.hackclub.com/verifications/document";
+const IDV_VERIFICATION_URL = "https://auth.hackclub.com/verifications/document";
 
 export default function IdvVerificationAlert() {
   const { props } = usePage<SharedProps>();
