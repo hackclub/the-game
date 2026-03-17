@@ -85,6 +85,12 @@ export default function ShowOrder({ order, order_user, item }: Props) {
           </div>
           <div className="mt-4">
             <h3 className="text-2xl font-bold">Mark Progress</h3>
+            {order_user.balance < 0 && (
+              <p className="my-2 rounded-md border-2 border-yellow-400 bg-yellow-200 p-4 font-bold">
+                WARNING: THIS USER HAS A NEGATIVE BALANCE. AN APPROVAL WAS
+                PROBABLY UNDONE.
+              </p>
+            )}
             <div className="flex gap-2">
               <button
                 className="cursor-pointer rounded-md bg-blue-500 px-4 py-2 font-bold text-white"
