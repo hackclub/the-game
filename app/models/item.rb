@@ -12,6 +12,8 @@
 #  updated_at   :datetime         not null
 #
 class Item < ApplicationRecord
+  INVITE_ID = 3
+
   has_many :purchases, dependent: :destroy
   has_one_attached :image
 

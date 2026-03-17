@@ -7,16 +7,21 @@ export default function LoggedHours({
   inProgressTime,
   reviewTime,
   tickets,
+  boughtInvite,
 }: {
   totalProjectTime: number;
   inProgressTime: number;
   reviewTime: number;
   tickets: number;
+  boughtInvite: boolean;
 }) {
   const hours = Math.floor(totalProjectTime / 3600);
   const minutes = Math.floor((totalProjectTime % 3600) / 60);
 
-  const ticketProgress = Math.min(tickets / QUALIFIED_TICKETS, 1);
+  const ticketProgress = Math.max(
+    Math.min(tickets / QUALIFIED_TICKETS, 1),
+    Number(boughtInvite),
+  );
   const reportedProgress = Math.min(
     totalProjectTime / (3600 * QUALIFIED_TICKETS),
     1,
@@ -33,7 +38,9 @@ export default function LoggedHours({
           />
           <div
             className="absolute inset-y-0 left-0 bg-[#fecb0d]"
-            style={{ width: `${ticketProgress * 100}%` }}
+            style={{
+              width: `${ticketProgress * 100}%`,
+            }}
           />
         </div>
         <div
@@ -50,31 +57,40 @@ export default function LoggedHours({
             You currently have{" "}
             <span className="font-bold">{tickets} tickets</span>.
           </p>
-          <p className="smoothing-black text-center text-2xl tracking-[-0.04em]">
-            In total, you've logged{" "}
-            <span className="font-bold">
-              {hours} hours and {minutes} minutes
-              {ticketProgress == 1 ? "!" : "."}
-            </span>
-            {inProgressTime > 0 && (
-              <>
-                <br />
-                You haven't shipped{" "}
-                <span className="font-bold">
-                  {formatTime(inProgressTime)}
-                </span>{" "}
-                yet.
-              </>
-            )}
-            {reviewTime > 0 && (
-              <>
-                <br />
-                You have{" "}
-                <span className="font-bold">{formatTime(reviewTime)}</span>{" "}
-                under review.
-              </>
-            )}
-          </p>
+          {boughtInvite ? (
+            <p className="smoothing-black text-center text-2xl tracking-[-0.04em]">
+              You've already bought your invite to the game - keep hacking to
+              buy travel stipends and other cool stuff!
+            </p>
+          ) : (
+            <p className="smoothing-black text-center text-2xl tracking-[-0.04em]">
+              In total, you've logged{" "}
+              <span className="font-bold">
+                {hours} hours and {minutes} minutes
+                {ticketProgress == 1 ? "!" : "."}
+              </span>
+              {inProgressTime > 0 && (
+                <>
+                  <br />
+                  You haven't shipped{" "}
+                  <span className="font-bold">
+                    {formatTime(inProgressTime)}
+                  </span>{" "}
+                  yet.
+                </>
+              )}
+              {reviewTime > 0 && (
+                <>
+                  <br />
+                  You have{" "}
+                  <span className="font-bold">
+                    {formatTime(reviewTime)}
+                  </span>{" "}
+                  under review.
+                </>
+              )}
+            </p>
+          )}
         </div>
         <span className="smoothing-black min-w-max pr-12 text-2xl font-bold tracking-tight">
           Eligible to Qualify

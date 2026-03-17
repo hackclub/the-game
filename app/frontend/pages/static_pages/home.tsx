@@ -21,6 +21,7 @@ export default function Home() {
       homepage_alert_title: string;
       homepage_alert_description: string;
     } | null;
+    boughtInvite: boolean;
   }>();
 
   if (!props.user?.onboarding_completed && !props.user?.hackatime_id) {
@@ -76,6 +77,7 @@ export default function Home() {
               inProgressTime={props.inProgressTime}
               reviewTime={props.reviewTime}
               tickets={props.user.balance}
+              boughtInvite={props.boughtInvite}
             />
 
             <IdvVerificationAlert />
