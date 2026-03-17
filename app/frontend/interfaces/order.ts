@@ -8,5 +8,6 @@ export interface Order {
   updated_at: string;
   hold_at: string;
   fulfilled_at: string;
+  deleted_at: string;
   pending_at: string;
 }

@@ -14,6 +14,7 @@ class ProjectsController < ApplicationController
 
     render inertia: "projects/new", props: {
       hackatime_projects: available_hackatime_projects,
+      tags: Project::Tag.all.map(&:display_hash),
       projects_count: current_user.projects.count
     }
   end
@@ -46,10 +47,25 @@ class ProjectsController < ApplicationController
   def show
     authorize @project
     project_hash = @project.display_hash(user: true, reviews: true, admin: current_user.admin?, reviewer: current_user.reviewer?)
+
+    ship_versions = @project.versions.where_object_changes_to(aasm_state: :submitted)
+    ships = ship_versions.map.with_index do |version, index|
+      diff = index == 0 ? {} : @project.diff(ship_versions[index - 1].object)
+
+      { id: version.id, date: version.created_at.to_s, diff: }
+    end
+
     hackatime_projects = available_hackatime_projects(user: @project.user) + @project.hackatime_projects.map(&:display_hash)
     @project.mark_notifications_read
+
+    @og_title = @project.title.present? ? "#{@project.title} – Hack Club: The Game" : "Hack Club: The Game"
+    @og_description = @project.desc.presence || "A project on Hack Club: The Game"
+    @og_image = rails_blob_url(@project.screenshot, disposition: :inline) if @project.screenshot.attached?
+
     render inertia: "projects/show", props: {
       project: project_hash,
+      ships:,
+      tags: Project::Tag.all.map(&:display_hash),
       hackatime_projects: hackatime_projects
     }
   end
@@ -94,6 +110,15 @@ class ProjectsController < ApplicationController
   def ship
     authorize @project
 
+    unless current_user.idv_verified?
+      track_event("project_ship_failed", {
+        project_id: @project.id,
+        reason: "idv_not_verified"
+      })
+      redirect_to project_path(@project), flash: { alert: "Verify your identity to be able to get your projects reviewed." }
+      return
+    end
+
     if @project.missing_fields.any?
       track_event("project_ship_failed", {
         project_id: @project.id,
@@ -122,6 +147,12 @@ class ProjectsController < ApplicationController
 
     unless params[:screenshot] == "0"
       p[:screenshot] = params[:screenshot]
+    end
+
+    if params[:tags].present?
+      p[:tags] = Project::Tag.where(id: params[:tags].values.map(&:to_i))
+    else
+      p[:tags] = []
     end
 
     p

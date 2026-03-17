@@ -43,8 +43,17 @@ class Project
     end
 
     after_create_commit do
-      create_notification
+      create_notification if content.present?
       create_ysws_record if approval?
+    end
+
+    # undo
+    after_destroy_commit do
+      project_version = project.versions.where_object_changes_to(aasm_state: project.aasm_state).last
+      project_version.reify.save!
+      project.versions.last.delete
+
+      ysws_record&.destroy
     end
 
     def display_hash(author: false, admin: false)

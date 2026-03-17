@@ -75,6 +75,16 @@ export default function AdminPage() {
             title="Shop Orders"
             description="View and fulfill shop orders"
           />
+          <AdminNav
+            href="/admin/tags"
+            title="Project Tags"
+            description="Create/delete/modify project tags"
+          />
+          <AdminNav
+            href="/admin/referrals"
+            title="Referral Program"
+            description="Manage referral rollout, settings, and stats"
+          />
         </div>
       </div>
     </Layout>

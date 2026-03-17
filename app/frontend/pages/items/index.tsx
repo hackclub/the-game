@@ -1,15 +1,21 @@
 import Layout from "@/layouts/layout";
 import { Link } from "@inertiajs/react";
+import IdvVerificationAlert from "@/components/IdvVerificationAlert";
 import PageHeading from "@/components/layout/PageHeading";
 import ItemComponent from "@/components/shop/Item";
+import ReferralItem from "@/components/shop/ReferralItem";
 import type { Item } from "@/interfaces/item";
 
 export default function Shop({
   items,
   has_purchased,
+  referred_item,
+  purchased_item_ids,
 }: {
-  items: Item[];
+  items: (Item & { stock_left: number })[];
   has_purchased: boolean;
+  referred_item: Item | null;
+  purchased_item_ids: number[];
 }) {
   return (
     <Layout>
@@ -30,10 +36,22 @@ export default function Shop({
           </>
         }
       />
-      <div className="mt-8 grid grid-cols-1 gap-4 pl-8 md:grid-cols-2 lg:grid-cols-3">
-        {items.map((item) => (
-          <ItemComponent key={item.id} item={item} />
-        ))}
+      <div className="mt-8 flex flex-col gap-8 pl-8">
+        <IdvVerificationAlert />
+
+        {referred_item && <ReferralItem item={referred_item} />}
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {items.map((item) => (
+            <ItemComponent
+              key={item.id}
+              item={item}
+              alreadyPurchased={
+                item.one_per_user && purchased_item_ids.includes(item.id)
+              }
+            />
+          ))}
+        </div>
       </div>
     </Layout>
   );

@@ -1,7 +1,8 @@
+import React from "react";
 import Layout from "@/layouts/layout";
 import type { Project } from "@/interfaces/project";
 import ProjectCard from "@/components/projects/ProjectCard";
-import { router } from "@inertiajs/react";
+import { Link } from "@inertiajs/react";
 import formatTime from "@/utils/formatTime";
 
 interface Props {
@@ -67,25 +68,35 @@ export default function Review({
               {all_queued.map((project, index) => (
                 <tr
                   key={project.id}
-                  className="cursor-pointer border-b border-gray-100 hover:bg-gray-50"
-                  onClick={() => router.visit(`/projects/${project.id}`)}
+                  className="border-b border-gray-100 hover:bg-gray-50"
                 >
-                  <td className="py-2 pr-4 text-gray-400">{index + 1}</td>
-                  <td className="py-2 pr-4 font-medium">{project.title}</td>
-                  <td className="py-2 pr-4 text-gray-600">
-                    {project.username}
-                  </td>
-                  <td className="py-2 pr-4 text-gray-500">
-                    {new Date(project.submitted_at!).toLocaleDateString()}
-                  </td>
-                  <td className="py-2 pr-4 text-gray-500">
-                    {formatTime(project.reported_seconds)}
-                  </td>
-                  <td className="py-2 pr-4 text-gray-500">
-                    {project.real_approved_seconds > 0
-                      ? formatTime(project.real_approved_seconds)
-                      : "—"}
-                  </td>
+                  {(
+                    [
+                      <span className="text-gray-400">{index + 1}</span>,
+                      <span className="font-medium">{project.title}</span>,
+                      <span className="text-gray-600">{project.username}</span>,
+                      <span className="text-gray-500">
+                        {new Date(project.submitted_at!).toLocaleDateString()}
+                      </span>,
+                      <span className="text-gray-500">
+                        {formatTime(project.reported_seconds)}
+                      </span>,
+                      <span className="text-gray-500">
+                        {project.real_approved_seconds > 0
+                          ? formatTime(project.real_approved_seconds)
+                          : "—"}
+                      </span>,
+                    ] as React.ReactNode[]
+                  ).map((cell, i) => (
+                    <td key={i} className="py-0 pr-4">
+                      <Link
+                        href={`/projects/${project.id}`}
+                        className="block py-2"
+                      >
+                        {cell}
+                      </Link>
+                    </td>
+                  ))}
                 </tr>
               ))}
             </tbody>

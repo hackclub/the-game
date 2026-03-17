@@ -1,6 +1,8 @@
-import { useForm } from "@inertiajs/react";
+import { useForm, router, usePage } from "@inertiajs/react";
 import type { HackatimeProject } from "@/interfaces/hackatime_project";
 import type { Project } from "@/interfaces/project";
+import type { ProjectTag } from "@/interfaces/project_tag";
+import type { SharedProps } from "@/types";
 import formatTime from "@/utils/formatTime";
 import { useMemo } from "react";
 import arrowIcon from "@/assets/icons/arrow.svg";
@@ -8,6 +10,7 @@ import clsx from "clsx";
 
 interface Props {
   hackatime_projects: HackatimeProject[];
+  tags: ProjectTag[];
   project?: Project;
   tutorial?: boolean;
 }
@@ -110,9 +113,11 @@ function TextareaField({
 
 export default function ProjectForm({
   hackatime_projects,
+  tags,
   project,
   tutorial,
 }: Props) {
+  const { props } = usePage<SharedProps>();
   const { data, setData, post, patch, processing, errors, progress } = useForm({
     title: project?.title ?? "",
     desc: project?.desc ?? "",
@@ -120,9 +125,11 @@ export default function ProjectForm({
     demo_link: project?.demo_link ?? "",
     hackatime_project_keys: project?.hackatime_projects ?? ([] as number[]),
     screenshot: (project?.screenshot ? 0 : null) as File | 0 | null,
+    tags: project?.tags ?? ([] as number[]),
   });
 
   const disabled = project?.aasm_state === "submitted";
+  const idvVerified = props.user.verification_status === "verified";
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -135,6 +142,23 @@ export default function ProjectForm({
       post("/projects/", {
         forceFormData: true,
       });
+    }
+  }
+
+  function shipProject(e: React.MouseEvent) {
+    e.stopPropagation();
+    if (confirm("Are you sure you want to ship this project?")) {
+      patch(`/projects/${project!.id}`, {
+        forceFormData: true,
+        onFinish: () => router.patch(`/projects/${project!.id}/ship`),
+      });
+    }
+  }
+
+  function deleteProject(e: React.MouseEvent) {
+    e.stopPropagation();
+    if (confirm("Are you sure you want to delete this project?")) {
+      router.delete(`/projects/${project!.id}`);
     }
   }
 
@@ -268,22 +292,85 @@ export default function ProjectForm({
           </select>
         </div>
 
-        {!disabled && (
-          <button
-            className={clsx(
-              "group flex h-[59px] w-full cursor-pointer items-center justify-center gap-3 bg-black text-xl font-bold text-white transition-colors",
-              "hover:bg-white hover:text-black disabled:opacity-50",
-            )}
-            type="submit"
-            disabled={processing}
+        <div className="flex flex-col gap-1">
+          <FieldHeading
+            label="Tags"
+            description="Select applicable tags for this project"
+          />
+          <select
+            className="mt-1 border-[#cacaca] bg-[#d9d9d9] p-2 text-xl outline-none"
+            multiple
+            onChange={(e) =>
+              setData(
+                "tags",
+                [...e.target.selectedOptions].map((o) => Number(o.value)),
+              )
+            }
+            disabled={disabled}
           >
-            <img
-              src={arrowIcon}
-              alt=""
-              className="h-5 w-5 transition-all group-hover:invert"
-            />
-            {project ? "Update project" : "Create project"}
-          </button>
+            {tags.map((tag) => (
+              <option
+                key={tag.id}
+                value={tag.id}
+                selected={data.tags.includes(tag.id)}
+              >
+                {tag.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {!disabled && (
+          <>
+            <button
+              className={clsx(
+                "group flex h-[59px] w-full cursor-pointer items-center justify-center gap-3 bg-black text-xl font-bold text-white transition-colors",
+                "hover:border-4 hover:bg-white hover:text-black disabled:opacity-50",
+              )}
+              type="submit"
+              disabled={processing}
+            >
+              <img
+                src={arrowIcon}
+                alt=""
+                className="h-5 w-5 transition-all group-hover:invert"
+              />
+              {project ? "Update project" : "Create project"}
+            </button>
+            {project && (
+              <div className="flex gap-3">
+                {project.reported_seconds > project.approved_seconds && (
+                  <button
+                    className={clsx(
+                      "group flex h-[59px] w-full cursor-pointer items-center justify-center gap-3 bg-[#fecb0d] text-xl font-bold text-black transition-colors",
+                      "hover:bg-[#e5b80b] disabled:cursor-not-allowed disabled:opacity-50",
+                    )}
+                    type="button"
+                    onClick={shipProject}
+                    disabled={processing || !idvVerified}
+                  >
+                    {!idvVerified
+                      ? "Verify to ship"
+                      : project.aasm_state === "approved" ||
+                          project.aasm_state === "rejected"
+                        ? "Re-ship"
+                        : "Ship"}
+                  </button>
+                )}
+                <button
+                  className={clsx(
+                    "group flex h-[59px] w-full cursor-pointer items-center justify-center gap-3 bg-red-500 text-xl font-bold text-white transition-colors",
+                    "hover:bg-red-600 disabled:opacity-50",
+                  )}
+                  type="button"
+                  onClick={deleteProject}
+                  disabled={processing}
+                >
+                  Delete
+                </button>
+              </div>
+            )}
+          </>
         )}
       </form>
     </div>

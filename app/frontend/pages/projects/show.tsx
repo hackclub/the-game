@@ -1,41 +1,30 @@
-import { router, usePage, Link } from "@inertiajs/react";
+import { usePage, Link } from "@inertiajs/react";
 import ProjectForm from "@/components/projects/ProjectForm";
 import ProjectReviews from "@/components/projects/ProjectReviews";
 import PageHeading from "@/components/layout/PageHeading";
 import formatTime from "@/utils/formatTime";
 import Layout from "@/layouts/layout";
-import type { Project } from "@/interfaces/project";
+import type { Project, ProjectChange } from "@/interfaces/project";
 import type { ProjectReview } from "@/interfaces/project_review";
 import type { HackatimeProject } from "@/interfaces/hackatime_project";
 import type { PublicUser, ReviewerUser } from "@/interfaces/user";
+import type { ProjectTag } from "@/interfaces/project_tag";
 import clockIcon from "@/assets/icons/clock.svg";
 
 interface Props {
   project: Project & {
-    user?: ReviewerUser;
+    user: ReviewerUser;
     reviews: (ProjectReview & { author: PublicUser })[];
   };
+  ships: ProjectChange[];
   hackatime_projects: HackatimeProject[];
+  tags: ProjectTag[];
   [key: string]: unknown;
 }
 
 export default function ShowProject() {
   const { props } = usePage<Props>();
-  const { project, hackatime_projects, user } = props;
-
-  function shipProject(e: React.MouseEvent) {
-    e.stopPropagation();
-    if (confirm("Are you sure you want to ship this project?")) {
-      router.patch(`/projects/${project.id}/ship`);
-    }
-  }
-
-  function deleteProject(e: React.MouseEvent) {
-    e.stopPropagation();
-    if (confirm("Are you sure you want to delete this project?")) {
-      router.delete(`/projects/${project.id}`);
-    }
-  }
+  const { project, ships, hackatime_projects, tags, user } = props;
 
   const showUserInfo =
     (user.role === "admin" || user.role === "reviewer") &&
@@ -126,26 +115,10 @@ export default function ShowProject() {
             </div>
           )}
 
-          <div className="mt-4 flex gap-3 px-4 md:px-16">
-            {project.aasm_state !== "submitted" && (
-              <button
-                className="cursor-pointer bg-[#fecb0d] px-6 py-2 text-lg font-bold text-black hover:bg-[#e5b80b]"
-                onClick={shipProject}
-              >
-                {project.aasm_state === "approved" ? "Re-ship" : "Ship"}
-              </button>
-            )}
-            <button
-              className="cursor-pointer bg-black px-6 py-2 text-lg font-bold text-white hover:bg-gray-800"
-              onClick={deleteProject}
-            >
-              Delete
-            </button>
-          </div>
-
           <ProjectForm
             project={project}
             hackatime_projects={hackatime_projects}
+            tags={tags}
           />
         </div>
         {showUserInfo && (
@@ -198,7 +171,7 @@ export default function ShowProject() {
           </div>
         )}
       </div>
-      <ProjectReviews project={project} />
+      <ProjectReviews project={project} ships={ships} />
     </Layout>
   );
 }

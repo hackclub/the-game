@@ -7,13 +7,14 @@ import HackClubLogo from "../../components/rsvp/HackClubLogo";
 import ArrowVector from "../../components/rsvp/ArrowVector";
 
 import HackClubFooter from "../../components/rsvp/HackClubFooter";
+
 export default function RsvpPage() {
   const [showScrollArrow, setShowScrollArrow] = useState(true);
   const step1CircleRef = useRef<HTMLDivElement>(null);
   const step2CircleRef = useRef<HTMLDivElement>(null);
   const step3CircleRef = useRef<HTMLDivElement>(null);
 
-  const { props, flash } = usePage();
+  const { props, flash } = usePage<{ referrer_name: string | null }>();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -45,6 +46,17 @@ export default function RsvpPage() {
           </div>
         ))}
       </div>
+
+      {props.referrer_name && (
+        <div className="fixed top-8 right-8 z-50">
+          <div className="rounded-md border-2 bg-[#fecb0d] px-8 py-4 pr-32">
+            <p className="text-2xl font-bold text-black">
+              {String(props.referrer_name)} invited you!
+            </p>
+            <p className="text-lg">Sign up now and get free stickers!</p>
+          </div>
+        </div>
+      )}
 
       <div className="relative z-10 flex min-h-screen w-full items-center justify-center px-4 py-12 lg:py-24">
         <div className="flex w-full max-w-none flex-col items-end lg:max-w-6xl">

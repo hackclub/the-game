@@ -59,6 +59,8 @@ class User < ApplicationRecord
   has_many :items, through: :purchases
   has_many :notifications
   has_many :ticket_adjustments
+  has_many :referrals, foreign_key: :referrer_id
+  has_many :referred_users, through: :referrals, source: :referred_user
 
   has_many :approved_reviews, -> { where(review_type: :approval) }, through: :projects, source: :reviews, class_name: "Project::Review"
 
@@ -71,7 +73,7 @@ class User < ApplicationRecord
   enum :ban_type, { hackatime: 0, blueprint: 1, previous: 2, slack: 3, age: 4 }
   enum :role, { user: "user", admin: "admin", reviewer: "reviewer" }
 
-  after_save_commit :link_hackatime, if: -> { hackatime_id.nil? }
+  after_save_commit :link_hackatime, if: -> { slack_id_previously_changed? && hackatime_id.nil? }
   after_save_commit :fetch_avatar, if: -> { avatar.nil? }
   after_save_commit :fetch_username, if: -> { username.nil? }
   after_save_commit :sync_pyramid_record, if: -> { referral_code_previously_changed? }
@@ -107,6 +109,9 @@ class User < ApplicationRecord
     if private
       hash = self.as_json.slice("id", "first_name", "last_name", "github_username", "address_street", "address_locality", "address_region", "address_country", "address_postal", "birthday", "avatar", "email", "role", "username", "ysws_verified", "verification_status", "account_id", "hackatime_id", "slack_id", "onboarding_completed")
       hash["balance"] = self.balance
+      hash["total_reported_seconds"] = self.total_reported_seconds
+      hash["total_in_review_seconds"] = self.total_in_review_seconds
+      hash["total_approved_seconds"] = self.total_approved_seconds
       hash["ticket_adjustments"] = self.ticket_adjustments.order(created_at: :desc).map(&:display_hash)
 
       hash
@@ -121,8 +126,12 @@ class User < ApplicationRecord
     HackatimeProject.where(id: cached_hackatime_projects.map { |hp| hp["id"] }, project: nil)
   end
 
+  def idv_verified?
+    verification_status == "verified"
+  end
+
   def sync_pyramid_record
-    data = { email:, referral_code:, projects_count: projects.count, idv_status: verification_status, hours: (total_seconds / 3600.00) }
+    data = { email:, referral_code:, projects_count: projects.count, idv_status: verification_status, hours: (total_reported_seconds / 3600.00) }
 
     if pyramid_record.nil?
       Pyramid.create(data)
@@ -153,12 +162,16 @@ class User < ApplicationRecord
     Airtable.find_by(email:)
   end
 
-  def total_seconds
-    projects.reduce(0) { |acc, project| acc + project.display_seconds }
+  def total_reported_seconds
+    projects.reduce(0) { |acc, project| acc + project.reported_seconds }
   end
 
   def total_in_review_seconds
     projects.submitted.reduce(0) { |acc, project| acc + project.in_review_seconds }
+  end
+
+  def total_ever_submitted_seconds
+    total_in_review_seconds + total_reviewed_seconds
   end
 
   def total_reviewed_seconds
@@ -183,6 +196,10 @@ class User < ApplicationRecord
 
   def unread_adjustment_notifications
     Notification.where(notifiable: ticket_adjustments, read: false)
+  end
+
+  def referral_link_code
+    @referral_link_code ||= Digest::SHA256.hexdigest("referral-#{id}-#{created_at}")[0, 8]
   end
 
   private

@@ -8,6 +8,8 @@ export default function ItemForm({ item }: { item?: Item }) {
     price: item?.price,
     image: item?.image ? 0 : (null as File | null | 0),
     featured: item?.featured,
+    one_per_user: item?.one_per_user,
+    stock: item?.stock,
   });
 
   function handleSubmit(e: React.FormEvent) {
@@ -51,6 +53,16 @@ export default function ItemForm({ item }: { item?: Item }) {
         />
       </div>
 
+      <div className="flex flex-col">
+        <label className="font-bold">Stock?</label>
+        <input
+          className="rounded-md p-2"
+          type="number"
+          value={data.stock}
+          onChange={(e) => setData("stock", parseInt(e.target.value))}
+        />
+      </div>
+
       <div className="flex items-center gap-2">
         <input
           id="featured"
@@ -60,6 +72,18 @@ export default function ItemForm({ item }: { item?: Item }) {
         />
         <label htmlFor="featured" className="font-bold">
           Featured
+        </label>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <input
+          id="one_per_user"
+          type="checkbox"
+          checked={data.one_per_user || false}
+          onChange={(e) => setData("one_per_user", e.target.checked)}
+        />
+        <label htmlFor="one_per_user" className="font-bold">
+          One per user
         </label>
       </div>
 

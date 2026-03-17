@@ -1,4 +1,5 @@
 import { usePage, Link } from "@inertiajs/react";
+import IdvVerificationAlert from "@/components/IdvVerificationAlert";
 import Layout from "@/layouts/layout";
 import LoggedHours from "@/components/home/LoggedHours";
 import Announcements from "@/components/home/Announcements";
@@ -16,6 +17,11 @@ export default function Home() {
     reviewTime: number;
     projectCount: number;
     announcements: Announcement[];
+    referralProgram: {
+      homepage_alert_title: string;
+      homepage_alert_description: string;
+    } | null;
+    boughtInvite: boolean;
   }>();
 
   if (!props.user?.onboarding_completed && !props.user?.hackatime_id) {
@@ -45,6 +51,23 @@ export default function Home() {
           </p>
         </div>
 
+        {props.referralProgram && (
+          <Link
+            href="/invite"
+            className="flex items-center justify-between rounded-2xl bg-[#fecb0d] p-6 transition-transform hover:scale-[1.01]"
+          >
+            <div>
+              <p className="smoothing-black text-2xl font-bold tracking-[-0.02em]">
+                {props.referralProgram.homepage_alert_title}
+              </p>
+              <p className="smoothing-black text-lg">
+                {props.referralProgram.homepage_alert_description}
+              </p>
+            </div>
+            <span className="smoothing-black text-xl font-bold">→</span>
+          </Link>
+        )}
+
         {isOnboarding ? null : (
           <>
             <MissingAccountFields />
@@ -54,7 +77,10 @@ export default function Home() {
               inProgressTime={props.inProgressTime}
               reviewTime={props.reviewTime}
               tickets={props.user.balance}
+              boughtInvite={props.boughtInvite}
             />
+
+            <IdvVerificationAlert />
 
             <Announcements announcements={props.announcements} />
           </>

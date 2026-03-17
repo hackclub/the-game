@@ -1,13 +1,21 @@
 import { usePage, Link } from "@inertiajs/react";
 import { useState } from "react";
 import type { Item } from "@/interfaces/item";
+import type { SharedProps } from "@/types";
 import ticketIcon from "@/assets/icons/ticket.svg";
 
-export default function Item({ item }: { item: Item }) {
-  const { props } = usePage();
+export default function Item({
+  item,
+  alreadyPurchased,
+}: {
+  item: Item & { stock_left: number };
+  alreadyPurchased: boolean;
+}) {
+  const { props } = usePage<SharedProps>();
   const [quantity, setQuantity] = useState(1);
   const totalCost = item.price * quantity;
   const canAfford = props.user.balance >= totalCost;
+  const idvVerified = props.user.verification_status === "verified";
   const maxQuantity = Math.max(1, Math.floor(props.user.balance / item.price));
 
   return (
@@ -38,43 +46,62 @@ export default function Item({ item }: { item: Item }) {
             </span>
           </div>
         </div>
+        {item.stock && <p className="text-lg">{item.stock_left} left!</p>}
         <p className="smoothing-black mt-2 text-xl tracking-[-0.02em]">
           {item.description}
         </p>
-        <div className="mt-4 flex items-center gap-2">
-          <button
-            type="button"
-            className="flex h-10 w-10 cursor-pointer items-center justify-center rounded border-2 border-black bg-white text-xl font-bold transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
-            onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-            disabled={quantity <= 1}
-          >
-            −
-          </button>
-          <span className="smoothing-black w-10 text-center text-xl font-bold">
-            {quantity}
-          </span>
-          <button
-            type="button"
-            className="flex h-10 w-10 cursor-pointer items-center justify-center rounded border-2 border-black bg-white text-xl font-bold transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
-            onClick={() => setQuantity((q) => q + 1)}
-            disabled={quantity >= maxQuantity}
-          >
-            +
-          </button>
-        </div>
-        {canAfford ? (
-          <Link
-            className="smoothing-white mt-4 block w-full bg-black px-5 py-3 text-center text-xl font-bold tracking-tight text-white transition-colors hover:bg-[#fecb0d] hover:text-black"
-            href={`/shop/${item.id}/buy`}
-            method="post"
-            data={{ quantity }}
-          >
-            Buy{quantity > 1 ? ` (${quantity})` : ""}
-          </Link>
-        ) : (
+        {alreadyPurchased ? (
           <p className="smoothing-black mt-4 block w-full bg-[#d9d9d9] px-5 py-3 text-center text-xl font-bold tracking-tight text-black/50">
-            Not enough tickets
+            Already purchased
           </p>
+        ) : (
+          <>
+            {!item.one_per_user && (
+              <div className="mt-4 flex items-center gap-2">
+                <button
+                  type="button"
+                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded border-2 border-black bg-white text-xl font-bold transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
+                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                  disabled={!idvVerified || quantity <= 1}
+                >
+                  −
+                </button>
+                <span className="smoothing-black w-10 text-center text-xl font-bold">
+                  {quantity}
+                </span>
+                <button
+                  type="button"
+                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded border-2 border-black bg-white text-xl font-bold transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
+                  onClick={() => setQuantity((q) => q + 1)}
+                  disabled={!idvVerified || quantity >= maxQuantity}
+                >
+                  +
+                </button>
+              </div>
+            )}
+            {!idvVerified ? (
+              <button
+                type="button"
+                disabled
+                className="smoothing-black mt-4 block w-full cursor-not-allowed bg-[#d9d9d9] px-5 py-3 text-center text-xl font-bold tracking-tight text-black/50"
+              >
+                Verify to buy
+              </button>
+            ) : canAfford ? (
+              <Link
+                className="smoothing-white mt-4 block w-full bg-black px-5 py-3 text-center text-xl font-bold tracking-tight text-white transition-colors hover:bg-[#fecb0d] hover:text-black"
+                href={`/shop/${item.id}/buy`}
+                method="post"
+                data={{ quantity }}
+              >
+                Buy{quantity > 1 ? ` (${quantity})` : ""}
+              </Link>
+            ) : (
+              <p className="smoothing-black mt-4 block w-full bg-[#d9d9d9] px-5 py-3 text-center text-xl font-bold tracking-tight text-black/50">
+                Not enough tickets
+              </p>
+            )}
+          </>
         )}
       </div>
     </div>

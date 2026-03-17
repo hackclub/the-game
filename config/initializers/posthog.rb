@@ -12,7 +12,7 @@
 PostHog::Rails.configure do |config|
   # Automatically capture exceptions (default: false)
   # Set to true to enable automatic exception tracking
-  # config.auto_capture_exceptions = true
+  config.auto_capture_exceptions = true
 
   # Report exceptions that Rails rescues (e.g., with rescue_from) (default: false)
   # Set to true to capture rescued exceptions

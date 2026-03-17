@@ -32,6 +32,8 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Project < ApplicationRecord
+  DIFF_FIELDS = [ "title", "desc", "demo_link", "repo_link" ].freeze
+
   include AASM
   include PgSearch::Model
 
@@ -45,6 +47,7 @@ class Project < ApplicationRecord
   belongs_to :user
   has_many :hackatime_projects, dependent: :destroy
   has_many :reviews, class_name: "Project::Review"
+  has_and_belongs_to_many :tags, join_table: :project_tags_projects, association_foreign_key: :project_tag_id
   has_one_attached :screenshot
 
   validates :title, :desc, presence: true
@@ -90,12 +93,6 @@ class Project < ApplicationRecord
     end
   end
 
-  def display_seconds
-    return approved_seconds if approved_seconds.present? && approved?
-    return total_seconds if total_seconds.present?
-    reported_seconds
-  end
-
   def reported_seconds
     hackatime_projects.reduce(0) do |acc, project|
       acc + project.sync_total_seconds
@@ -112,10 +109,10 @@ class Project < ApplicationRecord
     hash = self.as_json.slice("id", "aasm_state", "approved_at", "demo_link", "desc", "rejected_at", "repo_link", "submitted_at", "title", "ysws", "created_at", "updated_at", "user_id", "high_quality")
     hash["reported_seconds"] = reported_seconds
     hash["total_seconds"] = total_seconds
-    hash["display_seconds"] = display_seconds
     hash["approved_seconds"] = approved_seconds
     hash["real_approved_seconds"] = real_approved_seconds
     hash["hackatime_projects"] = hackatime_projects.pluck(:id)
+    hash["tags"] = tags.pluck(:id)
     hash["status"] = display_status
     hash["unread_notification_count"] = unread_notifications.count
 
@@ -190,5 +187,17 @@ class Project < ApplicationRecord
 
   def mark_notifications_read
     unread_notifications.each(&:mark_read)
+  end
+
+  def diff(version)
+    diffs = {}
+
+    DIFF_FIELDS.each do |field|
+      if self[field] != version[field]
+        diffs[field] = [ version[field], self[field] ]
+      end
+    end
+
+    diffs
   end
 end

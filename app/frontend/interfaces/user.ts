@@ -6,6 +6,9 @@ export interface PrivateUser {
   last_name: string;
   github_username: string;
   balance: number;
+  total_reported_seconds: number;
+  total_in_review_seconds: number;
+  total_approved_seconds: number;
 
   address_street: string;
   address_locality: string;
@@ -28,6 +31,7 @@ export interface PrivateUser {
 
   unread_notification_count: number;
   unread_project_notification_count: number;
+  referral_program_active: boolean;
 
   ticket_adjustments: TicketAdjustment[];
 }

@@ -62,7 +62,13 @@ class AuthController < ApplicationController
 
       user.update!(data)
 
+      AddUserToSlackChannelsJob.perform_later(user.id) if is_new_user && user.slack_id.present?
+
       session[:user_id] = user.id
+
+      if is_new_user && session[:referral_code].present?
+        create_referral_record(user, session[:referral_code])
+      end
       session.delete(:referral_code)
 
       PostHog.capture({
@@ -140,6 +146,17 @@ class AuthController < ApplicationController
     rescue URI::InvalidURIError
     end
 
+    nil
+  end
+
+  def create_referral_record(user, code)
+    referrer = User.where(is_banned: false).find_each { |u| break u if u.referral_link_code == code }
+    return unless referrer.is_a?(User)
+    return if referrer.id == user.id
+
+    Referral.create!(referrer: referrer, referred_user: user, code: code)
+    user.update!(referrer: referrer)
+  rescue ActiveRecord::RecordInvalid
     nil
   end
 
