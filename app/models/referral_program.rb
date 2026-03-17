@@ -50,7 +50,7 @@ class ReferralProgram < ApplicationRecord
   def display_hash
     hash = as_json.except("created_at", "updated_at")
     if referred_item.present?
-      hash["referred_item"] = referred_item.display_hash
+      hash["referred_item"] = referred_item.display_hash(false)
     end
     hash
   end
