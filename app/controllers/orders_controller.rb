@@ -20,7 +20,7 @@ class OrdersController < ApplicationController
 
   def destroy
     @order.destroy!
-    redirect_to admin_orders_path, notice: "Order Deleted"
+    redirect_to order_path(@order), notice: "Order Deleted"
   end
 
   def hold
@@ -36,6 +36,6 @@ class OrdersController < ApplicationController
   private
 
   def get_order
-    @order = Item::Purchase.find(params[:id])
+    @order = Item::Purchase.with_deleted.find(params[:id])
   end
 end

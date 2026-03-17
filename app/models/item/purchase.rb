@@ -23,7 +23,7 @@ class Item
     include AASM
     has_paper_trail
     acts_as_paranoid
-    
+
     belongs_to :user
     belongs_to :item
 
@@ -49,7 +49,7 @@ class Item
     validate :check_one_per_user, on: :create
 
     def display_hash(item: false)
-      hash = self.as_json.slice("id", "aasm_state", "created_at", "updated_at", "item_id", "user_id", "fulfilled_at", "hold_at", "quantity")
+      hash = self.as_json.slice("id", "aasm_state", "created_at", "updated_at", "item_id", "user_id", "fulfilled_at", "hold_at", "quantity", "deleted_at")
 
       if item
         hash["item"] = self.item.display_hash

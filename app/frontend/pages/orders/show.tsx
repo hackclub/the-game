@@ -50,15 +50,17 @@ export default function ShowOrder({ order, order_user, item }: Props) {
             <span className="font-semibold">Status:</span>
             <span
               className={`rounded-full px-3 py-1 text-sm font-bold ${
-                {
-                  pending: "bg-yellow-100 text-yellow-800",
-                  processing: "bg-blue-100 text-blue-800",
-                  fulfilled: "bg-green-100 text-green-800",
-                  hold: "bg-orange-100 text-orange-800",
-                }[order.aasm_state] ?? "bg-gray-100 text-gray-800"
+                order.deleted_at
+                  ? "bg-red-100 text-red-800"
+                  : {
+                      pending: "bg-yellow-100 text-yellow-800",
+                      processing: "bg-blue-100 text-blue-800",
+                      fulfilled: "bg-green-100 text-green-800",
+                      hold: "bg-orange-100 text-orange-800",
+                    }[order.aasm_state] ?? "bg-gray-100 text-gray-800"
               }`}
             >
-              {order.aasm_state}
+              {order.deleted_at ? "deleted" : order.aasm_state}
             </span>
           </p>
           <div className="mt-4">
@@ -89,35 +91,37 @@ export default function ShowOrder({ order, order_user, item }: Props) {
               )}
             </div>
           </div>
-          <div className="mt-4">
-            <h3 className="text-2xl font-bold">Mark Progress</h3>
-            {order_user.balance < 0 && (
-              <p className="my-2 rounded-md border-2 border-yellow-400 bg-yellow-200 p-4 font-bold">
-                WARNING: THIS USER HAS A NEGATIVE BALANCE. AN APPROVAL WAS
-                PROBABLY UNDONE.
-              </p>
-            )}
-            <div className="flex gap-2">
-              <button
-                className="cursor-pointer rounded-md bg-blue-500 px-4 py-2 font-bold text-white"
-                onClick={handleFulfill}
-              >
-                Fulfilled
-              </button>
-              <button
-                className="cursor-pointer rounded-md bg-orange-500 px-4 py-2 font-bold text-white"
-                onClick={handleOnHold}
-              >
-                Place On Hold
-              </button>
-              <button
-                className="cursor-pointer rounded-md bg-red-500 px-4 py-2 font-bold text-white"
-                onClick={handleDelete}
-              >
-                Delete
-              </button>
+          {!order.deleted_at && (
+            <div className="mt-4">
+              <h3 className="text-2xl font-bold">Mark Progress</h3>
+              {order_user.balance < 0 && (
+                <p className="my-2 rounded-md border-2 border-yellow-400 bg-yellow-200 p-4 font-bold">
+                  WARNING: THIS USER HAS A NEGATIVE BALANCE. AN APPROVAL WAS
+                  PROBABLY UNDONE.
+                </p>
+              )}
+              <div className="flex gap-2">
+                <button
+                  className="cursor-pointer rounded-md bg-blue-500 px-4 py-2 font-bold text-white"
+                  onClick={handleFulfill}
+                >
+                  Fulfilled
+                </button>
+                <button
+                  className="cursor-pointer rounded-md bg-orange-500 px-4 py-2 font-bold text-white"
+                  onClick={handleOnHold}
+                >
+                  Place On Hold
+                </button>
+                <button
+                  className="cursor-pointer rounded-md bg-red-500 px-4 py-2 font-bold text-white"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         <div className="px-4 py-5 text-xl md:px-16">
