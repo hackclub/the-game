@@ -4,6 +4,7 @@
 #
 #  id           :bigint           not null, primary key
 #  aasm_state   :string           default("pending"), not null
+#  deleted_at   :datetime
 #  fulfilled_at :datetime
 #  hold_at      :datetime
 #  quantity     :integer          default(1), not null
@@ -21,7 +22,8 @@ class Item
   class Purchase < ApplicationRecord
     include AASM
     has_paper_trail
-
+    acts_as_paranoid
+    
     belongs_to :user
     belongs_to :item
 
