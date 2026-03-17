@@ -62,6 +62,8 @@ class AuthController < ApplicationController
 
       user.update!(data)
 
+      AddUserToSlackChannelsJob.perform_later(user.id) if is_new_user && user.slack_id.present?
+
       session[:user_id] = user.id
 
       if is_new_user && session[:referral_code].present?
