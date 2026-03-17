@@ -20,7 +20,7 @@ class ItemsController < ApplicationController
     items_scope = items_scope.where.not(id: program.referred_item_id) if program.referred_item_id.present?
 
     render inertia: "items/index", props: {
-      items: items_scope.map { |item| item.display_hash(stock_left: true) },
+      items: items_scope.map { |item| item.display_hash(true) },
       has_purchased: current_user.purchases.any?,
       referred_item: referred_item,
       purchased_item_ids: purchased_item_ids

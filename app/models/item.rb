@@ -18,7 +18,7 @@ class Item < ApplicationRecord
   has_many :purchases, dependent: :destroy
   has_one_attached :image
 
-  def display_hash(stock_left)
+  def display_hash(stock_left = false)
     hash = self.as_json.slice("id", "description", "name", "price", "featured", "one_per_user", "stock")
 
     if image.attached? && image.persisted?
