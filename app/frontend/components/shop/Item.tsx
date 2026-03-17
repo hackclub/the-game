@@ -8,7 +8,7 @@ export default function Item({
   item,
   alreadyPurchased,
 }: {
-  item: Item;
+  item: Item & { stock_left: number };
   alreadyPurchased: boolean;
 }) {
   const { props } = usePage<SharedProps>();
@@ -46,6 +46,7 @@ export default function Item({
             </span>
           </div>
         </div>
+        {item.stock && <p className="text-lg">{item.stock_left} left!</p>}
         <p className="smoothing-black mt-2 text-xl tracking-[-0.02em]">
           {item.description}
         </p>

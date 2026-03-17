@@ -37,6 +37,9 @@ export default function Items({ items }: Props) {
     {
       field: "price" as const,
     },
+    {
+      field: "stock" as const,
+    },
   ]);
 
   return (

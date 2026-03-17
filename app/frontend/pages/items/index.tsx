@@ -12,7 +12,7 @@ export default function Shop({
   referred_item,
   purchased_item_ids,
 }: {
-  items: Item[];
+  items: (Item & { stock_left: number })[];
   has_purchased: boolean;
   referred_item: Item | null;
   purchased_item_ids: number[];

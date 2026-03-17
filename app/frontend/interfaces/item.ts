@@ -6,4 +6,5 @@ export interface Item {
   image?: string;
   featured: boolean;
   one_per_user: boolean;
+  stock: number;
 }

@@ -20,7 +20,7 @@ class ItemsController < ApplicationController
     items_scope = items_scope.where.not(id: program.referred_item_id) if program.referred_item_id.present?
 
     render inertia: "items/index", props: {
-      items: items_scope.map(&:display_hash),
+      items: items_scope.map { |item| item.display_hash(stock_left: true) },
       has_purchased: current_user.purchases.any?,
       referred_item: referred_item,
       purchased_item_ids: purchased_item_ids
@@ -112,7 +112,7 @@ class ItemsController < ApplicationController
   end
 
   def item_params
-    p = params.permit(:name, :description, :price, :featured, :one_per_user)
+    p = params.permit(:name, :description, :price, :featured, :one_per_user, :stock)
     p[:featured] = ActiveModel::Type::Boolean.new.cast(p[:featured]) || false
     p[:one_per_user] = ActiveModel::Type::Boolean.new.cast(p[:one_per_user]) || false
 

@@ -9,6 +9,7 @@ export default function ItemForm({ item }: { item?: Item }) {
     image: item?.image ? 0 : (null as File | null | 0),
     featured: item?.featured,
     one_per_user: item?.one_per_user,
+    stock: item?.stock,
   });
 
   function handleSubmit(e: React.FormEvent) {
@@ -49,6 +50,16 @@ export default function ItemForm({ item }: { item?: Item }) {
           type="number"
           value={data.price}
           onChange={(e) => setData("price", parseInt(e.target.value))}
+        />
+      </div>
+
+      <div className="flex flex-col">
+        <label className="font-bold">Stock?</label>
+        <input
+          className="rounded-md p-2"
+          type="number"
+          value={data.stock}
+          onChange={(e) => setData("stock", parseInt(e.target.value))}
         />
       </div>
 
