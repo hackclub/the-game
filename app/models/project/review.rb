@@ -43,7 +43,7 @@ class Project
     end
 
     after_create_commit do
-      create_notification
+      create_notification if content.present?
       create_ysws_record if approval?
     end
 
