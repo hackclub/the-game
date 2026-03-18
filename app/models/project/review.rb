@@ -6,6 +6,7 @@
 #  admin_content    :text
 #  approved_seconds :integer
 #  content          :text
+#  deleted_at       :datetime
 #  review_type      :string
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
@@ -20,6 +21,8 @@
 class Project
   class Review < ApplicationRecord
     include ActionView::Helpers::DateHelper
+
+    acts_as_paranoid
 
     belongs_to :author, class_name: "User"
     belongs_to :project
@@ -49,11 +52,15 @@ class Project
 
     # undo
     after_destroy_commit do
-      project_version = project.versions.where_object_changes_to(aasm_state: project.aasm_state).last
-      project_version.reify.save!
-      project.versions.last.delete
+      unless comment?
+        project_version = project.versions.where_object_changes_to(aasm_state: project.aasm_state).last
+        project_version.reify.save!
+        project.versions.last.delete
 
-      ysws_record&.destroy
+        create_destroy_notification
+
+        ysws_record&.destroy
+      end
     end
 
     def display_hash(author: false, admin: false)
@@ -113,6 +120,19 @@ class Project
       end
 
       message = "#{base_message}#{"\n>#{content}" if content.present?}"
+
+      Notification.create!(user: project.user, notifiable: self, message:, link: Rails.application.routes.url_helpers.project_url(project))
+    end
+
+    def create_destroy_notification
+      message = case review_type
+      when "comment"
+                  return
+      when "rejection"
+                  "The rejection for your project \"#{project.title}\" has been removed."
+      when "approval"
+                  "The approval for your project \"#{project.title}\" has been removed."
+      end
 
       Notification.create!(user: project.user, notifiable: self, message:, link: Rails.application.routes.url_helpers.project_url(project))
     end

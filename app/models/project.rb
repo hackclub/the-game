@@ -182,7 +182,7 @@ class Project < ApplicationRecord
   end
 
   def unread_notifications
-    Notification.where(notifiable: reviews, read: false)
+    Notification.where(notifiable: reviews.with_deleted, read: false)
   end
 
   def mark_notifications_read

@@ -136,13 +136,16 @@ export default function ProjectReviews({
                             >
                               Edit
                             </Link>
-                            {index == timeline.length - 1 && (
+                            {(index == timeline.length - 1 ||
+                              review.review_type === "comment") && (
                               <Link
                                 href={`/projects/${project.id}/reviews/${review.id}`}
                                 className="cursor-pointer text-red-500 underline"
                                 method="delete"
                               >
-                                Undo
+                                {review.review_type === "comment"
+                                  ? "Delete"
+                                  : "Undo"}
                               </Link>
                             )}
                           </div>
