@@ -32,6 +32,7 @@ class AuthController < ApplicationController
 
       data = {
         account_id:,
+        account_access_token: auth["credentials"]["token"],
         first_name: user_info["given_name"],
         last_name: user_info["family_name"],
         address_street: user_info["address"]&.[]("street_address"),

@@ -8,6 +8,7 @@ class ApplicationController < ActionController::Base
 
   before_action :set_paper_trail_whodunnit
   before_action :update_last_active
+  before_action :refresh_unverified_idv_status
   before_action :redirect_banned_users
   before_action :redirect_adults
 
@@ -55,6 +56,13 @@ class ApplicationController < ActionController::Base
     return unless current_user.is_banned
 
     redirect_to sorry_path
+  end
+
+  def refresh_unverified_idv_status
+    return unless user_logged_in?
+    return if current_user.idv_verified?
+
+    current_user.refresh_verification_status!
   end
 
   def redirect_adults
