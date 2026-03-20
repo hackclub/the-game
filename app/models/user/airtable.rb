@@ -6,7 +6,7 @@ class User
     field :first_name, "First Name"
     field :verification_status, "Verification Status"
     field :hackatime_linked, "Hackatime Linked?"
-    field :first_project_created_at, "Loops - firstProjectCreatedAt"
-    field :first_project_ship_at, "Loops - firstProjectShipAt"
+    field :first_project_created_at, "Loops - hctgFirstProjectCreatedAt"
+    field :first_project_ship_at, "Loops - hctgFirstProjectShipAt"
   end
 end
