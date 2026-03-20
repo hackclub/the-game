@@ -160,7 +160,17 @@ class User < ApplicationRecord
   def sync_airtable_record
     return if Airtable.airtable_optional_env? && !Airtable.airtable_enabled?
 
-    data = { email:, first_name: first_name.presence || username, verification_status:, hackatime_linked: hackatime_id.present? }
+    first_project = projects.order(:created_at).first
+    first_shipped_project = projects.where.not(submitted_at: nil).order(:submitted_at).first
+
+    data = {
+      email:,
+      first_name: first_name.presence || username,
+      verification_status:,
+      hackatime_linked: hackatime_id.present?,
+      first_project_created_at: first_project&.created_at,
+      first_project_ship_at: first_shipped_project&.submitted_at
+    }
 
     if airtable_record.nil?
       Airtable.create(data)
