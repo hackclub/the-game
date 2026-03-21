@@ -18,7 +18,10 @@ interface Props {
 export default function ReviewShow({ project, ships }: Props) {
   return (
     <Layout>
-      <PageHeading eyebrow="Review" title={project.title ?? "Untitled Project"} />
+      <PageHeading
+        eyebrow="Review"
+        title={project.title ?? "Untitled Project"}
+      />
       <div className="px-8 py-6">
         <div className="flex gap-6">
           <div className="min-w-0 flex-1">
@@ -87,7 +90,7 @@ export default function ReviewShow({ project, ships }: Props) {
             {project.desc && (
               <div className="mb-6">
                 <h2 className="mb-1 text-xl font-semibold">Description</h2>
-                <p className="max-w-2xl text-lg text-gray-700 wrap-break-word">
+                <p className="max-w-2xl text-lg wrap-break-word text-gray-700">
                   {project.desc}
                 </p>
               </div>
@@ -125,7 +128,7 @@ export default function ReviewShow({ project, ships }: Props) {
             </div>
           </div>
 
-          <div className="w-72 shrink-0 rounded-md border border-gray-200 bg-gray-50 p-5 self-start">
+          <div className="w-72 shrink-0 self-start rounded-md border border-gray-200 bg-gray-50 p-5">
             <h2 className="mb-3 text-2xl font-bold">User Info</h2>
             <div className="flex flex-col gap-3">
               <img

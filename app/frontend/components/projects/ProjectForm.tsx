@@ -280,10 +280,15 @@ export default function ProjectForm({
                     if (isSelected) {
                       setData(
                         "hackatime_project_keys",
-                        data.hackatime_project_keys.filter((id) => id !== hp.id),
+                        data.hackatime_project_keys.filter(
+                          (id) => id !== hp.id,
+                        ),
                       );
                     } else {
-                      setData("hackatime_project_keys", [...data.hackatime_project_keys, hp.id]);
+                      setData("hackatime_project_keys", [
+                        ...data.hackatime_project_keys,
+                        hp.id,
+                      ]);
                     }
                   }}
                 >
