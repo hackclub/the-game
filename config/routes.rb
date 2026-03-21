@@ -78,6 +78,7 @@ Rails.application.routes.draw do
   end
 
   get "/review", to: "review#index"
+  get "/review/:id", to: "review#show", as: :review_show
 
   scope "/auth" do
     get "hca/callback", to: "auth#account_callback"
