@@ -2,6 +2,7 @@ import Layout from "@/layouts/layout";
 import PageHeading from "@/components/layout/PageHeading";
 import ProjectReviews from "@/components/projects/ProjectReviews";
 import formatTime from "@/utils/formatTime";
+import type { HackatimeProject } from "@/interfaces/hackatime_project";
 import type { Project, ProjectChange } from "@/interfaces/project";
 import type { ProjectReview } from "@/interfaces/project_review";
 import type { PublicUser, ReviewerUser } from "@/interfaces/user";
@@ -13,9 +14,14 @@ interface Props {
     reviews: (ProjectReview & { author: PublicUser })[];
   };
   ships: ProjectChange[];
+  hackatime_projects: HackatimeProject[];
 }
 
-export default function ReviewShow({ project, ships }: Props) {
+export default function ReviewShow({
+  project,
+  ships,
+  hackatime_projects,
+}: Props) {
   return (
     <Layout>
       <PageHeading
@@ -55,20 +61,27 @@ export default function ReviewShow({ project, ships }: Props) {
             )}
 
             {project.aasm_state === "submitted" && (
-              <p className="mt-1 text-lg text-yellow-600">
-                {formatTime(project.total_seconds - project.approved_seconds)}{" "}
-                under review
-                {project.reported_seconds > project.total_seconds && (
-                  <>
-                    {" "}
-                    (
-                    {formatTime(
-                      project.reported_seconds - project.total_seconds,
-                    )}{" "}
-                    not yet shipped)
-                  </>
+              <>
+                <p className="mt-1 text-lg text-yellow-600">
+                  {formatTime(project.total_seconds - project.approved_seconds)}{" "}
+                  under review
+                  {project.reported_seconds > project.total_seconds && (
+                    <>
+                      {" "}
+                      (
+                      {formatTime(
+                        project.reported_seconds - project.total_seconds,
+                      )}{" "}
+                      not yet shipped)
+                    </>
+                  )}
+                </p>
+                {hackatime_projects.length > 0 && (
+                  <p className="mt-1 text-sm text-gray-600">
+                    {hackatime_projects.map((project) => project.name).join(", ")}
+                  </p>
                 )}
-              </p>
+              </>
             )}
 
             {project.high_quality && (

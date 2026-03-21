@@ -30,6 +30,7 @@ class ReviewController < ApplicationController
 
     render inertia: "review/show", props: {
       project: project_hash,
+      hackatime_projects: project.hackatime_projects.map(&:display_hash),
       ships:
     }
   end
