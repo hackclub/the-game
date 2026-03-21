@@ -78,7 +78,7 @@ export default function ReviewShow({
                 </p>
                 {hackatime_projects.length > 0 && (
                   <p className="mt-1 text-sm text-gray-600">
-                    {hackatime_projects.map((project) => project.name).join(", ")}
+                    <b>Hackatime projects:</b> {hackatime_projects.map((project) => project.name).join(", ")}
                   </p>
                 )}
               </>
