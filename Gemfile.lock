@@ -193,7 +193,10 @@ GEM
     faraday-net_http_persistent (2.3.1)
       faraday (~> 2.5)
       net-http-persistent (>= 4.0.4, < 5)
+    ffi (1.17.3-arm64-darwin)
     ffi (1.17.3-x64-mingw-ucrt)
+    ffi (1.17.3-x86_64-darwin)
+    ffi (1.17.3-x86_64-linux-gnu)
     fugit (1.12.1)
       et-orbi (~> 1.4)
       raabro (~> 1.4)
@@ -306,7 +309,13 @@ GEM
       net-protocol
     net-ssh (7.3.0)
     nio4r (2.7.5)
+    nokogiri (1.19.1-arm64-darwin)
+      racc (~> 1.4)
     nokogiri (1.19.1-x64-mingw-ucrt)
+      racc (~> 1.4)
+    nokogiri (1.19.1-x86_64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.19.1-x86_64-linux-gnu)
       racc (~> 1.4)
     norairrecord (0.5.1)
       faraday (>= 1.0, < 3.0)
@@ -341,7 +350,10 @@ GEM
     parser (3.3.10.0)
       ast (~> 2.4.1)
       racc
+    pg (1.6.3-arm64-darwin)
     pg (1.6.3-x64-mingw-ucrt)
+    pg (1.6.3-x86_64-darwin)
+    pg (1.6.3-x86_64-linux)
     pg_search (2.3.7)
       activerecord (>= 6.1)
       activesupport (>= 6.1)
@@ -523,6 +535,9 @@ GEM
       faraday-follow_redirects
     thor (1.5.0)
     thruster (0.1.17)
+    thruster (0.1.17-arm64-darwin)
+    thruster (0.1.17-x86_64-darwin)
+    thruster (0.1.17-x86_64-linux)
     timeout (0.6.0)
     tsort (0.2.0)
     turbo-rails (2.0.20)
@@ -569,7 +584,10 @@ GEM
     zeitwerk (2.7.4)
 
 PLATFORMS
+  arm64-darwin-24
   x64-mingw-ucrt
+  x86_64-darwin-24
+  x86_64-linux
 
 DEPENDENCIES
   aasm (~> 5.5)

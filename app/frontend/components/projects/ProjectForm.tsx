@@ -260,7 +260,7 @@ export default function ProjectForm({
         <div className="flex flex-col gap-1">
           <FieldHeading
             label="Hackatime Projects"
-            description="Select a Hackatime project to link"
+            description="Select Hackatime projects to link"
           />
           <div className="mt-1 max-h-60 overflow-y-auto border border-[#cacaca] bg-[#d9d9d9]">
             {sortedHackatimeProjects.map((hp) => {
