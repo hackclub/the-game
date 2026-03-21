@@ -131,20 +131,26 @@ class User < ApplicationRecord
   end
 
   def refresh_verification_status!
-    return if account_access_token.blank?
+    return if account_id.blank?
 
     response = Faraday.get(
-      "#{ENV.fetch('HCA_URL', 'https://auth.hackclub.com')}/oauth/userinfo",
-      nil,
-      { "Authorization" => "Bearer #{account_access_token}" }
+      "#{ENV.fetch('HCA_URL', 'https://auth.hackclub.com')}/api/external/check",
+      { idv_id: account_id }
     )
 
     return unless response.success?
 
     data = JSON.parse(response.body)
-    update!(verification_status: data["verification_status"]) if data["verification_status"].present?
+    status = self.class.normalized_verification_status(data["result"])
+    update!(verification_status: status) if status.present?
   rescue Faraday::Error, JSON::ParserError => e
     Rails.logger.warn("Failed to refresh verification status for User##{id}: #{e.message}")
+  end
+
+  def self.normalized_verification_status(status)
+    return "verified" if %w[verified verified_eligible verified_but_over_18].include?(status)
+
+    status
   end
 
   def sync_pyramid_record
