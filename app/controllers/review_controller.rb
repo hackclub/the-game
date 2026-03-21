@@ -15,4 +15,22 @@ class ReviewController < ApplicationController
       alltime_leaderboard: alltime_reviews_by_user.to_a.map { |entry| { id: entry[0], name: User.find(entry[0]).username, count: entry[1] } }
     }
   end
+
+  def show
+    project = Project.find(params[:id])
+    project_hash = project.display_hash(user: true, reviews: true, admin: current_user.admin?, reviewer: current_user.reviewer?)
+
+    ship_versions = project.versions.where_object_changes_to(aasm_state: :submitted)
+    ships = ship_versions.map.with_index do |version, index|
+      diff = index == 0 ? {} : project.diff(ship_versions[index - 1].object)
+      { id: version.id, date: version.created_at.to_s, diff: }
+    end
+
+    project.mark_notifications_read
+
+    render inertia: "review/show", props: {
+      project: project_hash,
+      ships:
+    }
+  end
 end

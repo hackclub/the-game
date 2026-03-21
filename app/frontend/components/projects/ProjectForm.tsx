@@ -260,36 +260,75 @@ export default function ProjectForm({
         <div className="flex flex-col gap-1">
           <FieldHeading
             label="Hackatime Projects"
-            description="Select Hackatime projects to link"
+            description="Select a Hackatime project to link"
           />
-          <select
-            className="mt-1 border-[#cacaca] bg-[#d9d9d9] p-2 text-xl outline-none"
-            multiple
-            onChange={(e) =>
-              setData(
-                "hackatime_project_keys",
-                [...e.target.selectedOptions].map((o) => Number(o.value)),
-              )
-            }
-            disabled={disabled}
-          >
-            <option
-              disabled
-              selected={!project?.hackatime_projects?.length}
-              value="-1"
-            >
-              Select a project
-            </option>
-            {sortedHackatimeProjects.map((hp) => (
-              <option
-                key={hp.id}
-                value={hp.id}
-                selected={data.hackatime_project_keys.includes(hp.id)}
-              >
-                {hp.name} ({formatTime(hp.total_seconds)})
-              </option>
-            ))}
-          </select>
+          <div className="mt-1 max-h-60 overflow-y-auto border border-[#cacaca] bg-[#d9d9d9]">
+            {sortedHackatimeProjects.map((hp) => {
+              const isSelected = data.hackatime_project_keys.includes(hp.id);
+              return (
+                <button
+                  key={hp.id}
+                  type="button"
+                  disabled={disabled}
+                  className={clsx(
+                    "flex w-full items-center px-4 py-2 text-left text-xl transition-colors",
+                    isSelected
+                      ? "bg-black font-bold text-white"
+                      : "hover:bg-[#c9c9c9] disabled:opacity-40",
+                  )}
+                  onClick={() => {
+                    if (isSelected) {
+                      setData(
+                        "hackatime_project_keys",
+                        data.hackatime_project_keys.filter((id) => id !== hp.id),
+                      );
+                    } else {
+                      setData("hackatime_project_keys", [...data.hackatime_project_keys, hp.id]);
+                    }
+                  }}
+                >
+                  {hp.name} ({formatTime(hp.total_seconds)})
+                </button>
+              );
+            })}
+          </div>
+          {data.hackatime_project_keys.length > 0 && (
+            <div className="mt-2">
+              <span className="text-lg font-semibold text-[#565656]">
+                Selected projects:
+              </span>
+              <div className="mt-1 flex flex-wrap gap-2">
+                {data.hackatime_project_keys.map((id) => {
+                  const hp = hackatime_projects.find((p) => p.id === id);
+                  if (!hp) return null;
+                  return (
+                    <div
+                      key={id}
+                      className="flex items-center gap-2 bg-black px-3 py-1.5 text-lg font-bold text-white"
+                    >
+                      <span>{hp.name}</span>
+                      {!disabled && (
+                        <button
+                          type="button"
+                          className="cursor-pointer text-white/70 transition-colors hover:text-white"
+                          onClick={() =>
+                            setData(
+                              "hackatime_project_keys",
+                              data.hackatime_project_keys.filter(
+                                (k) => k !== id,
+                              ),
+                            )
+                          }
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col gap-1">
