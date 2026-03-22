@@ -24,6 +24,16 @@ export default function Users({ users, q, role, pagination }: Props) {
     {
       field: "id" as const,
       headerName: "ID",
+      cellRenderer: (field: any) => {
+        return (
+          <a 
+          href={`/users/${field.value}`}
+          className="text-blue-500 underline"
+          >
+            {field.value}
+          </a>
+        )
+      }
     },
     {
       field: "avatar" as const,
