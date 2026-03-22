@@ -22,7 +22,7 @@ class Project
 
       flash[:notice] = "#{human_review_desc} \"#{@project.title}\"#{" for #{params[:approved_hours]} hours" if review.approval? && params[:approved_hours].present?}"
 
-      redirect_to project_path(@project)
+      redirect_back_or_to project_path(@project)
     end
 
     def edit
@@ -34,7 +34,7 @@ class Project
 
       flash[:notice] = "Edited review"
 
-      redirect_to project_path(@project)
+      redirect_back_or_to project_path(@project)
     end
 
     def destroy
@@ -42,7 +42,7 @@ class Project
 
       flash[:notice] = "Deleted review"
 
-      redirect_to project_path(@project)
+      redirect_back_or_to project_path(@project)
     end
 
     private

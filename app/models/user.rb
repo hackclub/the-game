@@ -77,7 +77,7 @@ class User < ApplicationRecord
   after_save_commit :fetch_avatar, if: -> { avatar.nil? }
   after_save_commit :fetch_username, if: -> { username.nil? }
   after_save_commit :sync_pyramid_record, if: -> { referral_code_previously_changed? }
-  # after_save_commit :sync_airtable_record
+  after_save_commit :sync_airtable_record
 
   def self.exchange_hackatime_code(code, host:)
     response = Faraday.post("https://hackatime.hackclub.com/oauth/token", { client_id: ENV["HACKATIME_CLIENT_ID"], client_secret: ENV["HACKATIME_CLIENT_SECRET"], redirect_uri: Rails.application.routes.url_helpers.hackatime_callback_url(host:), code:, grant_type: "authorization_code" })
@@ -130,6 +130,29 @@ class User < ApplicationRecord
     verification_status == "verified"
   end
 
+  def refresh_verification_status!
+    return if account_id.blank?
+
+    response = Faraday.get(
+      "#{ENV.fetch('HCA_URL', 'https://auth.hackclub.com')}/api/external/check",
+      { idv_id: account_id }
+    )
+
+    return unless response.success?
+
+    data = JSON.parse(response.body)
+    status = self.class.normalized_verification_status(data["result"])
+    update!(verification_status: status) if status.present?
+  rescue Faraday::Error, JSON::ParserError => e
+    Rails.logger.warn("Failed to refresh verification status for User##{id}: #{e.message}")
+  end
+
+  def self.normalized_verification_status(status)
+    return "verified" if %w[verified verified_eligible verified_but_over_18].include?(status)
+
+    status
+  end
+
   def sync_pyramid_record
     data = { email:, referral_code:, projects_count: projects.count, idv_status: verification_status, hours: (total_reported_seconds / 3600.00) }
 
@@ -143,7 +166,17 @@ class User < ApplicationRecord
   def sync_airtable_record
     return if Airtable.airtable_optional_env? && !Airtable.airtable_enabled?
 
-    data = { email:, first_name: first_name.presence || username, verification_status:, hackatime_linked: hackatime_id.present? }
+    first_project = projects.order(:created_at).first
+    first_shipped_project = projects.where.not(submitted_at: nil).order(:submitted_at).first
+
+    data = {
+      email:,
+      first_name: first_name.presence || username,
+      verification_status:,
+      hackatime_linked: hackatime_id.present?,
+      first_project_created_at: first_project&.created_at,
+      first_project_ship_at: first_shipped_project&.submitted_at
+    }
 
     if airtable_record.nil?
       Airtable.create(data)

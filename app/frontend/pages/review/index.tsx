@@ -39,7 +39,7 @@ export default function Review({
           <h2 className="mb-2 text-3xl font-semibold">Next up to review!</h2>
           <div className="grid grid-cols-3 gap-5">
             {queue.map((project) => (
-              <ProjectCard project={project} link={`/projects/${project.id}`} />
+              <ProjectCard project={project} link={`/review/${project.id}`} />
             ))}
           </div>
         </div>
@@ -90,7 +90,7 @@ export default function Review({
                   ).map((cell, i) => (
                     <td key={i} className="py-0 pr-4">
                       <Link
-                        href={`/projects/${project.id}`}
+                        href={`/review/${project.id}`}
                         className="block py-2"
                       >
                         {cell}

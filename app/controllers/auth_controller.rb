@@ -32,6 +32,7 @@ class AuthController < ApplicationController
 
       data = {
         account_id:,
+        account_access_token: auth["credentials"]["token"],
         first_name: user_info["given_name"],
         last_name: user_info["family_name"],
         address_street: user_info["address"]&.[]("street_address"),
@@ -41,7 +42,7 @@ class AuthController < ApplicationController
         address_country: user_info["address"]&.[]("country"),
         birthday: user_info["birthdate"],
         slack_id: user_info["slack_id"],
-        verification_status: user_info["verification_status"],
+        verification_status: User.normalized_verification_status(user_info["verification_status"]),
         referral_code: current_user.nil? && user.nil? ? session[:referral_code] : nil
       }
 

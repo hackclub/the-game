@@ -19,7 +19,8 @@ class StaticPagesController < ApplicationController
     reviewTime = current_user.total_in_review_seconds
     announcements = SlackAnnouncementsService.available? ? SlackAnnouncementsService.fetch_announcements : []
     referral_program = ReferralProgram.instance
-    boughtInvite = Item.find(Item::INVITE_ID).purchases.where(user: current_user).exists?
+    invite_item = Item.find_by(id: Item::INVITE_ID)
+    boughtInvite = invite_item&.purchases&.where(user: current_user)&.exists? || false
 
     render inertia: { totalProjectTime:, inProgressTime:, reviewTime:, projectCount: current_user.projects.count, announcements: announcements, referralProgram: referral_program.active? ? { homepage_alert_title: referral_program.homepage_alert_title, homepage_alert_description: referral_program.homepage_alert_description } : nil, boughtInvite: }
   end

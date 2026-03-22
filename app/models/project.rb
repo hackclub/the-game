@@ -46,6 +46,9 @@ class Project < ApplicationRecord
 
   belongs_to :user
   has_many :hackatime_projects, dependent: :destroy
+
+  after_create_commit :sync_user_airtable_if_first_project
+  after_update_commit :sync_user_airtable_if_first_ship
   has_many :reviews, class_name: "Project::Review"
   has_and_belongs_to_many :tags, join_table: :project_tags_projects, association_foreign_key: :project_tag_id
   has_one_attached :screenshot
@@ -182,7 +185,7 @@ class Project < ApplicationRecord
   end
 
   def unread_notifications
-    Notification.where(notifiable: reviews, read: false)
+    Notification.where(notifiable: reviews.with_deleted, read: false)
   end
 
   def mark_notifications_read
@@ -199,5 +202,17 @@ class Project < ApplicationRecord
     end
 
     diffs
+  end
+
+  private
+
+  def sync_user_airtable_if_first_project
+    user.sync_airtable_record if user.projects.count == 1
+  end
+
+  def sync_user_airtable_if_first_ship
+    return unless submitted_at_previously_changed? && submitted_at_previously_was.nil?
+
+    user.sync_airtable_record if user.projects.where.not(submitted_at: nil).count == 1
   end
 end
