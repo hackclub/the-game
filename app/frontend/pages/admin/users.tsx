@@ -51,6 +51,9 @@ export default function Users({ users, q, role, pagination }: Props) {
     { field: "slack_id" as const, headerName: "Slack ID" },
     { field: "account_id" as const, headerName: "HCA ID" },
     { field: "hackatime_id" as const, headerName: "Hackatime ID" },
+    { field: "project_count" as const, headerName: "Projects" },
+    { field: "total_reported_seconds" as const, headerName: "Total Reported Seconds", valueFormatter: (field: any) => (field.value / 3600).toPrecision(4) },
+    { field: "total_approved_seconds" as const, headerName: "Total Approved Seconds", valueFormatter: (field: any) => (field.value / 3600).toPrecision(4) },
   ]);
 
   function goToPage(page: number) {
