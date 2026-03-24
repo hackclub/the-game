@@ -40,6 +40,20 @@
 #  index_users_on_referrer_id  (referrer_id)
 #
 class User < ApplicationRecord
+  def self.normalized_username(value)
+    value.to_s.strip.delete_prefix("@").presence
+  end
+
+  def self.fetch_username_from_slack(slack_id)
+    return if slack_id.blank?
+
+    response = Faraday.get("https://cachet.dunkirk.sh/users/#{slack_id}")
+    return unless response.success?
+
+    data = JSON.parse(response.body)
+    normalized_username(data["username"] || data["handle"])
+  end
+
   # Fail safe!
   def to_s
     "User##{id}"
@@ -265,13 +279,8 @@ class User < ApplicationRecord
   end
 
   def fetch_username
-    return if slack_id.blank?
-
-    response = Faraday.get("https://cachet.dunkirk.sh/users/#{slack_id}")
-    if response.success?
-      data = JSON.parse(response.body)
-      update(username: data["displayName"])
-    end
+    username = self.class.fetch_username_from_slack(slack_id)
+    update(username:) if username.present?
   end
 
   def fetch_avatar
