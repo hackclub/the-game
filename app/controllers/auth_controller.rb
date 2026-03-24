@@ -27,6 +27,7 @@ class AuthController < ApplicationController
       auth = request.env["omniauth.auth"]
       user_info = auth["extra"]["raw_info"]
       account_id = auth["uid"]
+      username = User.fetch_username_from_slack(user_info["slack_id"]) || User.normalized_username(auth.dig("info", "nickname") || user_info["preferred_username"])
 
       user = User.find_by(account_id:)
 
@@ -45,6 +46,7 @@ class AuthController < ApplicationController
         verification_status: User.normalized_verification_status(user_info["verification_status"]),
         referral_code: current_user.nil? && user.nil? ? session[:referral_code] : nil
       }
+      data[:username] = username if username.present?
 
       if user.nil?
         if current_user.present? && current_user.email != user_info["email"]

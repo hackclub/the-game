@@ -96,9 +96,10 @@ class SlackAnnouncementsService
       end
 
       user_data = if response.success? && response.body["ok"]
+        slack_user = response.body["user"]
         profile = response.body["user"]["profile"]
         {
-          name: profile["display_name"].presence || profile["real_name"] || "Unknown",
+          name: slack_user["name"].presence || "Unknown",
           avatar_url: profile["image_72"]
         }
       else
