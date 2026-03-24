@@ -30,10 +30,10 @@ class Referral < ApplicationRecord
   validates :referred_user_id, uniqueness: true
 
   scope :shipped, -> { where(shipped: true) }
-  scope :verified, -> { where(shipped: true) }
+  scope :verified, -> { where(referred_user_id: User.where(verification_status: "verified").select(:id)) }
 
   def verified?
-    shipped?
+    referred_user&.idv_verified? || false
   end
 
   def display_hash

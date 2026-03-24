@@ -51,10 +51,12 @@ class InviteController < ApplicationController
   end
 
   def referral_leaderboard
+    verified_users = User.where(verification_status: "verified").select(:id).to_sql
+
     User.joins(:referrals)
-        .select("users.id, users.username, users.avatar, COUNT(referrals.id) as referral_count, COALESCE(SUM(CASE WHEN referrals.shipped THEN 1 ELSE 0 END), 0) as verified_count, COALESCE(SUM(referrals.raffle_entries), 0) as total_entries")
+        .select("users.id, users.username, users.avatar, COUNT(referrals.id) as referral_count, COALESCE(SUM(CASE WHEN referrals.referred_user_id IN (#{verified_users}) THEN 1 ELSE 0 END), 0) as verified_count, COALESCE(SUM(referrals.raffle_entries), 0) as total_entries")
         .group("users.id, users.username, users.avatar")
-        .order("total_entries DESC")
+        .order("verified_count DESC, total_entries DESC, referral_count DESC, users.id ASC")
         .limit(50)
         .map do |u|
           {

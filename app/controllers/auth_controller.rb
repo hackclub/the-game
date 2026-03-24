@@ -157,6 +157,7 @@ class AuthController < ApplicationController
 
     Referral.create!(referrer: referrer, referred_user: user, code: code)
     user.update!(referrer: referrer)
+    ReferralRewardService.sync_verification(user)
   rescue ActiveRecord::RecordInvalid
     nil
   end

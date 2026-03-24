@@ -76,6 +76,7 @@ class User < ApplicationRecord
   after_save_commit :link_hackatime, if: -> { slack_id_previously_changed? && hackatime_id.nil? }
   after_save_commit :fetch_avatar, if: -> { avatar.nil? }
   after_save_commit :fetch_username, if: -> { username.nil? }
+  after_save_commit :sync_referral_verification, if: -> { verification_status_previously_changed? }
   after_save_commit :sync_pyramid_record, if: -> { referral_code_previously_changed? }
   after_save_commit :sync_airtable_record
 
@@ -236,6 +237,10 @@ class User < ApplicationRecord
   end
 
   private
+
+  def sync_referral_verification
+    ReferralRewardService.sync_verification(self)
+  end
 
   def self.account_client(access_token)
     Faraday.new(url: "https://account.hackclub.com/api/v1", headers: { "Authorization" => "Bearer #{access_token}" }) do |conn|
