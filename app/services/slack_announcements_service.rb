@@ -1,5 +1,4 @@
 class SlackAnnouncementsService
-  BASE_URL = "https://slack.com/api"
   CHANNEL_ID = "C0A7HQZFFNX"
   CACHE_TTL = 5.minutes
   MAX_ANNOUNCEMENTS = 10
@@ -13,14 +12,12 @@ class SlackAnnouncementsService
   @cache_mutex = Mutex.new
   @announcements_cache = nil
   @announcements_cached_at = nil
-  @user_cache = {}
-  @user_cache_times = {}
   @channel_cache = {}
   @channel_cache_times = {}
 
   class << self
     def available?
-      ENV["SLACK_BOT_TOKEN"].present?
+      SlackApiService.available?
     end
 
     def fetch_announcements
@@ -43,7 +40,7 @@ class SlackAnnouncementsService
     private
 
     def fetch_and_filter_messages
-      response = slack_client.get("conversations.history") do |req|
+      response = SlackApiService.client.get("conversations.history") do |req|
         req.params = { channel: CHANNEL_ID, limit: 200 }
       end
 
@@ -70,11 +67,11 @@ class SlackAnnouncementsService
     end
 
     def build_announcement(message)
-      user = fetch_user(message["user"])
+      user = SlackUserService.fetch(message["user"]) || {}
       permalink = fetch_permalink(message["ts"])
 
       {
-        author_name: user[:name],
+        author_name: user[:username] || "Unknown",
         author_avatar_url: user[:avatar_url],
         content: format_message(message["text"]),
         timestamp: Time.at(message["ts"].to_f).utc.iso8601,
@@ -82,40 +79,8 @@ class SlackAnnouncementsService
       }
     end
 
-    def fetch_user(user_id)
-      return { name: "Unknown", avatar_url: nil } if user_id.blank?
-
-      @cache_mutex.synchronize do
-        if @user_cache[user_id] && @user_cache_times[user_id] && @user_cache_times[user_id] > CACHE_TTL.ago
-          return @user_cache[user_id]
-        end
-      end
-
-      response = slack_client.get("users.info") do |req|
-        req.params = { user: user_id }
-      end
-
-      user_data = if response.success? && response.body["ok"]
-        slack_user = response.body["user"]
-        profile = response.body["user"]["profile"]
-        {
-          name: slack_user["name"].presence || "Unknown",
-          avatar_url: profile["image_72"]
-        }
-      else
-        { name: "Unknown", avatar_url: nil }
-      end
-
-      @cache_mutex.synchronize do
-        @user_cache[user_id] = user_data
-        @user_cache_times[user_id] = Time.current
-      end
-
-      user_data
-    end
-
     def fetch_permalink(message_ts)
-      response = slack_client.get("chat.getPermalink") do |req|
+      response = SlackApiService.client.get("chat.getPermalink") do |req|
         req.params = { channel: CHANNEL_ID, message_ts: message_ts }
       end
 
@@ -160,7 +125,7 @@ class SlackAnnouncementsService
         return channel_name
       end
 
-      response = slack_client.get("conversations.info") do |req|
+      response = SlackApiService.client.get("conversations.info") do |req|
         req.params = { channel: channel_id }
       end
 
@@ -176,13 +141,6 @@ class SlackAnnouncementsService
       end
 
       channel_name
-    end
-
-    def slack_client
-      Faraday.new(url: BASE_URL) do |conn|
-        conn.request :authorization, "Bearer", ENV["SLACK_BOT_TOKEN"]
-        conn.response :json, content_type: /\bjson$/
-      end
     end
   end
 end

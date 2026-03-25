@@ -45,13 +45,7 @@ class User < ApplicationRecord
   end
 
   def self.fetch_username_from_slack(slack_id)
-    return if slack_id.blank?
-
-    response = Faraday.get("https://cachet.dunkirk.sh/users/#{slack_id}")
-    return unless response.success?
-
-    data = JSON.parse(response.body)
-    normalized_username(data["username"] || data["handle"])
+    normalized_username(SlackUserService.username(slack_id))
   end
 
   # Fail safe!
@@ -284,12 +278,7 @@ class User < ApplicationRecord
   end
 
   def fetch_avatar
-    return if slack_id.blank?
-
-    response = Faraday.get("https://cachet.dunkirk.sh/users/#{slack_id}")
-    if response.success?
-      data = JSON.parse(response.body)
-      update(avatar: data["imageUrl"])
-    end
+    avatar_url = SlackUserService.avatar_url(slack_id)
+    update(avatar: avatar_url) if avatar_url.present?
   end
 end
