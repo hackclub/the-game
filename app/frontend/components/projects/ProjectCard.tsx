@@ -17,11 +17,18 @@ export default function ProjectCard({
       className="group relative cursor-pointer overflow-hidden transition-transform hover:scale-[1.02]"
     >
       {project.screenshot ? (
-        <img
-          src={project.screenshot}
-          alt={project.title ?? "Project screenshot"}
-          className="h-[105px] w-full rounded-tl-2xl rounded-tr-2xl border-2 border-b-0 border-black object-cover"
-        />
+        <div className="relative overflow-hidden rounded-t-2xl">
+          <img
+            src={project.screenshot}
+            alt={project.title ?? "Project screenshot"}
+            className="h-[105px] w-full rounded-tl-2xl rounded-tr-2xl border-2 border-b-0 border-black object-cover"
+          />
+          {project.high_quality && (
+            <div className="absolute top-0 right-0 rounded-tr-2xl rounded-bl-2xl border-2 border-black bg-yellow-400 p-2">
+              <p>Golden ticket winner!</p>
+            </div>
+          )}
+        </div>
       ) : (
         <div className="h-[105px] w-full rounded-tl-2xl rounded-tr-2xl border-2 border-b-0 border-black bg-gradient-to-br from-gray-300 to-gray-400" />
       )}
