@@ -38,6 +38,7 @@ class Project < ApplicationRecord
   include PgSearch::Model
 
   pg_search_scope :search_by_title, against: :title
+  scope :high_quality, -> { where(high_quality: true) }
 
   acts_as_paranoid
   has_paper_trail

@@ -5,6 +5,8 @@ import QuestionAnswer from "../../components/rsvp/QuestionAnswer";
 import DynamicBackgroundLines from "../../components/rsvp/DynamicBackgroundLines";
 import HackClubLogo from "../../components/rsvp/HackClubLogo";
 import ArrowVector from "../../components/rsvp/ArrowVector";
+import type { Project } from "@/interfaces/project";
+import ProjectCard from "@/components/projects/ProjectCard";
 
 import HackClubFooter from "../../components/rsvp/HackClubFooter";
 
@@ -14,7 +16,10 @@ export default function RsvpPage() {
   const step2CircleRef = useRef<HTMLDivElement>(null);
   const step3CircleRef = useRef<HTMLDivElement>(null);
 
-  const { props, flash } = usePage<{ referrer_name: string | null }>();
+  const { props, flash } = usePage<{
+    referrer_name: string | null;
+    featured_projects: Project[];
+  }>();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -183,6 +188,22 @@ export default function RsvpPage() {
               honor!
             </span>
           </Step>
+        </div>
+      </div>
+
+      <div className="relative z-10 flex w-full flex-col gap-5 px-6 pt-12 lg:px-48 lg:pt-20">
+        <p className="smoothing-black w-full border-b-4 border-black pb-4 text-4xl font-bold text-black lg:text-7xl lg:tracking-[-3px]">
+          Projects
+        </p>
+
+        <p className="text-2xl">
+          These are some awesome projects being shipped for Hack Club: The Game!
+        </p>
+
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {props.featured_projects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
         </div>
       </div>
 
