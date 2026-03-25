@@ -401,15 +401,14 @@ export default function AdminReferrals({
                 <th className="px-3 py-2 text-left">#</th>
                 <th className="px-3 py-2 text-left">User</th>
                 <th className="px-3 py-2 text-right">Referrals</th>
-                <th className="px-3 py-2 text-right">Verified</th>
-                <th className="px-3 py-2 text-right">Entries</th>
+                <th className="px-3 py-2 text-right font-bold">Verified</th>
               </tr>
             </thead>
             <tbody>
               {leaderboard.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={4}
                     className="px-3 py-6 text-center text-gray-400"
                   >
                     No referrals yet
@@ -438,11 +437,8 @@ export default function AdminReferrals({
                     <td className="px-3 py-2 text-right">
                       {entry.referral_count}
                     </td>
-                    <td className="px-3 py-2 text-right">
-                      {entry.verified_count}
-                    </td>
                     <td className="px-3 py-2 text-right font-bold">
-                      {entry.total_raffle_entries}
+                      {entry.verified_count}
                     </td>
                   </tr>
                 ))

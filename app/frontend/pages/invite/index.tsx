@@ -150,15 +150,14 @@ export default function InvitePage({
                   <th className="px-4 py-3 text-left">#</th>
                   <th className="px-4 py-3 text-left">User</th>
                   <th className="px-4 py-3 text-right">Referrals</th>
-                  <th className="px-4 py-3 text-right">Verified</th>
-                  <th className="px-4 py-3 text-right">Entries</th>
+                  <th className="px-4 py-3 text-right font-bold">Verified</th>
                 </tr>
               </thead>
               <tbody>
                 {leaderboard.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={5}
+                      colSpan={4}
                       className="px-4 py-6 text-center text-gray-500"
                     >
                       No referrals yet. Be the first!
@@ -192,11 +191,8 @@ export default function InvitePage({
                       <td className="px-4 py-3 text-right">
                         {entry.referral_count}
                       </td>
-                      <td className="px-4 py-3 text-right">
-                        {entry.verified_count}
-                      </td>
                       <td className="px-4 py-3 text-right font-bold">
-                        {entry.total_entries}
+                        {entry.verified_count}
                       </td>
                     </tr>
                   ))
