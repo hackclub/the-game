@@ -16,7 +16,7 @@ class SlackUserService
         profile = slack_user["profile"] || {}
 
         {
-          username: slack_user["name"].presence,
+          username: profile["display_name"].presence,
           avatar_url: profile["image_72"].presence
         }.compact.presence
       end
