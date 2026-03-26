@@ -40,6 +40,8 @@
 #  index_users_on_referrer_id  (referrer_id)
 #
 class User < ApplicationRecord
+  VERIFIED_VERIFICATION_STATUSES = %w[verified verified_eligible verified_but_over_18].freeze
+
   def self.normalized_username(value)
     value.to_s.strip.delete_prefix("@").presence
   end
@@ -136,7 +138,7 @@ class User < ApplicationRecord
   end
 
   def idv_verified?
-    verification_status == "verified"
+    self.class.verified_verification_statuses.include?(verification_status)
   end
 
   def refresh_verification_status!
@@ -157,9 +159,13 @@ class User < ApplicationRecord
   end
 
   def self.normalized_verification_status(status)
-    return "verified" if %w[verified verified_eligible verified_but_over_18].include?(status)
+    return "verified" if verified_verification_statuses.include?(status)
 
     status
+  end
+
+  def self.verified_verification_statuses
+    VERIFIED_VERIFICATION_STATUSES
   end
 
   def sync_pyramid_record
