@@ -197,30 +197,27 @@ class User < ApplicationRecord
   end
 
   def sync_airtable_record
-    return if Airtable.airtable_optional_env? && !Airtable.airtable_enabled?
+    return if User::Airtable.airtable_optional_env? && !User::Airtable.airtable_enabled?
 
     first_project = projects.order(:created_at).first
     first_shipped_project = projects.where.not(submitted_at: nil).order(:submitted_at).first
 
     data = {
-      email:,
+      email: email,
       first_name: first_name.presence || username,
-      address_street:,
-      address_locality:,
-      address_region:,
-      address_country:,
-      address_postal:,
-      verification_status:,
+      address_line1: address_street,
+      address_city: address_locality,
+      address_state: address_region,
+      address_country: address_country,
+      address_postal: address_postal,
+      verification_status: verification_status,
       hackatime_linked: hackatime_id.present?,
       first_project_created_at: first_project&.created_at,
       first_project_ship_at: first_shipped_project&.submitted_at
     }
 
-    if airtable_record.nil?
-      Airtable.create(data)
-    else
-      airtable_record.update(data)
-    end
+    record = airtable_record || User::Airtable.new(email: email)
+    record.update(data)
   end
 
   def pyramid_record
@@ -228,9 +225,9 @@ class User < ApplicationRecord
   end
 
   def airtable_record
-    return nil if Airtable.airtable_optional_env? && !Airtable.airtable_enabled?
+    return nil if User::Airtable.airtable_optional_env? && !User::Airtable.airtable_enabled?
 
-    Airtable.find_by(email:)
+    User::Airtable.find_by(email: email)
   end
 
   def total_reported_seconds
