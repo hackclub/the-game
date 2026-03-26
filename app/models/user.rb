@@ -153,7 +153,25 @@ class User < ApplicationRecord
 
     data = JSON.parse(response.body)
     status = self.class.normalized_verification_status(data["result"])
-    update!(verification_status: status) if status.present?
+
+    updates = {}
+    updates[:verification_status] = status if status.present?
+
+    # Sync address if available
+    if data["address"].present?
+      updates[:address_street] = data["address"]["street_address"]
+      updates[:address_locality] = data["address"]["locality"]
+      updates[:address_region] = data["address"]["region"]
+      updates[:address_postal] = data["address"]["postal_code"]
+      updates[:address_country] = data["address"]["country"]
+    end
+
+    # Sync other identity fields if present and possibly missing locally
+    updates[:first_name] = data["given_name"] if data["given_name"].present?
+    updates[:last_name] = data["family_name"] if data["family_name"].present?
+    updates[:birthday] = data["birthdate"] if data["birthdate"].present?
+
+    update!(updates) if updates.any?
   rescue Faraday::Error, JSON::ParserError => e
     Rails.logger.warn("Failed to refresh verification status for User##{id}: #{e.message}")
   end
@@ -187,6 +205,11 @@ class User < ApplicationRecord
     data = {
       email:,
       first_name: first_name.presence || username,
+      address_street:,
+      address_locality:,
+      address_region:,
+      address_country:,
+      address_postal:,
       verification_status:,
       hackatime_linked: hackatime_id.present?,
       first_project_created_at: first_project&.created_at,
