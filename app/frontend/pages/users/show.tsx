@@ -150,7 +150,7 @@ export default function UserPage() {
                   {item.link && (
                     <a href={item.link}>
                       <img
-                        className="inline h-5 w-5 align-middle"
+                        className="inline h-5 w-5 pl-1 align-middle"
                         src={inviteIcon}
                       />
                     </a>
