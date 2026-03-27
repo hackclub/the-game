@@ -14,7 +14,7 @@ export default function ProjectCard({
   return (
     <a
       href={link}
-      className="group relative cursor-pointer overflow-hidden transition-transform hover:scale-[1.02]"
+      className={`group relative cursor-pointer overflow-hidden rounded-2xl transition-transform hover:scale-[1.02] ${project.high_quality && "shadow-[0_0_30px_rgba(255,215,0,0.9)]"}`}
     >
       {project.screenshot ? (
         <div className="relative overflow-hidden rounded-t-2xl">
@@ -23,11 +23,6 @@ export default function ProjectCard({
             alt={project.title ?? "Project screenshot"}
             className="h-[105px] w-full rounded-tl-2xl rounded-tr-2xl border-2 border-b-0 border-black object-cover"
           />
-          {project.high_quality && (
-            <div className="absolute top-0 right-0 rounded-tr-2xl rounded-bl-2xl border-2 border-black bg-yellow-400 p-2">
-              <p>Golden ticket winner!</p>
-            </div>
-          )}
         </div>
       ) : (
         <div className="h-[105px] w-full rounded-tl-2xl rounded-tr-2xl border-2 border-b-0 border-black bg-gradient-to-br from-gray-300 to-gray-400" />
@@ -58,6 +53,11 @@ export default function ProjectCard({
         {project.desc && (
           <p className="smoothing-black mt-2 max-h-14 overflow-hidden text-xl tracking-[-0.02em] wrap-break-word text-ellipsis">
             {project.desc}
+          </p>
+        )}
+        {project.high_quality && (
+          <p className="pt-2 text-center font-semibold text-yellow-600 italic">
+            🎫 Golden ticket winner!
           </p>
         )}
       </div>
