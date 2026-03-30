@@ -101,8 +101,8 @@ class AdminController < ApplicationController
 
     render inertia: "admin/orders", props: {
       orders: paginated_orders,
-      items: Item.all.map(&:display_hash),
-      users: User.all.map(&:display_hash),
+      items: Item.all.order(name: :asc).map(&:display_hash),
+      users: User.all.order(username: :asc).map(&:display_hash),
       status: params[:status],
       item_id: params[:item_id],
       user_id: params[:user_id],
