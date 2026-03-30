@@ -4,6 +4,7 @@
 #
 #  id           :bigint           not null, primary key
 #  aasm_state   :string           default("pending"), not null
+#  amount_paid  :integer          not null
 #  deleted_at   :datetime
 #  fulfilled_at :datetime
 #  hold_at      :datetime
@@ -43,13 +44,15 @@ class Item
 
     attr_accessor :skip_balance_check
 
+    before_validation :set_amount_paid
+
     validates :quantity, numericality: { greater_than: 0 }
     validate :user_is_verified, on: :create
     validate :check_balance, on: :create, unless: :skip_balance_check
     validate :check_one_per_user, on: :create
 
     def display_hash(item: false)
-      hash = self.as_json.slice("id", "aasm_state", "created_at", "updated_at", "item_id", "user_id", "fulfilled_at", "hold_at", "quantity", "deleted_at")
+      hash = self.as_json.slice("id", "aasm_state", "created_at", "updated_at", "item_id", "user_id", "fulfilled_at", "hold_at", "quantity", "deleted_at", "amount_paid")
 
       if item
         hash["item"] = self.item.display_hash
@@ -60,6 +63,10 @@ class Item
 
     private
 
+    def set_amount_paid
+      self.amount_paid = (quantity || 1) * item.price
+    end
+
     def user_is_verified
       return if user.idv_verified?
 
@@ -67,9 +74,8 @@ class Item
     end
 
     def check_balance
-      total_cost = item.price * quantity
-      if user.balance < total_cost
-        errors.add(:base, "User ##{user.id} (#{user.balance} tickets) does not have sufficient tickets to purchase #{quantity}x #{item.name} (#{total_cost} tickets)")
+      if user.balance < amount_paid
+        errors.add(:base, "User ##{user.id} (#{user.balance} tickets) does not have sufficient tickets to purchase #{quantity}x #{item.name} (#{amount_paid} tickets)")
       end
     end
 

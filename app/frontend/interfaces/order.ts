@@ -3,6 +3,7 @@ export interface Order {
   user_id: number;
   item_id: number;
   quantity: number;
+  amount_paid: number;
   aasm_state: string;
   created_at: string;
   updated_at: string;

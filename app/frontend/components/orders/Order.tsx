@@ -25,8 +25,8 @@ export default function OrderCard({
             {order.item.name}
           </p>
           <p className="text-sm text-gray-500">
-            Order #{order.id} · {order.item.price * order.quantity} ticket
-            {order.item.price * order.quantity !== 1 && "s"}
+            Order #{order.id} · {order.amount_paid} ticket
+            {order.amount_paid !== 1 && "s"}
           </p>
         </div>
         <span
