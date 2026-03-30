@@ -89,11 +89,23 @@ class AdminController < ApplicationController
       filtered_orders = filtered_orders.where(aasm_state: params[:status])
     end
 
+    if params[:item_id].present?
+      filtered_orders = filtered_orders.where(item_id: params[:item_id])
+    end
+
+    if params[:user_id].present?
+      filtered_orders = filtered_orders.where(user_id: params[:user_id])
+    end
+
     paginated_orders = filtered_orders.order(created_at: :desc).page(params[:page]).per(10)
 
     render inertia: "admin/orders", props: {
       orders: paginated_orders,
+      items: Item.all.map(&:display_hash),
+      users: User.all.map(&:display_hash),
       status: params[:status],
+      item_id: params[:item_id],
+      user_id: params[:user_id],
       pagination: {
         current_page: paginated_orders.current_page,
         next_page: paginated_orders.next_page,
