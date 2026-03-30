@@ -5,6 +5,9 @@ import { ACCOUNT_REQUIRED_FIELDS, PrivateUser } from "@/interfaces/user";
 import PageHeading from "@/components/layout/PageHeading";
 import AdjustmentForm from "@/components/adjustments/AdjustmentForm";
 import inviteIcon from "@/assets/icons/invite.svg";
+import type { Order } from "@/interfaces/order";
+import type { Item } from "@/interfaces/item";
+import OrderCard from "@/components/orders/Order";
 
 interface Props {
   page_user: PrivateUser;
@@ -14,6 +17,7 @@ interface Props {
     date: string;
     link?: string;
   }[];
+  orders: (Order & { item: Item })[];
   [_: string]: unknown;
 }
 
@@ -93,10 +97,21 @@ export default function UserPage() {
           </p>
 
           <div>
+            {props.orders.length > 0 && (
+              <>
+                <p className="mb-2 text-2xl font-bold">Orders</p>
+              </>
+            )}
+
+            {props.orders.map((order) => (
+              <OrderCard order={order} />
+            ))}
+          </div>
+
+          <div>
             {(props.page_user.ticket_adjustments.length > 0 ||
               props.user.role === "admin") && (
               <>
-                <hr className="my-2 w-full" />
                 <p className="mb-2 text-2xl font-bold">Ticket adjustments</p>
               </>
             )}

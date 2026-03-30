@@ -19,6 +19,6 @@ class UsersController < ApplicationController
     unsorted_timeline = approved_items + adjustment_items + purchase_items
     timeline = unsorted_timeline.sort_by { |item| item[:date] }
 
-    render inertia: "users/show", props: { page_user: user.display_hash(private: true), custom: params[:id].present?, timeline: }
+    render inertia: "users/show", props: { page_user: user.display_hash(private: true), custom: params[:id].present?, timeline:, orders: user.purchases.map { |order| order.display_hash(item: true) } }
   end
 end
