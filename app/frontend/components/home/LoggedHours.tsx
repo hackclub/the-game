@@ -52,7 +52,7 @@ export default function LoggedHours({
         <span className="smoothing-black pl-12 text-2xl font-bold tracking-tight">
           Begin
         </span>
-        <div className="px-10">
+        <div className="hidden px-10 lg:block">
           <p className="smoothing-black text-center text-2xl tracking-[-0.04em]">
             You currently have{" "}
             <span className="font-bold">{tickets} tickets</span>.
@@ -95,6 +95,46 @@ export default function LoggedHours({
         <span className="smoothing-black min-w-max pr-12 text-2xl font-bold tracking-tight">
           Eligible to Qualify
         </span>
+      </div>
+      <div className="mt-4 px-1 text-center lg:hidden">
+        <p className="smoothing-black text-2xl tracking-[-0.04em]">
+          You currently have{" "}
+          <span className="font-bold">{tickets} tickets</span>.
+        </p>
+        {boughtInvite ? (
+          <p className="smoothing-black text-2xl tracking-[-0.04em]">
+            You've already bought your invite to the game - keep hacking to
+            buy travel stipends and other cool stuff!
+          </p>
+        ) : (
+          <p className="smoothing-black text-2xl tracking-[-0.04em]">
+            In total, you've logged{" "}
+            <span className="font-bold">
+              {hours} hours and {minutes} minutes
+              {ticketProgress == 1 ? "!" : "."}
+            </span>
+            {inProgressTime > 0 && (
+              <>
+                <br />
+                You haven't shipped{" "}
+                <span className="font-bold">
+                  {formatTime(inProgressTime)}
+                </span>{" "}
+                yet.
+              </>
+            )}
+            {reviewTime > 0 && (
+              <>
+                <br />
+                You have{" "}
+                <span className="font-bold">
+                  {formatTime(reviewTime)}
+                </span>{" "}
+                under review.
+              </>
+            )}
+          </p>
+        )}
       </div>
     </div>
   );
