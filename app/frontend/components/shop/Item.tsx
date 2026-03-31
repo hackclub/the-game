@@ -1,8 +1,9 @@
-import { usePage, Link } from "@inertiajs/react";
+import { usePage, router } from "@inertiajs/react";
 import { useState } from "react";
 import type { Item } from "@/interfaces/item";
 import type { SharedProps } from "@/types";
 import ticketIcon from "@/assets/icons/ticket.svg";
+import ConfirmPurchaseModal from "./ConfirmPurchaseModal";
 
 export default function Item({
   item,
@@ -13,6 +14,7 @@ export default function Item({
 }) {
   const { props } = usePage<SharedProps>();
   const [quantity, setQuantity] = useState(1);
+  const [showConfirm, setShowConfirm] = useState(false);
   const totalCost = item.price * quantity;
   const canAfford = props.user.balance >= totalCost;
   const idvVerified = props.user.verification_status === "verified";
@@ -88,14 +90,26 @@ export default function Item({
                 Verify to buy
               </button>
             ) : canAfford ? (
-              <Link
-                className="smoothing-white mt-4 block w-full bg-black px-5 py-3 text-center text-xl font-bold tracking-tight text-white transition-colors hover:bg-[#fecb0d] hover:text-black"
-                href={`/shop/${item.id}/buy`}
-                method="post"
-                data={{ quantity }}
-              >
-                Buy{quantity > 1 ? ` (${quantity})` : ""}
-              </Link>
+              <>
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm(true)}
+                  className="smoothing-white mt-4 block w-full cursor-pointer bg-black px-5 py-3 text-center text-xl font-bold tracking-tight text-white transition-colors hover:bg-[#fecb0d] hover:text-black"
+                >
+                  Buy{quantity > 1 ? ` (${quantity})` : ""}
+                </button>
+                <ConfirmPurchaseModal
+                  open={showConfirm}
+                  item={item}
+                  quantity={quantity}
+                  totalCost={totalCost}
+                  onCancel={() => setShowConfirm(false)}
+                  onConfirm={() => {
+                    setShowConfirm(false);
+                    router.post(`/shop/${item.id}/buy`, { quantity });
+                  }}
+                />
+              </>
             ) : (
               <p className="smoothing-black mt-4 block w-full bg-[#d9d9d9] px-5 py-3 text-center text-xl font-bold tracking-tight text-black/50">
                 Not enough tickets
