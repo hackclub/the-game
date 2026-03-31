@@ -14,7 +14,9 @@ export default function ProjectCard({
   return (
     <a
       href={link}
-      className={`group relative cursor-pointer overflow-hidden rounded-2xl transition-transform hover:scale-[1.02] ${project.high_quality && "shadow-[0_0_30px_rgba(255,215,0,0.9)]"}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`group relative flex cursor-pointer flex-col overflow-hidden rounded-2xl transition-transform hover:scale-[1.02] ${project.high_quality && "shadow-[0_0_30px_rgba(255,215,0,0.9)]"}`}
     >
       {project.screenshot ? (
         <div className="relative overflow-hidden rounded-t-2xl">
@@ -33,7 +35,7 @@ export default function ProjectCard({
           {project.unread_notification_count != 1 && "s"}
         </p>
       )}
-      <div className="rounded-br-2xl rounded-bl-2xl border-2 border-black bg-white p-6">
+      <div className="flex-1 rounded-br-2xl rounded-bl-2xl border-2 border-black bg-white p-6">
         <div className="flex items-start justify-between gap-2">
           <h2 className="smoothing-black text-4xl font-bold tracking-[-0.03em]">
             {project.title}
