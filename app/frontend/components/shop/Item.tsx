@@ -21,7 +21,7 @@ export default function Item({
   const maxQuantity = Math.max(1, Math.floor(props.user.balance / item.price));
 
   return (
-    <div>
+    <div className="flex h-full flex-col">
       <div className="relative h-8 rounded-tl-2xl rounded-tr-2xl bg-black">
         {item.featured && (
           <span className="absolute top-2 right-3 text-sm font-bold text-[#fecb0d]">
@@ -29,7 +29,7 @@ export default function Item({
           </span>
         )}
       </div>
-      <div className="rounded-br-2xl rounded-bl-2xl border-2 border-t-0 border-black bg-white px-6 py-4">
+      <div className="flex flex-1 flex-col rounded-br-2xl rounded-bl-2xl border-2 border-t-0 border-black bg-white px-6 py-4">
         {item.image && (
           <img
             src={item.image}
@@ -52,6 +52,7 @@ export default function Item({
         <p className="smoothing-black mt-2 text-xl tracking-[-0.02em]">
           {item.description}
         </p>
+        <div className="mt-auto">
         {alreadyPurchased ? (
           <p className="smoothing-black mt-4 block w-full bg-[#d9d9d9] px-5 py-3 text-center text-xl font-bold tracking-tight text-black/50">
             Already purchased
@@ -117,6 +118,7 @@ export default function Item({
             )}
           </>
         )}
+        </div>
       </div>
     </div>
   );
