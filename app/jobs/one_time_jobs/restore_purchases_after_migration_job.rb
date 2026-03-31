@@ -14,9 +14,10 @@ module OneTimeJobs
   class RestorePurchasesAfterMigrationJob < ApplicationJob
     queue_as :default
 
-    # Approximate window when the migration ran. Adjust if deployment logs show otherwise.
-    DELETION_WINDOW_START = Time.zone.parse("2026-03-30 21:40:00 -0400")
-    DELETION_WINDOW_END   = Time.zone.parse("2026-03-30 22:10:00 -0400")
+    # Commit was published at 6:26pm EDT; deployment takes some time, so the
+    # migration ran sometime after that. 30-minute window with buffer on both ends.
+    DELETION_WINDOW_START = Time.zone.parse("2026-03-30 18:20:00 -0400")
+    DELETION_WINDOW_END   = Time.zone.parse("2026-03-30 18:56:00 -0400")
 
     def perform(window_start: DELETION_WINDOW_START, window_end: DELETION_WINDOW_END)
       log "Starting purchase restoration for deletions between #{window_start} and #{window_end}"
