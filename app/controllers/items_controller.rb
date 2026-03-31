@@ -90,7 +90,13 @@ class ItemsController < ApplicationController
   end
 
   def edit
-    render inertia: "items/edit", props: { item: @item.display_hash }
+    versions = @item.versions.map do |version|
+      real_changes = version.object_changes
+      real_changes.delete("updated_at")
+      { timestamp: version.created_at, changes: real_changes }
+    end
+
+    render inertia: "items/edit", props: { item: @item.display_hash, versions: }
   end
 
   def update
