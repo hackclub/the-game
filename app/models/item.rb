@@ -3,6 +3,7 @@
 # Table name: items
 #
 #  id           :bigint           not null, primary key
+#  black_market :boolean          default(FALSE), not null
 #  description  :text             not null
 #  featured     :boolean          default(FALSE), not null
 #  name         :string           not null
@@ -21,7 +22,7 @@ class Item < ApplicationRecord
   has_one_attached :image
 
   def display_hash(stock_left = false)
-    hash = self.as_json.slice("id", "description", "name", "price", "featured", "one_per_user", "stock")
+    hash = self.as_json.slice("id", "description", "name", "price", "featured", "one_per_user", "stock", "black_market")
     if image.attached? && image.persisted?
       hash["image"] = Rails.application.routes.url_helpers.rails_blob_path(image, disposition: :inline)
     end

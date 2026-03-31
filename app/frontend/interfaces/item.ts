@@ -7,4 +7,5 @@ export interface Item {
   featured: boolean;
   one_per_user: boolean;
   stock: number;
+  black_market: boolean;
 }

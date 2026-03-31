@@ -118,7 +118,7 @@ class ItemsController < ApplicationController
   end
 
   def item_params
-    p = params.permit(:name, :description, :price, :featured, :one_per_user, :stock)
+    p = params.permit(:name, :description, :price, :featured, :one_per_user, :stock, :black_market)
     p[:featured] = ActiveModel::Type::Boolean.new.cast(p[:featured]) || false
     p[:one_per_user] = ActiveModel::Type::Boolean.new.cast(p[:one_per_user]) || false
 
