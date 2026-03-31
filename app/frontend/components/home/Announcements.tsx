@@ -21,10 +21,10 @@ export default function Announcements({
             href={announcement.permalink}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full sm:w-[367px]"
+            className="flex w-full flex-col sm:w-[367px]"
           >
             <div className="h-[37px] rounded-tl-2xl rounded-tr-2xl bg-black" />
-            <div className="overflow-clip rounded-br-2xl rounded-bl-2xl border-2 border-t-0 border-black bg-white px-5 py-5">
+            <div className="flex-1 overflow-clip rounded-br-2xl rounded-bl-2xl border-2 border-t-0 border-black bg-white px-5 py-5">
               <div className="mb-4 flex items-center gap-1">
                 <img
                   src={announcement.author_avatar_url}
