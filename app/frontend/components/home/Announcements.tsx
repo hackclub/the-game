@@ -14,14 +14,14 @@ export default function Announcements({
         </p>
       </div>
 
-      <div className="flex flex-wrap gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(340px,1fr))]">
         {announcements.map((announcement, index) => (
           <a
             key={index}
             href={announcement.permalink}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex w-full flex-col sm:w-[367px]"
+            className="flex flex-col"
           >
             <div className="h-[37px] rounded-tl-2xl rounded-tr-2xl bg-black" />
             <div className="flex-1 overflow-clip rounded-br-2xl rounded-bl-2xl border-2 border-t-0 border-black bg-white px-5 py-5">
