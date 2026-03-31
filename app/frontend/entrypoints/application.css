@@ -104,3 +104,25 @@ body {
 .animate-move-right {
   animation: move-right 0.75s ease-in-out infinite alternate-reverse;
 }
+
+@keyframes barbershop-scroll {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 22.63px 0;
+  }
+}
+
+.barbershop-stripes {
+  background-color: #d4a800;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 8px,
+    #b08e00 8px,
+    #b08e00 16px
+  );
+  background-size: 22.63px 100%;
+  animation: barbershop-scroll 1s linear infinite;
+}

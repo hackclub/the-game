@@ -33,7 +33,7 @@ export default function LoggedHours({
         <div className="relative z-10 h-16 w-16 shrink-0 rounded-full bg-[#fecb0d]" />
         <div className="relative -mx-3 h-5 flex-1 overflow-hidden rounded-full bg-black">
           <div
-            className="absolute inset-y-0 left-0 bg-red-500"
+            className="absolute inset-y-0 left-0 barbershop-stripes"
             style={{ width: `${reportedProgress * 100}%` }}
           />
           <div
