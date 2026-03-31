@@ -84,7 +84,7 @@ module OneTimeJobs
       log "Restore #{to_restore.count} old purchase(s):"
       to_restore.each { |p| log "  ##{p.id}  #{p.quantity}x #{p.item.name} — #{p.user.username || p.user.email}" }
 
-      log "Permanently remove #{to_destroy.count} new purchase(s):"
+      log "Soft-delete #{to_destroy.count} new purchase(s):"
       to_destroy.each { |p| log "  ##{p.id}  #{p.quantity}x #{p.item.name} — #{p.user.username || p.user.email}" }
 
       log "\nProceed? [y/N]"
@@ -92,8 +92,8 @@ module OneTimeJobs
 
       ActiveRecord::Base.transaction do
         to_destroy.each do |p|
-          p.really_destroy!
-          log "Permanently removed new purchase ##{p.id} (#{p.item.name})"
+          p.destroy
+          log "Soft-deleted new purchase ##{p.id} (#{p.item.name})"
         end
 
         to_restore.each do |p|
