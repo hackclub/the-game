@@ -66,7 +66,7 @@ export default function Orders({
         return (
           <a
             className="text-blue-500 underline"
-            href={`/admin/items/${field.value}`}
+            href={`/shop/${field.value}/edit`}
           >
             {items.find((i) => i.id == field.value)?.name}
           </a>
