@@ -5,17 +5,18 @@ import clockIcon from "@/assets/icons/clock.svg";
 interface ProjectCardProps {
   project: Project & { username?: string };
   link?: string;
+  newTab?: boolean;
 }
 
 export default function ProjectCard({
   project,
   link = `${project.demo_link}`,
+  newTab = false,
 }: ProjectCardProps) {
   return (
     <a
       href={link}
-      target="_blank"
-      rel="noopener noreferrer"
+      {...(newTab && { target: "_blank", rel: "noopener noreferrer" })}
       className={`group relative flex cursor-pointer flex-col overflow-hidden rounded-2xl transition-transform hover:scale-[1.02] ${project.high_quality && "shadow-[0_0_30px_rgba(255,215,0,0.9)]"}`}
     >
       {project.screenshot ? (
