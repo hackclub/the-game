@@ -40,6 +40,18 @@ export default function Items({ items }: Props) {
     {
       field: "stock" as const,
     },
+    {
+      field: "featured" as const,
+      headerName: "Featured?",
+    },
+    {
+      field: "one_per_user" as const,
+      headerName: "One per user?",
+    },
+    {
+      field: "black_market" as const,
+      headerName: "Black market?",
+    },
   ]);
 
   return (
