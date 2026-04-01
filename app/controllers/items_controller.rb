@@ -121,6 +121,7 @@ class ItemsController < ApplicationController
     p = params.permit(:name, :description, :price, :featured, :one_per_user, :stock, :black_market)
     p[:featured] = ActiveModel::Type::Boolean.new.cast(p[:featured]) || false
     p[:one_per_user] = ActiveModel::Type::Boolean.new.cast(p[:one_per_user]) || false
+    p[:black_market] = ActiveModel::Type::Boolean.new.cast(p[:black_market]) || false
 
     unless params[:image] == "0"
       p[:image] = params[:image]
