@@ -2,6 +2,10 @@ class SlackAnnouncementsService
   CHANNEL_ID = "C0A7HQZFFNX"
   CACHE_TTL = 5.minutes
   MAX_ANNOUNCEMENTS = 10
+  IGNORED_MESSAGES = %w[
+    C0A7HQZFFNX/p1775070602906179
+  ].freeze
+
   CHANNEL_NAMES = {
     "C0AJ70Q994L" => "hctg-tracker",
     "C0A7HQZFFNX" => "hctg-bulletin",
@@ -51,6 +55,7 @@ class SlackAnnouncementsService
 
       all_messages.each do |msg|
         next unless msg["text"]&.match?(/<!channel>|<!here>/)
+        next if ignored_message?(msg["ts"])
 
         # If message has @here and is less than 8 chars, use previous message instead
         if msg["text"].include?("<!here>") && msg["text"].length < 16
@@ -64,6 +69,11 @@ class SlackAnnouncementsService
       end
 
       messages.map { |m| build_announcement(m) }
+    end
+
+    def ignored_message?(ts)
+      permalink_ts = "p#{ts.delete('.')}"
+      IGNORED_MESSAGES.include?("#{CHANNEL_ID}/#{permalink_ts}")
     end
 
     def build_announcement(message)
