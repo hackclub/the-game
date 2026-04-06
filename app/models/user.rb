@@ -272,7 +272,7 @@ class User < ApplicationRecord
   end
 
   def wizard?
-    projects.any?(&:high_quality)
+    admin? || projects.any?(&:high_quality)
   end
 
   private
