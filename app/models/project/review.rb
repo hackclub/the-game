@@ -138,10 +138,14 @@ class Project
     end
 
     def create_ysws_record
+      project.reload
       tracked_time = format_duration(project.approved_seconds)
       adjusted_time = format_duration(approved_seconds)
       hackatime_names = project.hackatime_projects.pluck(:name).join(", ")
       submitted_date = project.submitted_at.strftime("%Y-%m-%d")
+
+      prior_approval = project.reviews.approval.where.not(id: id).order(:created_at).last
+      is_reship = prior_approval.present?
 
       time_summary = if project.approved_seconds == approved_seconds
         "This user tracked #{tracked_time} on Hackatime and was approved for the full time tracked."
@@ -149,12 +153,21 @@ class Project
         "This user tracked #{tracked_time} on Hackatime. This was adjusted to #{adjusted_time} after review."
       end
 
+      if is_reship
+        last_ship_date = prior_approval.created_at.strftime("%Y-%m-%d")
+        submission_line = "Project was reshipped by @/#{project.user.username} on #{submitted_date}. Previously shipped on #{last_ship_date}"
+        time_range = "time from #{last_ship_date} to #{submitted_date}"
+      else
+        submission_line = "Project was submitted by @/#{project.user.username} on #{submitted_date}"
+        time_range = "time from 2025-12-22 to #{submitted_date}"
+      end
+
       review_reason = <<~TEXT.strip
         #{time_summary}
         #{admin_content}
-        Project was submitted by @/#{project.user.username} on #{submitted_date}
+        #{submission_line}
 
-        The Hackatime projects submitted were: #{hackatime_names} and included time from 2025-12-22 to #{submitted_date}
+        The Hackatime projects submitted were: #{hackatime_names} and included #{time_range}
 
         Project was reviewed by @/#{author.username} on #{created_at.strftime("%Y-%m-%d")}.
       TEXT
