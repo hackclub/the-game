@@ -45,6 +45,7 @@ Rails.application.routes.draw do
   end
 
   scope :shop do
+    get "platform_nine_and_three_quarters", to: "items#platform_nine_and_three_quarters"
     resources :orders, only: [ :index, :show, :destroy, :update ] do
       member do
         patch :hold

@@ -21,6 +21,9 @@ class Item < ApplicationRecord
   has_many :purchases, dependent: :destroy
   has_one_attached :image
 
+  scope :not_black_market, -> { where(black_market: false) }
+  scope :black_market, -> { where(black_market: true) }
+
   def display_hash(stock_left = false)
     hash = self.as_json.slice("id", "description", "name", "price", "featured", "one_per_user", "stock", "black_market")
     if image.attached? && image.persisted?

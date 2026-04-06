@@ -3,30 +3,24 @@ import { Link } from "@inertiajs/react";
 import IdvVerificationAlert from "@/components/IdvVerificationAlert";
 import PageHeading from "@/components/layout/PageHeading";
 import ItemComponent from "@/components/shop/Item";
-import ReferralItem from "@/components/shop/ReferralItem";
-import { usePage } from "@inertiajs/react";
 import type { Item } from "@/interfaces/item";
 
-export default function Shop({
+export default function PlatformNineAndThreeQuarters({
   items,
   has_purchased,
-  referred_item,
   purchased_item_ids,
 }: {
   items: (Item & { stock_left: number })[];
   has_purchased: boolean;
-  referred_item: Item | null;
   purchased_item_ids: number[];
 }) {
-  const { props } = usePage();
-
   return (
-    <Layout>
+    <Layout className="bg-gray-900">
       <PageHeading
-        title="Shop"
+        title={"Platform 9 ¾"}
         subtitle={
           <>
-            Spend your hard-earned tickets on cool stuff!
+            <span className="text-white">Yer a wizard!</span>
             <br />
             {has_purchased && (
               <Link
@@ -39,18 +33,8 @@ export default function Shop({
           </>
         }
       />
-      {props.user.wizard && (
-        <a
-          className="absolute top-5 right-0 bg-black px-8 py-4 text-xl font-bold text-yellow-500"
-          href="/shop/platform_nine_and_three_quarters"
-        >
-          Enter Platform 9 <sup>3</sup>&frasl;<sub>4</sub>
-        </a>
-      )}
       <div className="mt-8 flex flex-col gap-8 pl-8">
         <IdvVerificationAlert />
-
-        {referred_item && <ReferralItem item={referred_item} />}
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => (
