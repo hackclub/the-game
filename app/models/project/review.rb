@@ -164,7 +164,9 @@ class Project
 
       review_reason = <<~TEXT.strip
         #{time_summary}
+
         #{admin_content}
+        
         #{submission_line}
 
         The Hackatime projects submitted were: #{hackatime_names} and included #{time_range}
