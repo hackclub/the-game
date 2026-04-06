@@ -138,6 +138,27 @@ class Project
     end
 
     def create_ysws_record
+      tracked_time = format_duration(project.approved_seconds)
+      adjusted_time = format_duration(approved_seconds)
+      hackatime_names = project.hackatime_projects.pluck(:name).join(", ")
+      submitted_date = project.submitted_at.strftime("%Y-%m-%d")
+
+      time_summary = if project.approved_seconds == approved_seconds
+        "This user tracked #{tracked_time} on Hackatime and was approved for the full time tracked."
+      else
+        "This user tracked #{tracked_time} on Hackatime. This was adjusted to #{adjusted_time} after review."
+      end
+
+      review_reason = <<~TEXT.strip
+        #{time_summary}
+        #{admin_content}
+        Project was submitted by @/#{project.user.username} on #{submitted_date}
+
+        The Hackatime projects submitted were: #{hackatime_names} and included time from 2025-12-22 to #{submitted_date}
+
+        Project was reviewed by @/#{author.username} on #{created_at.strftime("%Y-%m-%d")}.
+      TEXT
+
       ysws_project = Project::Ysws.create(
         project_id: project.id,
         review_id: id,
@@ -154,12 +175,18 @@ class Project
         name: project.title,
         description: project.desc,
         hours: approved_seconds / 3600.0,
-        review_reason: admin_content,
+        review_reason:,
         code_url: project.repo_link,
         playable_url: project.demo_link
       )
 
       ysws_project.attach_screenshot(project.screenshot)
+    end
+
+    def format_duration(seconds)
+      hours = seconds / 3600
+      minutes = (seconds % 3600) / 60
+      "#{hours}h #{minutes}min"
     end
   end
 end
