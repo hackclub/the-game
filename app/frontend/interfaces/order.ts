@@ -11,4 +11,6 @@ export interface Order {
   fulfilled_at: string;
   deleted_at: string;
   pending_at: string;
+  note?: string;
+  admin_note?: string;
 }

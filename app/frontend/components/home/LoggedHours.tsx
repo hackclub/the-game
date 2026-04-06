@@ -33,7 +33,7 @@ export default function LoggedHours({
         <div className="relative z-10 h-16 w-16 shrink-0 rounded-full bg-[#fecb0d]" />
         <div className="relative -mx-3 h-5 flex-1 overflow-hidden rounded-full bg-black">
           <div
-            className="absolute inset-y-0 left-0 barbershop-stripes"
+            className="barbershop-stripes absolute inset-y-0 left-0"
             style={{ width: `${reportedProgress * 100}%` }}
           />
           <div
@@ -103,8 +103,8 @@ export default function LoggedHours({
         </p>
         {boughtInvite ? (
           <p className="smoothing-black text-2xl tracking-[-0.04em]">
-            You've already bought your invite to the game - keep hacking to
-            buy travel stipends and other cool stuff!
+            You've already bought your invite to the game - keep hacking to buy
+            travel stipends and other cool stuff!
           </p>
         ) : (
           <p className="smoothing-black text-2xl tracking-[-0.04em]">
@@ -127,9 +127,7 @@ export default function LoggedHours({
               <>
                 <br />
                 You have{" "}
-                <span className="font-bold">
-                  {formatTime(reviewTime)}
-                </span>{" "}
+                <span className="font-bold">{formatTime(reviewTime)}</span>{" "}
                 under review.
               </>
             )}

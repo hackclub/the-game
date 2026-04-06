@@ -4,6 +4,7 @@ import type { Order } from "@/interfaces/order";
 import type { PrivateUser } from "@/interfaces/user";
 import type { Item } from "@/interfaces/item";
 import { router } from "@inertiajs/react";
+import { useState } from "react";
 
 interface Props {
   order: Order;
@@ -12,6 +13,8 @@ interface Props {
 }
 
 export default function ShowOrder({ order, order_user, item }: Props) {
+  const [adminNote, setAdminNote] = useState(order.admin_note);
+
   function handleDelete() {
     router.delete(`/shop/orders/${order.id}`);
   }
@@ -46,6 +49,11 @@ export default function ShowOrder({ order, order_user, item }: Props) {
             tickets
             {order.quantity > 1 && ` (${item.price} each)`}
           </p>
+          {order.note && (
+            <p>
+              <span className="font-semibold">User note:</span> {order.note}
+            </p>
+          )}
           <p className="mt-4 flex items-center gap-2">
             <span className="font-semibold">Status:</span>
             <span
@@ -122,6 +130,24 @@ export default function ShowOrder({ order, order_user, item }: Props) {
               </div>
             </div>
           )}
+          <div className="mt-5 flex flex-col gap-2">
+            <h3 className="text-2xl font-bold">Admin Note</h3>
+            <textarea
+              className="rounded-md bg-white"
+              value={adminNote}
+              onChange={(e) => setAdminNote(e.target.value)}
+            ></textarea>
+            <button
+              className="rounded-md bg-blue-500 px-4 py-2 font-bold text-white"
+              onClick={() => {
+                router.patch(`/shop/orders/${order.id}`, {
+                  admin_note: adminNote,
+                });
+              }}
+            >
+              Update
+            </button>
+          </div>
         </div>
 
         <div className="px-4 py-5 text-xl md:px-16">

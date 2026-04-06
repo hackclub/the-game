@@ -124,6 +124,7 @@ class User < ApplicationRecord
       hash["total_in_review_seconds"] = self.total_in_review_seconds
       hash["total_approved_seconds"] = self.total_approved_seconds
       hash["ticket_adjustments"] = self.ticket_adjustments.order(created_at: :desc).map(&:display_hash)
+      hash["wizard"] = self.wizard?
 
       hash
     elsif review
@@ -268,6 +269,10 @@ class User < ApplicationRecord
 
   def referral_link_code
     @referral_link_code ||= Digest::SHA256.hexdigest("referral-#{id}-#{created_at}")[0, 8]
+  end
+
+  def wizard?
+    admin? || projects.any?(&:high_quality)
   end
 
   private

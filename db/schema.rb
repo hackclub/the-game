@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_31_014847) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_05_161447) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
   enable_extension "pg_catalog.plpgsql"
@@ -122,12 +122,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_31_014847) do
 
   create_table "item_purchases", force: :cascade do |t|
     t.string "aasm_state", default: "pending", null: false
+    t.text "admin_note"
     t.integer "amount_paid", null: false
     t.datetime "created_at", null: false
     t.datetime "deleted_at"
     t.datetime "fulfilled_at"
     t.datetime "hold_at"
     t.bigint "item_id", null: false
+    t.text "note"
     t.integer "quantity", default: 1, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false

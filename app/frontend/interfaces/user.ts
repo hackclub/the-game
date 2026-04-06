@@ -34,6 +34,7 @@ export interface PrivateUser {
   referral_program_active: boolean;
 
   ticket_adjustments: TicketAdjustment[];
+  wizard: boolean;
 }
 
 export interface ReviewerUser {

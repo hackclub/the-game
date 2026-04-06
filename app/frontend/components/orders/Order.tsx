@@ -28,6 +28,7 @@ export default function OrderCard({
             Order #{order.id} · {order.amount_paid} ticket
             {order.amount_paid !== 1 && "s"}
           </p>
+          {order.note && <p className="text-sm italic">{order.note}</p>}
         </div>
         <span
           className={`rounded-full px-3 py-1 text-sm font-bold ${
