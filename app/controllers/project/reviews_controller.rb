@@ -9,7 +9,7 @@ class Project
     def create
       review = @project.reviews.create!(review_params)
 
-      @project.update!(high_quality: params[:high_quality]) if params[:high_quality].present?
+      @project.update!(high_quality: params[:high_quality]) if params[:high_quality].present? && review.approval?
 
       human_review_desc = case review.review_type
       when "comment"

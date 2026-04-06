@@ -46,6 +46,10 @@ export default function ReviewForm({
           value={data.review_type}
           onChange={(e) => {
             setData("review_type", e.target.value);
+
+            if (e.target.value !== "approval") {
+              setData("high_quality", false);
+            }
           }}
         >
           <option value="comment">Comment</option>
