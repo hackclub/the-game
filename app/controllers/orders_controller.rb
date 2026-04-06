@@ -1,6 +1,6 @@
 class OrdersController < ApplicationController
-  before_action :signed_in_admin, only: [ :show, :destroy, :hold, :fulfill ]
-  before_action :get_order, only: [ :show, :destroy, :hold, :fulfill ]
+  before_action :signed_in_admin, except: :index
+  before_action :get_order, only: [ :show, :destroy, :hold, :fulfill, :update ]
   skip_after_action :verify_authorized
 
   def index
@@ -12,7 +12,7 @@ class OrdersController < ApplicationController
 
   def show
     render inertia: "orders/show", props: {
-      order: @order.display_hash,
+      order: @order.display_hash(admin: current_user.admin?),
       order_user: @order.user.display_hash(private: true),
       item: @order.item.display_hash
     }
@@ -33,9 +33,18 @@ class OrdersController < ApplicationController
     redirect_to admin_orders_path, notice: "Order fulfilled"
   end
 
+  def update
+    @order.update!(order_params)
+    redirect_to order_path(@order), notice: "Order updated"
+  end
+
   private
 
   def get_order
     @order = Item::Purchase.with_deleted.find(params[:id])
+  end
+
+  def order_params
+    params.require(:order).permit(:admin_note)
   end
 end

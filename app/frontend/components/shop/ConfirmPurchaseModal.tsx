@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Item } from "@/interfaces/item";
 import ticketIcon from "@/assets/icons/ticket.svg";
 
@@ -15,9 +15,10 @@ export default function ConfirmPurchaseModal({
   quantity: number;
   totalCost: number;
   onCancel: () => void;
-  onConfirm: () => void;
+  onConfirm: (note?: string) => void;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const [note, setNote] = useState("");
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -49,11 +50,13 @@ export default function ConfirmPurchaseModal({
           </span>{" "}
           for
           <img src={ticketIcon} alt="Tickets" className="inline h-5 w-5" />
-          <span className="font-bold tracking-[-0.03em]">
-            {totalCost}
-          </span>?
+          <span className="font-bold tracking-[-0.03em]">{totalCost}</span>?
         </p>
-        <div className="mt-6 flex gap-3">
+        <div className="my-6 flex flex-col">
+          <label className="text-lg font-bold">Note (optional)</label>
+          <textarea value={note} onChange={(e) => setNote(e.target.value)} />
+        </div>
+        <div className="flex gap-3">
           <button
             type="button"
             onClick={onCancel}
@@ -63,7 +66,7 @@ export default function ConfirmPurchaseModal({
           </button>
           <button
             type="button"
-            onClick={onConfirm}
+            onClick={() => onConfirm(note)}
             className="smoothing-white flex-1 cursor-pointer rounded-none bg-black px-5 py-3 text-center text-lg font-bold tracking-tight text-white transition-colors hover:bg-[#fecb0d] hover:text-black"
           >
             Confirm

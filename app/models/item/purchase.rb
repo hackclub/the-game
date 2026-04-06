@@ -4,10 +4,12 @@
 #
 #  id           :bigint           not null, primary key
 #  aasm_state   :string           default("pending"), not null
+#  admin_note   :text
 #  amount_paid  :integer          not null
 #  deleted_at   :datetime
 #  fulfilled_at :datetime
 #  hold_at      :datetime
+#  note         :text
 #  quantity     :integer          default(1), not null
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
@@ -51,11 +53,15 @@ class Item
     validate :check_balance, on: :create, unless: :skip_balance_check
     validate :check_one_per_user, on: :create
 
-    def display_hash(item: false)
-      hash = self.as_json.slice("id", "aasm_state", "created_at", "updated_at", "item_id", "user_id", "fulfilled_at", "hold_at", "quantity", "deleted_at", "amount_paid")
+    def display_hash(item: false, admin: false)
+      hash = self.as_json.slice("id", "aasm_state", "created_at", "updated_at", "item_id", "user_id", "fulfilled_at", "hold_at", "quantity", "deleted_at", "amount_paid", "note")
 
       if item
         hash["item"] = self.item.display_hash
+      end
+
+      if admin
+        hash["admin_note"] = self.admin_note
       end
 
       hash

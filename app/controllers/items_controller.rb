@@ -53,7 +53,7 @@ class ItemsController < ApplicationController
 
   def buy
     quantity = [ params.fetch(:quantity, 1).to_i, 1 ].max
-    purchase = Item::Purchase.create(user: current_user, item: @item, quantity: quantity)
+    purchase = Item::Purchase.create(user: current_user, item: @item, quantity: quantity, note: params[:note])
 
     if purchase.errors.empty?
       track_event("item_purchased", {

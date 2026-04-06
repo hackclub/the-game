@@ -45,7 +45,7 @@ Rails.application.routes.draw do
   end
 
   scope :shop do
-    resources :orders, only: [ :index, :show, :destroy ] do
+    resources :orders, only: [ :index, :show, :destroy, :update ] do
       member do
         patch :hold
         patch :fulfill
