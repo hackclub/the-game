@@ -1,7 +1,24 @@
 import { useForm } from "@inertiajs/react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Project } from "@/interfaces/project";
 import { ProjectReview } from "@/interfaces/project_review";
+
+const QUICK_RESPONSES = [
+  {
+    label: "No readme",
+    text: "Hi! You need to include a proper README for your project. This should include a short description of the project, how you built it, and instructions on how to run/play/experience it.",
+  },
+  {
+    label: "Double-dipping",
+    text: "Hey, it looks like you submitted this project to both Hack Club The Game and another event, which isn't allowed. Please DM me on slack if you've decided on which program you'd like to submit to!",
+  },
+  {
+    label: "Excessive AI-usage",
+    text: `It looks like your submission relied on AI for it's creation. We respect the value of AI as a coding tool, but a Hack Club project should be something that, when you look at it, you feel proud of how hard you worked to ship it. If you are using AI to help you code, then that means giving your agent detailed instructions and manually reviewing the code so that the finished project is polished.
+    
+    Keep working until you have something that you can honestly say is your best work! Add a couple of features yourself, and once you feel confident that you've done the work to make this project your own, feel free to submit again!`,
+  },
+] as const;
 
 export default function ReviewForm({
   project,
@@ -22,6 +39,17 @@ export default function ReviewForm({
     high_quality: (project.high_quality ?? null) as boolean | null,
   });
   const [adminOnly, setAdminOnly] = useState(false);
+  const [showQuickResponses, setShowQuickResponses] = useState(false);
+
+  function insertQuickResponse(text: string) {
+    const field =
+      data.review_type === "comment" && adminOnly
+        ? "admin_content"
+        : "content";
+    const current = data[field];
+    setData(field, current ? `${current}\n\n${text}` : text);
+    setShowQuickResponses(false);
+  }
 
   function submitReview(e: React.FormEvent) {
     e.preventDefault();
@@ -101,6 +129,29 @@ export default function ReviewForm({
               <label className="text-lg">High quality?</label>
             </div>
           </>
+        )}
+      </div>
+      <div className="relative">
+        <button
+          type="button"
+          className="cursor-pointer border border-[#cacaca] bg-[#d9d9d9] px-4 py-2 text-sm font-medium hover:bg-[#ccc]"
+          onClick={() => setShowQuickResponses(!showQuickResponses)}
+        >
+          Quick responses {showQuickResponses ? "▲" : "▼"}
+        </button>
+        {showQuickResponses && (
+          <div className="absolute z-10 mt-1 flex flex-col border border-[#cacaca] bg-white shadow-md">
+            {QUICK_RESPONSES.map((response) => (
+              <button
+                key={response.label}
+                type="button"
+                className="cursor-pointer px-4 py-2 text-left text-sm hover:bg-[#e8e8e8]"
+                onClick={() => insertQuickResponse(response.text)}
+              >
+                {response.label}
+              </button>
+            ))}
+          </div>
         )}
       </div>
       <textarea

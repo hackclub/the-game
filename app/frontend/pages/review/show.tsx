@@ -77,12 +77,21 @@ export default function ReviewShow({
                   )}
                 </p>
                 {hackatime_projects.length > 0 && (
-                  <p className="mt-1 text-sm text-gray-600">
-                    <b>Hackatime projects:</b>{" "}
-                    {hackatime_projects
-                      .map((project) => project.name)
-                      .join(", ")}
-                  </p>
+                  <div className="mt-2">
+                    <p className="text-sm font-semibold text-gray-600">
+                      Hackatime projects:
+                    </p>
+                    <ul className="mt-1 list-inside list-disc text-sm text-gray-600">
+                      {hackatime_projects.map((hp) => (
+                        <li key={hp.id}>
+                          {hp.name}{" "}
+                          <span className="text-gray-500">
+                            ({formatTime(hp.total_seconds)})
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 )}
               </>
             )}
@@ -154,7 +163,13 @@ export default function ReviewShow({
               />
               <div className="text-lg">
                 <p className="font-bold">
-                  {project.user!.username} ({project.user!.id})
+                  <a
+                    href={`/users/${project.user!.id}`}
+                    className="text-blue-500 underline hover:text-blue-700"
+                  >
+                    {project.user!.username}
+                  </a>{" "}
+                  ({project.user!.id})
                 </p>
                 <p className="text-gray-600">{project.user!.email}</p>
                 <p>

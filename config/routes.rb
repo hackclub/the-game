@@ -34,6 +34,7 @@ Rails.application.routes.draw do
 
     member do
       patch :ship
+      post :check_repo
     end
   end
 

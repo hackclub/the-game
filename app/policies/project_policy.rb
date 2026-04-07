@@ -12,4 +12,5 @@ class ProjectPolicy < ApplicationPolicy
   end
 
   alias_method :ship?, :update?
+  alias_method :check_repo?, :show?
 end

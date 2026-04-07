@@ -1,6 +1,8 @@
+require "open3"
+
 class ProjectsController < ApplicationController
   skip_after_action :verify_authorized, only: [ :index, :new, :create ]
-  before_action :set_project, only: [ :show, :update, :destroy, :ship ]
+  before_action :set_project, only: [ :show, :update, :destroy, :ship, :check_repo ]
 
   def index
     projects = current_user.projects.map { |project| project.display_hash }
@@ -128,6 +130,15 @@ class ProjectsController < ApplicationController
       return
     end
 
+    unless repo_accessible?(@project.repo_link)
+      track_event("project_ship_failed", {
+        project_id: @project.id,
+        reason: "repo_not_accessible"
+      })
+      redirect_to project_path(@project), flash: { alert: "Could not access repo. Is it private?" }
+      return
+    end
+
     @project.mark_submitted!
 
     track_event("project_shipped", {
@@ -138,6 +149,13 @@ class ProjectsController < ApplicationController
 
     flash[:notice] = "Shipped #{@project.title}!"
     redirect_back_or_to projects_path
+  end
+
+  def check_repo
+    authorize @project
+    accessible = repo_accessible?(@project.repo_link)
+    has_readme = accessible ? readme_exists?(@project.repo_link) : false
+    render json: { accessible: accessible, has_readme: has_readme }
   end
 
   private
@@ -173,5 +191,38 @@ class ProjectsController < ApplicationController
 
   def set_project
     @project = Project.find(params[:id])
+  end
+
+  def repo_accessible?(url)
+    return false if url.blank?
+
+    env = {
+      "GIT_TERMINAL_PROMPT" => "0",
+      "GIT_ASKPASS" => "/bin/true",
+      "GIT_CONFIG_NOSYSTEM" => "1",
+      "HOME" => "/dev/null"
+    }
+    _output, status = Open3.capture2e(env, "git", "ls-remote", "--exit-code", "--heads", url, chdir: Dir.tmpdir)
+    status.success?
+  rescue StandardError
+    false
+  end
+
+  def readme_exists?(url)
+    return false if url.blank?
+
+    uri = URI.parse(url)
+    return false unless uri.host&.include?("github.com")
+
+    parts = uri.path.chomp("/").split("/").reject(&:blank?)
+    return false unless parts.length >= 2
+
+    api_uri = URI.parse("https://api.github.com/repos/#{parts[0]}/#{parts[1]}/readme")
+    response = Net::HTTP.start(api_uri.host, api_uri.port, use_ssl: true, open_timeout: 5, read_timeout: 5) do |http|
+      http.head(api_uri.request_uri, { "User-Agent" => "HackClub-TheGame" })
+    end
+    response.code.to_i == 200
+  rescue StandardError
+    false
   end
 end

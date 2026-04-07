@@ -4,7 +4,7 @@ import type { Project } from "@/interfaces/project";
 import type { ProjectTag } from "@/interfaces/project_tag";
 import type { SharedProps } from "@/types";
 import formatTime from "@/utils/formatTime";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import arrowIcon from "@/assets/icons/arrow.svg";
 import clsx from "clsx";
 
@@ -111,6 +111,122 @@ function TextareaField({
   );
 }
 
+interface ShipCheck {
+  label: string;
+  passed: boolean;
+  loading?: boolean;
+  failHint?: string;
+  hint?: string;
+  hintLink?: string;
+}
+
+function PreShipChecklist({
+  open,
+  checks,
+  repoChecking,
+  onCancel,
+  onConfirm,
+}: {
+  open: boolean;
+  checks: ShipCheck[];
+  repoChecking: boolean;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const allPassed = checks.every((c) => c.passed) && !repoChecking;
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (open) dialog.showModal();
+    else dialog.close();
+  }, [open]);
+
+  return (
+    <dialog
+      ref={dialogRef}
+      onClose={onCancel}
+      className="m-auto w-full max-w-md rounded-2xl border-2 border-black bg-white p-0 backdrop:bg-black/50"
+    >
+      <div className="bg-black px-6 py-3">
+        <h2 className="text-xl font-bold text-white">Pre-ship checklist</h2>
+      </div>
+      <div className="px-6 py-5">
+        <ul className="flex flex-col gap-3">
+          {checks.map((check) => (
+            <li key={check.label} className="flex flex-col gap-0.5">
+              <div className="flex items-center gap-3 text-lg">
+                <span
+                  className={clsx(
+                    "flex h-6 w-6 shrink-0 items-center justify-center rounded border-2 text-sm font-bold",
+                    check.loading
+                      ? "border-gray-400 text-gray-400"
+                      : check.passed
+                        ? "border-green-600 bg-green-600 text-white"
+                        : "border-red-500 text-red-500",
+                  )}
+                >
+                  {check.loading ? "…" : check.passed ? "✓" : "✗"}
+                </span>
+                <span
+                  className={clsx(
+                    check.loading
+                      ? "text-gray-400"
+                      : check.passed
+                        ? "text-black"
+                        : "text-red-500 font-medium",
+                  )}
+                >
+                  {check.label}
+                </span>
+              </div>
+              {!check.loading && !check.passed && check.failHint && (
+                <span className="ml-9 text-sm text-red-500">
+                  {check.failHint}
+                </span>
+              )}
+              {check.hint && (
+                <span className="ml-9 text-sm text-gray-500">
+                  {check.hintLink ? (
+                    <a
+                      href={check.hintLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline hover:text-black"
+                    >
+                      {check.hint}
+                    </a>
+                  ) : (
+                    check.hint
+                  )}
+                </span>
+              )}
+            </li>
+          ))}
+        </ul>
+        <div className="mt-6 flex gap-3">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="flex-1 cursor-pointer border-2 border-black px-5 py-3 text-center text-lg font-bold tracking-tight transition-colors hover:bg-gray-100"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={!allPassed}
+            className="flex-1 cursor-pointer bg-black px-5 py-3 text-center text-lg font-bold tracking-tight text-white transition-colors hover:bg-[#fecb0d] hover:text-black disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Ship it!
+          </button>
+        </div>
+      </div>
+    </dialog>
+  );
+}
+
 export default function ProjectForm({
   hackatime_projects,
   tags,
@@ -130,6 +246,67 @@ export default function ProjectForm({
 
   const disabled = project?.aasm_state === "submitted";
   const idvVerified = props.user.verification_status === "verified";
+  const [showShipChecklist, setShowShipChecklist] = useState(false);
+  const [repoChecking, setRepoChecking] = useState(false);
+  const [repoAccessible, setRepoAccessible] = useState<boolean | null>(null);
+  const [hasReadme, setHasReadme] = useState<boolean | null>(null);
+
+  const hasTitle = data.title.trim().length > 0;
+  const hasDescription = data.desc.trim().length > 0;
+  const hasScreenshot = data.screenshot !== null;
+  const hasHackatimeProject =
+    Array.isArray(data.hackatime_project_keys) &&
+    data.hackatime_project_keys.length > 0;
+  const hasRepoLink = data.repo_link.trim().length > 0;
+
+  const shipChecks = [
+    { label: "Project name", passed: hasTitle },
+    { label: "Description", passed: hasDescription },
+    { label: "Screenshot", passed: hasScreenshot },
+    {
+      label: "Public code repository",
+      passed: hasRepoLink && repoAccessible === true,
+      loading: repoChecking,
+      failHint: "Check if your repository is public!",
+    },
+    {
+      label: "Good readme",
+      passed: hasReadme === true,
+      loading: repoChecking,
+      hint: "Unsure? Check this out!",
+      hintLink: "https://hack.club/hctg/guide",
+    },
+    { label: "Hackatime project attached", passed: hasHackatimeProject },
+  ];
+
+  const checkRepo = useCallback(async () => {
+    if (!project || !hasRepoLink) {
+      setRepoAccessible(false);
+      setHasReadme(false);
+      return;
+    }
+    setRepoChecking(true);
+    try {
+      const csrfToken = document
+        .querySelector('meta[name="csrf-token"]')
+        ?.getAttribute("content");
+      const res = await fetch(`/projects/${project.id}/check_repo`, {
+        method: "POST",
+        headers: {
+          "X-CSRF-Token": csrfToken || "",
+          Accept: "application/json",
+        },
+      });
+      const json = await res.json();
+      setRepoAccessible(json.accessible);
+      setHasReadme(json.has_readme);
+    } catch {
+      setRepoAccessible(false);
+      setHasReadme(false);
+    } finally {
+      setRepoChecking(false);
+    }
+  }, [project, hasRepoLink]);
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -145,14 +322,24 @@ export default function ProjectForm({
     }
   }
 
-  function shipProject(e: React.MouseEvent) {
+  function openShipChecklist(e: React.MouseEvent) {
     e.stopPropagation();
-    if (confirm("Are you sure you want to ship this project?")) {
-      patch(`/projects/${project!.id}`, {
-        forceFormData: true,
-        onFinish: () => router.patch(`/projects/${project!.id}/ship`),
-      });
-    }
+    setRepoAccessible(null);
+    patch(`/projects/${project!.id}`, {
+      forceFormData: true,
+      onSuccess: () => {
+        setShowShipChecklist(true);
+        checkRepo();
+      },
+    });
+  }
+
+  function confirmShip() {
+    setShowShipChecklist(false);
+    patch(`/projects/${project!.id}`, {
+      forceFormData: true,
+      onFinish: () => router.patch(`/projects/${project!.id}/ship`),
+    });
   }
 
   function deleteProject(e: React.MouseEvent) {
@@ -390,7 +577,7 @@ export default function ProjectForm({
                       "hover:bg-[#e5b80b] disabled:cursor-not-allowed disabled:opacity-50",
                     )}
                     type="button"
-                    onClick={shipProject}
+                    onClick={openShipChecklist}
                     disabled={processing || !idvVerified}
                   >
                     {!idvVerified
@@ -401,19 +588,24 @@ export default function ProjectForm({
                         : "Ship"}
                   </button>
                 )}
-                {project.real_approved_seconds === 0 && (
-                  <button
-                    className={clsx(
-                      "group flex h-[59px] w-full cursor-pointer items-center justify-center gap-3 bg-red-500 text-xl font-bold text-white transition-colors",
-                      "hover:bg-red-600 disabled:opacity-50",
-                    )}
-                    type="button"
-                    onClick={deleteProject}
-                    disabled={processing}
-                  >
-                    Delete
-                  </button>
-                )}
+                <PreShipChecklist
+                  open={showShipChecklist}
+                  checks={shipChecks}
+                  repoChecking={repoChecking}
+                  onCancel={() => setShowShipChecklist(false)}
+                  onConfirm={confirmShip}
+                />
+                <button
+                  className={clsx(
+                    "group flex h-[59px] w-full cursor-pointer items-center justify-center gap-3 bg-red-500 text-xl font-bold text-white transition-colors",
+                    "hover:bg-red-600 disabled:opacity-50",
+                  )}
+                  type="button"
+                  onClick={deleteProject}
+                  disabled={processing}
+                >
+                  Delete
+                </button>
               </div>
             )}
           </>

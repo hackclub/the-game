@@ -1,5 +1,3 @@
-# README
-
 # Welcome to the game, at Hack Club!
 
 ## Getting Started
