@@ -1,5 +1,3 @@
-require "open3"
-
 class ProjectsController < ApplicationController
   skip_after_action :verify_authorized, only: [ :index, :new, :create ]
   before_action :set_project, only: [ :show, :update, :destroy, :ship, :check_repo ]
@@ -193,36 +191,44 @@ class ProjectsController < ApplicationController
     @project = Project.find(params[:id])
   end
 
+  def github_repo_parts(url)
+    uri = URI.parse(url)
+    return nil unless uri.host&.include?("github.com")
+
+    parts = uri.path.chomp("/").split("/").reject(&:blank?)
+    return nil unless parts.length >= 2
+
+    [parts[0], parts[1]]
+  rescue URI::InvalidURIError
+    nil
+  end
+
+  def github_api_get(path)
+    uri = URI.parse("https://api.github.com#{path}")
+    Net::HTTP.start(uri.host, uri.port, use_ssl: true, open_timeout: 5, read_timeout: 5) do |http|
+      http.get(uri.request_uri, { "User-Agent" => "HackClub-TheGame", "Accept" => "application/vnd.github+json" })
+    end
+  rescue StandardError
+    nil
+  end
+
   def repo_accessible?(url)
     return false if url.blank?
 
-    env = {
-      "GIT_TERMINAL_PROMPT" => "0",
-      "GIT_ASKPASS" => "/bin/true",
-      "GIT_CONFIG_NOSYSTEM" => "1",
-      "HOME" => "/dev/null"
-    }
-    _output, status = Open3.capture2e(env, "git", "ls-remote", "--exit-code", "--heads", url, chdir: Dir.tmpdir)
-    status.success?
-  rescue StandardError
-    false
+    repo = github_repo_parts(url)
+    return false unless repo
+
+    response = github_api_get("/repos/#{repo[0]}/#{repo[1]}")
+    response&.code&.to_i == 200
   end
 
   def readme_exists?(url)
     return false if url.blank?
 
-    uri = URI.parse(url)
-    return false unless uri.host&.include?("github.com")
+    repo = github_repo_parts(url)
+    return false unless repo
 
-    parts = uri.path.chomp("/").split("/").reject(&:blank?)
-    return false unless parts.length >= 2
-
-    api_uri = URI.parse("https://api.github.com/repos/#{parts[0]}/#{parts[1]}/readme")
-    response = Net::HTTP.start(api_uri.host, api_uri.port, use_ssl: true, open_timeout: 5, read_timeout: 5) do |http|
-      http.head(api_uri.request_uri, { "User-Agent" => "HackClub-TheGame" })
-    end
-    response.code.to_i == 200
-  rescue StandardError
-    false
+    response = github_api_get("/repos/#{repo[0]}/#{repo[1]}/readme")
+    response&.code&.to_i == 200
   end
 end
