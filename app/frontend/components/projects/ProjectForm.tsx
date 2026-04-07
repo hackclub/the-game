@@ -401,17 +401,19 @@ export default function ProjectForm({
                         : "Ship"}
                   </button>
                 )}
-                <button
-                  className={clsx(
-                    "group flex h-[59px] w-full cursor-pointer items-center justify-center gap-3 bg-red-500 text-xl font-bold text-white transition-colors",
-                    "hover:bg-red-600 disabled:opacity-50",
-                  )}
-                  type="button"
-                  onClick={deleteProject}
-                  disabled={processing}
-                >
-                  Delete
-                </button>
+                {project.real_approved_seconds === 0 && (
+                  <button
+                    className={clsx(
+                      "group flex h-[59px] w-full cursor-pointer items-center justify-center gap-3 bg-red-500 text-xl font-bold text-white transition-colors",
+                      "hover:bg-red-600 disabled:opacity-50",
+                    )}
+                    type="button"
+                    onClick={deleteProject}
+                    disabled={processing}
+                  >
+                    Delete
+                  </button>
+                )}
               </div>
             )}
           </>

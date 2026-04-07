@@ -7,6 +7,9 @@ class ProjectPolicy < ApplicationPolicy
     user.admin? || user.reviewer? || (record.user == user && !record.submitted?)
   end
 
-  alias_method :destroy?, :show?
+  def destroy?
+    (record.user == user || user.admin?) && record.reviews.approval.empty?
+  end
+
   alias_method :ship?, :update?
 end
