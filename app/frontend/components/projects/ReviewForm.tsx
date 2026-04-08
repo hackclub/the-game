@@ -6,17 +6,17 @@ import { ProjectReview } from "@/interfaces/project_review";
 const QUICK_RESPONSES = [
   {
     label: "No readme",
-    text: "Hi! You need to include a proper README for your project. This should include a short description of the project, how you built it, and instructions on how to run/play/experience it.",
+    text: "Hi! You need to include a proper README for your project. This should include a short description of the project, how you built it, and instructions on how to run/play/experience it. Feel free to resubmit when you've done this!",
   },
   {
     label: "Double-dipping",
-    text: "Hey, it looks like you submitted this project to both Hack Club The Game and another event, which isn't allowed. Please DM me on slack if you've decided on which program you'd like to submit to!",
+    text: "Hey, it looks like you submitted this project to both Hack Club The Game and another YSWS program, which isn't allowed. Feel free to create and submit an original project just for Hack Club: The Game :) - ask in #hack-club-the-game if you need help!",
   },
   {
     label: "Excessive AI-usage",
-    text: `It looks like your submission relied on AI for it's creation. We respect the value of AI as a coding tool, but a Hack Club project should be something that, when you look at it, you feel proud of how hard you worked to ship it. If you are using AI to help you code, then that means giving your agent detailed instructions and manually reviewing the code so that the finished project is polished.
+    text: `It looks like your submission relied on AI for its creation. We respect the value of AI as a coding tool, but a Hack Club project should be something that, when you look at it, you feel proud of how hard you worked to ship it. If you are using AI to help you code, then that means manually reviewing and adjusting the code so that the finished project is polished. You should also keep the use of AI to generally under 30% of your total project's code!
     
-    Keep working until you have something that you can honestly say is your best work! Add a couple of features yourself, and once you feel confident that you've done the work to make this project your own, feel free to submit again!`,
+    Keep working until you have something that you can honestly say is your best work! Add a couple of features yourself, and once you feel confident that you've done the work to make this project your own, feel free to submit again! See slide 17 of https://hack.club/hctg/guide for more context.`,
   },
 ] as const;
 
