@@ -47,61 +47,63 @@ end
 # ============================================================================
 # Initialize the PostHog client with core SDK options.
 
-PostHog.init do |config|
-  # ============================================================================
-  # REQUIRED CONFIGURATION
-  # ============================================================================
+Rails.application.config.after_initialize do
+  PostHog.init do |config|
+    # ============================================================================
+    # REQUIRED CONFIGURATION
+    # ============================================================================
 
-  # Your PostHog project API key (required)
-  # Get this from: PostHog Project Settings > API Keys
-  # https://app.posthog.com/settings/project-details#variables
-  config.api_key = ENV.fetch("POSTHOG_API_KEY", "")
+    # Your PostHog project API key (required)
+    # Get this from: PostHog Project Settings > API Keys
+    # https://app.posthog.com/settings/project-details#variables
+    config.api_key = ENV.fetch("POSTHOG_API_KEY", "")
 
-  # ============================================================================
-  # OPTIONAL CONFIGURATION
-  # ============================================================================
+    # ============================================================================
+    # OPTIONAL CONFIGURATION
+    # ============================================================================
 
-  # For PostHog Cloud, use: https://us.i.posthog.com or https://eu.i.posthog.com
-  config.host = ENV.fetch("POSTHOG_HOST", "https://us.i.posthog.com")
+    # For PostHog Cloud, use: https://us.i.posthog.com or https://eu.i.posthog.com
+    config.host = ENV.fetch("POSTHOG_HOST", "https://us.i.posthog.com")
 
-  # Personal API key (optional, but required for local feature flag evaluation)
-  # Get this from: PostHog Settings > Personal API Keys
-  # https://app.posthog.com/settings/user-api-keys
-  config.personal_api_key = ENV.fetch("POSTHOG_PERSONAL_API_KEY", nil)
+    # Personal API key (optional, but required for local feature flag evaluation)
+    # Get this from: PostHog Settings > Personal API Keys
+    # https://app.posthog.com/settings/user-api-keys
+    config.personal_api_key = ENV.fetch("POSTHOG_PERSONAL_API_KEY", nil)
 
-  # Maximum number of events to queue before dropping (default: 10000)
-  config.max_queue_size = 10_000
+    # Maximum number of events to queue before dropping (default: 10000)
+    config.max_queue_size = 10_000
 
-  # Feature flags polling interval in seconds (default: 30)
-  config.feature_flags_polling_interval = 30
+    # Feature flags polling interval in seconds (default: 30)
+    config.feature_flags_polling_interval = 30
 
-  # Feature flag request timeout in seconds (default: 3)
-  config.feature_flag_request_timeout_seconds = 3
+    # Feature flag request timeout in seconds (default: 3)
+    config.feature_flag_request_timeout_seconds = 3
 
-  # Error callback - called when PostHog encounters an error
-  # config.on_error = proc { |status, message|
-  #   Rails.logger.error("[PostHog] Error #{status}: #{message}")
-  # }
+    # Error callback - called when PostHog encounters an error
+    # config.on_error = proc { |status, message|
+    #   Rails.logger.error("[PostHog] Error #{status}: #{message}")
+    # }
 
-  # Before send callback - modify or filter events before sending
-  # Return nil to prevent the event from being sent
-  # config.before_send = proc { |event|
-  #   # Filter out test users
-  #   return nil if event[:properties]&.dig("$user_email")&.end_with?("@test.com")
-  #
-  #   # Add custom properties to all events
-  #   event[:properties] ||= {}
-  #   event[:properties]["environment"] = Rails.env
-  #
-  #   event
-  # }
+    # Before send callback - modify or filter events before sending
+    # Return nil to prevent the event from being sent
+    # config.before_send = proc { |event|
+    #   # Filter out test users
+    #   return nil if event[:properties]&.dig("$user_email")&.end_with?("@test.com")
+    #
+    #   # Add custom properties to all events
+    #   event[:properties] ||= {}
+    #   event[:properties]["environment"] = Rails.env
+    #
+    #   event
+    # }
 
-  # ============================================================================
-  # ENVIRONMENT-SPECIFIC CONFIGURATION
-  # ============================================================================
+    # ============================================================================
+    # ENVIRONMENT-SPECIFIC CONFIGURATION
+    # ============================================================================
 
-  # Disable in test and development environments
-  config.test_mode = true if Rails.env.test? || Rails.env.development?
+    # Disable in test and development environments
+    config.test_mode = true if Rails.env.test? || Rails.env.development?
+  end
 end
 
 # ============================================================================

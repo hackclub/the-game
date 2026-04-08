@@ -75,6 +75,8 @@ group :development do
   gem "annotaterb"
 
   gem "actual_db_schema"
+
+  gem "bullet", "8.1.0"
 end
 
 group :test do

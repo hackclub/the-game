@@ -83,4 +83,9 @@ Rails.application.configure do
   # config.generators.apply_rubocop_autocorrect_after_generate!
 
   Rails.application.routes.default_url_options[:host] = "localhost:3100"
+
+  config.after_initialize do
+    Bullet.enable = true
+    Bullet.console = true
+  end
 end

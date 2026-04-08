@@ -232,7 +232,7 @@ class User < ApplicationRecord
   end
 
   def total_reported_seconds
-    projects.reduce(0) { |acc, project| acc + project.reported_seconds }
+    projects.includes(:hackatime_projects).reduce(0) { |acc, project| acc + project.reported_seconds }
   end
 
   def total_in_review_seconds
@@ -253,7 +253,7 @@ class User < ApplicationRecord
 
   def balance
     revenue = ((approved_reviews.reduce(0) { |acc, review| acc + review.approved_seconds }) / 3600.0).floor
-    expenses = purchases.includes(:item).reduce(0) { |acc, purchase| acc + (purchase.amount_paid) }
+    expenses = purchases.reduce(0) { |acc, purchase| acc + (purchase.amount_paid) }
     adjustments = ticket_adjustments.reduce(0) { |acc, adjustment | acc + adjustment.amount }
 
     revenue + adjustments - expenses

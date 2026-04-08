@@ -3,7 +3,7 @@ class ReviewController < ApplicationController
   before_action :signed_in_reviewer
 
   def index
-    all_queued = Project.submitted.order(submitted_at: :asc)
+    all_queued = Project.submitted.includes(:hackatime_projects).order(submitted_at: :asc)
     queue = all_queued.first(3)
     week_reviews_by_user = Project::Review.where.not(review_type: :comment).where("created_at > '#{1.week.ago.iso8601}'").group(:author_id).count
     alltime_reviews_by_user = Project::Review.where.not(review_type: :comment).group(:author_id).count
