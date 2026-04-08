@@ -23,6 +23,7 @@ export interface Project {
   high_quality: boolean;
   unread_notification_count: number;
   tags: number[];
+  ai_declaration: string | null;
 }
 
 export interface ProjectChange {

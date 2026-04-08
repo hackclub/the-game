@@ -118,6 +118,8 @@ interface ShipCheck {
   failHint?: string;
   hint?: string;
   hintLink?: string;
+  optional?: boolean;
+  detail?: string;
 }
 
 function PreShipChecklist({
@@ -134,7 +136,7 @@ function PreShipChecklist({
   onConfirm: () => void;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const allPassed = checks.every((c) => c.passed) && !repoChecking;
+  const allPassed = checks.every((c) => c.passed || c.optional) && !repoChecking;
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -164,10 +166,12 @@ function PreShipChecklist({
                       ? "border-gray-400 text-gray-400"
                       : check.passed
                         ? "border-green-600 bg-green-600 text-white"
-                        : "border-red-500 text-red-500",
+                        : check.optional
+                          ? "border-gray-400 text-gray-400"
+                          : "border-red-500 text-red-500",
                   )}
                 >
-                  {check.loading ? "…" : check.passed ? "✓" : "✗"}
+                  {check.loading ? "…" : check.passed ? "✓" : check.optional ? "–" : "✗"}
                 </span>
                 <span
                   className={clsx(
@@ -175,7 +179,9 @@ function PreShipChecklist({
                       ? "text-gray-400"
                       : check.passed
                         ? "text-black"
-                        : "font-medium text-red-500",
+                        : check.optional
+                          ? "text-gray-400"
+                          : "font-medium text-red-500",
                   )}
                 >
                   {check.label}
@@ -200,6 +206,11 @@ function PreShipChecklist({
                   ) : (
                     check.hint
                   )}
+                </span>
+              )}
+              {check.detail && (
+                <span className="ml-9 text-sm italic text-gray-600">
+                  "{check.detail}"
                 </span>
               )}
             </li>
@@ -242,6 +253,7 @@ export default function ProjectForm({
     hackatime_project_keys: project?.hackatime_projects ?? ([] as number[]),
     screenshot: (project?.screenshot ? 0 : null) as File | 0 | null,
     tags: project?.tags ?? ([] as number[]),
+    ai_declaration: project?.ai_declaration ?? "",
   });
 
   const disabled = project?.aasm_state === "submitted";
@@ -258,10 +270,12 @@ export default function ProjectForm({
     Array.isArray(data.hackatime_project_keys) &&
     data.hackatime_project_keys.length > 0;
   const hasRepoLink = data.repo_link.trim().length > 0;
+  const hasAiDeclaration = data.ai_declaration.trim().length > 0;
 
   const shipChecks = [
     { label: "Project name", passed: hasTitle },
     { label: "Description", passed: hasDescription },
+    { label: "AI Declaration", passed: hasAiDeclaration, hint: "Make sure to clearly define how it was used!", optional: true },
     { label: "Screenshot", passed: hasScreenshot },
     {
       label: "Public code repository",
@@ -375,6 +389,14 @@ export default function ProjectForm({
           error={errors.desc}
           disabled={disabled}
           required
+        />
+
+        <TextareaField
+          label="AI Declaration"
+          description="Projects should be mostly human built!"
+          value={data.ai_declaration}
+          onChange={(value) => setData("ai_declaration", value)}
+          disabled={disabled}
         />
 
         {tutorial && (

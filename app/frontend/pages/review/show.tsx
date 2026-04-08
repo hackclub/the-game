@@ -151,6 +151,13 @@ export default function ReviewShow({
                 View Project Page ↗
               </a>
             </div>
+
+            {project.ai_declaration && (
+              <div className="mb-6 rounded-md border border-gray-200 bg-gray-50 p-4">
+                <h3 className="text-lg font-bold">AI Declaration</h3>
+                <p className="mt-1 text-gray-600">{project.ai_declaration}</p>
+              </div>
+            )}
           </div>
 
           <div className="w-72 shrink-0 self-start rounded-md border border-gray-200 bg-gray-50 p-5">

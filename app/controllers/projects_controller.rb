@@ -159,7 +159,7 @@ class ProjectsController < ApplicationController
   private
 
   def project_params
-    p = params.permit(:title, :desc, :demo_link, :repo_link)
+    p = params.permit(:title, :desc, :demo_link, :repo_link, :ai_declaration)
 
     unless params[:screenshot] == "0"
       p[:screenshot] = params[:screenshot]
