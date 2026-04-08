@@ -391,13 +391,30 @@ export default function ProjectForm({
           required
         />
 
-        <TextareaField
-          label="AI Declaration"
-          description="Projects should be mostly human built!"
-          value={data.ai_declaration}
-          onChange={(value) => setData("ai_declaration", value)}
-          disabled={disabled}
-        />
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-row flex-wrap items-end gap-3">
+            <label className="smoothing-black text-3xl font-bold tracking-[-0.02em]">
+              AI Declaration
+            </label>
+            <span className="text-xl text-[#565656]">
+              Projects should be mostly human built!{" "}
+              <a
+                href="https://docs.google.com/document/d/1qaSabYkvaPVHtioIsBYAXtEobP4fbqHXZ3oyKS9RQa8/edit?tab=t.a49qvlml6s0m#heading=h.3083lok045i"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-black"
+              >
+                Check this out if you're unsure what to put :D
+              </a>
+            </span>
+          </div>
+          <textarea
+            className="mt-1 h-[117px] resize-none border-[#cacaca] bg-[#d9d9d9] p-4 text-xl outline-none"
+            value={data.ai_declaration}
+            onChange={(e) => setData("ai_declaration", e.target.value)}
+            disabled={disabled}
+          />
+        </div>
 
         {tutorial && (
           <p className="text-lg text-[#565656] italic">
