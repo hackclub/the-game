@@ -116,7 +116,7 @@ export default function UserPage() {
               </>
             )}
             <div className="flex flex-col gap-3">
-              {props.user.ticket_adjustments.map((adjustment) => (
+              {props.page_user.ticket_adjustments.map((adjustment) => (
                 <div className="flex max-w-md flex-col rounded-md border bg-white p-4 text-lg">
                   <div className="flex justify-between">
                     <p>
