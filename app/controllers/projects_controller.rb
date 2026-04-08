@@ -198,7 +198,7 @@ class ProjectsController < ApplicationController
     parts = uri.path.chomp("/").split("/").reject(&:blank?)
     return nil unless parts.length >= 2
 
-    [parts[0], parts[1]]
+    [ parts[0], parts[1] ]
   rescue URI::InvalidURIError
     nil
   end

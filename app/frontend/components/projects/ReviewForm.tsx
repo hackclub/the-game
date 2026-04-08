@@ -43,9 +43,7 @@ export default function ReviewForm({
 
   function insertQuickResponse(text: string) {
     const field =
-      data.review_type === "comment" && adminOnly
-        ? "admin_content"
-        : "content";
+      data.review_type === "comment" && adminOnly ? "admin_content" : "content";
     const current = data[field];
     setData(field, current ? `${current}\n\n${text}` : text);
     setShowQuickResponses(false);

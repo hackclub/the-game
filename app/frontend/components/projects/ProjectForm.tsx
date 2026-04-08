@@ -175,7 +175,7 @@ function PreShipChecklist({
                       ? "text-gray-400"
                       : check.passed
                         ? "text-black"
-                        : "text-red-500 font-medium",
+                        : "font-medium text-red-500",
                   )}
                 >
                   {check.label}
