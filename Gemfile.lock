@@ -87,7 +87,7 @@ GEM
       csv
       parser
       prism
-    addressable (2.8.8)
+    addressable (2.9.0)
       public_suffix (>= 2.0.2, < 8.0)
     aes_key_wrap (1.1.0)
     airctiverecord (0.2.1)
@@ -375,7 +375,7 @@ GEM
     psych (5.3.1)
       date
       stringio
-    public_suffix (7.0.2)
+    public_suffix (7.0.5)
     puma (7.1.0)
       nio4r (~> 2.0)
     pundit (2.5.2)
