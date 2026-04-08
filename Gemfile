@@ -117,3 +117,6 @@ gem "slack-ruby-client"
 # Posthog - for user analysis and error monitoring
 gem "posthog-ruby"
 gem "posthog-rails"
+
+gem "rack-mini-profiler"
+gem "stackprof"

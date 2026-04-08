@@ -12,6 +12,12 @@ class ApplicationController < ActionController::Base
   before_action :redirect_banned_users
   before_action :redirect_adults
 
+  before_action do
+    if current_user && current_user.admin?
+      Rack::MiniProfiler.authorize_request
+    end
+  end
+
   after_action :verify_authorized
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
