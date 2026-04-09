@@ -40,6 +40,8 @@
 #  index_users_on_referrer_id  (referrer_id)
 #
 class User < ApplicationRecord
+  include SwrCacheable
+
   VERIFIED_VERIFICATION_STATUSES = %w[verified verified_eligible verified_but_over_18].freeze
 
   def self.normalized_username(value)
@@ -106,13 +108,15 @@ class User < ApplicationRecord
   end
 
   def cached_hackatime_projects
-    Rails.cache.fetch("#{self.cache_key_with_version}/hackatime_projects", expires_in: 1.minute) do
-      HackatimeService.sync_hackatime_projects(self).map do |hp|
-        hash = hp.as_json
-        hash["total_seconds"] = hp.total_seconds
+    swr_cache("#{self.cache_key_with_version}/hackatime_projects", stale_after: 1.second, max_ttl: 1.hour, fetcher: :fetch_hackatime_projects) { fetch_hackatime_projects }
+  end
 
-        hash
-      end
+  def fetch_hackatime_projects
+    HackatimeService.sync_hackatime_projects(self).map do |hp|
+      hash = hp.as_json
+      hash["total_seconds"] = hp.total_seconds
+
+      hash
     end
   end
 
