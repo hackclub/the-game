@@ -104,8 +104,9 @@ class ItemsController < ApplicationController
   end
 
   def edit
-    versions = @item.versions.map do |version|
+    versions = @item.versions.filter_map do |version|
       real_changes = version.object_changes
+      next if real_changes.nil?
       real_changes.delete("updated_at")
       { timestamp: version.created_at, changes: real_changes }
     end
