@@ -68,6 +68,7 @@ export default function Items({ items }: Props) {
           rowData={rowData}
           columnDefs={colDefs}
           loadThemeGoogleFonts={true}
+          enableCellTextSelection={true}
         />
       </div>
     </Layout>

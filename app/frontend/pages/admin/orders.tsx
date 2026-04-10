@@ -171,6 +171,7 @@ export default function Orders({
           rowData={orders}
           columnDefs={colDefs}
           loadThemeGoogleFonts={true}
+          enableCellTextSelection={true}
         />
       </div>
 

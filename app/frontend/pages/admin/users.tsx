@@ -120,6 +120,7 @@ export default function Users({ users, q, role, pagination }: Props) {
           rowData={rowData}
           columnDefs={colDefs}
           loadThemeGoogleFonts={true}
+          enableCellTextSelection={true}
         />
       </div>
 

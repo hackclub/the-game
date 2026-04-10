@@ -179,6 +179,7 @@ export default function Projects({
           rowData={rowData}
           columnDefs={colDefs}
           loadThemeGoogleFonts={true}
+          enableCellTextSelection={true}
         />
       </div>
 
