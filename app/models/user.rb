@@ -110,7 +110,7 @@ class User < ApplicationRecord
   end
 
   def cached_hackatime_projects
-    swr_cache("#{self.cache_key_with_version}/hackatime_projects", stale_after: 1.second, max_ttl: 1.hour, fetcher: :fetch_hackatime_projects) { fetch_hackatime_projects }
+    swr_cache("#{self.cache_key_with_version}/hackatime_projects", stale_after: 1.minute, max_ttl: 1.1.hours, fetcher: :fetch_hackatime_projects) { fetch_hackatime_projects }
   end
 
   def fetch_hackatime_projects

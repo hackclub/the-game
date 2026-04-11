@@ -4,3 +4,6 @@ sync_pyramid_scheme_users:
 generate_statistics:
   cron: "0 * * * *"
   class: "GenerateStatisticsJob"
+refresh_hackatime_cache:
+  cron: "0 * * * *"
+  class: "RefreshHackatimeCacheJob"
