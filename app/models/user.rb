@@ -71,6 +71,8 @@ class User < ApplicationRecord
   has_many :items, through: :purchases
   has_many :notifications
   has_many :ticket_adjustments
+  has_many :incoming_ticket_transfers, foreign_key: :to_user_id, class_name: "TicketTransfer"
+  has_many :outgoing_ticket_transfers, foreign_key: :from_user_id, class_name: "TicketTransfer"
   has_many :referrals, foreign_key: :referrer_id
   has_many :referred_users, through: :referrals, source: :referred_user
 
@@ -128,6 +130,8 @@ class User < ApplicationRecord
       hash["total_in_review_seconds"] = self.total_in_review_seconds
       hash["total_approved_seconds"] = self.total_approved_seconds
       hash["ticket_adjustments"] = self.ticket_adjustments.order(created_at: :desc).map(&:display_hash)
+      hash["incoming_ticket_transfers"] = self.incoming_ticket_transfers.order(created_at: :desc).map(&:display_hash)
+      hash["outgoing_ticket_transfers"] = self.outgoing_ticket_transfers.order(created_at: :desc).map(&:display_hash)
       hash["wizard"] = self.wizard?
 
       hash
@@ -259,8 +263,10 @@ class User < ApplicationRecord
     revenue = ((approved_reviews.reduce(0) { |acc, review| acc + review.approved_seconds }) / 3600.0).floor
     expenses = purchases.reduce(0) { |acc, purchase| acc + (purchase.amount_paid) }
     adjustments = ticket_adjustments.reduce(0) { |acc, adjustment | acc + adjustment.amount }
+    incoming_transfers = incoming_ticket_transfers.reduce(0) { |acc, transfer| acc + transfer.amount }
+    outgoing_transfers = outgoing_ticket_transfers.reduce(0) { |acc, transfer| acc + transfer.amount }
 
-    revenue + adjustments - expenses
+    revenue + adjustments - expenses + incoming_transfers - outgoing_transfers
   end
 
   def mark_adjustment_notifications_read

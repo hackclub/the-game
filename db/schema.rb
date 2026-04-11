@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_08_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_11_020511) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
   enable_extension "pg_catalog.plpgsql"
@@ -263,6 +263,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_08_120000) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["user_id"], name: "index_ticket_adjustments_on_user_id"
+  end
+
+  create_table "ticket_transfers", force: :cascade do |t|
+    t.integer "amount", null: false
+    t.datetime "created_at", null: false
+    t.bigint "from_user_id", null: false
+    t.bigint "to_user_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["from_user_id"], name: "index_ticket_transfers_on_from_user_id"
+    t.index ["to_user_id"], name: "index_ticket_transfers_on_to_user_id"
   end
 
   create_table "users", force: :cascade do |t|

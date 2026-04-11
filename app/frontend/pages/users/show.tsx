@@ -4,6 +4,7 @@ import MissingAccountFields from "@/components/settings/MissingAccountFields";
 import { ACCOUNT_REQUIRED_FIELDS, PrivateUser } from "@/interfaces/user";
 import PageHeading from "@/components/layout/PageHeading";
 import AdjustmentForm from "@/components/adjustments/AdjustmentForm";
+import TransferForm from "@/components/transfers/TransferForm";
 import inviteIcon from "@/assets/icons/invite.svg";
 import type { Order } from "@/interfaces/order";
 import type { Item } from "@/interfaces/item";
@@ -149,6 +150,37 @@ export default function UserPage() {
             {props.user.role === "admin" && (
               <AdjustmentForm user_id={props.page_user.id} />
             )}
+          </div>
+
+          <div>
+            <p className="mb-2 text-2xl font-bold">Ticket transfers</p>
+            <div className="flex flex-col gap-3">
+              {[
+                ...props.page_user.outgoing_ticket_transfers,
+                ...props.page_user.incoming_ticket_transfers,
+              ].map((transfer) => (
+                <div className="flex max-w-md flex-col rounded-md border bg-white p-4 text-lg">
+                  <div className="flex justify-between">
+                    <p>
+                      <strong>{transfer.from_user_name}</strong> transferred{" "}
+                      {transfer.amount} ticket{transfer.amount === 1 ? "" : "s"}{" "}
+                      to <strong>{transfer.to_user_name}</strong> on{" "}
+                      {new Date(transfer.created_at).toLocaleString()}
+                    </p>
+                    {props.user.role === "admin" && (
+                      <Link
+                        href={`/users/${props.user.id}/transfers/${transfer.id}`}
+                        method="delete"
+                        className="cursor-pointer text-red-500 underline"
+                      >
+                        Delete
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <TransferForm user_id={props.page_user.id} />
           </div>
         </div>
         <div className="p-8">
