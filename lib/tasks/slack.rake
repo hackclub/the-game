@@ -1,0 +1,28 @@
+namespace :slack do
+  desc "Invite all existing users with a slack_id to the game's Slack channels"
+  task invite_existing_users: :environment do
+    unless SlackChannelInviteService.available?
+      puts "ERROR: SLACK_XOXD_TOKEN and SLACK_XOXC_TOKEN must be set."
+      exit 1
+    end
+
+    users = User.where.not(slack_id: [nil, ""])
+    total = users.count
+    puts "Processing #{total} users..."
+
+    succeeded = 0
+    skipped = 0
+
+    users.find_each.with_index(1) do |user, i|
+      print "[#{i}/#{total}] #{user.email} (#{user.slack_id})... "
+      SlackChannelInviteService.invite_user(user.slack_id)
+      puts "done"
+      succeeded += 1
+    rescue => e
+      puts "ERROR: #{e.message}"
+      skipped += 1
+    end
+
+    puts "\nFinished. #{succeeded} processed, #{skipped} errored."
+  end
+end
