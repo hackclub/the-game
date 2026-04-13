@@ -43,8 +43,8 @@ export default function Stats({
 
   const funnelData = [
     { name: "All users", value: stats.user_count, fill: "#6366f1" },
-    { name: "Slack linked", value: stats.user_slack_count, fill: "#8b5cf6" },
-    { name: "HCA linked", value: stats.user_account_count, fill: "#a78bfa" },
+    { name: "HCA linked", value: stats.user_account_count, fill: "#8b5cf6" },
+    { name: "Slack linked", value: stats.user_slack_count, fill: "#a78bfa" },
     { name: "Hackatime linked", value: stats.user_hackatime_count, fill: "#60a5fa" },
     { name: "IDV verified", value: stats.user_idv_verified_count, fill: "#34d399" },
     { name: "Onboarding done", value: stats.user_onboarding_count, fill: "#4ade80" },
