@@ -4,6 +4,7 @@
 #
 #  id               :bigint           not null, primary key
 #  aasm_state       :string
+#  ai_declaration   :text
 #  approved_at      :datetime
 #  approved_seconds :integer
 #  deleted_at       :datetime

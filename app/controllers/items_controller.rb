@@ -16,7 +16,7 @@ class ItemsController < ApplicationController
 
     purchased_item_ids = current_user.purchases.pluck(:item_id).uniq
 
-    items_scope = Item.not_black_market.with_attached_image.order(featured: :desc, price: :asc)
+    items_scope = Item.not_black_market.with_attached_image.order(super_featured: :desc, featured: :desc, price: :asc)
     items_scope = items_scope.where.not(id: program.referred_item_id) if program.referred_item_id.present?
 
     render inertia: "items/index", props: {
@@ -32,7 +32,7 @@ class ItemsController < ApplicationController
 
     purchased_item_ids = current_user.purchases.pluck(:item_id).uniq
 
-    items_scope = Item.with_attached_image.black_market.order(featured: :desc, price: :asc)
+    items_scope = Item.with_attached_image.black_market.order(super_featured: :desc, featured: :desc, price: :asc)
 
     render inertia: "items/platform_nine_and_three_quarters", props: {
       items: items_scope.map { |item| item.display_hash(true) },
@@ -133,8 +133,9 @@ class ItemsController < ApplicationController
   end
 
   def item_params
-    p = params.permit(:name, :description, :price, :featured, :one_per_user, :stock, :black_market)
+    p = params.permit(:name, :description, :price, :featured, :super_featured, :one_per_user, :stock, :black_market)
     p[:featured] = ActiveModel::Type::Boolean.new.cast(p[:featured]) || false
+    p[:super_featured] = ActiveModel::Type::Boolean.new.cast(p[:super_featured]) || false
     p[:one_per_user] = ActiveModel::Type::Boolean.new.cast(p[:one_per_user]) || false
     p[:black_market] = ActiveModel::Type::Boolean.new.cast(p[:black_market]) || false
 

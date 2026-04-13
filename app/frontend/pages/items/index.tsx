@@ -60,6 +60,7 @@ export default function Shop({
               alreadyPurchased={
                 item.one_per_user && purchased_item_ids.includes(item.id)
               }
+              className={item.super_featured ? "col-span-full" : undefined}
             />
           ))}
         </div>

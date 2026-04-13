@@ -45,6 +45,10 @@ export default function Items({ items }: Props) {
       headerName: "Featured?",
     },
     {
+      field: "super_featured" as const,
+      headerName: "Super featured?",
+    },
+    {
       field: "one_per_user" as const,
       headerName: "One per user?",
     },

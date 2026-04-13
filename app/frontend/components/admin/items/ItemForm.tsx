@@ -8,6 +8,7 @@ export default function ItemForm({ item }: { item?: Item }) {
     price: item?.price,
     image: item?.image ? 0 : (null as File | null | 0),
     featured: item?.featured,
+    super_featured: item?.super_featured,
     one_per_user: item?.one_per_user,
     stock: item?.stock,
     black_market: item?.black_market,
@@ -73,6 +74,18 @@ export default function ItemForm({ item }: { item?: Item }) {
         />
         <label htmlFor="featured" className="font-bold">
           Featured
+        </label>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <input
+          id="super_featured"
+          type="checkbox"
+          checked={data.super_featured || false}
+          onChange={(e) => setData("super_featured", e.target.checked)}
+        />
+        <label htmlFor="super_featured" className="font-bold">
+          Super featured
         </label>
       </div>
 

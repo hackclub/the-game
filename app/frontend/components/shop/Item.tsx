@@ -8,9 +8,11 @@ import ConfirmPurchaseModal from "./ConfirmPurchaseModal";
 export default function Item({
   item,
   alreadyPurchased,
+  className,
 }: {
   item: Item & { stock_left: number };
   alreadyPurchased: boolean;
+  className?: string;
 }) {
   const { props } = usePage<SharedProps>();
   const [quantity, setQuantity] = useState(1);
@@ -21,9 +23,14 @@ export default function Item({
   const maxQuantity = Math.max(1, Math.floor(props.user.balance / item.price));
 
   return (
-    <div className="flex h-full flex-col">
+    <div className={`flex h-full flex-col${className ? ` ${className}` : ""}`}>
       <div className="relative h-8 rounded-tl-2xl rounded-tr-2xl bg-black">
-        {item.featured && (
+        {item.super_featured && (
+          <span className="absolute top-2 right-3 text-sm font-bold text-[#fecb0d]">
+            ★ Super Featured
+          </span>
+        )}
+        {!item.super_featured && item.featured && (
           <span className="absolute top-2 right-3 text-sm font-bold text-[#fecb0d]">
             ★ Featured
           </span>
@@ -34,7 +41,7 @@ export default function Item({
           <img
             src={item.image}
             alt={item.name}
-            className="mb-4 h-40 w-full object-contain"
+            className={`mb-4 w-full object-contain ${item.super_featured ? "h-64" : "h-40"}`}
           />
         )}
         <div className="flex items-start justify-between gap-6">
