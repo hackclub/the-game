@@ -18,6 +18,7 @@ namespace :slack do
       SlackChannelInviteService.invite_user(user.slack_id)
       puts "done"
       succeeded += 1
+      sleep(1) # stay well under Slack Tier 3 rate limits (3 calls/user)
     rescue => e
       puts "ERROR: #{e.message}"
       skipped += 1
