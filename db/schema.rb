@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_13_000001) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_13_192830) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
   enable_extension "pg_catalog.plpgsql"
@@ -108,6 +108,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_000001) do
     t.string "status"
     t.datetime "updated_at", null: false
     t.index ["creator_id"], name: "index_blazer_queries_on_creator_id"
+  end
+
+  create_table "daily_active_users", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.date "date", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id", "date"], name: "index_daily_active_users_on_user_id_and_date", unique: true
+    t.index ["user_id"], name: "index_daily_active_users_on_user_id"
   end
 
   create_table "hackatime_projects", force: :cascade do |t|
@@ -314,6 +323,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_000001) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "daily_active_users", "users"
   add_foreign_key "hackatime_projects", "users"
   add_foreign_key "projects", "users"
   add_foreign_key "referral_program", "items", column: "referred_item_id"

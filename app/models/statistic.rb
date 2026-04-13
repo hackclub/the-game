@@ -17,19 +17,27 @@ class Statistic < AirpplicationRecord
     project_count = Project.count
 
     user_count = User.count
+    user_onboarding_count = User.where(onboarding_completed: true).count
+    user_slack_count = User.where.not(slack_id: nil).count
     user_account_count = User.where.not(account_id: nil).count
     user_hackatime_count = User.where.not(hackatime_id: nil).count
+    user_idv_verified_count = User.where(verification_status: User::VERIFIED_VERIFICATION_STATUSES).count
     user_project_created_count = User.joins(:projects).distinct.count
-    user_project_shipped_count = User.joins(:projects).where.not(projects: { aasm_state: :pending }).distinct.count
+    user_project_submitted_count = User.joins(:projects).where(projects: { aasm_state: %w[submitted approved] }).distinct.count
+    user_project_shipped_count = User.joins(:projects).where(projects: { aasm_state: :approved }).distinct.count
 
     {
       date: DateTime.now.to_s,
       approved_hours:,
       project_count:,
       user_count:,
+      user_onboarding_count:,
+      user_slack_count:,
       user_account_count:,
       user_hackatime_count:,
+      user_idv_verified_count:,
       user_project_created_count:,
+      user_project_submitted_count:,
       user_project_shipped_count:
     }
   end

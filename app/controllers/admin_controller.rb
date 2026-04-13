@@ -79,7 +79,42 @@ class AdminController < ApplicationController
   end
 
   def stats
-    render inertia: "admin/stats", props: { stats: Statistic.generate_statistic_data }
+    invite_purchase_count = Item::Purchase.where(item_id: Item::INVITE_ID).count
+
+    orders_by_date = Item::Purchase.where.not(aasm_state: :fulfilled)
+                                   .group("DATE(created_at)")
+                                   .count
+    if orders_by_date.any?
+      first_date = orders_by_date.keys.min
+      orders_over_time = (first_date..Date.current).map { |date| { date: date.to_s, count: orders_by_date[date] || 0 } }
+    else
+      orders_over_time = []
+    end
+
+    invite_orders_by_date = Item::Purchase.where(item_id: Item::INVITE_ID)
+                                          .group("DATE(created_at)")
+                                          .count
+    if invite_orders_by_date.any?
+      first_date = invite_orders_by_date.keys.min
+      invite_orders_over_time = (first_date..Date.current).map { |date| { date: date.to_s, count: invite_orders_by_date[date] || 0 } }
+
+      event_date = Date.new(2026, 5, 22)
+      days_until_event = (event_date - Date.current).to_i
+      days_elapsed = (Date.current - first_date).to_i + 1
+      daily_rate = invite_purchase_count / days_elapsed.to_f
+      invite_projected_count = (invite_purchase_count + daily_rate * days_until_event).round
+    else
+      invite_orders_over_time = []
+      invite_projected_count = nil
+    end
+
+    render inertia: "admin/stats", props: {
+      stats: Statistic.generate_statistic_data,
+      invite_purchase_count:,
+      invite_projected_count:,
+      orders_over_time:,
+      invite_orders_over_time:
+    }
   end
 
   def orders
