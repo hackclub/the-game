@@ -13,5 +13,6 @@ class User
     field :hackatime_linked, "Hackatime Linked?"
     field :first_project_created_at, "Loops - hctgFirstProjectCreatedAt"
     field :first_project_ship_at, "Loops - hctgFirstProjectShipAt"
+    field :hours_logged, "Hours Logged"
   end
 end
