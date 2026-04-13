@@ -218,8 +218,7 @@ class User < ApplicationRecord
       verification_status: verification_status,
       hackatime_linked: hackatime_id.present?,
       first_project_created_at: first_project&.created_at,
-      first_project_ship_at: first_shipped_project&.submitted_at,
-      hours_logged: (total_reported_seconds / 3600.0).round(2)
+      first_project_ship_at: first_shipped_project&.submitted_at
     }
 
     record = airtable_record || User::Airtable.new(email: email)
