@@ -147,7 +147,7 @@ class Project
       prior_approval = project.reviews.approval.where.not(id: id).order(:created_at).last
       is_reship = prior_approval.present?
 
-      time_summary = if project.approved_seconds == approved_seconds
+      time_summary = if tracked_time == adjusted_time
         "This user tracked #{tracked_time} on Hackatime and was approved for the full time tracked."
       else
         "This user tracked #{tracked_time} on Hackatime. This was adjusted to #{adjusted_time} after review."
