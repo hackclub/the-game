@@ -39,14 +39,6 @@ export default function Shop({
           </>
         }
       />
-      {props.user.wizard && (
-        <a
-          className="absolute top-5 right-0 bg-black px-8 py-4 text-xl font-bold text-yellow-500"
-          href="/shop/platform_nine_and_three_quarters"
-        >
-          Enter Platform 9 <sup>3</sup>&frasl;<sub>4</sub>
-        </a>
-      )}
       <div className="mt-8 flex flex-col gap-8 pl-8">
         <IdvVerificationAlert />
 

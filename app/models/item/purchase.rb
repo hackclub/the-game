@@ -52,6 +52,7 @@ class Item
     validate :user_is_verified, on: :create
     validate :check_balance, on: :create, unless: :skip_balance_check
     validate :check_one_per_user, on: :create
+    validate :check_black_market, on: :create
 
     def display_hash(item: false, admin: false)
       hash = self.as_json.slice("id", "aasm_state", "created_at", "updated_at", "item_id", "user_id", "fulfilled_at", "hold_at", "quantity", "deleted_at", "amount_paid", "note")
@@ -89,6 +90,12 @@ class Item
       return unless item.one_per_user? && self.class.where(user: user, item: item).exists?
 
       errors.add(:base, "You have already purchased #{item.name}")
+    end
+
+    def check_black_market
+      if item.black_market && !user.wizard?
+        errors.add(:base, "A golden ticket is required to purchase this item")
+      end
     end
   end
 end

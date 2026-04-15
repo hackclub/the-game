@@ -1,7 +1,7 @@
 class ItemsController < ApplicationController
   before_action :set_item, only: [ :buy, :claim_referral_item, :edit, :update, :destroy ]
   before_action :signed_in_admin, only: [ :create, :edit, :update, :destroy ]
-  skip_after_action :verify_authorized, only: [ :index, :platform_nine_and_three_quarters, :buy, :claim_referral_item, :create, :edit, :update, :destroy ]
+  skip_after_action :verify_authorized, only: [ :index, :buy, :claim_referral_item, :create, :edit, :update, :destroy ]
 
   def index
     program = ReferralProgram.instance
@@ -16,27 +16,13 @@ class ItemsController < ApplicationController
 
     purchased_item_ids = current_user.purchases.pluck(:item_id).uniq
 
-    items_scope = Item.not_black_market.with_attached_image.order(super_featured: :desc, featured: :desc, price: :asc)
+    items_scope = Item.with_attached_image.order(super_featured: :desc, featured: :desc, price: :asc)
     items_scope = items_scope.where.not(id: program.referred_item_id) if program.referred_item_id.present?
 
     render inertia: "items/index", props: {
       items: items_scope.map { |item| item.display_hash(true) },
       has_purchased: current_user.purchases.any?,
       referred_item: referred_item,
-      purchased_item_ids: purchased_item_ids
-    }
-  end
-
-  def platform_nine_and_three_quarters
-    raise ActionController::RoutingError.new("Not Found") unless current_user.wizard? || current_user.admin?
-
-    purchased_item_ids = current_user.purchases.pluck(:item_id).uniq
-
-    items_scope = Item.with_attached_image.black_market.order(super_featured: :desc, featured: :desc, price: :asc)
-
-    render inertia: "items/platform_nine_and_three_quarters", props: {
-      items: items_scope.map { |item| item.display_hash(true) },
-      has_purchased: current_user.purchases.any?,
       purchased_item_ids: purchased_item_ids
     }
   end
@@ -84,6 +70,13 @@ class ItemsController < ApplicationController
         reason: "idv_not_verified"
       })
       flash[:alert] = "Verify your identity to be able to buy items from the shop."
+    elsif @item.black_market && !current_user.wizard?
+      track_event("item_purchase_failed", {
+        item_id: @item.id,
+        item_name: @item.name,
+        reason: "black_market"
+      })
+      flash[:alert] = "A golden ticket is required to purchase this item."
     else
       reason = @item.one_per_user? && current_user.purchases.where(item: @item).exists? ? "already_purchased" : "insufficient_tickets"
       track_event("item_purchase_failed", {

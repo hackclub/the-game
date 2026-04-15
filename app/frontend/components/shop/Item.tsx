@@ -25,6 +25,11 @@ export default function Item({
   return (
     <div className={`flex h-full flex-col${className ? ` ${className}` : ""}`}>
       <div className="relative h-8 rounded-tl-2xl rounded-tr-2xl bg-black">
+        {item.black_market && (
+          <span className="absolute top-2 left-3 text-sm font-bold text-purple-500">
+            🔮 Black Market
+          </span>
+        )}
         {item.super_featured && (
           <span className="absolute top-2 right-3 text-sm font-bold text-[#fecb0d]">
             ★ Super Featured
@@ -96,6 +101,14 @@ export default function Item({
                   className="smoothing-black mt-4 block w-full cursor-not-allowed bg-[#d9d9d9] px-5 py-3 text-center text-xl font-bold tracking-tight text-black/50"
                 >
                   Verify to buy
+                </button>
+              ) : item.black_market && !props.user.wizard ? (
+                <button
+                  type="button"
+                  disabled
+                  className="smoothing-black mt-4 block w-full cursor-not-allowed bg-[#d9d9d9] px-5 py-3 text-center text-xl font-bold tracking-tight text-black/50"
+                >
+                  Golden ticket required
                 </button>
               ) : canAfford ? (
                 <>
