@@ -51,7 +51,12 @@ class AdminController < ApplicationController
     filtered_users = User.all
 
     if params[:q].present?
-      filtered_users = filtered_users.search_by_name(params[:q])
+      slack_id_pattern = /\A(?:https:\/\/[a-z0-9.]+\.slack\.com\/team\/)?(U[A-Z0-9]{8,})\z/
+      if (match = params[:q].strip.match(slack_id_pattern))
+        filtered_users = filtered_users.where(slack_id: match[1])
+      else
+        filtered_users = filtered_users.search_by_name(params[:q])
+      end
     end
 
     if params[:role].present?

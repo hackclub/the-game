@@ -85,7 +85,7 @@ export default function Users({ users, q, role, pagination }: Props) {
       <div className="my-6 flex gap-3">
         <input
           className="w-full rounded-md px-3 py-1 md:w-1/3"
-          placeholder="Search users..."
+          placeholder="Search by name, email, or Slack ID..."
           value={newQuery}
           onChange={(e) => setNewQuery(e.target.value)}
         />
