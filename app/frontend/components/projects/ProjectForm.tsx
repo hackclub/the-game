@@ -20,6 +20,7 @@ interface InputFieldProps {
   description: string;
   value: string;
   onChange: (value: string) => void;
+  onBlur?: (value: string) => void;
   error?: string | string[];
   disabled?: boolean;
   required?: boolean;
@@ -48,6 +49,7 @@ function InputField({
   description,
   value,
   onChange,
+  onBlur,
   error,
   disabled,
   required,
@@ -66,6 +68,7 @@ function InputField({
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur ? (e) => onBlur(e.target.value) : undefined}
         disabled={disabled}
       />
 
@@ -425,6 +428,11 @@ export default function ProjectForm({
           description="Link to your source code repository"
           value={data.repo_link}
           onChange={(value) => setData("repo_link", value)}
+          onBlur={(value) => {
+            if (value.startsWith("https://github.com/") && value.endsWith(".git")) {
+              setData("repo_link", value.slice(0, -4));
+            }
+          }}
           error={errors.repo_link}
           disabled={disabled}
           type="url"
