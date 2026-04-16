@@ -122,6 +122,87 @@ class AdminController < ApplicationController
     }
   end
 
+  def users_search
+    users = User.search_by_name(params[:q]).limit(8)
+    render json: users.map { |u| { id: u.id, username: u.username, avatar: u.avatar } }
+  end
+
+  def audit_log
+    versions = PaperTrail::Version.all
+
+    if params[:item_type].present?
+      versions = versions.where(item_type: params[:item_type])
+    end
+
+    if params[:event].present?
+      versions = versions.where(event: params[:event])
+    end
+
+    whodunnit_user = nil
+    if params[:whodunnit].present?
+      whodunnit_user = User.find_by(id: params[:whodunnit])
+      versions = whodunnit_user ? versions.where(whodunnit: whodunnit_user.id.to_s) : versions.none
+    end
+
+    if params[:date_from].present?
+      versions = versions.where("created_at >= ?", params[:date_from].to_date.beginning_of_day)
+    end
+
+    if params[:date_to].present?
+      versions = versions.where("created_at <= ?", params[:date_to].to_date.end_of_day)
+    end
+
+    paginated = versions.order(created_at: :desc).page(params[:page]).per(50)
+
+    whodunnit_ids = paginated.map(&:whodunnit).compact.uniq
+    users_by_id = User.where(id: whodunnit_ids).index_by { |u| u.id.to_s }
+
+    # Fields that must never be sent to the frontend in object_changes diffs,
+    # regardless of encryption — PaperTrail may capture plaintext at change-time.
+    sensitive_fields = {
+      "User" => %w[account_access_token hackatime_access_token]
+    }
+
+    entries = paginated.map do |v|
+      actor = users_by_id[v.whodunnit]
+      changes = v.object_changes
+      if changes.is_a?(Hash)
+        blocked = sensitive_fields[v.item_type]
+        changes = changes.except(*blocked) if blocked
+      end
+      {
+        id: v.id,
+        item_type: v.item_type,
+        item_id: v.item_id,
+        event: v.event,
+        whodunnit: v.whodunnit,
+        whodunnit_user: actor ? { id: actor.id, username: actor.username, avatar: actor.avatar } : nil,
+        object_changes: changes,
+        created_at: v.created_at
+      }
+    end
+
+    item_types = PaperTrail::Version.distinct.pluck(:item_type).sort
+
+    render inertia: "admin/audit-log", props: {
+      entries:,
+      item_types:,
+      item_type: params[:item_type],
+      event: params[:event],
+      whodunnit: params[:whodunnit],
+      whodunnit_user: whodunnit_user ? { id: whodunnit_user.id, username: whodunnit_user.username, avatar: whodunnit_user.avatar } : nil,
+      date_from: params[:date_from],
+      date_to: params[:date_to],
+      pagination: {
+        current_page: paginated.current_page,
+        next_page: paginated.next_page,
+        prev_page: paginated.prev_page,
+        total_pages: paginated.total_pages,
+        total_count: paginated.total_count
+      }
+    }
+  end
+
   def orders
     filtered_orders = Item::Purchase.includes(:user, :item)
 

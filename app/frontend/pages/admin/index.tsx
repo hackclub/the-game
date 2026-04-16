@@ -85,6 +85,11 @@ export default function AdminPage() {
             title="Referral Program"
             description="Manage referral rollout, settings, and stats"
           />
+          <AdminNav
+            href="/admin/audit-log"
+            title="Audit Log"
+            description="Browse all paper trail records across models"
+          />
         </div>
       </div>
     </Layout>
