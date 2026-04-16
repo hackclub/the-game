@@ -12,5 +12,17 @@ class SlackApiService
         conn.response :json, content_type: /\bjson$/
       end
     end
+
+    def post_message(channel:, text:)
+      return unless available?
+
+      response = client.post("chat.postMessage") do |req|
+        req.headers["Content-Type"] = "application/json; charset=utf-8"
+        req.body = { channel: channel, text: text }.to_json
+      end
+
+      body = response.body.is_a?(Hash) ? response.body : {}
+      Rails.logger.warn("Failed to post Slack message to #{channel}: #{body["error"]}") unless body["ok"]
+    end
   end
 end

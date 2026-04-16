@@ -1,17 +1,12 @@
 class SlackAnnouncementsService
-  CHANNEL_ID = "C0A7HQZFFNX"
+  CHANNEL_ID = SlackChannels::BULLETIN
   CACHE_TTL = 5.minutes
   MAX_ANNOUNCEMENTS = 10
   IGNORED_MESSAGES = %w[
     C0A7HQZFFNX/p1775070602906179
   ].freeze
 
-  CHANNEL_NAMES = {
-    "C0AJ70Q994L" => "hctg-tracker",
-    "C0A7HQZFFNX" => "hctg-bulletin",
-    "C088DT8P7B8" => "hack-club-the-game",
-    "C0A9XULS1SL" => "hctg-help"
-  }.freeze
+  CHANNEL_NAMES = SlackChannels::ALL.freeze
 
   @cache_mutex = Mutex.new
   @announcements_cache = nil

@@ -9,7 +9,11 @@ class Project
     def create
       review = @project.reviews.create!(review_params)
 
-      @project.update!(high_quality: params[:high_quality]) if params[:high_quality].present? && review.approval?
+      if params[:high_quality].present? && review.approval?
+        was_high_quality = @project.high_quality?
+        @project.update!(high_quality: params[:high_quality])
+        post_golden_ticket_announcement(@project) if !was_high_quality && @project.high_quality?
+      end
 
       human_review_desc = case review.review_type
       when "comment"
@@ -59,6 +63,13 @@ class Project
 
     def set_review
       @review = Project::Review.find(params[:id])
+    end
+
+    def post_golden_ticket_announcement(project)
+      author_ping = project.user.slack_id.present? ? "<@#{project.user.slack_id}>" : project.user.username
+      text = ":rac_woah: #{author_ping} got a golden ticket for their project *#{project.title}*!! check it out <#{project.demo_link}|here!>"
+      channel = ENV.fetch("GOLDEN_TICKET_SLACK_CHANNEL", SlackChannels::THE_GAME)
+      SlackApiService.post_message(channel: channel, text: text)
     end
   end
 end

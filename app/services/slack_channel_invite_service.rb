@@ -1,10 +1,6 @@
 class SlackChannelInviteService
   BASE_URL = "https://hackclub.slack.com/api"
-  CHANNELS = {
-    "C0A7HQZFFNX" => "hctg-bulletin",
-    "C088DT8P7B8" => "hack-club-the-game",
-    "C0A9XULS1SL" => "hctg-help"
-  }.freeze
+  CHANNELS = SlackChannels::ALL.except(SlackChannels::TRACKER).freeze
 
   def self.available?
     ENV["SLACK_XOXD_TOKEN"].present? && ENV["SLACK_XOXC_TOKEN"].present?
