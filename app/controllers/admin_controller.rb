@@ -203,6 +203,11 @@ class AdminController < ApplicationController
     }
   end
 
+  def user_hackatime_projects
+    user = User.find(params[:id])
+    render json: user.hackatime_projects.map(&:display_hash)
+  end
+
   def orders
     filtered_orders = Item::Purchase.includes(:user, :item)
 

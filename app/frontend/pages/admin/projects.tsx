@@ -113,7 +113,15 @@ export default function Projects({
 
   return (
     <Layout>
-      <h1 className="text-3xl font-bold">Projects</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Projects</h1>
+        <a
+          href="/admin/projects/new"
+          className="rounded-md bg-blue-500 px-4 py-2 font-bold text-white"
+        >
+          Create Project
+        </a>
+      </div>
 
       <div className="my-6 flex gap-3">
         <input

@@ -70,6 +70,7 @@ Rails.application.routes.draw do
   namespace :admin do
     resources :announcements, only: [ :index, :create, :edit, :update, :destroy ]
     resources :tags, only: [ :index, :create, :edit, :update, :destroy ]
+    resources :projects, only: [ :new, :create ]
     resources :referrals, only: [ :index ] do
       collection do
         patch :update_program
@@ -95,6 +96,7 @@ Rails.application.routes.draw do
     get "/orders", to: "admin#orders"
     get "/audit-log", to: "admin#audit_log"
     get "/users/search", to: "admin#users_search"
+    get "/users/:id/hackatime_projects", to: "admin#user_hackatime_projects"
   end
 
   post "onboarding/complete", to: "onboarding#complete"
