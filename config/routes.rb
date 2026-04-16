@@ -92,6 +92,7 @@ Rails.application.routes.draw do
     get "/projects", to: "admin#projects"
     get "/users", to: "admin#users"
     get "/items", to: "admin#items"
+    post "/items/bulk_adjust_price", to: "items#bulk_adjust_price"
     get "/stats", to: "admin#stats"
     get "/orders", to: "admin#orders"
     get "/audit-log", to: "admin#audit_log"
