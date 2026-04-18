@@ -106,7 +106,7 @@ export default function Item({
                 <button
                   type="button"
                   disabled
-                  className="smoothing-black mt-4 block w-full cursor-not-allowed bg-[#d9d9d9] px-5 py-3 text-center text-xl font-bold tracking-tight text-black/50"
+                  className="smoothing-black mt-4 block w-full cursor-not-allowed bg-yellow-600/60 px-5 py-3 text-center text-xl font-bold tracking-tight text-white"
                 >
                   Golden ticket required
                 </button>
