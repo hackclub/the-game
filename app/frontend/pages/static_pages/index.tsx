@@ -52,6 +52,17 @@ export default function RsvpPage() {
           background-size: 100px 100px;
           animation: grid-drift 14s linear infinite;
         }
+        .projects-grid {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          background-image:
+            linear-gradient(to right, rgba(255,255,255,0.03) 4px, transparent 4px),
+            linear-gradient(to bottom, rgba(255,255,255,0.03) 4px, transparent 4px);
+          background-size: 100px 100px;
+          animation: grid-drift 14s linear infinite;
+          animation-delay: -5s;
+        }
       `}</style>
       <div className="animated-grid" aria-hidden="true" />
       <Head title="Hack Club: The Game" />
@@ -213,12 +224,7 @@ export default function RsvpPage() {
       <div className="relative z-10 w-full">
         {/* Full-bleed dark section header */}
         <div className="relative w-full overflow-hidden bg-[#383636]">
-          {/* Decorative Mini Metro lines */}
-          <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-            <div className="absolute top-10 left-8 right-0 h-px bg-white/10" />
-            <div className="absolute bottom-14 left-8 w-56 h-px bg-white/10" />
-            <div className="absolute top-1/3 right-48 h-px w-24 bg-white/10" />
-          </div>
+          <div className="projects-grid" aria-hidden="true" />
 
           <div className="relative px-6 pt-10 pb-16 lg:px-48 lg:pt-16 lg:pb-24">
             <p className="smoothing-black text-6xl font-bold leading-none tracking-[-3px] text-white lg:text-[108px] lg:tracking-[-6px]">
