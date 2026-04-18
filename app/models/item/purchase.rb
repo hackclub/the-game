@@ -71,7 +71,9 @@ class Item
     private
 
     def set_amount_paid
-      self.amount_paid = (quantity || 1) * item.price
+      if amount_paid.nil?
+        self.amount_paid = (quantity || 1) * item.price
+      end
     end
 
     def user_is_verified
