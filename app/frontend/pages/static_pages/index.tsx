@@ -34,8 +34,26 @@ export default function RsvpPage() {
   return (
     <div
       id="hero"
-      className="relative flex w-full flex-col items-start bg-white"
+      className="relative flex w-full flex-col items-start bg-[#E3EBEE]"
     >
+      <style>{`
+        @keyframes grid-drift {
+          0% { background-position: 0px 0px; }
+          100% { background-position: 100px 100px; }
+        }
+        .animated-grid {
+          position: fixed;
+          inset: 0;
+          pointer-events: none;
+          z-index: 0;
+          background-image:
+            linear-gradient(to right, #DBE6EC 4px, transparent 4px),
+            linear-gradient(to bottom, #DBE6EC 4px, transparent 4px);
+          background-size: 100px 100px;
+          animation: grid-drift 14s linear infinite;
+        }
+      `}</style>
+      <div className="animated-grid" aria-hidden="true" />
       <Head title="Hack Club: The Game" />
       <DynamicBackgroundLines
         stepCircleRefs={[step1CircleRef, step2CircleRef, step3CircleRef]}
@@ -55,7 +73,7 @@ export default function RsvpPage() {
       {props.referrer_name && (
         <div className="fixed top-8 right-8 z-50">
           <div className="rounded-md border-2 bg-[#fecb0d] px-8 py-4 pr-32">
-            <p className="text-2xl font-bold text-black">
+            <p className="text-2xl font-bold text-[#383636]">
               {String(props.referrer_name)} invited you!
             </p>
             <p className="text-lg">Sign up now and get free stickers!</p>
@@ -65,14 +83,14 @@ export default function RsvpPage() {
 
       <div className="relative z-10 flex min-h-screen w-full items-center justify-center px-4 py-12 lg:py-24">
         <div className="flex w-full max-w-none flex-col items-end lg:max-w-6xl">
-          <div className="flex w-full flex-col border-t-30 border-r-4 border-b-4 border-l-4 border-solid border-black bg-white lg:flex-row">
+          <div className="flex w-full flex-col border-t-30 border-r-4 border-b-4 border-l-4 border-solid border-[#383636] bg-white lg:flex-row text-[#383636]">
             <div className="flex items-center justify-center bg-white px-6 py-6 lg:border-r-0">
               <div className="h-20 w-auto lg:h-24">
-                <HackClubLogo className="block h-full w-auto max-w-none" />
+                <HackClubLogo className="block h-full w-auto max-w-none text-[#383636]" />
               </div>
             </div>
 
-            <div className="flex flex-1 flex-col border-t-4 border-black bg-white px-6 py-6 lg:border-t-0 lg:border-l-4 lg:px-10 lg:py-8">
+            <div className="flex flex-1 flex-col border-t-4 border-[#383636] bg-white px-6 py-6 lg:border-t-0 lg:border-l-4 lg:px-10 lg:py-8">
               <div className="mb-4">
                 <p className="smoothing-black text-2xl leading-tight tracking-[-0.05em] whitespace-nowrap sm:text-3xl lg:text-6xl lg:leading-none xl:text-8xl">
                   <span className="font-normal">hack club: </span>
@@ -91,7 +109,7 @@ export default function RsvpPage() {
           {props.user ? (
             <a
               href="/home"
-              className="mt-1 flex h-full w-full cursor-pointer items-center justify-center gap-3 border-4 border-black bg-white px-4 py-4 transition-colors hover:bg-black hover:text-white lg:gap-4 lg:px-6 lg:py-6"
+              className="mt-1 flex h-full w-full cursor-pointer items-center justify-center gap-3 border-4 border-[#383636] bg-white px-4 py-4 transition-colors text-[#383636] hover:bg-black hover:text-white lg:gap-4 lg:px-6 lg:py-6"
             >
               <div className="h-6 w-6 lg:h-7 lg:w-7">
                 <ArrowVector className="block h-full w-full max-w-none" />
@@ -105,19 +123,19 @@ export default function RsvpPage() {
               action="/auth/hca"
               className="mt-4 flex h-20 w-full flex-col gap-2 sm:flex-row lg:gap-3"
             >
-              <div className="flex h-full border-4 border-black bg-white px-4 sm:flex-1 lg:px-6">
+              <div className="flex h-full border-4 border-[#383636] bg-white px-4 sm:flex-1 lg:px-6">
                 <input
                   required
                   name="login_hint"
                   type="email"
                   placeholder="your@email.com"
-                  className="w-full border-none bg-transparent font-[Arial] text-lg tracking-[-0.04em] text-black placeholder-gray-400 outline-none focus:ring-0 lg:text-3xl"
+                  className="w-full border-none bg-transparent font-[Arial] text-lg tracking-[-0.04em] text-[#383636] placeholder-gray-400 outline-none focus:ring-0 lg:text-3xl"
                 />
               </div>
 
               <button
                 type="submit"
-                className="flex h-full w-full cursor-pointer items-center justify-center gap-3 border-4 border-black bg-white px-4 py-4 transition-colors hover:bg-black hover:text-white sm:w-auto lg:gap-4 lg:px-6 lg:py-6"
+                className="flex h-full w-full cursor-pointer items-center justify-center gap-3 border-4 border-[#383636] bg-white px-4 py-4 transition-colors hover:bg-black hover:text-white sm:w-auto lg:gap-4 lg:px-6 lg:py-6"
               >
                 <div className="h-6 w-6 lg:h-7 lg:w-7">
                   <ArrowVector className="block h-full w-full max-w-none" />
@@ -191,24 +209,69 @@ export default function RsvpPage() {
         </div>
       </div>
 
-      <div className="relative z-10 flex w-full flex-col gap-5 px-6 pt-12 lg:px-48 lg:pt-20">
-        <p className="smoothing-black w-full border-b-4 border-black pb-4 text-4xl font-bold text-black lg:text-7xl lg:tracking-[-3px]">
-          Projects
-        </p>
+      {/* Projects Section — Nintendo Switch eShop / Mini Metro inspired */}
+      <div className="relative z-10 w-full">
+        {/* Full-bleed dark section header */}
+        <div className="relative w-full overflow-hidden bg-[#383636]">
+          {/* Decorative Mini Metro lines */}
+          <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+            <div className="absolute top-10 left-8 right-0 h-px bg-white/10" />
+            <div className="absolute bottom-14 left-8 w-56 h-px bg-white/10" />
+            <div className="absolute top-1/3 right-48 h-px w-24 bg-white/10" />
+          </div>
 
-        <p className="text-2xl">
-          These are some awesome projects being shipped for Hack Club: The Game!
-        </p>
+          <div className="relative px-6 pt-10 pb-16 lg:px-48 lg:pt-16 lg:pb-24">
+            <p className="smoothing-black text-6xl font-bold leading-none tracking-[-3px] text-white lg:text-[108px] lg:tracking-[-6px]">
+              Projects
+            </p>
+            <p className="mt-4 whitespace-nowrap text-lg text-white/60 lg:text-xl">
+              There's lots of really cool projects being shipped to Hack Club: The Game every day! Take a look!
+            </p>
+          </div>
 
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {props.featured_projects.map((project) => (
-            <ProjectCard key={project.id} project={project} newTab />
-          ))}
+          {/* Diagonal bottom-right cut into the section */}
+          <div
+            className="absolute bottom-0 left-0 right-0 h-6 bg-[#E3EBEE] lg:h-10"
+            style={{ clipPath: "polygon(0 100%, 100% 0, 100% 100%)" }}
+            aria-hidden="true"
+          />
+        </div>
+
+        {/* Marquee */}
+        <div className="w-full overflow-hidden pb-24 pt-6 lg:pb-40 lg:pt-10">
+          <style>{`
+            @keyframes marquee {
+              0%   { transform: translateX(0); }
+              100% { transform: translateX(-50%); }
+            }
+            .marquee-track {
+              display: flex;
+              width: max-content;
+              animation: marquee 120s linear infinite;
+            }
+            .marquee-track:hover {
+              animation-play-state: paused;
+            }
+            .marquee-tilt {
+              transform: rotate(-2deg) translateY(12px);
+            }
+          `}</style>
+          <div className="marquee-tilt">
+            <div className="marquee-track">
+              {[...props.featured_projects, ...props.featured_projects].map(
+                (project, i) => (
+                  <div key={i} className="w-80 shrink-0 px-3 lg:w-96">
+                    <ProjectCard project={project} newTab />
+                  </div>
+                )
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
       <div className="relative z-10 flex w-full flex-col gap-12 px-6 pt-12 lg:gap-24 lg:px-48 lg:pt-20">
-        <p className="smoothing-black w-full border-b-4 border-black pb-4 text-4xl font-bold text-black lg:text-7xl lg:tracking-[-3px]">
+        <p className="smoothing-black w-full border-b-4 border-[#383636] pb-4 text-4xl font-bold text-[#383636] lg:text-7xl lg:tracking-[-3px]">
           FAQ
         </p>
       </div>

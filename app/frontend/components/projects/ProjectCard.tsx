@@ -17,7 +17,7 @@ export default function ProjectCard({
     <a
       href={link}
       {...(newTab && { target: "_blank", rel: "noopener noreferrer" })}
-      className={`group relative flex cursor-pointer flex-col overflow-hidden rounded-2xl transition-transform hover:scale-[1.02] ${project.high_quality && "shadow-[0_0_30px_rgba(255,215,0,0.9)]"}`}
+      className={`group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl transition-transform hover:scale-[1.02] ${project.high_quality && "shadow-[0_0_30px_rgba(255,215,0,0.9)]"}`}
     >
       {project.screenshot ? (
         <div className="relative overflow-hidden rounded-t-2xl">
@@ -28,7 +28,7 @@ export default function ProjectCard({
           />
         </div>
       ) : (
-        <div className="h-[105px] w-full rounded-tl-2xl rounded-tr-2xl border-2 border-b-0 border-black bg-gradient-to-br from-gray-300 to-gray-400" />
+        <div className="h-[105px] w-full rounded-tl-2xl rounded-tr-2xl border-2 border-b-0 border-black bg-white" />
       )}
       {project.unread_notification_count > 0 && link !== project.demo_link && (
         <p className="absolute top-2 left-2 z-10 rounded-full bg-red-500 px-4 py-2 font-semibold text-white">

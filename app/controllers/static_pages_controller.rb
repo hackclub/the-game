@@ -33,7 +33,7 @@ class StaticPagesController < ApplicationController
       referrer_name = referrer&.username
     end
 
-    featured_projects = Project.high_quality.order(Arel.sql("RANDOM()")).limit(3)
+    featured_projects = Project.high_quality.order(created_at: :desc).limit(20)
 
     render inertia: { signed_in: user_logged_in?, referrer_name: referrer_name, featured_projects: featured_projects.map { |p| p.display_hash.merge(username: p.user&.username, high_quality: nil) } }
   end
