@@ -51,9 +51,9 @@ export default function ShowProject() {
             </span>
           </div>
 
-          {project.approved_seconds > 0 && (
+          {project.real_approved_seconds > 0 && (
             <p className="px-4 text-lg text-green-600 md:px-16">
-              {formatTime(project.approved_seconds)} approved{" "}
+              {formatTime(project.real_approved_seconds)} approved{" "}
               {project.aasm_state === "approved" &&
                 project.reported_seconds > project.approved_seconds && (
                   <span className="text-yellow-600">
