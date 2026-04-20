@@ -32,7 +32,12 @@ export default function ExplorePage({
 
       <div className="mt-4 flex gap-2">
         {pagination.prev_page && (
-          <button onClick={() => goToPage(pagination.prev_page)}>← Prev</button>
+          <button
+            className="cursor-pointer"
+            onClick={() => goToPage(pagination.prev_page)}
+          >
+            ← Prev
+          </button>
         )}
 
         <span>
@@ -40,7 +45,12 @@ export default function ExplorePage({
         </span>
 
         {pagination.next_page && (
-          <button onClick={() => goToPage(pagination.next_page)}>Next →</button>
+          <button
+            className="cursor-pointer"
+            onClick={() => goToPage(pagination.next_page)}
+          >
+            Next →
+          </button>
         )}
       </div>
     </Layout>
