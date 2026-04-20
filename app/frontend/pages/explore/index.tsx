@@ -2,12 +2,20 @@ import Layout from "@/layouts/layout";
 import PageHeading from "@/components/layout/PageHeading";
 import ProjectCard from "@/components/projects/ProjectCard";
 import type { Project } from "@/interfaces/project";
+import type { Pagination } from "@/interfaces/pagination";
+import { router } from "@inertiajs/react";
 
 export default function ExplorePage({
   projects,
+  pagination,
 }: {
   projects: (Project & { username: string })[];
+  pagination: Pagination;
 }) {
+  function goToPage(page: number) {
+    router.get("/admin/users", { page }, { preserveScroll: true });
+  }
+
   return (
     <Layout>
       <PageHeading
@@ -20,6 +28,20 @@ export default function ExplorePage({
             <ProjectCard key={project.id} project={project} newTab />
           ))}
         </div>
+      </div>
+
+      <div className="mt-4 flex gap-2">
+        {pagination.prev_page && (
+          <button onClick={() => goToPage(pagination.prev_page)}>← Prev</button>
+        )}
+
+        <span>
+          Page {pagination.current_page} of {pagination.total_pages}
+        </span>
+
+        {pagination.next_page && (
+          <button onClick={() => goToPage(pagination.next_page)}>Next →</button>
+        )}
       </div>
     </Layout>
   );
