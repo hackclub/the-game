@@ -66,7 +66,7 @@ export default function LoggedHours({
             <p className="smoothing-black text-center text-2xl tracking-[-0.04em]">
               In total, you've logged{" "}
               <span className="font-bold">
-                {hours} hours and {minutes} minutes
+                {hours} hours and {minutes} minute{minutes === 1 ? "" : "s"}
                 {ticketProgress == 1 ? "!" : "."}
               </span>
               {inProgressTime > 0 && (
@@ -110,7 +110,7 @@ export default function LoggedHours({
           <p className="smoothing-black text-2xl tracking-[-0.04em]">
             In total, you've logged{" "}
             <span className="font-bold">
-              {hours} hours and {minutes} minutes
+              {hours} hours and {minutes} minute{minutes === 1 ? "" : "s"}
               {ticketProgress == 1 ? "!" : "."}
             </span>
             {inProgressTime > 0 && (
