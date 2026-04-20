@@ -13,7 +13,7 @@ export default function ExplorePage({
   pagination: Pagination;
 }) {
   function goToPage(page: number) {
-    router.get("/admin/users", { page }, { preserveScroll: true });
+    router.get("/explore", { page }, { preserveScroll: true });
   }
 
   return (
