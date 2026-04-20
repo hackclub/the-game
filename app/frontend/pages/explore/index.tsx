@@ -22,6 +22,31 @@ export default function ExplorePage({
         title="Gallery"
         subtitle="Take a look at all of the cool projects submitted to Hack Club: The Game!"
       />
+
+      <div className="mt-4 flex gap-2 pl-8">
+        {pagination.prev_page && (
+          <button
+            className="cursor-pointer"
+            onClick={() => goToPage(pagination.prev_page)}
+          >
+            ← Prev
+          </button>
+        )}
+
+        <span>
+          Page {pagination.current_page} of {pagination.total_pages}
+        </span>
+
+        {pagination.next_page && (
+          <button
+            className="cursor-pointer"
+            onClick={() => goToPage(pagination.next_page)}
+          >
+            Next →
+          </button>
+        )}
+      </div>
+
       <div className="mt-8 pl-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {projects.map((project) => (
@@ -30,7 +55,7 @@ export default function ExplorePage({
         </div>
       </div>
 
-      <div className="mt-4 flex gap-2">
+      <div className="mt-4 flex gap-2 pl-8">
         {pagination.prev_page && (
           <button
             className="cursor-pointer"
