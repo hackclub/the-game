@@ -43,9 +43,9 @@ export default function ReviewShow({
               </span>
             </div>
 
-            {project.approved_seconds > 0 && (
+            {project.real_approved_seconds > 0 && (
               <p className="mt-1 text-lg text-green-600">
-                {formatTime(project.approved_seconds)} approved
+                {formatTime(project.real_approved_seconds)} approved
                 {project.aasm_state === "approved" &&
                   project.reported_seconds > project.approved_seconds && (
                     <span className="text-yellow-600">
