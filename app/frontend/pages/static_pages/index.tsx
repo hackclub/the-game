@@ -297,7 +297,7 @@ export default function RsvpPage() {
           question="When is the event?"
           answer={
             <>
-              Hack Club: The Game will take place from May 22nd to May 25th.
+              Hack Club: The Game will take place from May 22nd to May 24th.
               We'll have more details in the coming weeks - join{" "}
               <a
                 className="font-bold text-blue-500 underline"
