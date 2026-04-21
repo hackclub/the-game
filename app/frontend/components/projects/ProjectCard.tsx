@@ -6,29 +6,32 @@ interface ProjectCardProps {
   project: Project & { username?: string };
   link?: string;
   newTab?: boolean;
+  variant?: "default" | "homepage";
 }
 
 export default function ProjectCard({
   project,
   link = `${project.demo_link}`,
   newTab = false,
+  variant = "default",
 }: ProjectCardProps) {
+  const isHomepage = variant === "homepage";
   return (
     <a
       href={link}
       {...(newTab && { target: "_blank", rel: "noopener noreferrer" })}
-      className={`group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl transition-transform hover:scale-[1.02] ${project.high_quality && "shadow-[0_0_30px_rgba(255,215,0,0.9)]"}`}
+      className={`group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl transition-transform hover:scale-[1.02] ${project.high_quality && "shadow-[0_0_30px_rgba(255,215,0,0.9)]"} ${isHomepage ? "shadow-[24px_24px_0px_rgba(0,0,0,0.5)] text-[#3D4042]" : ""}`}
     >
       {project.screenshot ? (
         <div className="relative overflow-hidden rounded-t-2xl">
           <img
             src={project.screenshot}
             alt={project.title ?? "Project screenshot"}
-            className="h-[105px] w-full rounded-tl-2xl rounded-tr-2xl border-2 border-b-0 border-black object-cover"
+            className={`h-[105px] w-full rounded-tl-2xl rounded-tr-2xl object-cover border-2 border-b-0 border-black`}
           />
         </div>
       ) : (
-        <div className="h-[105px] w-full rounded-tl-2xl rounded-tr-2xl border-2 border-b-0 border-black bg-white" />
+        <div className={`h-[105px] w-full rounded-tl-2xl rounded-tr-2xl bg-white border-2 border-b-0 border-black`} />
       )}
       {project.unread_notification_count > 0 && link !== project.demo_link && (
         <p className="absolute top-2 left-2 z-10 rounded-full bg-red-500 px-4 py-2 font-semibold text-white">
@@ -36,7 +39,7 @@ export default function ProjectCard({
           {project.unread_notification_count != 1 && "s"}
         </p>
       )}
-      <div className="flex-1 rounded-br-2xl rounded-bl-2xl border-2 border-black bg-white p-6">
+      <div className={`flex-1 rounded-br-2xl rounded-bl-2xl bg-white p-6 border-2 border-black`}>
         <div className="flex items-start justify-between gap-2">
           <h2 className="smoothing-black text-4xl font-bold tracking-[-0.03em] wrap-anywhere">
             {project.title}

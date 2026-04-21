@@ -263,11 +263,11 @@ export default function RsvpPage() {
             }
           `}</style>
           <div className="marquee-tilt">
-            <div className="marquee-track">
+            <div className="marquee-track gap-12">
               {[...props.featured_projects, ...props.featured_projects].map(
                 (project, i) => (
-                  <div key={i} className="w-80 shrink-0 px-3 lg:w-96">
-                    <ProjectCard project={project} newTab />
+                  <div key={i} className="w-80 shrink-0 lg:w-96">
+                    <ProjectCard project={project} newTab variant="homepage" />
                   </div>
                 )
               )}
