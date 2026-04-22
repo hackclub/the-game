@@ -1,5 +1,5 @@
 namespace :slack do
-  desc "Invite all existing users with a slack_id to the game's Slack channels"
+  desc "Invite all existing users with a slack_id to the game's Slack channels. Set JOIN_AFTER=YYYY-MM-DD to only include users who joined after that date."
   task invite_existing_users: :environment do
     unless SlackChannelInviteService.available?
       puts "ERROR: SLACK_XOXD_TOKEN and SLACK_XOXC_TOKEN must be set."
@@ -7,6 +7,12 @@ namespace :slack do
     end
 
     users = User.where.not(slack_id: [nil, ""])
+
+    if ENV["JOIN_AFTER"].present?
+      join_after = Date.parse(ENV["JOIN_AFTER"])
+      users = users.where("created_at > ?", join_after)
+      puts "Filtering to users who joined after #{join_after}..."
+    end
     total = users.count
     puts "Processing #{total} users..."
 
