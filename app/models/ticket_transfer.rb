@@ -4,6 +4,7 @@
 #
 #  id           :bigint           not null, primary key
 #  amount       :integer          not null
+#  reason       :string           not null
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  from_user_id :bigint           not null
@@ -25,7 +26,7 @@ class TicketTransfer < ApplicationRecord
   validate :check_balance
 
   def display_hash
-    hash = self.as_json.slice("id", "amount", "created_at")
+    hash = self.as_json.slice("id", "amount", "reason", "created_at")
 
     hash["from_user_name"] = from_user.username
     hash["to_user_name"] = to_user.username

@@ -4,6 +4,7 @@ export default function TransferForm({ user_id }: { user_id: number }) {
   const { data, setData, post, reset } = useForm({
     amount: 0,
     slack_id: "",
+    reason: "",
   });
 
   function handleSubmit(e: React.FormEvent) {
@@ -51,6 +52,16 @@ export default function TransferForm({ user_id }: { user_id: number }) {
             type="number"
             value={data.amount}
             onChange={(e) => setData("amount", Number(e.target.value))}
+            className="rounded-md"
+            required
+          />
+        </div>
+
+        <div className="flex flex-col">
+          <label>Reason</label>
+          <input
+            value={data.reason}
+            onChange={(e) => setData("reason", e.target.value)}
             className="rounded-md"
             required
           />

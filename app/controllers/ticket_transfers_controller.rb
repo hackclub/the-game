@@ -25,6 +25,6 @@ class TicketTransfersController < ApplicationController
   private
 
   def transfer_params
-    params.require(:ticket_transfer).permit(:amount)
+    params.require(:ticket_transfer).permit(:amount, :reason)
   end
 end

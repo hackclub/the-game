@@ -171,6 +171,8 @@ export default function UserPage() {
                       {transfer.amount} ticket{transfer.amount === 1 ? "" : "s"}{" "}
                       to <strong>{transfer.to_user_name}</strong> on{" "}
                       {new Date(transfer.created_at).toLocaleString()}
+                      <br />
+                      <span>{transfer.reason}</span>
                     </p>
                     {props.user.role === "admin" && (
                       <Link

@@ -3,5 +3,6 @@ export interface TicketTransfer {
   from_user_name: string;
   to_user_name: string;
   amount: number;
+  reason: string;
   created_at: string;
 }
