@@ -151,9 +151,10 @@ class ProjectsController < ApplicationController
 
   def check_repo
     authorize @project
+    is_github = is_github?(@project.repo_link)
     accessible = repo_accessible?(@project.repo_link)
     has_readme = accessible ? readme_exists?(@project.repo_link) : false
-    render json: { accessible: accessible, has_readme: has_readme }
+    render json: { is_github:, accessible: accessible, has_readme: has_readme }
   end
 
   private
@@ -189,6 +190,11 @@ class ProjectsController < ApplicationController
 
   def set_project
     @project = Project.find(params[:id])
+  end
+
+  def is_github?(url)
+    uri = URI.parse(url)
+    uri.host&.include?("github.com")
   end
 
   def github_repo_parts(url)

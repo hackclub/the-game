@@ -272,9 +272,11 @@ export default function ProjectForm({
   const [repoChecking, setRepoChecking] = useState(false);
   const [repoAccessible, setRepoAccessible] = useState<boolean | null>(null);
   const [hasReadme, setHasReadme] = useState<boolean | null>(null);
+  const [isGithub, setIsGithub] = useState<boolean | null>(null);
 
   const hasTitle = data.title.trim().length > 0;
   const hasDescription = data.desc.trim().length > 0;
+  const hasDemoLink = !!data.demo_link;
   const hasScreenshot = data.screenshot !== null;
   const hasHackatimeProject =
     Array.isArray(data.hackatime_project_keys) &&
@@ -291,16 +293,24 @@ export default function ProjectForm({
       hint: "Make sure to clearly define how it was used!",
       optional: true,
     },
+    {
+      label: "Demo link",
+      passed: hasDemoLink,
+    },
     { label: "Screenshot", passed: hasScreenshot },
     {
       label: "Public code repository",
-      passed: hasRepoLink && repoAccessible === true,
+      passed: hasRepoLink && (repoAccessible === true || !isGithub),
       loading: repoChecking,
       failHint: "Check if your repository is public!",
+      hint:
+        hasRepoLink && !isGithub
+          ? "This repository isn't on GitHub - double check that it exists!"
+          : "",
     },
     {
       label: "Good readme",
-      passed: hasReadme === true,
+      passed: hasRepoLink && (hasReadme === true || !isGithub),
       loading: repoChecking,
       hint: "Unsure? Check this out!",
       hintLink: "https://hack.club/hctg/guide",
@@ -312,6 +322,7 @@ export default function ProjectForm({
     if (!project || !hasRepoLink) {
       setRepoAccessible(false);
       setHasReadme(false);
+      setIsGithub(false);
       return;
     }
     setRepoChecking(true);
@@ -329,9 +340,11 @@ export default function ProjectForm({
       const json = await res.json();
       setRepoAccessible(json.accessible);
       setHasReadme(json.has_readme);
+      setIsGithub(json.is_github);
     } catch {
       setRepoAccessible(false);
       setHasReadme(false);
+      setIsGithub(false);
     } finally {
       setRepoChecking(false);
     }
@@ -429,7 +442,10 @@ export default function ProjectForm({
           value={data.repo_link}
           onChange={(value) => setData("repo_link", value)}
           onBlur={(value) => {
-            if (value.startsWith("https://github.com/") && value.endsWith(".git")) {
+            if (
+              value.startsWith("https://github.com/") &&
+              value.endsWith(".git")
+            ) {
               setData("repo_link", value.slice(0, -4));
             }
           }}
