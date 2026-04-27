@@ -64,6 +64,7 @@ Rails.application.routes.draw do
 
   resources :users, only: :show do
     resources :ticket_adjustments, path: "adjustments", only: [ :create, :destroy ]
+    resources :ticket_transfers, path: "transfers", only: [ :create, :destroy ]
   end
   get "/me", to: "users#show"
 

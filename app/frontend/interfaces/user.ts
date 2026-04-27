@@ -1,4 +1,5 @@
 import type { TicketAdjustment } from "./ticket_adjustment";
+import type { TicketTransfer } from "./ticket_transfer";
 
 export interface PrivateUser {
   id: number;
@@ -34,6 +35,8 @@ export interface PrivateUser {
   referral_program_active: boolean;
 
   ticket_adjustments: TicketAdjustment[];
+  incoming_ticket_transfers: TicketTransfer[];
+  outgoing_ticket_transfers: TicketTransfer[];
   wizard: boolean;
   can_overspend: boolean;
 }
