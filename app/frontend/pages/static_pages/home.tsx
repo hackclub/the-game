@@ -51,6 +51,18 @@ export default function Home() {
           </p>
         </div>
 
+        <div className="mx-auto w-full max-w-4xl overflow-hidden rounded-3xl border-4 border-black bg-black shadow-[10px_10px_0_0_rgba(0,0,0,0.9)]">
+          <div className="aspect-video w-full">
+            <iframe
+              className="h-full w-full"
+              src="https://www.youtube.com/embed/FT5jE3tca4A"
+              title="Hack Club: The Game video"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          </div>
+        </div>
+
         {props.referralProgram && (
           <Link
             href="/invite"
