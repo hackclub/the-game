@@ -114,19 +114,6 @@ export default function RsvpPage() {
                   game across Manhattan
                 </p>
               </div>
-
-              <div className="mt-8 overflow-hidden border-4 border-[#383636] bg-black shadow-[10px_10px_0_0_rgba(56,54,54,0.18)]">
-                <div className="aspect-video w-full">
-                  <iframe
-                    className="h-full w-full"
-                    src="https://www.youtube.com/embed/FT5jE3tca4A"
-                    title="Hack Club: The Game video"
-                    loading="lazy"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                  />
-                </div>
-              </div>
             </div>
           </div>
 
