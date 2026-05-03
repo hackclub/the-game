@@ -56,7 +56,7 @@ export default function ConfirmPurchaseModal({
         </p>
         {willGoIntoDebt && (
           <p className="mt-3 rounded border border-red-400 bg-red-50 px-3 py-2 text-sm font-bold text-red-700">
-            ⚠ This purchase will put you into negative currency.
+            ⚠ This purchase will put you into negative tickets! You'll need to complete hours after the event to pay it off.
           </p>
         )}
         <div className="my-6 flex flex-col">
