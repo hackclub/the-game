@@ -7,6 +7,7 @@ export default function ConfirmPurchaseModal({
   item,
   quantity,
   totalCost,
+  willGoIntoDebt,
   onCancel,
   onConfirm,
 }: {
@@ -14,6 +15,7 @@ export default function ConfirmPurchaseModal({
   item: Item;
   quantity: number;
   totalCost: number;
+  willGoIntoDebt?: boolean;
   onCancel: () => void;
   onConfirm: (note?: string) => void;
 }) {
@@ -52,6 +54,11 @@ export default function ConfirmPurchaseModal({
           <img src={ticketIcon} alt="Tickets" className="inline h-5 w-5" />
           <span className="font-bold tracking-[-0.03em]">{totalCost}</span>?
         </p>
+        {willGoIntoDebt && (
+          <p className="mt-3 rounded border border-red-400 bg-red-50 px-3 py-2 text-sm font-bold text-red-700">
+            ⚠ This purchase will put you into negative currency.
+          </p>
+        )}
         <div className="my-6 flex flex-col">
           <label className="text-lg font-bold">Note (optional)</label>
           <textarea value={note} onChange={(e) => setNote(e.target.value)} />

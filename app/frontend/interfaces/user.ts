@@ -35,6 +35,7 @@ export interface PrivateUser {
 
   ticket_adjustments: TicketAdjustment[];
   wizard: boolean;
+  can_overspend: boolean;
 }
 
 export interface ReviewerUser {

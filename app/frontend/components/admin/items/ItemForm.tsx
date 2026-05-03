@@ -12,6 +12,7 @@ export default function ItemForm({ item }: { item?: Item }) {
     one_per_user: item?.one_per_user,
     stock: item?.stock,
     black_market: item?.black_market,
+    event_related: item?.event_related,
   });
 
   function handleSubmit(e: React.FormEvent) {
@@ -110,6 +111,18 @@ export default function ItemForm({ item }: { item?: Item }) {
         />
         <label htmlFor="black_market" className="font-bold">
           Black market
+        </label>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <input
+          id="event_related"
+          type="checkbox"
+          checked={data.event_related || false}
+          onChange={(e) => setData("event_related", e.target.checked)}
+        />
+        <label htmlFor="event_related" className="font-bold">
+          Event related
         </label>
       </div>
 

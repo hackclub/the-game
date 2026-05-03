@@ -129,6 +129,7 @@ class User < ApplicationRecord
       hash["total_approved_seconds"] = self.total_approved_seconds
       hash["ticket_adjustments"] = self.ticket_adjustments.order(created_at: :desc).map(&:display_hash)
       hash["wizard"] = self.wizard?
+      hash["can_overspend"] = self.can_overspend
 
       hash
     elsif review

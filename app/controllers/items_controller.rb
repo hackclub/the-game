@@ -138,11 +138,12 @@ class ItemsController < ApplicationController
   end
 
   def item_params
-    p = params.permit(:name, :description, :price, :featured, :super_featured, :one_per_user, :stock, :black_market)
+    p = params.permit(:name, :description, :price, :featured, :super_featured, :one_per_user, :stock, :black_market, :event_related)
     p[:featured] = ActiveModel::Type::Boolean.new.cast(p[:featured]) || false
     p[:super_featured] = ActiveModel::Type::Boolean.new.cast(p[:super_featured]) || false
     p[:one_per_user] = ActiveModel::Type::Boolean.new.cast(p[:one_per_user]) || false
     p[:black_market] = ActiveModel::Type::Boolean.new.cast(p[:black_market]) || false
+    p[:event_related] = ActiveModel::Type::Boolean.new.cast(p[:event_related]) || false
 
     unless params[:image] == "0"
       p[:image] = params[:image]
