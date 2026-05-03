@@ -9,4 +9,5 @@ export interface Item {
   one_per_user: boolean;
   stock: number;
   black_market: boolean;
+  event_related: boolean;
 }

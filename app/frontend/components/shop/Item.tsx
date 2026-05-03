@@ -21,6 +21,7 @@ export default function Item({
   const canAfford = props.user.balance >= totalCost;
   const idvVerified = props.user.verification_status === "verified";
   const maxQuantity = Math.max(1, Math.floor(props.user.balance / item.price));
+  const canOverspendBuy = props.user.can_overspend && item.event_related && !canAfford;
 
   return (
     <div className={`flex h-full flex-col${className ? ` ${className}` : ""}`}>
@@ -124,6 +125,28 @@ export default function Item({
                     item={item}
                     quantity={quantity}
                     totalCost={totalCost}
+                    onCancel={() => setShowConfirm(false)}
+                    onConfirm={(note?: string) => {
+                      setShowConfirm(false);
+                      router.post(`/shop/${item.id}/buy`, { quantity, note });
+                    }}
+                  />
+                </>
+              ) : canOverspendBuy ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirm(true)}
+                    className="smoothing-white mt-4 block w-full cursor-pointer bg-black px-5 py-3 text-center text-xl font-bold tracking-tight text-white transition-colors hover:bg-[#fecb0d] hover:text-black"
+                  >
+                    Buy (will go into debt){quantity > 1 ? ` (${quantity})` : ""}
+                  </button>
+                  <ConfirmPurchaseModal
+                    open={showConfirm}
+                    item={item}
+                    quantity={quantity}
+                    totalCost={totalCost}
+                    willGoIntoDebt
                     onCancel={() => setShowConfirm(false)}
                     onConfirm={(note?: string) => {
                       setShowConfirm(false);

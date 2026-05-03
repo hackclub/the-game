@@ -41,6 +41,7 @@ export default function Items({ items }: Props) {
     { field: "super_featured" as const, headerName: "Super featured?" },
     { field: "one_per_user" as const, headerName: "One per user?" },
     { field: "black_market" as const, headerName: "Black market?" },
+    { field: "event_related" as const, headerName: "Event related?" },
   ]);
 
   const onSelectionChanged = () => {
