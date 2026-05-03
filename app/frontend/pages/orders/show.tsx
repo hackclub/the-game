@@ -102,6 +102,11 @@ export default function ShowOrder({ order, order_user, item }: Props) {
           {!order.deleted_at && (
             <div className="mt-4">
               <h3 className="text-2xl font-bold">Mark Progress</h3>
+              {order_user.can_overspend && (
+                <p className="my-2 rounded-md border-2 border-blue-400 bg-blue-100 p-4 font-bold text-blue-800">
+                  This user has overspending for event items enabled.
+                </p>
+              )}
               {order_user.balance < 0 && (
                 <p className="my-2 rounded-md border-2 border-yellow-400 bg-yellow-200 p-4 font-bold">
                   WARNING: THIS USER HAS A NEGATIVE BALANCE. AN APPROVAL WAS
