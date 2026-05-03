@@ -47,6 +47,11 @@ export default function UserPage() {
               reviewer.
             </p>
           )}
+          {props.page_user.can_overspend && (
+            <p className="rounded-md border-2 border-blue-400 bg-blue-100 px-4 py-2 font-bold text-blue-800">
+              Overspending for event items is enabled for this user.
+            </p>
+          )}
           <p>
             <span className="font-bold">Email: </span>
             {props.page_user.email}
