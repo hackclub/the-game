@@ -21,7 +21,7 @@ export default function Item({
   const canAfford = props.user.balance >= totalCost;
   const idvVerified = props.user.verification_status === "verified";
   const maxQuantity = Math.max(1, Math.floor(props.user.balance / item.price));
-  const canOverspendBuy = props.user.can_overspend && item.event_related && !canAfford;
+  const canOverspendBuy = props.user.can_overspend && item.event_related && !canAfford && !(item.id === 3 && props.user.balance < 20);
 
   return (
     <div className={`flex h-full flex-col${className ? ` ${className}` : ""}`}>

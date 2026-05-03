@@ -83,7 +83,12 @@ class Item
     end
 
     def check_balance
-      return if user.can_overspend? && item.event_related?
+      if user.can_overspend? && item.event_related?
+        if item.id == Item::INVITE_ID && user.balance < 20
+          errors.add(:base, "You need at least 20 tickets to purchase #{item.name}")
+        end
+        return
+      end
       if user.balance < amount_paid
         errors.add(:base, "User ##{user.id} (#{user.balance} tickets) does not have sufficient tickets to purchase #{quantity}x #{item.name} (#{amount_paid} tickets)")
       end
