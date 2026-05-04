@@ -67,14 +67,39 @@ function IconDestroy() {
 }
 
 function EventBadge({ event }: { event: string }) {
-  const configs: Record<string, { icon: React.ReactNode; bg: string; text: string; label: string }> = {
-    create: { icon: <IconCreate />, bg: "bg-green-100", text: "text-green-700", label: "Created" },
-    update: { icon: <IconUpdate />, bg: "bg-blue-100",  text: "text-blue-700",  label: "Updated" },
-    destroy: { icon: <IconDestroy />, bg: "bg-red-100", text: "text-red-700",   label: "Deleted" },
+  const configs: Record<
+    string,
+    { icon: React.ReactNode; bg: string; text: string; label: string }
+  > = {
+    create: {
+      icon: <IconCreate />,
+      bg: "bg-green-100",
+      text: "text-green-700",
+      label: "Created",
+    },
+    update: {
+      icon: <IconUpdate />,
+      bg: "bg-blue-100",
+      text: "text-blue-700",
+      label: "Updated",
+    },
+    destroy: {
+      icon: <IconDestroy />,
+      bg: "bg-red-100",
+      text: "text-red-700",
+      label: "Deleted",
+    },
   };
-  const cfg = configs[event] ?? { icon: null, bg: "bg-gray-100", text: "text-gray-700", label: event };
+  const cfg = configs[event] ?? {
+    icon: null,
+    bg: "bg-gray-100",
+    text: "text-gray-700",
+    label: event,
+  };
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${cfg.bg} ${cfg.text}`}>
+    <span
+      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${cfg.bg} ${cfg.text}`}
+    >
       {cfg.icon}
       {cfg.label}
     </span>
@@ -89,28 +114,49 @@ function formatValue(val: unknown): string {
   return String(val);
 }
 
-function ChangeDiff({ changes }: { changes: Record<string, [unknown, unknown]> }) {
+function ChangeDiff({
+  changes,
+}: {
+  changes: Record<string, [unknown, unknown]>;
+}) {
   // Skip internal timestamps and papertrail noise
   const SKIP = new Set(["updated_at", "created_at"]);
   const entries = Object.entries(changes).filter(([k]) => !SKIP.has(k));
 
   if (entries.length === 0) {
-    return <p className="text-xs text-gray-500 italic">No significant changes recorded.</p>;
+    return (
+      <p className="text-xs text-gray-500 italic">
+        No significant changes recorded.
+      </p>
+    );
   }
 
   return (
-    <div className="mt-2 space-y-2 text-xs font-mono">
+    <div className="mt-2 space-y-2 font-mono text-xs">
       {entries.map(([field, [oldVal, newVal]]) => (
-        <div key={field} className="rounded border border-gray-200 bg-white overflow-hidden">
-          <div className="bg-gray-50 px-3 py-1 font-semibold text-gray-600">{field}</div>
+        <div
+          key={field}
+          className="overflow-hidden rounded border border-gray-200 bg-white"
+        >
+          <div className="bg-gray-50 px-3 py-1 font-semibold text-gray-600">
+            {field}
+          </div>
           <div className="grid grid-cols-2 divide-x divide-gray-200">
-            <div className="px-3 py-2 bg-red-50">
-              <span className="block text-red-400 text-[10px] uppercase tracking-wide mb-1">Before</span>
-              <pre className="whitespace-pre-wrap break-all text-red-700">{formatValue(oldVal)}</pre>
+            <div className="bg-red-50 px-3 py-2">
+              <span className="mb-1 block text-[10px] tracking-wide text-red-400 uppercase">
+                Before
+              </span>
+              <pre className="break-all whitespace-pre-wrap text-red-700">
+                {formatValue(oldVal)}
+              </pre>
             </div>
-            <div className="px-3 py-2 bg-green-50">
-              <span className="block text-green-400 text-[10px] uppercase tracking-wide mb-1">After</span>
-              <pre className="whitespace-pre-wrap break-all text-green-700">{formatValue(newVal)}</pre>
+            <div className="bg-green-50 px-3 py-2">
+              <span className="mb-1 block text-[10px] tracking-wide text-green-400 uppercase">
+                After
+              </span>
+              <pre className="break-all whitespace-pre-wrap text-green-700">
+                {formatValue(newVal)}
+              </pre>
             </div>
           </div>
         </div>
@@ -149,7 +195,10 @@ function UserAutocomplete({
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
         setOpen(false);
       }
     }
@@ -169,9 +218,12 @@ function UserAutocomplete({
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(async () => {
       try {
-        const res = await fetch(`/admin/users/search?q=${encodeURIComponent(q)}`, {
-          headers: { Accept: "application/json" },
-        });
+        const res = await fetch(
+          `/admin/users/search?q=${encodeURIComponent(q)}`,
+          {
+            headers: { Accept: "application/json" },
+          },
+        );
         const data: UserSuggestion[] = await res.json();
         setSuggestions(data);
         setOpen(data.length > 0);
@@ -193,7 +245,11 @@ function UserAutocomplete({
       <label className="text-xs font-semibold text-gray-500">Actor</label>
       <div className="flex items-center gap-2 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm focus-within:ring-2 focus-within:ring-yellow-400">
         {value && selectedUser?.avatar && (
-          <img src={selectedUser.avatar} alt="" className="h-5 w-5 rounded-full shrink-0" />
+          <img
+            src={selectedUser.avatar}
+            alt=""
+            className="h-5 w-5 shrink-0 rounded-full"
+          />
         )}
         <input
           type="text"
@@ -207,7 +263,12 @@ function UserAutocomplete({
           <button
             type="button"
             className="shrink-0 text-gray-400 hover:text-gray-600"
-            onClick={() => { setQuery(""); onChange("", null); setSuggestions([]); setOpen(false); }}
+            onClick={() => {
+              setQuery("");
+              onChange("", null);
+              setSuggestions([]);
+              setOpen(false);
+            }}
           >
             ×
           </button>
@@ -220,11 +281,18 @@ function UserAutocomplete({
               <button
                 type="button"
                 className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-yellow-50"
-                onMouseDown={(e) => { e.preventDefault(); select(u); }}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  select(u);
+                }}
               >
                 <div className="h-6 w-6 shrink-0 overflow-hidden rounded-full bg-gray-200">
                   {u.avatar ? (
-                    <img src={u.avatar} alt="" className="h-full w-full object-cover" />
+                    <img
+                      src={u.avatar}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center text-xs font-bold text-gray-500">
                       {u.username.charAt(0).toUpperCase()}
@@ -248,11 +316,21 @@ function AuditRow({ entry }: { entry: AuditEntry }) {
   const [open, setOpen] = useState(false);
 
   const date = new Date(entry.created_at);
-  const dateStr = date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-  const timeStr = date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  const dateStr = date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+  const timeStr = date.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
 
   const actor = entry.whodunnit_user;
-  const actorName = actor?.username ?? (entry.whodunnit ? `User #${entry.whodunnit}` : "System");
+  const actorName =
+    actor?.username ??
+    (entry.whodunnit ? `User #${entry.whodunnit}` : "System");
 
   const itemLabel = entry.item_type.replace("::", " › ");
 
@@ -270,7 +348,11 @@ function AuditRow({ entry }: { entry: AuditEntry }) {
         {/* Avatar */}
         <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full bg-gray-200">
           {actor?.avatar ? (
-            <img src={actor.avatar} alt="" className="h-full w-full object-cover" />
+            <img
+              src={actor.avatar}
+              alt=""
+              className="h-full w-full object-cover"
+            />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-sm font-bold text-gray-500">
               {actorName.charAt(0).toUpperCase()}
@@ -285,7 +367,11 @@ function AuditRow({ entry }: { entry: AuditEntry }) {
         <span className="flex-1 truncate text-sm text-gray-800">
           <span className="font-semibold">{actorName}</span>{" "}
           <span className="text-gray-500">
-            {entry.event === "create" ? "created" : entry.event === "update" ? "updated" : "deleted"}{" "}
+            {entry.event === "create"
+              ? "created"
+              : entry.event === "update"
+                ? "updated"
+                : "deleted"}{" "}
           </span>
           <span className="font-mono text-xs font-medium text-gray-700">
             {itemLabel} #{entry.item_id}
@@ -293,7 +379,10 @@ function AuditRow({ entry }: { entry: AuditEntry }) {
         </span>
 
         {/* Date */}
-        <span className="shrink-0 text-xs text-gray-400" title={`${dateStr} ${timeStr}`}>
+        <span
+          className="shrink-0 text-xs text-gray-400"
+          title={`${dateStr} ${timeStr}`}
+        >
           {dateStr} · {timeStr}
         </span>
 
@@ -313,11 +402,20 @@ function AuditRow({ entry }: { entry: AuditEntry }) {
 
       {/* Expanded details */}
       {open && (
-        <div className="border-t border-gray-100 px-4 pb-4 pt-3">
+        <div className="border-t border-gray-100 px-4 pt-3 pb-4">
           <div className="mb-2 flex flex-wrap gap-4 text-xs text-gray-500">
-            <span><span className="font-semibold text-gray-700">Version ID:</span> {entry.id}</span>
-            <span><span className="font-semibold text-gray-700">Item type:</span> {entry.item_type}</span>
-            <span><span className="font-semibold text-gray-700">Item ID:</span> {entry.item_id}</span>
+            <span>
+              <span className="font-semibold text-gray-700">Version ID:</span>{" "}
+              {entry.id}
+            </span>
+            <span>
+              <span className="font-semibold text-gray-700">Item type:</span>{" "}
+              {entry.item_type}
+            </span>
+            <span>
+              <span className="font-semibold text-gray-700">Item ID:</span>{" "}
+              {entry.item_id}
+            </span>
             {entry.whodunnit && (
               <a
                 href={`/users/${entry.whodunnit}`}
@@ -329,10 +427,13 @@ function AuditRow({ entry }: { entry: AuditEntry }) {
             )}
           </div>
 
-          {entry.object_changes && Object.keys(entry.object_changes).length > 0 ? (
+          {entry.object_changes &&
+          Object.keys(entry.object_changes).length > 0 ? (
             <ChangeDiff changes={entry.object_changes} />
           ) : (
-            <p className="text-xs text-gray-400 italic">No change data recorded for this event.</p>
+            <p className="text-xs text-gray-400 italic">
+              No change data recorded for this event.
+            </p>
           )}
         </div>
       )}
@@ -360,7 +461,9 @@ export default function AuditLog({
     date_from: date_from || "",
     date_to: date_to || "",
   });
-  const [selectedActor, setSelectedActor] = useState<AuditUser | null>(whodunnit_user ?? null);
+  const [selectedActor, setSelectedActor] = useState<AuditUser | null>(
+    whodunnit_user ?? null,
+  );
 
   function set(key: keyof typeof filters, value: string) {
     setFilters((f) => ({ ...f, [key]: value }));
@@ -371,17 +474,28 @@ export default function AuditLog({
   }
 
   function reset() {
-    const cleared = { item_type: "", event: "", whodunnit: "", date_from: "", date_to: "" };
+    const cleared = {
+      item_type: "",
+      event: "",
+      whodunnit: "",
+      date_from: "",
+      date_to: "",
+    };
     setFilters(cleared);
     setSelectedActor(null);
     router.get("/admin/audit-log", cleared, { preserveScroll: true });
   }
 
   function goToPage(page: number) {
-    router.get("/admin/audit-log", { ...filters, page }, { preserveScroll: true });
+    router.get(
+      "/admin/audit-log",
+      { ...filters, page },
+      { preserveScroll: true },
+    );
   }
 
-  const inputCls = "rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400";
+  const inputCls =
+    "rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400";
 
   return (
     <Layout>
@@ -403,7 +517,9 @@ export default function AuditLog({
             >
               <option value="">All models</option>
               {item_types.map((t) => (
-                <option key={t} value={t}>{t}</option>
+                <option key={t} value={t}>
+                  {t}
+                </option>
               ))}
             </select>
           </div>
@@ -454,8 +570,8 @@ export default function AuditLog({
                       ? e === "create"
                         ? "border-green-400 bg-green-100 text-green-700"
                         : e === "update"
-                        ? "border-blue-400 bg-blue-100 text-blue-700"
-                        : "border-red-400 bg-red-100 text-red-700"
+                          ? "border-blue-400 bg-blue-100 text-blue-700"
+                          : "border-red-400 bg-red-100 text-red-700"
                       : "border-gray-300 bg-white text-gray-600 hover:bg-gray-50"
                   }`}
                 >
@@ -501,8 +617,10 @@ export default function AuditLog({
           <div className="mt-6 flex items-center justify-between text-sm text-gray-600">
             <button
               disabled={!pagination.prev_page}
-              onClick={() => pagination.prev_page && goToPage(pagination.prev_page)}
-              className="disabled:opacity-40 cursor-pointer rounded-md border px-3 py-1 hover:bg-gray-50 disabled:cursor-default"
+              onClick={() =>
+                pagination.prev_page && goToPage(pagination.prev_page)
+              }
+              className="cursor-pointer rounded-md border px-3 py-1 hover:bg-gray-50 disabled:cursor-default disabled:opacity-40"
             >
               ← Prev
             </button>
@@ -511,8 +629,10 @@ export default function AuditLog({
             </span>
             <button
               disabled={!pagination.next_page}
-              onClick={() => pagination.next_page && goToPage(pagination.next_page)}
-              className="disabled:opacity-40 cursor-pointer rounded-md border px-3 py-1 hover:bg-gray-50 disabled:cursor-default"
+              onClick={() =>
+                pagination.next_page && goToPage(pagination.next_page)
+              }
+              className="cursor-pointer rounded-md border px-3 py-1 hover:bg-gray-50 disabled:cursor-default disabled:opacity-40"
             >
               Next →
             </button>

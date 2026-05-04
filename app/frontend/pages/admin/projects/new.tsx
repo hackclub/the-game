@@ -20,7 +20,9 @@ export default function NewProject({ tags, errors }: Props) {
   const [userResults, setUserResults] = useState<UserResult[]>([]);
   const [selectedUser, setSelectedUser] = useState<UserResult | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [hackatimeProjects, setHackatimeProjects] = useState<HackatimeProject[]>([]);
+  const [hackatimeProjects, setHackatimeProjects] = useState<
+    HackatimeProject[]
+  >([]);
   const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { data, setData, post, processing, progress } = useForm({
@@ -69,7 +71,10 @@ export default function NewProject({ tags, errors }: Props) {
   function toggleHackatimeProject(hp: HackatimeProject) {
     const keys = data.hackatime_project_keys;
     if (keys.includes(hp.id)) {
-      setData("hackatime_project_keys", keys.filter((id) => id !== hp.id));
+      setData(
+        "hackatime_project_keys",
+        keys.filter((id) => id !== hp.id),
+      );
     } else {
       setData("hackatime_project_keys", [...keys, hp.id]);
     }
@@ -92,7 +97,7 @@ export default function NewProject({ tags, errors }: Props) {
     <Layout>
       <div className="max-w-2xl px-4">
         <div className="mb-6">
-          <a href="/admin/projects" className="text-blue-500 underline text-sm">
+          <a href="/admin/projects" className="text-sm text-blue-500 underline">
             ← Back to Projects
           </a>
           <h1 className="mt-2 text-3xl font-bold">Create Project as User</h1>
@@ -276,7 +281,9 @@ export default function NewProject({ tags, errors }: Props) {
               className="mt-1 cursor-pointer rounded-md border border-gray-300 p-2"
               type="file"
               accept="image/jpeg,image/png,image/gif,image/tiff,image/webp,image/heic"
-              onChange={(e) => setData("screenshot", e.target.files?.[0] ?? null)}
+              onChange={(e) =>
+                setData("screenshot", e.target.files?.[0] ?? null)
+              }
             />
             {progress && (
               <progress value={progress.percentage} max="100">

@@ -94,7 +94,7 @@ export default function RsvpPage() {
 
       <div className="relative z-10 flex min-h-screen w-full items-center justify-center px-4 py-12 lg:py-24">
         <div className="flex w-full max-w-none flex-col items-end lg:max-w-6xl">
-          <div className="flex w-full flex-col border-t-30 border-r-4 border-b-4 border-l-4 border-solid border-[#383636] bg-white lg:flex-row text-[#383636]">
+          <div className="flex w-full flex-col border-t-30 border-r-4 border-b-4 border-l-4 border-solid border-[#383636] bg-white text-[#383636] lg:flex-row">
             <div className="flex items-center justify-center bg-white px-6 py-6 lg:border-r-0">
               <div className="h-20 w-auto lg:h-24">
                 <HackClubLogo className="block h-full w-auto max-w-none text-[#383636]" />
@@ -120,7 +120,7 @@ export default function RsvpPage() {
           {props.user ? (
             <a
               href="/home"
-              className="mt-1 flex h-full w-full cursor-pointer items-center justify-center gap-3 border-4 border-[#383636] bg-white px-4 py-4 transition-colors text-[#383636] hover:bg-black hover:text-white lg:gap-4 lg:px-6 lg:py-6"
+              className="mt-1 flex h-full w-full cursor-pointer items-center justify-center gap-3 border-4 border-[#383636] bg-white px-4 py-4 text-[#383636] transition-colors hover:bg-black hover:text-white lg:gap-4 lg:px-6 lg:py-6"
             >
               <div className="h-6 w-6 lg:h-7 lg:w-7">
                 <ArrowVector className="block h-full w-full max-w-none" />
@@ -227,24 +227,25 @@ export default function RsvpPage() {
           <div className="projects-grid" aria-hidden="true" />
 
           <div className="relative px-6 pt-10 pb-16 lg:px-48 lg:pt-16 lg:pb-24">
-            <p className="smoothing-black text-6xl font-bold leading-none tracking-[-3px] text-white lg:text-[108px] lg:tracking-[-6px]">
+            <p className="smoothing-black text-6xl leading-none font-bold tracking-[-3px] text-white lg:text-[108px] lg:tracking-[-6px]">
               Projects
             </p>
-            <p className="mt-4 whitespace-nowrap text-lg text-white/60 lg:text-xl">
-              There's lots of really cool projects being shipped to Hack Club: The Game every day! Take a look!
+            <p className="mt-4 text-lg whitespace-nowrap text-white/60 lg:text-xl">
+              There's lots of really cool projects being shipped to Hack Club:
+              The Game every day! Take a look!
             </p>
           </div>
 
           {/* Diagonal bottom-right cut into the section */}
           <div
-            className="absolute bottom-0 left-0 right-0 h-6 bg-[#E3EBEE] lg:h-10"
+            className="absolute right-0 bottom-0 left-0 h-6 bg-[#E3EBEE] lg:h-10"
             style={{ clipPath: "polygon(0 100%, 100% 0, 100% 100%)" }}
             aria-hidden="true"
           />
         </div>
 
         {/* Marquee */}
-        <div className="w-full overflow-hidden pb-24 pt-6 lg:pb-40 lg:pt-10">
+        <div className="w-full overflow-hidden pt-6 pb-24 lg:pt-10 lg:pb-40">
           <style>{`
             @keyframes marquee {
               0%   { transform: translateX(0); }
@@ -269,7 +270,7 @@ export default function RsvpPage() {
                   <div key={i} className="w-80 shrink-0 lg:w-96">
                     <ProjectCard project={project} newTab variant="homepage" />
                   </div>
-                )
+                ),
               )}
             </div>
           </div>
