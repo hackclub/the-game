@@ -39,6 +39,10 @@ export default function ShowTransfer({ transfer, from_user, to_user }: Props) {
         </a>
       </p>
 
+      <p className="px-4 py-1 text-xl md:px-16">
+        Reason: <span className="italic">{transfer.reason}</span>
+      </p>
+
       <div className="grid grid-cols-2">
         <div className="px-4 py-5 text-xl md:px-16">
           <p className="mt-4 flex items-center gap-2">
