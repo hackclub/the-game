@@ -12,7 +12,7 @@ export default function TransferForm({ user_id }: { user_id: number }) {
 
     if (
       confirm(
-        `Are you sure you want to transfer ${data.amount} ticket${data.amount === 1 ? "" : "s"} to the user with slack ID ${data.slack_id}? This is irreversible.`,
+        `Are you sure you want to transfer ${data.amount} ticket${data.amount === 1 ? "" : "s"} to the user with slack ID ${data.slack_id}? Once approved, this is irreversible.`,
       )
     ) {
       post(`/users/${user_id}/transfers`);
@@ -67,8 +67,8 @@ export default function TransferForm({ user_id }: { user_id: number }) {
           />
         </div>
 
-        <button className="w-min cursor-pointer rounded-md bg-blue-500 px-4 py-2 font-semibold text-white">
-          Transfer
+        <button className="w-fit cursor-pointer rounded-md bg-blue-500 px-4 py-2 font-semibold text-white">
+          Request transfer
         </button>
       </form>
     </div>

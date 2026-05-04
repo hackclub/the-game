@@ -90,6 +90,11 @@ export default function AdminPage() {
             title="Audit Log"
             description="Browse all paper trail records across models"
           />
+          <AdminNav
+            href="/admin/ticket_transfers"
+            title="Ticket Transfers"
+            description="View and approve/reject ticket transfers"
+          />
         </div>
       </div>
     </Layout>

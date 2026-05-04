@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_27_162558) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_03_000002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
   enable_extension "pg_catalog.plpgsql"
@@ -150,6 +150,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_27_162558) do
     t.boolean "black_market", default: false, null: false
     t.datetime "created_at", null: false
     t.text "description", null: false
+    t.boolean "event_related", default: false, null: false
     t.boolean "featured", default: false, null: false
     t.string "name", null: false
     t.boolean "one_per_user", default: false, null: false
@@ -276,10 +277,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_27_162558) do
   end
 
   create_table "ticket_transfers", force: :cascade do |t|
+    t.string "aasm_state", null: false
     t.integer "amount", null: false
+    t.datetime "approved_at"
     t.datetime "created_at", null: false
     t.bigint "from_user_id", null: false
     t.string "reason", null: false
+    t.datetime "rejected_at"
     t.bigint "to_user_id", null: false
     t.datetime "updated_at", null: false
     t.index ["from_user_id"], name: "index_ticket_transfers_on_from_user_id"
@@ -297,6 +301,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_27_162558) do
     t.string "avatar"
     t.integer "ban_type"
     t.date "birthday"
+    t.boolean "can_overspend", default: false, null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.datetime "deleted_at"
     t.string "email", null: false

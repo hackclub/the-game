@@ -83,6 +83,13 @@ Rails.application.routes.draw do
   get "/review", to: "review#index"
   get "/review/:id", to: "review#show", as: :review_show
 
+  resources :ticket_transfers, only: :show do
+    member do
+      patch :approve
+      patch :reject
+    end
+  end
+
   scope "/auth" do
     get "hca/callback", to: "auth#account_callback"
     post "logout", to: "auth#logout"
@@ -99,6 +106,7 @@ Rails.application.routes.draw do
     get "/audit-log", to: "admin#audit_log"
     get "/users/search", to: "admin#users_search"
     get "/users/:id/hackatime_projects", to: "admin#user_hackatime_projects"
+    get "/ticket_transfers", to: "admin#ticket_transfers"
   end
 
   post "onboarding/complete", to: "onboarding#complete"

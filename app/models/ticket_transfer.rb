@@ -3,8 +3,11 @@
 # Table name: ticket_transfers
 #
 #  id           :bigint           not null, primary key
+#  aasm_state   :string           not null
 #  amount       :integer          not null
+#  approved_at  :datetime
 #  reason       :string           not null
+#  rejected_at  :datetime
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  from_user_id :bigint           not null
@@ -17,6 +20,9 @@
 #
 class TicketTransfer < ApplicationRecord
   include ActionView::Helpers::TextHelper
+  include AASM
+
+  has_paper_trail
 
   belongs_to :from_user, class_name: "User"
   belongs_to :to_user, class_name: "User"
@@ -25,11 +31,36 @@ class TicketTransfer < ApplicationRecord
   validate :is_not_self_transfer
   validate :check_balance
 
-  def display_hash
-    hash = self.as_json.slice("id", "amount", "reason", "created_at")
+  scope :not_rejected, -> { where.not(aasm_state: "rejected") }
+
+  aasm do
+    state :pending, initial: true
+    state :approved
+    state :rejected
+
+    event :mark_approved do
+      transitions from: :pending, to: :approved
+
+      after do
+        # notif
+      end
+    end
+
+    event :mark_rejected do
+      transitions from: :pending, to: :rejected
+    end
+  end
+
+  def display_hash(private: false)
+    hash = self.as_json.slice("id", "amount", "reason", "aasm_state", "created_at", "approved_at", "rejected_at")
 
     hash["from_user_name"] = from_user.username
     hash["to_user_name"] = to_user.username
+
+    if private
+      hash["from_user_id"] = from_user_id
+      hash["to_user_id"] = to_user_id
+    end
 
     hash
   end

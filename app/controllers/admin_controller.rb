@@ -241,4 +241,27 @@ class AdminController < ApplicationController
       }
     }
   end
+
+  def ticket_transfers
+    filtered_transfers = TicketTransfer.all
+
+    if params[:status].present?
+      filtered_transfers = filtered_transfers.where(aasm_state: params[:status])
+    end
+
+    paginated_transfers = filtered_transfers.order(created_at: :desc).page(params[:page]).per(10)
+
+    render inertia: "admin/ticket_transfers", props: {
+      transfers: paginated_transfers.map { |transfer| transfer.display_hash(private: true) },
+      status: params[:status],
+      users: User.all.order(username: :asc).map(&:display_hash),
+      pagination: {
+        current_page: paginated_transfers.current_page,
+        next_page: paginated_transfers.next_page,
+        prev_page: paginated_transfers.prev_page,
+        total_pages: paginated_transfers.total_pages,
+        total_count: paginated_transfers.total_count
+      }
+    }
+  end
 end

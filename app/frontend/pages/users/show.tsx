@@ -161,18 +161,25 @@ export default function UserPage() {
             <p className="mb-2 text-2xl font-bold">Ticket transfers</p>
             <div className="flex flex-col gap-3">
               {[
-                ...props.page_user.outgoing_ticket_transfers,
-                ...props.page_user.incoming_ticket_transfers,
+                ...props.page_user.outgoing_ticket_transfers.filter(
+                  (t) => t.aasm_state !== "rejected",
+                ),
+                ...props.page_user.incoming_ticket_transfers.filter(
+                  (t) => t.aasm_state === "approved",
+                ),
               ].map((transfer) => (
                 <div className="flex max-w-md flex-col rounded-md border bg-white p-4 text-lg">
                   <div className="flex justify-between">
                     <p>
-                      <strong>{transfer.from_user_name}</strong> transferred{" "}
+                      <strong>{transfer.from_user_name}</strong>{" "}
+                      {transfer.aasm_state === "pending"
+                        ? "requested to transfer"
+                        : "transferred"}{" "}
                       {transfer.amount} ticket{transfer.amount === 1 ? "" : "s"}{" "}
                       to <strong>{transfer.to_user_name}</strong> on{" "}
                       {new Date(transfer.created_at).toLocaleString()}
                       <br />
-                      <span>{transfer.reason}</span>
+                      <span className="italic">{transfer.reason}</span>
                     </p>
                     {props.user.role === "admin" && (
                       <Link

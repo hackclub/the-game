@@ -264,8 +264,8 @@ class User < ApplicationRecord
     revenue = ((approved_reviews.reduce(0) { |acc, review| acc + review.approved_seconds }) / 3600.0).floor
     expenses = purchases.reduce(0) { |acc, purchase| acc + (purchase.amount_paid) }
     adjustments = ticket_adjustments.reduce(0) { |acc, adjustment | acc + adjustment.amount }
-    incoming_transfers = incoming_ticket_transfers.reduce(0) { |acc, transfer| acc + transfer.amount }
-    outgoing_transfers = outgoing_ticket_transfers.reduce(0) { |acc, transfer| acc + transfer.amount }
+    incoming_transfers = incoming_ticket_transfers.approved.reduce(0) { |acc, transfer| acc + transfer.amount }
+    outgoing_transfers = outgoing_ticket_transfers.not_rejected.reduce(0) { |acc, transfer| acc + transfer.amount }
 
     revenue + adjustments - expenses + incoming_transfers - outgoing_transfers
   end
