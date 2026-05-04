@@ -157,9 +157,25 @@ class Project
         last_ship_date = prior_approval.created_at.strftime("%Y-%m-%d")
         submission_line = "Project was reshipped by @/#{project.user.username} on #{submitted_date}. Previously shipped on #{last_ship_date}"
         time_range = "time from #{last_ship_date} to #{submitted_date}"
+        lapse_start = prior_approval.created_at
       else
         submission_line = "Project was submitted by @/#{project.user.username} on #{submitted_date}"
         time_range = "time from 2025-12-22 to #{submitted_date}"
+        lapse_start = Time.parse("2025-12-22T00:00:00Z")
+      end
+
+      lapse_timelapses = fetch_lapse_timelapses(lapse_start, project.submitted_at)
+
+      lapse_section = if lapse_timelapses.any?
+        lines = lapse_timelapses.map do |t|
+          date = Time.at(t["createdAt"] / 1000.0).utc
+          date_str = "#{date.strftime("%B")} #{date.day.ordinalize}, #{date.year}"
+          duration_str = format_timelapse_duration(t["duration"])
+          "- https://lapse.hackclub.com/timelapse/#{t["id"]} (#{duration_str} created on #{date_str})"
+        end
+        "\n\nThis project has #{lapse_timelapses.length} timelapse#{"s" if lapse_timelapses.length != 1} tracked with Lapse:\n#{lines.join("\n")}"
+      else
+        ""
       end
 
       review_reason = <<~TEXT.strip
@@ -173,6 +189,8 @@ class Project
 
         Project was reviewed by @/#{author.username} on #{created_at.strftime("%Y-%m-%d")}.
       TEXT
+
+      review_reason += lapse_section
 
       ysws_project = Project::Ysws.create(
         project_id: project.id,
@@ -202,6 +220,51 @@ class Project
       hours = seconds / 3600
       minutes = (seconds % 3600) / 60
       "#{hours}h #{minutes}min"
+    end
+
+    def format_timelapse_duration(seconds)
+      total_minutes = (seconds / 60).round
+      hours = total_minutes / 60
+      minutes = total_minutes % 60
+      "#{hours}h #{minutes}m"
+    end
+
+    def fetch_lapse_timelapses(start_time, end_time)
+      hackatime_user_id = project.user.hackatime_id
+      return [] unless hackatime_user_id.present?
+
+      start_ms = start_time.to_i * 1000
+      end_ms = end_time.to_i * 1000
+
+      client = Faraday.new(url: "https://api.lapse.hackclub.com/api/hackatime") do |conn|
+        conn.response :json, content_type: /\bjson$/
+      end
+
+      timelapses = []
+
+      project.hackatime_projects.each do |hp|
+        begin
+          response = client.get("timelapsesForProject") do |req|
+            req.params = { hackatimeUserId: hackatime_user_id, projectKey: hp.name }
+          end
+
+          next unless response.success?
+
+          body = response.body
+          next unless body["ok"] && body.dig("data", "timelapses")
+
+          body["data"]["timelapses"].each do |t|
+            ms = t["createdAt"]
+            timelapses << t if ms >= start_ms && ms <= end_ms
+          end
+        rescue
+          next
+        end
+      end
+
+      timelapses
+    rescue
+      []
     end
   end
 end
