@@ -55,7 +55,7 @@ class ApplicationController < ActionController::Base
     return if current_user.last_active && current_user.last_active > 5.minutes.ago
 
     current_user.update_column(:last_active, Time.current)
-    DailyActiveUser.insert({ user_id: current_user.id, date: Date.current }, unique_by: [:user_id, :date])
+    DailyActiveUser.insert({ user_id: current_user.id, date: Date.current }, unique_by: [ :user_id, :date ])
   end
 
   def redirect_banned_users

@@ -7,6 +7,6 @@ class CreateDailyActiveUsers < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :daily_active_users, [:user_id, :date], unique: true
+    add_index :daily_active_users, [ :user_id, :date ], unique: true
   end
 end

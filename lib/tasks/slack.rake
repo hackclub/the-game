@@ -6,7 +6,7 @@ namespace :slack do
       exit 1
     end
 
-    users = User.where.not(slack_id: [nil, ""])
+    users = User.where.not(slack_id: [ nil, "" ])
 
     if ENV["JOIN_AFTER"].present?
       join_after = Date.parse(ENV["JOIN_AFTER"])
