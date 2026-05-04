@@ -7,7 +7,7 @@ import formatTime from "@/utils/formatTime";
 
 interface Props {
   queue: (Project & { username: string })[];
-  all_queued: (Project & { username: string })[];
+  all_queued: (Project & { username: string; ticket_count: number })[];
   queue_count: number;
   week_leaderboard: { id: number; name: string; count: number }[];
   alltime_leaderboard: { id: number; name: string; count: number }[];
@@ -74,7 +74,12 @@ export default function Review({
                     [
                       <span className="text-gray-400">{index + 1}</span>,
                       <span className="font-medium">{project.title}</span>,
-                      <span className="text-gray-600">{project.username}</span>,
+                      <span className="text-gray-600">
+                        {project.username}
+                        <span className="ml-1.5 text-gray-400">
+                          ({project.ticket_count} 🎟️)
+                        </span>
+                      </span>,
                       <span className="text-gray-500">
                         {new Date(project.submitted_at!).toLocaleDateString()}
                       </span>,

@@ -9,7 +9,7 @@ class ReviewController < ApplicationController
     alltime_reviews_by_user = Project::Review.where.not(review_type: :comment).group(:author_id).count
     render inertia: "review/index", props: {
       queue: queue.map { |project| project.display_hash.merge(username: project.user&.username) },
-      all_queued: all_queued.map { |project| project.display_hash.merge(username: project.user&.username) },
+      all_queued: all_queued.map { |project| project.display_hash.merge(username: project.user&.username, ticket_count: project.user&.balance) },
       queue_count: all_queued.count,
       week_leaderboard: week_reviews_by_user.to_a.map { |entry| { id: entry[0], name: User.find(entry[0]).username, count: entry[1] } },
       alltime_leaderboard: alltime_reviews_by_user.to_a.map { |entry| { id: entry[0], name: User.find(entry[0]).username, count: entry[1] } }
