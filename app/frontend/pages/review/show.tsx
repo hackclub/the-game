@@ -203,7 +203,14 @@ export default function ReviewShow({
                 </p>
                 <p>
                   <span className="font-semibold">Slack:</span>{" "}
-                  {project.user!.slack_id}
+                  <a
+                    href={`https://hackclub.enterprise.slack.com/team/${project.user!.slack_id}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    {project.user!.slack_id}
+                  </a>
                 </p>
               </div>
             </div>
