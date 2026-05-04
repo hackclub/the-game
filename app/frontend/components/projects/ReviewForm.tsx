@@ -1,5 +1,5 @@
 import { useForm } from "@inertiajs/react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Project } from "@/interfaces/project";
 import { ProjectReview } from "@/interfaces/project_review";
 
@@ -40,6 +40,16 @@ export default function ReviewForm({
   });
   const [adminOnly, setAdminOnly] = useState(false);
   const [showQuickResponses, setShowQuickResponses] = useState(false);
+
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      if (data.content || data.admin_content) {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [data.content, data.admin_content]);
 
   function insertQuickResponse(text: string) {
     const field =
