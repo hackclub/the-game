@@ -42,12 +42,17 @@ class TicketTransfer < ApplicationRecord
       transitions from: :pending, to: :approved
 
       after do
-        # notif
+        Notification.create!(user: from_user, notifiable: self, message: "Your transfer of #{pluralize(amount, "ticket")} to #{to_user.username} was approved!", link: Rails.application.routes.url_helpers.me_url)
+        Notification.create!(user: to_user, notifiable: self, message: "#{from_user.username} has transferred #{pluralize(amount, "ticket")} to you!", link: Rails.application.routes.url_helpers.me_url)
       end
     end
 
     event :mark_rejected do
       transitions from: :pending, to: :rejected
+
+      after do
+        Notification.create!(user: from_user, notifiable: self, message: "Your transfer of #{pluralize(amount, "ticket")} to #{to_user.username} was rejected", link: Rails.application.routes.url_helpers.me_url)
+      end
     end
   end
 

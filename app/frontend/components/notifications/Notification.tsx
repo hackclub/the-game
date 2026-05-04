@@ -18,6 +18,10 @@ export default function Notification({
       type = "Tickets";
       path = `/me`;
       break;
+    case "TicketTransfer":
+      type = "Ticket Transfer";
+      path = "/me";
+      break;
     default:
       type = "Other";
       path = "#";
