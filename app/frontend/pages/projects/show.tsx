@@ -164,7 +164,14 @@ export default function ShowProject() {
                 </p>
                 <p>
                   <span className="font-semibold">Slack ID:</span>{" "}
-                  {project.user!.slack_id}
+                  <a
+                    href={`https://hackclub.enterprise.slack.com/team/${project.user!.slack_id}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    {project.user!.slack_id}
+                  </a>
                 </p>
               </div>
             </div>
