@@ -54,6 +54,8 @@ export default function TransferForm({ user_id }: { user_id: number }) {
             onChange={(e) => setData("amount", Number(e.target.value))}
             className="rounded-md"
             required
+            min="1"
+            step="1"
           />
         </div>
 
