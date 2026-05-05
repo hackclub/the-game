@@ -128,7 +128,7 @@ class ProjectsController < ApplicationController
       return
     end
 
-    unless repo_accessible?(@project.repo_link) || (@project.repo_link.present && !is_github?(@project.repo_link))
+    unless repo_accessible?(@project.repo_link) || (@project.repo_link.present? && !is_github?(@project.repo_link))
       track_event("project_ship_failed", {
         project_id: @project.id,
         reason: "repo_not_accessible"
