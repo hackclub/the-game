@@ -29,7 +29,7 @@ class TicketTransfer < ApplicationRecord
 
   validates :amount, comparison: { greater_than: 0 }
   validate :is_not_self_transfer
-  validate :check_balance
+  validate :check_balance, if: -> { amount_changed? }
 
   scope :not_rejected, -> { where.not(aasm_state: "rejected") }
 
