@@ -4,6 +4,7 @@ import type { Project } from "@/interfaces/project";
 import type { ProjectTag } from "@/interfaces/project_tag";
 import type { SharedProps } from "@/types";
 import formatTime from "@/utils/formatTime";
+import { isShippingPaused, SHIPPING_PAUSE_MESSAGE } from "@/utils/shippingPause";
 import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import arrowIcon from "@/assets/icons/arrow.svg";
 import clsx from "clsx";
@@ -268,6 +269,7 @@ export default function ProjectForm({
 
   const disabled = project?.aasm_state === "submitted";
   const idvVerified = props.user.verification_status === "verified";
+  const shippingPaused = isShippingPaused();
   const [showShipChecklist, setShowShipChecklist] = useState(false);
   const [repoChecking, setRepoChecking] = useState(false);
   const [repoAccessible, setRepoAccessible] = useState<boolean | null>(null);
@@ -644,43 +646,52 @@ export default function ProjectForm({
               {project ? "Update project" : "Create project"}
             </button>
             {project && (
-              <div className="flex gap-3">
-                {project.reported_seconds > project.approved_seconds && (
+              <div className="flex flex-col gap-2">
+                <div className="flex gap-3">
+                  {project.reported_seconds > project.approved_seconds && (
+                    <button
+                      className={clsx(
+                        "group flex h-[59px] w-full items-center justify-center gap-3 text-xl font-bold transition-colors",
+                        shippingPaused
+                          ? "cursor-not-allowed bg-gray-300 text-gray-500"
+                          : "cursor-pointer bg-[#fecb0d] text-black hover:bg-[#e5b80b] disabled:cursor-not-allowed disabled:opacity-50",
+                      )}
+                      type="button"
+                      onClick={shippingPaused ? undefined : openShipChecklist}
+                      disabled={processing || !idvVerified || shippingPaused}
+                    >
+                      {!idvVerified
+                        ? "Verify to ship"
+                        : project.aasm_state === "approved" ||
+                            project.aasm_state === "rejected"
+                          ? "Re-ship"
+                          : "Ship"}
+                    </button>
+                  )}
+                  <PreShipChecklist
+                    open={showShipChecklist}
+                    checks={shipChecks}
+                    repoChecking={repoChecking}
+                    onCancel={() => setShowShipChecklist(false)}
+                    onConfirm={confirmShip}
+                  />
                   <button
                     className={clsx(
-                      "group flex h-[59px] w-full cursor-pointer items-center justify-center gap-3 bg-[#fecb0d] text-xl font-bold text-black transition-colors",
-                      "hover:bg-[#e5b80b] disabled:cursor-not-allowed disabled:opacity-50",
+                      "group flex h-[59px] w-full cursor-pointer items-center justify-center gap-3 bg-red-500 text-xl font-bold text-white transition-colors",
+                      "hover:bg-red-600 disabled:opacity-50",
                     )}
                     type="button"
-                    onClick={openShipChecklist}
-                    disabled={processing || !idvVerified}
+                    onClick={deleteProject}
+                    disabled={processing}
                   >
-                    {!idvVerified
-                      ? "Verify to ship"
-                      : project.aasm_state === "approved" ||
-                          project.aasm_state === "rejected"
-                        ? "Re-ship"
-                        : "Ship"}
+                    Delete
                   </button>
+                </div>
+                {shippingPaused && project.reported_seconds > project.approved_seconds && (
+                  <p className="rounded-lg border border-gray-300 bg-gray-100 px-4 py-3 text-sm text-gray-700">
+                    {SHIPPING_PAUSE_MESSAGE}
+                  </p>
                 )}
-                <PreShipChecklist
-                  open={showShipChecklist}
-                  checks={shipChecks}
-                  repoChecking={repoChecking}
-                  onCancel={() => setShowShipChecklist(false)}
-                  onConfirm={confirmShip}
-                />
-                <button
-                  className={clsx(
-                    "group flex h-[59px] w-full cursor-pointer items-center justify-center gap-3 bg-red-500 text-xl font-bold text-white transition-colors",
-                    "hover:bg-red-600 disabled:opacity-50",
-                  )}
-                  type="button"
-                  onClick={deleteProject}
-                  disabled={processing}
-                >
-                  Delete
-                </button>
               </div>
             )}
           </>
