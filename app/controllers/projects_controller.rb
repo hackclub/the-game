@@ -107,8 +107,8 @@ class ProjectsController < ApplicationController
     end
   end
 
-  SHIPPING_PAUSE_START = Time.parse("2026-05-10 21:02:00 UTC").freeze
-  SHIPPING_RESUME = Time.parse("2026-05-11 21:00:00 UTC").freeze
+  SHIPPING_PAUSE_START = Time.parse("2026-05-10 22:00:00 UTC").freeze
+  SHIPPING_RESUME = Time.parse("2026-05-11 22:00:00 UTC").freeze
   REJECTION_EXCEPTION_START = (SHIPPING_PAUSE_START - 2.days).freeze
 
   def ship
@@ -120,7 +120,7 @@ class ProjectsController < ApplicationController
           project_id: @project.id,
           reason: "shipping_paused"
         })
-        redirect_to project_path(@project), flash: { alert: "Shipping is temporarily paused as reviewers work to review projects of people who are qualifying for the HCTG event. It will be unpaused at 5:00pm ET on May 11th, 2026." }
+        redirect_to project_path(@project), flash: { alert: "Shipping is temporarily paused as reviewers work to review projects of people who are qualifying for the HCTG event. It will be unpaused at 6:00pm ET on May 11th, 2026." }
         return
       end
     end
