@@ -109,17 +109,20 @@ class ProjectsController < ApplicationController
 
   SHIPPING_PAUSE_START = Time.parse("2026-05-10 21:02:00 UTC").freeze
   SHIPPING_RESUME = Time.parse("2026-05-11 21:00:00 UTC").freeze
+  REJECTION_EXCEPTION_START = (SHIPPING_PAUSE_START - 2.days).freeze
 
   def ship
     authorize @project
 
     if Time.current >= SHIPPING_PAUSE_START && Time.current < SHIPPING_RESUME
-      track_event("project_ship_failed", {
-        project_id: @project.id,
-        reason: "shipping_paused"
-      })
-      redirect_to project_path(@project), flash: { alert: "Shipping is temporarily paused as reviewers work to review projects of people who are qualifying for the HCTG event. It will be unpaused at 5:00pm ET on May 11th, 2026." }
-      return
+      unless recently_rejected_reship?
+        track_event("project_ship_failed", {
+          project_id: @project.id,
+          reason: "shipping_paused"
+        })
+        redirect_to project_path(@project), flash: { alert: "Shipping is temporarily paused as reviewers work to review projects of people who are qualifying for the HCTG event. It will be unpaused at 5:00pm ET on May 11th, 2026." }
+        return
+      end
     end
 
     unless current_user.idv_verified?
@@ -170,6 +173,13 @@ class ProjectsController < ApplicationController
   end
 
   private
+
+  def recently_rejected_reship?
+    @project.aasm_state == "rejected" &&
+      @project.rejected_at.present? &&
+      @project.rejected_at >= REJECTION_EXCEPTION_START &&
+      @project.rejected_at < SHIPPING_PAUSE_START
+  end
 
   def project_params
     p = params.permit(:title, :desc, :demo_link, :repo_link, :ai_declaration)
