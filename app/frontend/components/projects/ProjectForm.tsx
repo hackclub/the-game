@@ -269,10 +269,13 @@ export default function ProjectForm({
 
   const disabled = project?.aasm_state === "submitted";
   const idvVerified = props.user.verification_status === "verified";
-  const shippingPaused = project
-    ? isShippingPausedForProject(project)
-    : isShippingPaused();
-  const hasRejectionException = isShippingPaused() && !shippingPaused;
+  const isAdmin = props.user.role === "admin";
+  const shippingPaused = isAdmin
+    ? false
+    : project
+      ? isShippingPausedForProject(project)
+      : isShippingPaused();
+  const hasRejectionException = !isAdmin && isShippingPaused() && !shippingPaused;
   const [showShipChecklist, setShowShipChecklist] = useState(false);
   const [repoChecking, setRepoChecking] = useState(false);
   const [repoAccessible, setRepoAccessible] = useState<boolean | null>(null);

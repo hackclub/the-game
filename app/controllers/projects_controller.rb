@@ -115,7 +115,7 @@ class ProjectsController < ApplicationController
     authorize @project
 
     if Time.current >= SHIPPING_PAUSE_START && Time.current < SHIPPING_RESUME
-      unless recently_rejected_reship?
+      unless recently_rejected_reship? || current_user.admin?
         track_event("project_ship_failed", {
           project_id: @project.id,
           reason: "shipping_paused"
