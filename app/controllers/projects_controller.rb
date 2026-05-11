@@ -125,31 +125,33 @@ class ProjectsController < ApplicationController
       end
     end
 
-    unless current_user.idv_verified?
-      track_event("project_ship_failed", {
-        project_id: @project.id,
-        reason: "idv_not_verified"
-      })
-      redirect_to project_path(@project), flash: { alert: "Verify your identity to be able to get your projects reviewed." }
-      return
-    end
+    unless current_user.admin?
+      unless current_user.idv_verified?
+        track_event("project_ship_failed", {
+          project_id: @project.id,
+          reason: "idv_not_verified"
+        })
+        redirect_to project_path(@project), flash: { alert: "Verify your identity to be able to get your projects reviewed." }
+        return
+      end
 
-    if @project.missing_fields.any?
-      track_event("project_ship_failed", {
-        project_id: @project.id,
-        missing_fields: @project.missing_fields
-      })
-      redirect_to project_path(@project), flash: { alert: "Cannot ship without #{@project.missing_fields.join(", ") }" }
-      return
-    end
+      if @project.missing_fields.any?
+        track_event("project_ship_failed", {
+          project_id: @project.id,
+          missing_fields: @project.missing_fields
+        })
+        redirect_to project_path(@project), flash: { alert: "Cannot ship without #{@project.missing_fields.join(", ") }" }
+        return
+      end
 
-    unless repo_accessible?(@project.repo_link) || (@project.repo_link.present? && !is_github?(@project.repo_link))
-      track_event("project_ship_failed", {
-        project_id: @project.id,
-        reason: "repo_not_accessible"
-      })
-      redirect_to project_path(@project), flash: { alert: "Could not access repo. Is it private?" }
-      return
+      unless repo_accessible?(@project.repo_link) || (@project.repo_link.present? && !is_github?(@project.repo_link))
+        track_event("project_ship_failed", {
+          project_id: @project.id,
+          reason: "repo_not_accessible"
+        })
+        redirect_to project_path(@project), flash: { alert: "Could not access repo. Is it private?" }
+        return
+      end
     end
 
     @project.mark_submitted!
