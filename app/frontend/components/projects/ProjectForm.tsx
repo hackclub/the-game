@@ -664,9 +664,9 @@ export default function ProjectForm({
                       )}
                       type="button"
                       onClick={shippingPaused ? undefined : openShipChecklist}
-                      disabled={processing || !idvVerified || shippingPaused}
+                      disabled={processing || (!isAdmin && !idvVerified) || shippingPaused}
                     >
-                      {!idvVerified
+                      {!isAdmin && !idvVerified
                         ? "Verify to ship"
                         : project.aasm_state === "approved" ||
                             project.aasm_state === "rejected"
