@@ -13,6 +13,7 @@ export default function ItemForm({ item }: { item?: Item }) {
     stock: item?.stock,
     black_market: item?.black_market,
     event_related: item?.event_related,
+    grants_platform_access: item?.grants_platform_access,
   });
 
   function handleSubmit(e: React.FormEvent) {
@@ -123,6 +124,18 @@ export default function ItemForm({ item }: { item?: Item }) {
         />
         <label htmlFor="event_related" className="font-bold">
           Event related
+        </label>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <input
+          id="grants_platform_access"
+          type="checkbox"
+          checked={data.grants_platform_access || false}
+          onChange={(e) => setData("grants_platform_access", e.target.checked)}
+        />
+        <label htmlFor="grants_platform_access" className="font-bold">
+          Grants Platform access
         </label>
       </div>
 

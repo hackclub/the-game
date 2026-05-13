@@ -10,4 +10,5 @@ export interface Item {
   stock: number;
   black_market: boolean;
   event_related: boolean;
+  grants_platform_access: boolean;
 }
