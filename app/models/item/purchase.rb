@@ -37,6 +37,7 @@ class Item
 
       event :fulfill do
         transitions from: [ :pending, :hold ], to: :fulfilled
+        after { grant_platform_access_if_applicable }
       end
 
       event :hold do
@@ -104,6 +105,15 @@ class Item
       if item.black_market && !user.wizard?
         errors.add(:base, "A golden ticket is required to purchase this item")
       end
+    end
+
+    def grant_platform_access_if_applicable
+      return unless item.grants_platform_access?
+      return if user.account_id.blank?
+
+      PlatformAuthorizationService.authorize!(user.account_id)
+    rescue => e
+      Rails.logger.error("[PlatformAuthorizationService] Failed to authorize user #{user.id} for purchase #{id}: #{e.message}")
     end
   end
 end
