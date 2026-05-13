@@ -7,7 +7,7 @@ class PlatformAuthorizationService
   ENDPOINT = "/api/internal/authorize"
 
   def self.authorize!(hca_id)
-    raise "PLATFORM_API_URL is not configured" if BASE_URL.blank?
+    return nil if BASE_URL.blank?
     raise "PLATFORM_API_TOKEN is not configured" if TOKEN.blank?
 
     uri  = URI("#{BASE_URL}#{ENDPOINT}")
