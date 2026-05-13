@@ -2,7 +2,11 @@ import Layout from "@/layouts/layout";
 import IdvVerificationAlert from "@/components/IdvVerificationAlert";
 import PageHeading from "@/components/layout/PageHeading";
 import ProjectList from "@/components/projects/ProjectList";
-import { isShippingPaused, isShippingPausedForProject, SHIPPING_PAUSE_MESSAGE } from "@/utils/shippingPause";
+import {
+  isShippingPaused,
+  isShippingPausedForProject,
+  SHIPPING_PAUSE_MESSAGE,
+} from "@/utils/shippingPause";
 import { usePage } from "@inertiajs/react";
 import type { SharedProps } from "@/types";
 
@@ -12,7 +16,9 @@ export default function Index({ projects }: { projects: Project[] }) {
   const { props } = usePage<SharedProps>();
   const isAdmin = props.user.role === "admin";
   const allPaused =
-    !isAdmin && isShippingPaused() && projects.every((p) => isShippingPausedForProject(p));
+    !isAdmin &&
+    isShippingPaused() &&
+    projects.every((p) => isShippingPausedForProject(p));
 
   return (
     <Layout>
