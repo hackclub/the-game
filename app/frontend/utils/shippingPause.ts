@@ -18,10 +18,7 @@ export function isShippingPausedForProject(project: {
   rejected_at: string | null;
 }): boolean {
   if (!isShippingPaused()) return false;
-  if (
-    project.aasm_state === "rejected" &&
-    project.rejected_at !== null
-  ) {
+  if (project.aasm_state === "rejected" && project.rejected_at !== null) {
     const rejectedAt = new Date(project.rejected_at);
     if (
       rejectedAt >= REJECTION_EXCEPTION_START &&
