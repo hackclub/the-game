@@ -20,12 +20,19 @@ export default function Item({
   const totalCost = item.price * quantity;
   const canAfford = props.user.balance >= totalCost;
   const idvVerified = props.user.verification_status === "verified";
-  const maxQuantity = Math.max(1, Math.floor(props.user.balance / item.price));
+  const maxQuantity = Math.max(
+    1,
+    Math.min(
+      Math.floor(props.user.balance / item.price),
+      item.stock != null ? item.stock_left : Infinity,
+    ),
+  );
   const canOverspendBuy =
     props.user.can_overspend &&
     item.event_related &&
     !canAfford &&
     !(item.id === 3 && props.user.balance < 20);
+  const outOfStock = item.stock != null && item.stock_left <= 0;
 
   return (
     <div className={`flex h-full flex-col${className ? ` ${className}` : ""}`}>
@@ -73,6 +80,10 @@ export default function Item({
           {alreadyPurchased ? (
             <p className="smoothing-black mt-4 block w-full bg-[#d9d9d9] px-5 py-3 text-center text-xl font-bold tracking-tight text-black/50">
               Already purchased
+            </p>
+          ) : outOfStock ? (
+            <p className="smoothing-black mt-4 block w-full bg-[#d9d9d9] px-5 py-3 text-center text-xl font-bold tracking-tight text-black/50">
+              Out of stock
             </p>
           ) : (
             <>
