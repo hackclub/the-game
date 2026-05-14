@@ -54,6 +54,7 @@ class Item
     validate :check_balance, on: :create, unless: :skip_balance_check
     validate :check_one_per_user, on: :create
     validate :check_black_market, on: :create
+    validate :check_stock, on: :create
 
     def display_hash(item: false, admin: false)
       hash = self.as_json.slice("id", "aasm_state", "created_at", "updated_at", "item_id", "user_id", "fulfilled_at", "hold_at", "quantity", "deleted_at", "amount_paid", "note")
@@ -104,6 +105,15 @@ class Item
     def check_black_market
       if item.black_market && !user.wizard?
         errors.add(:base, "A golden ticket is required to purchase this item")
+      end
+    end
+
+    def check_stock
+      return unless item.stock.present?
+
+      available = item.stock - item.purchases.sum(:quantity)
+      if quantity > available
+        errors.add(:base, "#{item.name} is out of stock")
       end
     end
 
