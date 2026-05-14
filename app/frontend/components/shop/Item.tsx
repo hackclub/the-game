@@ -20,10 +20,13 @@ export default function Item({
   const totalCost = item.price * quantity;
   const canAfford = props.user.balance >= totalCost;
   const idvVerified = props.user.verification_status === "verified";
-  const maxQuantity = Math.max(1, Math.min(
-    Math.floor(props.user.balance / item.price),
-    item.stock != null ? item.stock_left : Infinity,
-  ));
+  const maxQuantity = Math.max(
+    1,
+    Math.min(
+      Math.floor(props.user.balance / item.price),
+      item.stock != null ? item.stock_left : Infinity,
+    ),
+  );
   const canOverspendBuy =
     props.user.can_overspend &&
     item.event_related &&
