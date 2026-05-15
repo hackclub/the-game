@@ -148,7 +148,7 @@ export default function ItemForm({ item }: { item?: Item }) {
           onChange={(e) => setData("purchasable_in_debt", e.target.checked)}
         />
         <label htmlFor="purchasable_in_debt" className="font-bold">
-          Purchasable in debt
+          Purchasable in debt (only for users who bought platform access)
         </label>
       </div>
 
