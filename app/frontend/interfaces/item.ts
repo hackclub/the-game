@@ -11,4 +11,5 @@ export interface Item {
   black_market: boolean;
   event_related: boolean;
   grants_platform_access: boolean;
+  purchasable_in_debt: boolean;
 }

@@ -14,6 +14,7 @@ export default function ItemForm({ item }: { item?: Item }) {
     black_market: item?.black_market,
     event_related: item?.event_related,
     grants_platform_access: item?.grants_platform_access,
+    purchasable_in_debt: item?.purchasable_in_debt,
   });
 
   function handleSubmit(e: React.FormEvent) {
@@ -136,6 +137,18 @@ export default function ItemForm({ item }: { item?: Item }) {
         />
         <label htmlFor="grants_platform_access" className="font-bold">
           Grants Platform access
+        </label>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <input
+          id="purchasable_in_debt"
+          type="checkbox"
+          checked={data.purchasable_in_debt || false}
+          onChange={(e) => setData("purchasable_in_debt", e.target.checked)}
+        />
+        <label htmlFor="purchasable_in_debt" className="font-bold">
+          Purchasable in debt
         </label>
       </div>
 
