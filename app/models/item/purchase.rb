@@ -91,9 +91,18 @@ class Item
         end
         return
       end
+      if item.purchasable_in_debt? && user_has_platform_access_purchase?
+        return
+      end
       if user.balance < amount_paid
         errors.add(:base, "User ##{user.id} (#{user.balance} tickets) does not have sufficient tickets to purchase #{quantity}x #{item.name} (#{amount_paid} tickets)")
       end
+    end
+
+    def user_has_platform_access_purchase?
+      self.class.joins(:item)
+          .where(user: user, aasm_state: "fulfilled", items: { grants_platform_access: true })
+          .exists?
     end
 
     def check_one_per_user

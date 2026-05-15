@@ -12,6 +12,7 @@
 #  avatar                 :string
 #  ban_type               :integer
 #  birthday               :date
+#  can_overspend          :boolean          default(FALSE), not null
 #  deleted_at             :datetime
 #  email                  :string           not null
 #  first_name             :string
