@@ -228,6 +228,8 @@ class User < ApplicationRecord
 
     record = airtable_record || User::Airtable.new(email: email)
     record.update(data)
+  rescue StandardError => e
+    Rails.logger.error("Airtable sync failed for user #{id}: #{e.class}: #{e.message}")
   end
 
   def pyramid_record
