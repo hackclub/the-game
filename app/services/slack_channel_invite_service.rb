@@ -14,12 +14,19 @@ class SlackChannelInviteService
 
   def initialize(slack_id, client: nil)
     @slack_id = slack_id
-    @client = client || slack_client
+    @client = client || user_token_client
   end
 
   MAX_RETRIES = 3
 
   def invite_user
+    @use_bot_token = full_workspace_member?
+    if @use_bot_token
+      Rails.logger.info("SlackChannelInviteService: #{slack_id} is a full member, using bot token")
+    else
+      Rails.logger.info("SlackChannelInviteService: #{slack_id} is a guest/unboarded user, using user token")
+    end
+
     CHANNELS.each do |channel_id, channel_name|
       invite_to_channel(channel_id, channel_name)
     end
@@ -27,11 +34,38 @@ class SlackChannelInviteService
 
   private
 
+  # Returns true only if the user is a full workspace member (not a guest).
+  # Multi-channel guests (is_restricted) and single-channel guests (is_ultra_restricted)
+  # must still be invited via the user token.
+  def full_workspace_member?
+    return false unless SlackApiService.available?
+
+    response = SlackApiService.client.get("users.info") do |req|
+      req.params["user"] = slack_id
+    end
+
+    body = response.body.is_a?(Hash) ? response.body : {}
+    return false unless body["ok"]
+
+    user = body["user"] || {}
+    !user["is_restricted"] && !user["is_ultra_restricted"] && !user["deleted"]
+  rescue => e
+    Rails.logger.warn("SlackChannelInviteService: could not determine membership type for #{slack_id}: #{e.message}")
+    false
+  end
+
   def invite_to_channel(channel_id, channel_name, attempt: 1)
-    response = client.post("conversations.invite") do |req|
-      req.headers["Content-Type"] = "application/x-www-form-urlencoded; charset=utf-8"
-      req.headers["Cookie"] = "d=#{ENV["SLACK_XOXD_TOKEN"]}"
-      req.body = URI.encode_www_form(channel: channel_id, users: slack_id, token: ENV["SLACK_XOXC_TOKEN"])
+    response = if @use_bot_token
+      SlackApiService.client.post("conversations.invite") do |req|
+        req.headers["Content-Type"] = "application/json; charset=utf-8"
+        req.body = { channel: channel_id, users: slack_id }.to_json
+      end
+    else
+      client.post("conversations.invite") do |req|
+        req.headers["Content-Type"] = "application/x-www-form-urlencoded; charset=utf-8"
+        req.headers["Cookie"] = "d=#{ENV["SLACK_XOXD_TOKEN"]}"
+        req.body = URI.encode_www_form(channel: channel_id, users: slack_id, token: ENV["SLACK_XOXC_TOKEN"])
+      end
     end
 
     body = response.body.is_a?(Hash) ? response.body : {}
@@ -56,7 +90,7 @@ class SlackChannelInviteService
 
   attr_reader :client, :slack_id
 
-  def slack_client
+  def user_token_client
     Faraday.new(url: BASE_URL) do |conn|
       conn.response :json, content_type: /\bjson$/
     end
