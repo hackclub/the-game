@@ -1,5 +1,5 @@
 import { useForm } from "@inertiajs/react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Project } from "@/interfaces/project";
 import { ProjectReview } from "@/interfaces/project_review";
 
@@ -86,6 +86,10 @@ export default function ReviewForm({
             if (e.target.value !== "approval") {
               setData("high_quality", false);
             }
+
+            if (e.target.value !== "rejection") {
+              setShowQuickResponses(false);
+            }
           }}
         >
           <option value="comment">Comment</option>
@@ -139,29 +143,31 @@ export default function ReviewForm({
           </>
         )}
       </div>
-      <div className="relative">
-        <button
-          type="button"
-          className="cursor-pointer border border-[#cacaca] bg-[#d9d9d9] px-4 py-2 text-sm font-medium hover:bg-[#ccc]"
-          onClick={() => setShowQuickResponses(!showQuickResponses)}
-        >
-          Quick responses {showQuickResponses ? "▲" : "▼"}
-        </button>
-        {showQuickResponses && (
-          <div className="absolute z-10 mt-1 flex flex-col border border-[#cacaca] bg-white shadow-md">
-            {QUICK_RESPONSES.map((response) => (
-              <button
-                key={response.label}
-                type="button"
-                className="cursor-pointer px-4 py-2 text-left text-sm hover:bg-[#e8e8e8]"
-                onClick={() => insertQuickResponse(response.text)}
-              >
-                {response.label}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+      {data.review_type === "rejection" && (
+        <div className="relative">
+          <button
+            type="button"
+            className="cursor-pointer border border-[#cacaca] bg-[#d9d9d9] px-4 py-2 text-sm font-medium hover:bg-[#ccc]"
+            onClick={() => setShowQuickResponses(!showQuickResponses)}
+          >
+            Quick responses {showQuickResponses ? "▲" : "▼"}
+          </button>
+          {showQuickResponses && (
+            <div className="absolute z-10 mt-1 flex flex-col border border-[#cacaca] bg-white shadow-md">
+              {QUICK_RESPONSES.map((response) => (
+                <button
+                  key={response.label}
+                  type="button"
+                  className="cursor-pointer px-4 py-2 text-left text-sm hover:bg-[#e8e8e8]"
+                  onClick={() => insertQuickResponse(response.text)}
+                >
+                  {response.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
       <textarea
         className="h-[117px] resize-none border-[#cacaca] bg-[#d9d9d9] p-4 text-xl outline-none"
         value={

@@ -5,10 +5,7 @@ import PageHeading from "@/components/layout/PageHeading";
 export default function TravelPacklistPage() {
   return (
     <Layout>
-      <PageHeading
-        title="Travel Packlist"
-        subtitle="What to bring with you."
-      />
+      <PageHeading title="Travel Packlist" subtitle="What to bring with you." />
       <div className="px-6 pt-6 xl:px-24 xl:pt-10">
         <Link
           href="/docs"

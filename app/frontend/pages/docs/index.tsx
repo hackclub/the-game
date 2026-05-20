@@ -34,8 +34,8 @@ export default function DocsPage() {
           </h2>
           <p className="smoothing-black text-lg text-black/80">
             {/* smtjh about docs uh idk its docs? */}
-            The collection of docs you need to know everything about the online and in person event! 
-
+            The collection of docs you need to know everything about the online
+            and in person event!
           </p>
         </div>
 
