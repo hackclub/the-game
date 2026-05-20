@@ -119,4 +119,4 @@ gem "posthog-ruby"
 gem "posthog-rails"
 
 gem "rack-mini-profiler"
-gem "stackprof"
+gem "stackprof", platforms: :mri

@@ -55,6 +55,8 @@ Rails.application.routes.draw do
   end
 
   get "/explore", to: "explore#index"
+  get "/docs", to: "docs#index"
+  get "/docs/:slug", to: "docs#show", as: :doc
 
   resources :settings
   resources :notifications, only: [ :index ]
