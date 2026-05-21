@@ -31,15 +31,46 @@ export default function RsvpPage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const nyTime = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }));
+  const nyMonth = nyTime.getMonth();
+  const nyDay = nyTime.getDate();
+  const showEventBanner = nyMonth === 4 && nyDay >= 22 && nyDay <= 24;
+
   return (
     <div
       id="hero"
       className="relative flex w-full flex-col items-start bg-[#E3EBEE]"
     >
+      {showEventBanner && (
+        <a
+          href="https://platform.game.hackclub.com"
+          className="event-banner relative z-50 flex w-full min-h-[25svh] md:min-h-0 items-center justify-center px-6 py-4 md:py-3 text-center no-underline"
+        >
+          <span className="text-xl md:text-base font-bold text-black drop-shadow-sm">
+            Hack Club: The Game starts now!{" "}
+            <span className="underline">Click here to go to the IRL platform.</span>
+          </span>
+        </a>
+      )}
       <style>{`
         @keyframes grid-drift {
           0% { background-position: 0px 0px; }
           100% { background-position: 100px 100px; }
+        }
+        @keyframes stripe-slide {
+          0% { background-position: 0 0; }
+          100% { background-position: 28px 0; }
+        }
+        .event-banner {
+          background-color: #feca11;
+          background-image: repeating-linear-gradient(
+            -45deg,
+            rgba(0,0,0,0.08) 0px,
+            rgba(0,0,0,0.08) 10px,
+            transparent 10px,
+            transparent 20px
+          );
+          animation: stripe-slide 1.2s linear infinite;
         }
         .animated-grid {
           position: fixed;
