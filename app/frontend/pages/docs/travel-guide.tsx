@@ -17,8 +17,7 @@ export default function TravelGuidePage() {
               Hello!
             </h2>
             <p className="smoothing-black text-lg text-black/80">
-              <strong>HACK CLUB: THE GAME</strong> — the travel guides.
-              Welcome!
+              <strong>HACK CLUB: THE GAME</strong> — the travel guides. Welcome!
             </p>
           </section>
 
@@ -37,8 +36,8 @@ export default function TravelGuidePage() {
                 <strong>A train</strong>.
               </li>
               <li>
-                <strong>NOTE:</strong> Please be aware that you will have to
-                pay a $3.00 fare to ride the subway.
+                <strong>NOTE:</strong> Please be aware that you will have to pay
+                a $3.00 fare to ride the subway.
               </li>
               <li>
                 Be sure you are on the{" "}
@@ -61,8 +60,8 @@ export default function TravelGuidePage() {
               </li>
               <li>
                 From there, walk from <strong>Broadway</strong> to{" "}
-                <strong>Amsterdam Ave</strong> on the same block until you
-                reach the <strong>HI New York City Hostel</strong>.
+                <strong>Amsterdam Ave</strong> on the same block until you reach
+                the <strong>HI New York City Hostel</strong>.
               </li>
             </ol>
           </section>
@@ -92,16 +91,16 @@ export default function TravelGuidePage() {
                 .
               </li>
               <li>
-                <strong>NOTE:</strong> Please be aware that you will have to
-                pay a $3.00 fare to ride the subway.
+                <strong>NOTE:</strong> Please be aware that you will have to pay
+                a $3.00 fare to ride the subway.
               </li>
               <li>
                 Take the{" "}
                 <strong>7 train on the Manhattan-bound / Southbound</strong>{" "}
                 track until you reach the train station called{" "}
                 <strong>Times Square-42nd Street</strong>. This will be
-                approximately a 17-minute train ride, depending on whether
-                there are delays or not.
+                approximately a 17-minute train ride, depending on whether there
+                are delays or not.
               </li>
               <li>
                 From <strong>Times Square-42nd Street</strong>, transfer to the{" "}
@@ -115,8 +114,8 @@ export default function TravelGuidePage() {
               </li>
               <li>
                 From there, walk from <strong>Broadway</strong> to{" "}
-                <strong>Amsterdam Ave</strong> on the same block until you
-                reach the <strong>HI New York City Hostel</strong>.
+                <strong>Amsterdam Ave</strong> on the same block until you reach
+                the <strong>HI New York City Hostel</strong>.
               </li>
             </ol>
           </section>
@@ -137,4 +136,3 @@ export default function TravelGuidePage() {
     </Layout>
   );
 }
-  
