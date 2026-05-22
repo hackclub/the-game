@@ -202,7 +202,8 @@ class ProjectsController < ApplicationController
   def hackatime_project_keys
     if params[:hackatime_project_keys].present?
       keys = params[:hackatime_project_keys].values.map(&:to_i)
-      HackatimeProject.where(id: keys, user: @project.user).pluck(:id)
+      user = @project.present? ? @project.user : current_user
+      HackatimeProject.where(id: keys, user:).pluck(:id)
     else
       []
     end
