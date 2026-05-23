@@ -6,7 +6,7 @@ class PlatformAuthorizationService
   TOKEN    = ENV.fetch("PLATFORM_API_TOKEN", nil)
   ENDPOINT = "/api/internal/authorize"
 
-  def self.authorize!(hca_id)
+  def self.authorize!(user)
     return nil if BASE_URL.blank?
     raise "PLATFORM_API_TOKEN is not configured" if TOKEN.blank?
 
@@ -18,7 +18,15 @@ class PlatformAuthorizationService
       "Content-Type"  => "application/json",
       "Authorization" => "Bearer #{TOKEN}"
     })
-    req.body = { hca_id: }.to_json
+    full_name = [ user.first_name, user.last_name ].compact.join(" ").presence
+    req.body = {
+      hca_id:         user.account_id,
+      email:          user.email,
+      slack_id:       user.slack_id,
+      name:           full_name,
+      preferred_name: user.username,
+      avatar_url:     user.avatar
+    }.compact.to_json
 
     res = http.request(req)
     raise "Platform API error #{res.code}: #{res.body}" unless res.is_a?(Net::HTTPSuccess)

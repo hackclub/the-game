@@ -121,7 +121,7 @@ class Item
       return unless item.grants_platform_access?
       return if user.account_id.blank?
 
-      PlatformAuthorizationService.authorize!(user.account_id)
+      PlatformAuthorizationService.authorize!(user)
     rescue => e
       Rails.logger.error("[PlatformAuthorizationService] Failed to authorize user #{user.id} for purchase #{id}: #{e.message}")
     end
