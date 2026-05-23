@@ -1,21 +1,26 @@
 module OneTimeJobs
   class SyncUsersToIrlPlatformJob < ApplicationJob
+    BATCH_SIZE = 100
+
     queue_as :default
 
     def perform
-      users = User.where.not(account_id: [ nil, "" ])
+      stub_ids = PlatformAuthorizationService.stub_hca_ids
+      Rails.logger.info("[SyncUsersToIrlPlatformJob] #{stub_ids.size} stub users need data")
+
+      users = User.where(account_id: stub_ids)
+      Rails.logger.info("[SyncUsersToIrlPlatformJob] #{users.count} matched in the-game")
+
       synced = 0
       errored = 0
 
-      Rails.logger.info("[SyncUsersToIrlPlatformJob] Starting sync for #{users.count} users")
-
-      users.find_each do |user|
-        PlatformAuthorizationService.authorize!(user)
-        synced += 1
-        Rails.logger.info("[SyncUsersToIrlPlatformJob] Synced user #{user.id} / #{user.account_id} (#{synced} done)")
+      users.find_in_batches(batch_size: BATCH_SIZE) do |batch|
+        PlatformAuthorizationService.authorize_batch!(batch)
+        synced += batch.size
+        Rails.logger.info("[SyncUsersToIrlPlatformJob] Synced #{synced}/#{users.count}")
       rescue => e
-        errored += 1
-        Rails.logger.error("[SyncUsersToIrlPlatformJob] Failed for user #{user.id}: #{e.class} - #{e.message}")
+        errored += batch.size
+        Rails.logger.error("[SyncUsersToIrlPlatformJob] Batch failed: #{e.class} - #{e.message}")
       end
 
       Rails.logger.info("[SyncUsersToIrlPlatformJob] Done. synced=#{synced} errored=#{errored}")
