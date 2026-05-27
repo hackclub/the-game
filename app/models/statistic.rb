@@ -18,7 +18,6 @@ class Statistic < AirpplicationRecord
 
     user_count = User.count
     user_onboarding_count = User.where(onboarding_completed: true).count
-    user_slack_count = User.where.not(slack_id: nil).count
     user_account_count = User.where.not(account_id: nil).count
     user_hackatime_count = User.where.not(hackatime_id: nil).count
     user_idv_verified_count = User.where(verification_status: User::VERIFIED_VERIFICATION_STATUSES).count
@@ -32,7 +31,6 @@ class Statistic < AirpplicationRecord
       project_count:,
       user_count:,
       user_onboarding_count:,
-      user_slack_count:,
       user_account_count:,
       user_hackatime_count:,
       user_idv_verified_count:,

@@ -43,7 +43,6 @@ export default function Stats({
   const funnelData = [
     { name: "All users", value: stats.user_count, fill: "#6366f1" },
     { name: "HCA linked", value: stats.user_account_count, fill: "#8b5cf6" },
-    { name: "Slack linked", value: stats.user_slack_count, fill: "#a78bfa" },
     {
       name: "Hackatime linked",
       value: stats.user_hackatime_count,

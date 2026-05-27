@@ -4,7 +4,6 @@ export interface Statistic {
   project_count: number;
   user_count: number;
   user_onboarding_count: number;
-  user_slack_count: number;
   user_account_count: number;
   user_hackatime_count: number;
   user_idv_verified_count: number;

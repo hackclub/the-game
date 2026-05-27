@@ -108,6 +108,7 @@ Rails.application.routes.draw do
     get "/audit-log", to: "admin#audit_log"
     get "/users/search", to: "admin#users_search"
     get "/users/:id/hackatime_projects", to: "admin#user_hackatime_projects"
+    post "/users/:id/sync_to_platform", to: "admin#sync_user_to_platform"
     get "/ticket_transfers", to: "admin#ticket_transfers"
   end
 

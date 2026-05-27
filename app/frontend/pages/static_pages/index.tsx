@@ -70,6 +70,7 @@ export default function RsvpPage() {
             transparent 10px,
             transparent 20px
           );
+          background-size: 28px 28px;
           animation: stripe-slide 1.2s linear infinite;
         }
         .animated-grid {

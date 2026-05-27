@@ -64,6 +64,21 @@ export default function Users({ users, q, role, pagination }: Props) {
       headerName: "Total Approved Seconds",
       valueFormatter: (field: any) => (field.value / 3600).toPrecision(4),
     },
+    {
+      headerName: "Actions",
+      cellRenderer: (field: any) => {
+        return (
+          <button
+            className="cursor-pointer rounded bg-blue-600 px-2 py-1 text-xs text-white hover:bg-blue-700"
+            onClick={() =>
+              router.post(`/admin/users/${field.data.id}/sync_to_platform`)
+            }
+          >
+            Sync to IRL
+          </button>
+        );
+      },
+    },
   ]);
 
   function goToPage(page: number) {

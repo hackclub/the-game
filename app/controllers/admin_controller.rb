@@ -208,6 +208,16 @@ class AdminController < ApplicationController
     render json: user.hackatime_projects.map(&:display_hash)
   end
 
+  def sync_user_to_platform
+    user = User.find(params[:id])
+    PlatformAuthorizationService.authorize!(user)
+    flash[:notice] = "Successfully synced #{user.username} to the IRL platform."
+  rescue => e
+    flash[:alert] = "Failed to sync #{user&.username || "user"} to platform: #{e.message}"
+  ensure
+    redirect_back(fallback_location: "/admin/users")
+  end
+
   def orders
     filtered_orders = Item::Purchase.includes(:user, :item)
 
