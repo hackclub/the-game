@@ -74,7 +74,7 @@ export default function TestProjectCard({
             🎫 Golden ticket winner!
           </p>
         )}
-        <div className="mt-4 flex gap-2">
+        <div className="mt-4 flex flex-wrap gap-2">
           {project.demo_link ? (
             <a
               href={project.demo_link}
