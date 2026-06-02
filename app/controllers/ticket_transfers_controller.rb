@@ -7,11 +7,11 @@ class TicketTransfersController < ApplicationController
 
   def create
     to_user = User.find_by(slack_id: params[:slack_id])
-    TicketTransfer.create!(transfer_params.merge(from_user_id: params[:user_id], to_user:))
+    TicketTransfer.create!(transfer_params.merge(from_user_id: current_user.id, to_user:))
 
     flash[:notice] = "Requested to transfer #{pluralize(transfer_params[:amount], "ticket")} to #{to_user.username}"
 
-    redirect_back_or_to user_path(params[:user_id])
+    redirect_back_or_to admin_user_path(params[:user_id])
   end
 
   def destroy

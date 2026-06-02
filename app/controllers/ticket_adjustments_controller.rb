@@ -9,7 +9,7 @@ class TicketAdjustmentsController < ApplicationController
 
     flash[:notice] = "#{adjustment_params[:amount].positive? ? "Added" : "Removed"} #{pluralize(adjustment_params[:amount].abs, "ticket")}"
 
-    redirect_back_or_to user_path(params[:user_id])
+    redirect_back_or_to admin_user_path(params[:user_id])
   end
 
   def destroy
@@ -18,7 +18,7 @@ class TicketAdjustmentsController < ApplicationController
 
     flash[:notice] = "Removed ticket adjustment for #{pluralize(adjustment.amount, "ticket")}"
 
-    redirect_back_or_to user_path(adjustment.user)
+    redirect_back_or_to admin_user_path(adjustment.user)
   end
 
   private

@@ -133,7 +133,7 @@ export default function ShowProject() {
               <div>
                 {props.user.role === "admin" ? (
                   <Link
-                    href={`/users/${project.user!.id}`}
+                    href={`/admin/users/${project.user!.id}`}
                     className="font-bold text-blue-500 underline"
                   >
                     {project.user!.username} ({project.user!.id})

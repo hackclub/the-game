@@ -1,5 +1,5 @@
 class ProjectsController < ApplicationController
-  skip_after_action :verify_authorized, only: [ :index, :new, :create ]
+  skip_after_action :verify_authorized, only: [ :index, :new, :create, :display ]
   before_action :set_project, only: [ :show, :update, :destroy, :ship, :check_repo ]
 
   def index
@@ -70,6 +70,20 @@ class ProjectsController < ApplicationController
     }
   end
 
+  def display
+    project = Project.approved.includes(:user).find(params[:id])
+
+    @og_title = project.title.present? ? "#{project.title} – Hack Club: The Game" : "Hack Club: The Game"
+    @og_description = project.desc.presence || "A project on Hack Club: The Game"
+    @og_image = rails_blob_url(project.screenshot, disposition: :inline) if project.screenshot.attached?
+
+    render inertia: "projects/display", props: {
+      project: project.display_hash.merge(
+        user: project.user&.display_hash
+      )
+    }
+  end
+
   def update
     authorize @project
 
@@ -85,7 +99,7 @@ class ProjectsController < ApplicationController
     })
 
     flash[:notice] = "Project updated successfully"
-    redirect_back_or_to project_path(@project)
+    redirect_back_or_to manage_project_path(@project)
   rescue
     hackatime_projects = available_hackatime_projects(user: @project.user) + @project.hackatime_projects.map(&:display_hash)
     render inertia: "projects/show", props: { project: @project.display_hash, hackatime_projects: hackatime_projects, errors: @project.errors }
@@ -103,7 +117,7 @@ class ProjectsController < ApplicationController
       redirect_to projects_path
     else
       flash[:alert] = "Failed to delete project"
-      redirect_to project_path(@project)
+      redirect_to manage_project_path(@project)
     end
   end
 
@@ -120,7 +134,7 @@ class ProjectsController < ApplicationController
           project_id: @project.id,
           reason: "shipping_paused"
         })
-        redirect_to project_path(@project), flash: { alert: "Shipping is temporarily paused as reviewers work to review projects of people who are qualifying for the HCTG event. It will be unpaused at 6:00pm ET on May 11th, 2026." }
+        redirect_to manage_project_path(@project), flash: { alert: "Shipping is temporarily paused as reviewers work to review projects of people who are qualifying for the HCTG event. It will be unpaused at 6:00pm ET on May 11th, 2026." }
         return
       end
     end
@@ -131,7 +145,7 @@ class ProjectsController < ApplicationController
           project_id: @project.id,
           reason: "idv_not_verified"
         })
-        redirect_to project_path(@project), flash: { alert: "Verify your identity to be able to get your projects reviewed." }
+        redirect_to manage_project_path(@project), flash: { alert: "Verify your identity to be able to get your projects reviewed." }
         return
       end
 
@@ -140,7 +154,7 @@ class ProjectsController < ApplicationController
           project_id: @project.id,
           missing_fields: @project.missing_fields
         })
-        redirect_to project_path(@project), flash: { alert: "Cannot ship without #{@project.missing_fields.join(", ") }" }
+        redirect_to manage_project_path(@project), flash: { alert: "Cannot ship without #{@project.missing_fields.join(", ") }" }
         return
       end
 
@@ -149,7 +163,7 @@ class ProjectsController < ApplicationController
           project_id: @project.id,
           reason: "repo_not_accessible"
         })
-        redirect_to project_path(@project), flash: { alert: "Could not access repo. Is it private?" }
+        redirect_to manage_project_path(@project), flash: { alert: "Could not access repo. Is it private?" }
         return
       end
     end

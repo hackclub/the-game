@@ -1,4 +1,6 @@
-class ExploreController < ApplicationController
+class TestController < ApplicationController
+  before_action :signed_in_admin
+
   def index
     skip_authorization
 
@@ -13,11 +15,7 @@ class ExploreController < ApplicationController
 
     projects = Project.includes(:user).where(id: page_ids).index_by(&:id).values_at(*page_ids).compact
 
-    track_event("explore_viewed", {
-      project_count: total_count
-    })
-
-    render inertia: "explore/index", props: {
+    render inertia: "test/index", props: {
       projects: projects.map { |p| p.display_hash.merge(username: p.user&.username) },
       seed:,
       pagination: {
@@ -27,6 +25,15 @@ class ExploreController < ApplicationController
         total_pages:,
         total_count:
       }
+    }
+  end
+
+  def project
+    skip_authorization
+    projects = Project.includes(:user).approved.order(approved_at: :desc).limit(6)
+
+    render inertia: "test/project", props: {
+      projects: projects.map { |p| p.display_hash.merge(username: p.user&.username) }
     }
   end
 end

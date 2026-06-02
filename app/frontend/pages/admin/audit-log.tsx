@@ -418,7 +418,7 @@ function AuditRow({ entry }: { entry: AuditEntry }) {
             </span>
             {entry.whodunnit && (
               <a
-                href={`/users/${entry.whodunnit}`}
+                href={`/admin/users/${entry.whodunnit}`}
                 className="font-semibold text-blue-500 underline"
                 onClick={(e) => e.stopPropagation()}
               >

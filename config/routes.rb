@@ -29,7 +29,7 @@ Rails.application.routes.draw do
   post "/rsvp", to: "static_pages#create_rsvp"
   post "/signup", to: "static_pages#signup"
 
-  resources :projects, only: [ :index, :new, :create, :show, :update, :destroy ] do
+  resources :projects, only: [ :index, :new, :create, :update, :destroy ] do
     resources :reviews, only: [ :create, :edit, :update, :destroy ], module: :project
 
     member do
@@ -37,6 +37,8 @@ Rails.application.routes.draw do
       post :check_repo
     end
   end
+  get "/projects/:id", to: "projects#display"
+  get "/projects/:id/manage", to: "projects#show", as: :manage_project
 
   resources :shop, controller: :items, only: [ :index, :create, :edit, :update, :destroy ] do
     member do
@@ -55,6 +57,8 @@ Rails.application.routes.draw do
   end
 
   get "/explore", to: "explore#index"
+  get "/test", to: "test#index"
+  get "/test/project", to: "test#project"
   get "/docs", to: "docs#index"
   get "/docs/:slug", to: "docs#show", as: :doc
 
@@ -64,10 +68,11 @@ Rails.application.routes.draw do
   get "/invite", to: "invite#index"
   get "/invite/:code", to: "invite#show", as: :invite_show
 
-  resources :users, only: :show do
+  resources :users, only: [] do
     resources :ticket_adjustments, path: "adjustments", only: [ :create, :destroy ]
     resources :ticket_transfers, path: "transfers", only: [ :create, :destroy ]
   end
+  get "/users/:id", to: "users#display", as: :user
   get "/me", to: "users#show"
 
   namespace :admin do
@@ -110,6 +115,7 @@ Rails.application.routes.draw do
     get "/users/:id/hackatime_projects", to: "admin#user_hackatime_projects"
     post "/users/:id/sync_to_platform", to: "admin#sync_user_to_platform"
     get "/ticket_transfers", to: "admin#ticket_transfers"
+    get "/users/:id", to: "users#show", as: :user
   end
 
   post "onboarding/complete", to: "onboarding#complete"

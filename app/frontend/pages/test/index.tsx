@@ -5,7 +5,7 @@ import type { Project } from "@/interfaces/project";
 import type { Pagination } from "@/interfaces/pagination";
 import { router } from "@inertiajs/react";
 
-export default function ExplorePage({
+export default function TestPage({
   projects,
   pagination,
   seed,
@@ -15,14 +15,14 @@ export default function ExplorePage({
   seed: number;
 }) {
   function goToPage(page: number) {
-    router.get("/explore", { page, seed }, { preserveScroll: true });
+    router.get("/test", { page, seed }, { preserveScroll: true });
   }
 
   return (
     <Layout>
       <PageHeading
-        title="Gallery"
-        subtitle="Take a look at all of the cool projects submitted to Hack Club: The Game!"
+        title="Test"
+        subtitle="testing abababababa"
       />
 
       <div className="mt-4 flex gap-2 pl-8">

@@ -143,7 +143,7 @@ export default function ReviewShow({
                 </a>
               )}
               <a
-                href={`/projects/${project.id}`}
+                href={`/projects/${project.id}/manage`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 rounded-md border-2 border-gray-300 bg-white px-5 py-2.5 text-lg font-bold text-gray-600 transition-colors hover:bg-gray-50"
@@ -171,7 +171,7 @@ export default function ReviewShow({
               <div className="text-lg">
                 <p className="font-bold">
                   <a
-                    href={`/users/${project.user!.id}`}
+                    href={`/admin/users/${project.user!.id}`}
                     className="text-blue-500 underline hover:text-blue-700"
                   >
                     {project.user!.username}

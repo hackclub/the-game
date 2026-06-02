@@ -122,7 +122,7 @@ class Project < ApplicationRecord
     hash["unread_notification_count"] = unread_notifications.count
 
     if screenshot.attached? && screenshot.persisted?
-      hash["screenshot"] = Rails.application.routes.url_helpers.rails_blob_path(screenshot, disposition: :inline)
+      hash["screenshot"] = "/rails/active_storage/blobs/redirect/#{screenshot.blob.signed_id}/#{screenshot.blob.filename}"
     end
 
     if reviews

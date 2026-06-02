@@ -12,7 +12,7 @@ export default function Notification({
   switch (notification.notifiable_type) {
     case "Project::Review":
       type = "Review";
-      path = `/projects/${notification.notifiable.project_id}`;
+      path = `/projects/${notification.notifiable.project_id}/manage`;
       break;
     case "TicketAdjustment":
       type = "Tickets";

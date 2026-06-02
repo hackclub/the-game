@@ -21,4 +21,16 @@ class UsersController < ApplicationController
 
     render inertia: "users/show", props: { page_user: user.display_hash(private: true), custom: params[:id].present?, timeline:, orders: user.purchases.map { |order| order.display_hash(item: true) } }
   end
+
+  def display
+    skip_authorization
+
+    user = User.find(params[:id])
+    projects = user.projects.includes(:user).where("approved_seconds > 0 OR aasm_state = ?", "approved").order(approved_at: :desc, created_at: :desc)
+
+    render inertia: "users/display", props: {
+      page_user: user.display_hash,
+      projects: projects.map { |p| p.display_hash.merge(username: p.user&.username) }
+    }
+  end
 end

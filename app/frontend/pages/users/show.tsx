@@ -34,6 +34,17 @@ export default function UserPage() {
         title={props.custom ? props.page_user.username : "Settings"}
       />
 
+      {props.custom && (
+        <div className="px-8 pt-4">
+          <a
+            href={`/users/${props.page_user.id}`}
+            className="inline-block rounded-xl border-2 border-black bg-white px-4 py-3 text-lg font-semibold tracking-[-0.02em] transition-transform hover:scale-[1.02]"
+          >
+            View Public Profile
+          </a>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2">
         <div className="smoothing-black flex flex-col gap-4 p-8 text-xl">
           {props.page_user.role === "admin" && (

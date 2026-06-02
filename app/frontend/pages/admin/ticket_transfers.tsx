@@ -44,7 +44,7 @@ export default function Orders({
       headerName: "From User",
       cellRenderer: (field: any) => {
         return (
-          <a className="text-blue-500 underline" href={`/users/${field.value}`}>
+          <a className="text-blue-500 underline" href={`/admin/users/${field.value}`}>
             {users.find((u) => u.id == field.value)?.username}
           </a>
         );
@@ -55,7 +55,7 @@ export default function Orders({
       headerName: "To User",
       cellRenderer: (field: any) => {
         return (
-          <a className="text-blue-500 underline" href={`/users/${field.value}`}>
+          <a className="text-blue-500 underline" href={`/admin/users/${field.value}`}>
             {users.find((u) => u.id == field.value)?.username}
           </a>
         );

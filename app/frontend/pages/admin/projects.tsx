@@ -43,7 +43,7 @@ export default function Projects({
         return (
           <a
             className="text-blue-500 underline"
-            href={`/projects/${field.value}`}
+            href={`/projects/${field.value}/manage`}
           >
             {field.value}
           </a>
