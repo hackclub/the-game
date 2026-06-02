@@ -12,6 +12,7 @@
 #  avatar                 :string
 #  ban_type               :integer
 #  birthday               :date
+#  can_overspend          :boolean          default(FALSE), not null
 #  deleted_at             :datetime
 #  email                  :string           not null
 #  first_name             :string
@@ -22,6 +23,7 @@
 #  last_name              :string
 #  onboarding_completed   :boolean          default(FALSE), not null
 #  referral_code          :string
+#  referral_share_code    :string
 #  role                   :string           default("user")
 #  username               :string
 #  verification_status    :string
@@ -35,9 +37,10 @@
 #
 # Indexes
 #
-#  index_users_on_deleted_at   (deleted_at)
-#  index_users_on_email        (email) UNIQUE
-#  index_users_on_referrer_id  (referrer_id)
+#  index_users_on_deleted_at           (deleted_at)
+#  index_users_on_email                (email) UNIQUE
+#  index_users_on_referral_share_code  (referral_share_code) UNIQUE
+#  index_users_on_referrer_id          (referrer_id)
 #
 class User < ApplicationRecord
   include SwrCacheable
@@ -86,6 +89,8 @@ class User < ApplicationRecord
 
   enum :ban_type, { hackatime: 0, blueprint: 1, previous: 2, slack: 3, age: 4 }
   enum :role, { user: "user", admin: "admin", reviewer: "reviewer" }
+
+  before_create :set_referral_share_code
 
   after_save_commit :link_hackatime, if: -> { slack_id_previously_changed? && hackatime_id.nil? }
   after_save_commit :fetch_avatar, if: -> { avatar.nil? }
@@ -281,7 +286,7 @@ class User < ApplicationRecord
   end
 
   def referral_link_code
-    @referral_link_code ||= Digest::SHA256.hexdigest("referral-#{id}-#{created_at}")[0, 8]
+    referral_share_code
   end
 
   def wizard?
@@ -289,6 +294,10 @@ class User < ApplicationRecord
   end
 
   private
+
+  def set_referral_share_code
+    self.referral_share_code ||= SecureRandom.hex(6)
+  end
 
   def sync_referral_verification
     ReferralRewardService.sync_verification(self)

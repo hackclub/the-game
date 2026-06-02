@@ -89,14 +89,12 @@ export default function UserPage() {
                 {props.page_user.account_id ? "Missing fields" : "Unlinked"}
               </span>
             ) : (
-              <Link
+              <a
                 className={`${props.page_user.account_id ? "text-yellow-600" : "text-red-500"} underline`}
                 href="/auth/hca"
               >
-                {props.page_user.account_id
-                  ? "Reauthenticate"
-                  : "Click here to link"}
-              </Link>
+                {props.page_user.account_id ? "Reauthenticate" : "Click here to link"}
+              </a>
             )}
           </p>
           <MissingAccountFields />

@@ -6,7 +6,6 @@ module Authentication
   included do
       before_action :set_current_user
       before_action :authenticate_user!
-      before_action :ensure_allowed_user!
       helper_method :current_user, :user_logged_in?
   end
 
@@ -28,11 +27,6 @@ module Authentication
   def set_referral_code
     referral_code = params[:r] || params[:ref]
     session[:referral_code] = referral_code if referral_code.present?
-  end
-
-  def ensure_allowed_user!
-    return unless current_user
-    nil if current_user.admin?
   end
 
   def user_logged_in?

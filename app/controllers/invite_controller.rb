@@ -44,10 +44,7 @@ class InviteController < ApplicationController
   def find_referrer_by_code(code)
     return nil if code.blank?
 
-    User.where(is_banned: false).find_each do |u|
-      return u if u.referral_link_code == code
-    end
-    nil
+    User.find_by(referral_share_code: code, is_banned: false)
   end
 
   def referral_leaderboard

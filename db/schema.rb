@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_13_155822) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_02_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
   enable_extension "pg_catalog.plpgsql"
@@ -315,6 +315,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_13_155822) do
     t.string "last_name"
     t.boolean "onboarding_completed", default: false, null: false
     t.string "referral_code"
+    t.string "referral_share_code"
     t.bigint "referrer_id"
     t.string "role", default: "user"
     t.string "slack_id"
@@ -324,6 +325,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_13_155822) do
     t.boolean "ysws_verified"
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["referral_share_code"], name: "index_users_on_referral_share_code", unique: true
     t.index ["referrer_id"], name: "index_users_on_referrer_id"
   end
 

@@ -89,7 +89,7 @@ class AuthController < ApplicationController
         "HCA login failed: #{e.class}: #{e.message}\n#{e.backtrace&.first(10)&.join("\n")}"
       )
 
-      return redirect_to root_path, alert: "Couldn't log in: #{e.message}"
+      return redirect_to root_path, alert: "Login failed, please try again."
     end
 
     redirect_to home_path, notice: "Successfully logged in!"
@@ -118,7 +118,8 @@ class AuthController < ApplicationController
       redirect_to home_path, notice: "Successfully linked Hackatime!"
     end
   rescue StandardError => e
-    redirect_to home_path, alert: "Couldn't link hackatime: #{e.message}"
+    Rails.logger.error("Hackatime link failed: #{e.class}: #{e.message}")
+    redirect_to home_path, alert: "Couldn't link Hackatime, please try again."
   end
 
   private
@@ -153,8 +154,8 @@ class AuthController < ApplicationController
   end
 
   def create_referral_record(user, code)
-    referrer = User.where(is_banned: false).find_each { |u| break u if u.referral_link_code == code }
-    return unless referrer.is_a?(User)
+    referrer = User.find_by(referral_share_code: code, is_banned: false)
+    return unless referrer
     return if referrer.id == user.id
 
     Referral.create!(referrer: referrer, referred_user: user, code: code)
