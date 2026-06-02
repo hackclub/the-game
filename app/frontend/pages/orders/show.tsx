@@ -12,204 +12,269 @@ interface Props {
   item: Item;
 }
 
-export default function ShowOrder({ order, order_user, item }: Props) {
-  const [adminNote, setAdminNote] = useState(order.admin_note);
+const STATUS_LABELS: Record<string, string> = {
+  pending: "Pending",
+  fulfilled: "Fulfilled",
+  hold: "On Hold",
+};
 
-  function handleDelete() {
-    router.delete(`/shop/orders/${order.id}`);
-  }
-  function handleFulfill() {
-    router.patch(`/shop/orders/${order.id}/fulfill`);
-  }
-  function handleOnHold() {
-    router.patch(`/shop/orders/${order.id}/hold`);
-  }
+const STATUS_COLORS: Record<string, string> = {
+  pending: "bg-yellow-100 text-yellow-800",
+  fulfilled: "bg-green-100 text-green-800",
+  hold: "bg-orange-100 text-orange-800",
+  deleted: "bg-red-100 text-red-800",
+};
+
+function relativeDate(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const minutes = Math.floor(diff / 60000);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  if (days > 30) return new Date(dateStr).toLocaleDateString();
+  if (days > 1) return `${days} days ago`;
+  if (days === 1) return "yesterday";
+  if (hours > 1) return `${hours} hours ago`;
+  if (hours === 1) return "1 hour ago";
+  if (minutes > 1) return `${minutes} minutes ago`;
+  return "just now";
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-3">
+      <h2 className="text-2xl font-bold">{title}</h2>
+      <div className="rounded-2xl border-2 border-black bg-white p-5 shadow-sm">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <h3 className="text-lg font-bold">{label}</h3>
+      <div className="text-gray-800">{children}</div>
+    </div>
+  );
+}
+
+export default function ShowOrder({ order, order_user, item }: Props) {
+  const [adminNote, setAdminNote] = useState(order.admin_note ?? "");
+  const [userNote, setUserNote] = useState((order as any).user_note ?? "");
+
+  const state = order.deleted_at ? "deleted" : order.aasm_state;
+  const canAct = !order.deleted_at && order.aasm_state !== "fulfilled";
 
   return (
     <Layout>
-      <PageHeading eyebrow="Orders" title={`Order #${order.id}`} />
+      <PageHeading
+        eyebrow="Orders"
+        title={`Order #${order.id}: ${item.name}`}
+      />
 
-      <div className="grid grid-cols-2">
-        <div className="px-4 py-5 text-xl md:px-16">
-          <h2 className="mb-2 text-3xl font-bold">Item</h2>
-          {item.image && (
-            <img
-              src={item.image}
-              alt={item.name}
-              className="mb-4 h-48 w-48 object-contain"
-            />
-          )}
-          <p className="font-bold">{item.name}</p>
-          <p className="text-lg text-gray-600">{item.description}</p>
-          <p>
-            <span className="font-semibold">Quantity:</span> {order.quantity}
-          </p>
-          <p>
-            <span className="font-semibold">Price:</span> {order.amount_paid}{" "}
-            tickets
-            {order.quantity > 1 && ` (${item.price} each)`}
-          </p>
-          {order.note && (
-            <p>
-              <span className="font-semibold">User note:</span> {order.note}
-            </p>
-          )}
-          <p className="mt-4 flex items-center gap-2">
-            <span className="font-semibold">Status:</span>
-            <span
-              className={`rounded-full px-3 py-1 text-sm font-bold ${
-                order.deleted_at
-                  ? "bg-red-100 text-red-800"
-                  : ({
-                      pending: "bg-yellow-100 text-yellow-800",
-                      processing: "bg-blue-100 text-blue-800",
-                      fulfilled: "bg-green-100 text-green-800",
-                      hold: "bg-orange-100 text-orange-800",
-                    }[order.aasm_state] ?? "bg-gray-100 text-gray-800")
-              }`}
-            >
-              {order.deleted_at ? "deleted" : order.aasm_state}
-            </span>
-          </p>
-          <div className="mt-4">
-            <div className="grid grid-rows-2">
-              <p>
-                <span className="font-semibold"> Created on: </span>{" "}
-                {new Date(order.created_at).toLocaleString()}
-              </p>
+      <div className="mt-6 flex flex-col gap-6 px-4 pb-10 md:px-16">
 
-              {order.fulfilled_at && (
-                <p>
-                  <span className="font-semibold"> Fulfilled at: </span>{" "}
-                  {new Date(order.fulfilled_at).toLocaleString()}
-                </p>
-              )}
+        <Section title="Order details">
+          <div className="flex flex-col gap-5 md:flex-row md:gap-8">
+            <div className="flex flex-1 flex-col gap-4">
+              <Field label={item.name}>
+                <p className="text-gray-500">{item.description}</p>
+              </Field>
 
-              {order.hold_at && (
-                <p>
-                  <span className="font-semibold"> Hold at: </span>{" "}
-                  {new Date(order.hold_at).toLocaleString()}
-                </p>
-              )}
-              {order.deleted_at && (
-                <p>
-                  <span className="font-semibold"> Deleted at: </span>{" "}
-                  {new Date(order.deleted_at).toLocaleString()}
-                </p>
-              )}
-            </div>
-          </div>
-          {!order.deleted_at && (
-            <div className="mt-4">
-              <h3 className="text-2xl font-bold">Mark Progress</h3>
-              {order_user.can_overspend && (
-                <p className="my-2 rounded-md border-2 border-blue-400 bg-blue-100 p-4 font-bold text-blue-800">
-                  This user has overspending for event items enabled.
-                </p>
-              )}
-              {order_user.balance < 0 && (
-                <p className="my-2 rounded-md border-2 border-yellow-400 bg-yellow-200 p-4 font-bold">
-                  WARNING: THIS USER HAS A NEGATIVE BALANCE. AN APPROVAL WAS
-                  PROBABLY UNDONE.
-                </p>
-              )}
-              <div className="flex gap-2">
-                <button
-                  className="cursor-pointer rounded-md bg-blue-500 px-4 py-2 font-bold text-white"
-                  onClick={handleFulfill}
-                >
-                  Fulfilled
-                </button>
-                <button
-                  className="cursor-pointer rounded-md bg-orange-500 px-4 py-2 font-bold text-white"
-                  onClick={handleOnHold}
-                >
-                  Place On Hold
-                </button>
-                <button
-                  className="cursor-pointer rounded-md bg-red-500 px-4 py-2 font-bold text-white"
-                  onClick={handleDelete}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          )}
-          <div className="mt-5 flex flex-col gap-2">
-            <h3 className="text-2xl font-bold">Admin Note</h3>
-            <textarea
-              className="rounded-md bg-white"
-              value={adminNote}
-              onChange={(e) => setAdminNote(e.target.value)}
-            ></textarea>
-            <button
-              className="rounded-md bg-blue-500 px-4 py-2 font-bold text-white"
-              onClick={() => {
-                router.patch(`/shop/orders/${order.id}`, {
-                  admin_note: adminNote,
-                });
-              }}
-            >
-              Update
-            </button>
-          </div>
-        </div>
-
-        <div className="px-4 py-5 text-xl md:px-16">
-          <h2 className="mb-2 text-3xl font-bold">User info</h2>
-          <div className="flex gap-2">
-            <img
-              src={order_user.avatar}
-              alt={`Avatar of ${order_user.username}`}
-              className="h-28 w-28"
-            />
-            <div>
-              <p className="font-bold">
-                {order_user.username} ({order_user.id})
-              </p>
-              <p>{order_user.email}</p>
-              <p>
-                <span className="font-semibold">Balance:</span>{" "}
-                {order_user.balance} tickets
-              </p>
-              <p>
-                <span className="font-semibold">Slack ID:</span>{" "}
-                {order_user.slack_id}
-              </p>
-              <p>
-                <span className="font-semibold">Hackatime ID:</span>{" "}
-                {order_user.hackatime_id} (
-                <a
-                  href={`https://joe.fraud.hackclub.com/profile/${order_user.hackatime_id}`}
-                  className="text-blue-500 underline"
-                >
-                  Joe
-                </a>{" "}
-                |{" "}
-                <a
-                  href={`https://billy.3kh0.net/?u=${order_user.hackatime_id}`}
-                  className="text-blue-500 underline"
-                >
-                  Billy
+              <Field label="User">
+                <a href={`/admin/users/${order_user.id}`} className="underline">
+                  {order_user.username}
                 </a>
-                )
-              </p>
-              <p>
-                <span className="font-semibold">Verification:</span>{" "}
-                {order_user.verification_status}
-              </p>
+                {order_user.slack_id && (
+                  <p>
+                    Slack:{" "}
+                    <a
+                      href={`https://hackclub.enterprise.slack.com/team/${order_user.slack_id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline"
+                    >
+                      {order_user.slack_id}
+                    </a>
+                  </p>
+                )}
+              </Field>
+
+              <Field label="Payment">
+                <p>
+                  {order.amount_paid} tickets
+                  {order.quantity > 1 && ` (${item.price} each × ${order.quantity})`}
+                </p>
+              </Field>
+
+              <Field label="Status">
+                <span
+                  className={`inline-block rounded-full px-3 py-1 text-sm font-bold ${STATUS_COLORS[state] ?? "bg-gray-100 text-gray-800"}`}
+                >
+                  {STATUS_LABELS[state] ?? state}
+                </span>
+              </Field>
+
+              <Field label="Email">
+                <p>{order_user.email}</p>
+              </Field>
+
+              <Field label="Full name">
+                <p>
+                  {[order_user.first_name, order_user.last_name].filter(Boolean).join(" ") || "—"}
+                </p>
+              </Field>
+
+              <Field label="Shipping address">
+                {order_user.address_street ? (
+                  <>
+                    <p>{order_user.address_street}</p>
+                    <p>
+                      {[order_user.address_locality, order_user.address_region, order_user.address_postal]
+                        .filter(Boolean)
+                        .join(", ")}
+                    </p>
+                    <p>{order_user.address_country}</p>
+                  </>
+                ) : (
+                  <p className="text-gray-400">No address on file</p>
+                )}
+              </Field>
+
+              {order.note && (
+                <Field label="User note">
+                  <p className="whitespace-pre-wrap">{order.note}</p>
+                </Field>
+              )}
+
+              <Field label="Order date">
+                <abbr title={new Date(order.created_at).toUTCString()}>
+                  Created {relativeDate(order.created_at)}
+                </abbr>
+                {order.fulfilled_at && (
+                  <p className="text-sm text-gray-500">
+                    Fulfilled {relativeDate(order.fulfilled_at)}
+                  </p>
+                )}
+                {order.hold_at && (
+                  <p className="text-sm text-gray-500">
+                    Held {relativeDate(order.hold_at)}
+                  </p>
+                )}
+              </Field>
+
+              {order_user.balance < 0 && (
+                <p className="rounded-md border-2 border-yellow-400 bg-yellow-100 p-3 font-bold text-yellow-800">
+                  ⚠ User has a negative balance — an approval may have been undone.
+                </p>
+              )}
+              {order_user.can_overspend && (
+                <p className="rounded-md border-2 border-blue-400 bg-blue-100 p-3 font-bold text-blue-800">
+                  This user has overspending enabled for event items.
+                </p>
+              )}
+            </div>
+
+            {item.image && (
+              <div className="shrink-0 md:w-72">
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-full rounded-xl object-contain"
+                />
+              </div>
+            )}
+          </div>
+        </Section>
+
+        <div className="flex flex-col gap-6 md:flex-row">
+          <div className="flex flex-1 flex-col gap-3">
+            <h2 className="text-2xl font-bold">Admin notes</h2>
+            <div className="flex flex-1 flex-col gap-3 rounded-2xl border-2 border-black bg-white p-5 shadow-sm">
+              <label className="flex flex-1 flex-col gap-1">
+                <span className="text-sm text-gray-500">
+                  e.g. tracking number — visible to orgs only
+                </span>
+                <textarea
+                  className="flex-1 rounded-xl border-2 border-black p-3"
+                  rows={4}
+                  value={adminNote}
+                  onChange={(e) => setAdminNote(e.target.value)}
+                />
+              </label>
+              <button
+                className="cursor-pointer rounded-xl border-2 border-black bg-black px-4 py-2 font-semibold text-white transition-colors hover:bg-gray-800"
+                onClick={() =>
+                  router.patch(`/shop/orders/${order.id}`, { admin_note: adminNote })
+                }
+              >
+                Update notes
+              </button>
             </div>
           </div>
-          <div className="mt-4">
-            <h3 className="text-2xl font-bold">Address</h3>
-            <p>{order_user.address_street}</p>
-            <p>
-              {order_user.address_locality}, {order_user.address_region}{" "}
-              {order_user.address_postal}
-            </p>
-            <p>{order_user.address_country}</p>
+
+          <div className="flex flex-1 flex-col gap-3">
+            <h2 className="text-2xl font-bold">User notes</h2>
+            <div className="flex flex-1 flex-col gap-3 rounded-2xl border-2 border-black bg-white p-5 shadow-sm">
+              <label className="flex flex-1 flex-col gap-1">
+                <span className="text-sm text-gray-500">
+                  Sent to the user via Slack when the order is fulfilled
+                </span>
+                <textarea
+                  className="flex-1 rounded-xl border-2 border-black p-3"
+                  rows={4}
+                  value={userNote}
+                  onChange={(e) => setUserNote(e.target.value)}
+                />
+              </label>
+              <button
+                className="cursor-pointer rounded-xl border-2 border-black bg-black px-4 py-2 font-semibold text-white transition-colors hover:bg-gray-800"
+                onClick={() =>
+                  router.patch(`/shop/orders/${order.id}`, { user_note: userNote })
+                }
+              >
+                Save note
+              </button>
+            </div>
           </div>
         </div>
+
+        <Section title="Actions">
+          {canAct ? (
+            <div className="flex flex-col gap-3">
+              {order.aasm_state !== "fulfilled" && (
+                <button
+                  className="cursor-pointer rounded-xl border-2 border-black bg-green-500 px-4 py-3 font-bold text-white transition-colors hover:bg-green-600"
+                  onClick={() => router.patch(`/shop/orders/${order.id}/fulfill`)}
+                >
+                  Mark as fulfilled
+                </button>
+              )}
+              {order.aasm_state !== "hold" && (
+                <button
+                  className="cursor-pointer rounded-xl border-2 border-black bg-orange-500 px-4 py-3 font-bold text-white transition-colors hover:bg-orange-600"
+                  onClick={() => router.patch(`/shop/orders/${order.id}/hold`)}
+                >
+                  Place on hold
+                </button>
+              )}
+              <button
+                className="cursor-pointer rounded-xl border-2 border-black bg-red-500 px-4 py-3 font-bold text-white transition-colors hover:bg-red-600"
+                onClick={() => {
+                  if (confirm("Refund this order?")) router.delete(`/shop/orders/${order.id}`);
+                }}
+              >
+                Refund order
+              </button>
+            </div>
+          ) : (
+            <p className="text-center text-sm text-gray-500">
+              Order is {STATUS_LABELS[state]?.toLowerCase() ?? state} — no actions available.
+            </p>
+          )}
+        </Section>
+
       </div>
     </Layout>
   );

@@ -30,6 +30,14 @@ class OrdersController < ApplicationController
 
   def fulfill
     @order.fulfill!
+
+    if @order.user_note.present? && @order.user.slack_id.present?
+      SlackApiService.post_message(
+        channel: @order.user.slack_id,
+        text: "Hey #{@order.user.username}! Your order for \"#{@order.item.name}\" has been fulfilled. Here's a note from the team: #{@order.user_note}"
+      )
+    end
+
     redirect_to admin_orders_path, notice: "Order fulfilled"
   end
 
@@ -45,6 +53,6 @@ class OrdersController < ApplicationController
   end
 
   def order_params
-    params.require(:order).permit(:admin_note)
+    params.require(:order).permit(:admin_note, :user_note)
   end
 end

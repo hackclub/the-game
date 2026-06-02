@@ -219,6 +219,8 @@ class AdminController < ApplicationController
   end
 
   def orders
+    params[:status] = "pending" if params[:status].nil?
+
     filtered_orders = Item::Purchase.includes(:user, :item)
 
     if params[:status].present?
@@ -233,10 +235,10 @@ class AdminController < ApplicationController
       filtered_orders = filtered_orders.where(user_id: params[:user_id])
     end
 
-    paginated_orders = filtered_orders.order(created_at: :desc).page(params[:page]).per(10)
+    paginated_orders = filtered_orders.order(created_at: :desc).page(params[:page]).per(30)
 
     render inertia: "admin/orders", props: {
-      orders: paginated_orders,
+      orders: paginated_orders.map { |o| o.display_hash(item: true).merge(username: o.user&.username) },
       items: Item.all.order(name: :asc).map(&:display_hash),
       users: User.all.order(username: :asc).map(&:display_hash),
       status: params[:status],

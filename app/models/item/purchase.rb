@@ -11,6 +11,7 @@
 #  hold_at      :datetime
 #  note         :text
 #  quantity     :integer          default(1), not null
+#  user_note    :text
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  item_id      :bigint           not null
@@ -65,6 +66,7 @@ class Item
 
       if admin
         hash["admin_note"] = self.admin_note
+        hash["user_note"] = self.user_note
       end
 
       hash
