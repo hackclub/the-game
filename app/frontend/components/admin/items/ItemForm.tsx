@@ -14,6 +14,7 @@ export default function ItemForm({ item }: { item?: Item }) {
     black_market: item?.black_market,
     event_related: item?.event_related,
     grants_platform_access: item?.grants_platform_access,
+    visible: item?.visible ?? true,
   });
 
   function handleSubmit(e: React.FormEvent) {
@@ -136,6 +137,18 @@ export default function ItemForm({ item }: { item?: Item }) {
         />
         <label htmlFor="grants_platform_access" className="font-bold">
           Grants Platform access
+        </label>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <input
+          id="visible"
+          type="checkbox"
+          checked={data.visible ?? true}
+          onChange={(e) => setData("visible", e.target.checked)}
+        />
+        <label htmlFor="visible" className="font-bold">
+          Visible in shop
         </label>
       </div>
 

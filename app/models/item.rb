@@ -13,6 +13,7 @@
 #  price                  :integer          not null
 #  stock                  :integer
 #  super_featured         :boolean          default(FALSE), not null
+#  visible                :boolean          default(TRUE), not null
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #
@@ -26,9 +27,10 @@ class Item < ApplicationRecord
 
   scope :not_black_market, -> { where(black_market: false) }
   scope :black_market, -> { where(black_market: true) }
+  scope :visible, -> { where(visible: true) }
 
   def display_hash(stock_left = false)
-    hash = self.as_json.slice("id", "description", "name", "price", "featured", "super_featured", "one_per_user", "stock", "black_market", "event_related", "grants_platform_access")
+    hash = self.as_json.slice("id", "description", "name", "price", "featured", "super_featured", "one_per_user", "stock", "black_market", "event_related", "grants_platform_access", "visible")
     if image.attached? && image.persisted?
       hash["image"] = Rails.application.routes.url_helpers.rails_blob_path(image, disposition: :inline)
     end
