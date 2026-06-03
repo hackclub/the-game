@@ -7,7 +7,6 @@ import compassIcon from "@/assets/icons/compass.svg";
 import adminIcon from "@/assets/icons/admin.svg";
 import shopIcon from "@/assets/icons/shop.svg";
 import reviewIcon from "@/assets/icons/review.svg";
-import inviteIcon from "@/assets/icons/invite.svg";
 import docsIcon from "@/assets/icons/link.svg";
 
 import clsx from "clsx";
@@ -150,9 +149,6 @@ export default function Sidebar() {
             <SidebarLink link="/explore" name="Gallery" icon={compassIcon} />
             <SidebarLink link="/shop" name="Shop" icon={shopIcon} />
             <SidebarLink link="/docs" name="Docs" icon={docsIcon} />
-            {props.user.referral_program_active && (
-              <SidebarLink link="/invite" name="Refer" icon={inviteIcon} />
-            )}
             {(props.user.role === "admin" ||
               props.user.role === "reviewer") && (
               <SidebarLink link="/review" name="Review" icon={reviewIcon} />

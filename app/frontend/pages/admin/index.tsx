@@ -86,6 +86,11 @@ export default function AdminPage() {
             description="Manage referral rollout, settings, and stats"
           />
           <AdminNav
+            href="/invite"
+            title="Invite Page"
+            description="Og referral page"
+          />
+          <AdminNav
             href="/admin/audit-log"
             title="Audit Log"
             description="Browse all paper trail records across models"

@@ -1,5 +1,6 @@
 class InviteController < ApplicationController
   allow_unauthenticated_access only: [ :show ]
+  before_action :signed_in_admin, only: [ :index ]
   skip_after_action :verify_authorized
 
   def index
