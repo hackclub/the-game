@@ -255,6 +255,8 @@ class AdminController < ApplicationController
   end
 
   def ticket_transfers
+    params[:status] = "pending" if params[:status].nil?
+
     filtered_transfers = TicketTransfer.all
 
     if params[:status].present?

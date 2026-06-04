@@ -71,11 +71,6 @@ export default function AdminPage() {
             description="Create/delete/modify items in the shop"
           />
           <AdminNav
-            href="/admin/orders"
-            title="Shop Orders"
-            description="View and fulfill shop orders"
-          />
-          <AdminNav
             href="/admin/tags"
             title="Project Tags"
             description="Create/delete/modify project tags"
@@ -94,6 +89,19 @@ export default function AdminPage() {
             href="/admin/audit-log"
             title="Audit Log"
             description="Browse all paper trail records across models"
+          />
+        </div>
+
+        <div className="mt-8 mb-4 flex flex-col gap-1">
+          <h2 className="smoothing-black text-2xl font-bold">Fulfillment</h2>
+          <p className="text-gray-500 italic">stuff for fulfilling :p</p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <AdminNav
+            href="/admin/orders"
+            title="Shop Orders"
+            description="View and fulfill shop orders"
           />
           <AdminNav
             href="/admin/ticket_transfers"
