@@ -1,7 +1,7 @@
 class ItemsController < ApplicationController
   before_action :set_item, only: [ :buy, :claim_referral_item, :edit, :update, :destroy ]
-  before_action :signed_in_admin, only: [ :create, :edit, :update, :destroy, :bulk_adjust_price ]
-  skip_after_action :verify_authorized, only: [ :index, :buy, :claim_referral_item, :create, :edit, :update, :destroy, :bulk_adjust_price ]
+  before_action :signed_in_admin, only: [ :create, :edit, :update, :destroy, :bulk_adjust_price, :bulk_set_category ]
+  skip_after_action :verify_authorized, only: [ :index, :buy, :claim_referral_item, :create, :edit, :update, :destroy, :bulk_adjust_price, :bulk_set_category ]
 
   def index
     program = ReferralProgram.instance
@@ -98,6 +98,15 @@ class ItemsController < ApplicationController
       new_price = [ (item.price * (1 + percentage / 100.0)).round, 1 ].max
       item.update!(price: new_price)
     end
+
+    inertia_location admin_items_path
+  end
+
+  def bulk_set_category
+    item_ids = Array(params[:item_ids]).map(&:to_i)
+    category = params[:category].presence
+
+    Item.where(id: item_ids).update_all(category: category)
 
     inertia_location admin_items_path
   end

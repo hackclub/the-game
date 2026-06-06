@@ -108,6 +108,7 @@ Rails.application.routes.draw do
     get "/users", to: "admin#users"
     get "/items", to: "admin#items"
     post "/items/bulk_adjust_price", to: "items#bulk_adjust_price"
+    post "/items/bulk_set_category", to: "items#bulk_set_category"
     get "/stats", to: "admin#stats"
     get "/orders", to: "admin#orders"
     get "/audit-log", to: "admin#audit_log"

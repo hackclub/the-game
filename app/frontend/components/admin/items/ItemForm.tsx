@@ -1,26 +1,123 @@
 import { useForm } from "@inertiajs/react";
+import { useRef, useState, useEffect } from "react";
 import type { Item } from "@/interfaces/item";
 
-export default function ItemForm({ item, categories = [] }: { item?: Item; categories?: string[] }) {
+type FlagKey =
+  | "featured"
+  | "super_featured"
+  | "one_per_user"
+  | "black_market"
+  | "event_related"
+  | "grants_platform_access"
+  | "visible";
+
+const FLAGS: { key: FlagKey; label: string }[] = [
+  { key: "featured", label: "Featured" },
+  { key: "super_featured", label: "Super featured" },
+  { key: "one_per_user", label: "One per user" },
+  { key: "black_market", label: "Black market" },
+  { key: "event_related", label: "Event related" },
+  { key: "grants_platform_access", label: "Grants platform access" },
+  { key: "visible", label: "Visible in shop" },
+];
+
+const INPUT =
+  "w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500";
+
+function CategoryCombobox({
+  value,
+  categories,
+  onChange,
+}: {
+  value: string | null;
+  categories: string[];
+  onChange: (v: string | null) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function onMouseDown(e: MouseEvent) {
+      if (!ref.current?.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onMouseDown);
+    return () => document.removeEventListener("mousedown", onMouseDown);
+  }, []);
+
+  const display = value ?? "";
+  const filtered = display
+    ? categories.filter((c) => c.toLowerCase().includes(display.toLowerCase()))
+    : categories;
+
+  return (
+    <div ref={ref} className="relative">
+      <div className="flex gap-2">
+        <input
+          className={INPUT + " flex-1"}
+          placeholder="Uncategorized"
+          value={display}
+          onFocus={() => setOpen(true)}
+          onChange={(e) => {
+            onChange(e.target.value || null);
+            setOpen(true);
+          }}
+        />
+        {display && (
+          <button
+            type="button"
+            className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-500 hover:bg-gray-100"
+            onClick={() => onChange(null)}
+          >
+            Clear
+          </button>
+        )}
+      </div>
+      {open && filtered.length > 0 && (
+        <div className="absolute z-20 mt-1 w-full rounded-lg border border-gray-200 bg-white shadow-lg">
+          {filtered.map((c) => (
+            <button
+              key={c}
+              type="button"
+              className="block w-full px-3 py-2 text-left text-sm hover:bg-blue-50 hover:text-blue-700 first:rounded-t-lg last:rounded-b-lg"
+              onMouseDown={() => {
+                onChange(c);
+                setOpen(false);
+              }}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function ItemForm({
+  item,
+  categories = [],
+}: {
+  item?: Item;
+  categories?: string[];
+}) {
   const { data, setData, post, patch, progress } = useForm({
-    name: item?.name,
-    description: item?.description,
-    price: item?.price,
-    image: item?.image ? 0 : (null as File | null | 0),
-    featured: item?.featured,
-    super_featured: item?.super_featured,
-    one_per_user: item?.one_per_user,
-    stock: item?.stock,
-    black_market: item?.black_market,
-    event_related: item?.event_related,
-    grants_platform_access: item?.grants_platform_access,
+    name: item?.name ?? "",
+    description: item?.description ?? "",
+    price: item?.price ?? 0,
+    image: item?.image ? (0 as const) : (null as File | null),
+    featured: item?.featured ?? false,
+    super_featured: item?.super_featured ?? false,
+    one_per_user: item?.one_per_user ?? false,
+    stock: item?.stock ?? 0,
+    black_market: item?.black_market ?? false,
+    event_related: item?.event_related ?? false,
+    grants_platform_access: item?.grants_platform_access ?? false,
     visible: item?.visible ?? true,
     category: item?.category ?? null,
   });
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-
     if (item) {
       patch(`/shop/${item.id}`, { forceFormData: true });
     } else {
@@ -29,160 +126,136 @@ export default function ItemForm({ item, categories = [] }: { item?: Item; categ
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex max-w-lg flex-col gap-4">
-      <div className="flex flex-col">
-        <label className="font-bold">Name</label>
-        <input
-          className="rounded-md p-2"
-          type="text"
-          value={data.name}
-          onChange={(e) => setData("name", e.target.value)}
-        />
+    <form onSubmit={handleSubmit} className="flex max-w-xl flex-col gap-5">
+      {/* Basic Info */}
+      <div className="flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+        <p className="text-xs font-bold uppercase tracking-wider text-gray-400">
+          Basic Info
+        </p>
+        <div>
+          <label className="mb-1 block text-sm font-semibold text-gray-700">
+            Name
+          </label>
+          <input
+            className={INPUT}
+            type="text"
+            value={data.name}
+            onChange={(e) => setData("name", e.target.value)}
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-sm font-semibold text-gray-700">
+            Description
+          </label>
+          <textarea
+            className={INPUT + " min-h-[80px] resize-y"}
+            value={data.description}
+            onChange={(e) => setData("description", e.target.value)}
+          />
+        </div>
       </div>
 
-      <div className="flex flex-col">
-        <label className="font-bold">Description</label>
-        <textarea
-          className="rounded-md p-2"
-          value={data.description}
-          onChange={(e) => setData("description", e.target.value)}
-        />
+      {/* Pricing & Stock */}
+      <div className="flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+        <p className="text-xs font-bold uppercase tracking-wider text-gray-400">
+          Pricing & Stock
+        </p>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
+              Price (tickets)
+            </label>
+            <input
+              className={INPUT}
+              type="number"
+              value={data.price}
+              onChange={(e) => setData("price", parseInt(e.target.value) || 0)}
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
+              Stock
+            </label>
+            <input
+              className={INPUT}
+              type="number"
+              value={data.stock}
+              onChange={(e) => setData("stock", parseInt(e.target.value) || 0)}
+            />
+          </div>
+        </div>
       </div>
 
-      <div className="flex flex-col">
-        <label className="font-bold">Price</label>
-        <input
-          className="rounded-md p-2"
-          type="number"
-          value={data.price}
-          onChange={(e) => setData("price", parseInt(e.target.value))}
-        />
-      </div>
-
-      <div className="flex flex-col">
-        <label className="font-bold">Stock?</label>
-        <input
-          className="rounded-md p-2"
-          type="number"
-          value={data.stock}
-          onChange={(e) => setData("stock", parseInt(e.target.value))}
-        />
-      </div>
-
-      <div className="flex items-center gap-2">
-        <input
-          id="featured"
-          type="checkbox"
-          checked={data.featured || false}
-          onChange={(e) => setData("featured", e.target.checked)}
-        />
-        <label htmlFor="featured" className="font-bold">
-          Featured
-        </label>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <input
-          id="super_featured"
-          type="checkbox"
-          checked={data.super_featured || false}
-          onChange={(e) => setData("super_featured", e.target.checked)}
-        />
-        <label htmlFor="super_featured" className="font-bold">
-          Super featured
-        </label>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <input
-          id="one_per_user"
-          type="checkbox"
-          checked={data.one_per_user || false}
-          onChange={(e) => setData("one_per_user", e.target.checked)}
-        />
-        <label htmlFor="one_per_user" className="font-bold">
-          One per user
-        </label>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <input
-          id="black_market"
-          type="checkbox"
-          checked={data.black_market || false}
-          onChange={(e) => setData("black_market", e.target.checked)}
-        />
-        <label htmlFor="black_market" className="font-bold">
-          Black market
-        </label>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <input
-          id="event_related"
-          type="checkbox"
-          checked={data.event_related || false}
-          onChange={(e) => setData("event_related", e.target.checked)}
-        />
-        <label htmlFor="event_related" className="font-bold">
-          Event related
-        </label>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <input
-          id="grants_platform_access"
-          type="checkbox"
-          checked={data.grants_platform_access || false}
-          onChange={(e) => setData("grants_platform_access", e.target.checked)}
-        />
-        <label htmlFor="grants_platform_access" className="font-bold">
-          Grants Platform access
-        </label>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <input
-          id="visible"
-          type="checkbox"
-          checked={data.visible ?? true}
-          onChange={(e) => setData("visible", e.target.checked)}
-        />
-        <label htmlFor="visible" className="font-bold">
-          Visible in shop
-        </label>
-      </div>
-
-      <div className="flex flex-col">
-        <label className="font-bold">Category</label>
-        <input
-          className="rounded-md p-2"
-          list="category-suggestions"
-          placeholder="Uncategorized"
-          value={data.category ?? ""}
-          onChange={(e) => setData("category", e.target.value || null)}
-        />
-        <datalist id="category-suggestions">
-          <option value="grants" />
-          <option value="warehouse" />
-          {categories.filter((c) => c !== "grants" && c !== "warehouse").map((c) => (
-            <option key={c} value={c} />
+      {/* Flags */}
+      <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+        <p className="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">
+          Flags
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          {FLAGS.map(({ key, label }) => (
+            <label
+              key={key}
+              className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-100 px-3 py-2.5 hover:bg-gray-50"
+            >
+              <input
+                type="checkbox"
+                checked={(data[key] as boolean) ?? false}
+                onChange={(e) => setData(key as any, e.target.checked)}
+                className="h-4 w-4 rounded accent-blue-600"
+              />
+              <span className="text-sm font-medium text-gray-700">{label}</span>
+            </label>
           ))}
-        </datalist>
+        </div>
       </div>
 
-      <div className="flex flex-col">
-        <label className="font-bold">Image</label>
+      {/* Category */}
+      <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+        <p className="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">
+          Category
+        </p>
+        <CategoryCombobox
+          value={data.category}
+          categories={categories}
+          onChange={(v) => setData("category", v)}
+        />
+        {categories.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {categories.map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() =>
+                  setData("category", data.category === c ? null : c)
+                }
+                className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
+                  data.category === c
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Image */}
+      <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+        <p className="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">
+          Image
+        </p>
         {data.image === 0 && item?.image && (
-          <div className="relative mt-1 h-52 w-fit">
+          <div className="relative mb-3 h-52 w-fit">
             <img
               src={item.image}
               alt="Item image"
-              className="block max-h-full w-auto max-w-full object-contain"
+              className="block max-h-full w-auto max-w-full rounded-lg object-contain"
             />
             <button
               type="button"
-              className="absolute top-2 right-2 h-8 w-8 cursor-pointer bg-black text-sm font-bold text-white"
+              className="absolute right-2 top-2 h-7 w-7 cursor-pointer rounded-full bg-black/70 text-sm font-bold text-white hover:bg-black"
               onClick={() => setData("image", null)}
             >
               ✕
@@ -190,20 +263,28 @@ export default function ItemForm({ item, categories = [] }: { item?: Item; categ
           </div>
         )}
         <input
-          className="mt-1 cursor-pointer rounded-md border p-2"
+          className="w-full cursor-pointer rounded-lg border border-gray-200 p-2 text-sm file:mr-3 file:rounded file:border-0 file:bg-blue-50 file:px-3 file:py-1 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100"
           type="file"
           accept="image/jpeg,image/png,image/gif,image/webp"
           onChange={(e) => setData("image", e.target.files?.[0] ?? null)}
         />
         {progress && (
-          <progress value={progress.percentage} max="100">
-            {progress.percentage}%
-          </progress>
+          <div className="mt-2">
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-200">
+              <div
+                className="h-full bg-blue-600 transition-all"
+                style={{ width: `${progress.percentage}%` }}
+              />
+            </div>
+          </div>
         )}
       </div>
 
-      <button className="cursor-pointer rounded-md bg-blue-500 px-4 py-2 font-bold text-white">
-        Submit
+      <button
+        type="submit"
+        className="cursor-pointer rounded-xl bg-blue-600 px-6 py-3 font-bold text-white shadow-sm transition-colors hover:bg-blue-700 active:bg-blue-800"
+      >
+        {item ? "Save changes" : "Create item"}
       </button>
     </form>
   );
