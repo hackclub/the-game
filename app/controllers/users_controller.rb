@@ -2,7 +2,7 @@ class UsersController < ApplicationController
   include ActionView::Helpers::TextHelper
 
   def show
-    if params[:id].present? && !current_user.admin?
+    if params[:id].present? && !current_user.admin? && !current_user.fulfiller?
       raise Pundit::NotAuthorizedError
     end
 

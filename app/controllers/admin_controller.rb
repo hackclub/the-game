@@ -1,7 +1,7 @@
 class AdminController < ApplicationController
   skip_after_action :verify_authorized
-  before_action :signed_in_admin, except: [ :index, :orders, :ticket_transfers, :grants, :grants_csv ]
-  before_action :signed_in_fulfiller, only: [ :index, :orders, :ticket_transfers, :grants, :grants_csv ]
+  before_action :signed_in_admin, except: [ :index, :orders, :ticket_transfers, :grants, :grants_csv, :users ]
+  before_action :signed_in_fulfiller, only: [ :index, :orders, :ticket_transfers, :grants, :grants_csv, :users ]
 
   def index
     render inertia: "admin/index"
