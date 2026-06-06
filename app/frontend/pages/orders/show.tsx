@@ -102,10 +102,12 @@ export default function ShowOrder({ order, order_user, item }: Props) {
               </Field>
 
               <Field label="Payment">
-                <p>
-                  {order.amount_paid} tickets
-                  {order.quantity > 1 && ` (${item.price} each × ${order.quantity})`}
-                </p>
+                <p>{order.amount_paid} tickets</p>
+                {order.quantity > 1 && (
+                  <p className="text-sm text-gray-500">
+                    {item.price} tickets × {order.quantity} units = {order.amount_paid} tickets total
+                  </p>
+                )}
               </Field>
 
               <Field label="Status">
