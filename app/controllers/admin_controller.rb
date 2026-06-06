@@ -311,7 +311,7 @@ class AdminController < ApplicationController
     csv = CSV.generate(headers: true) do |csv|
       csv << [ "email", "amount_cents", "purpose", "one_time_use", "invite_message", "merchant_lock", "category_lock", "keyword_lock", "banned_merchants", "banned_categories" ]
       orders.each do |order|
-        csv << [ order.user.email, amount_cents, purpose, one_time_use, invite_message, merchant_lock, "", "", "", "" ]
+        csv << [ order.user.email, amount_cents * order.quantity, purpose, one_time_use, invite_message, merchant_lock, "", "", "", "" ]
       end
     end
 
