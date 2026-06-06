@@ -10,9 +10,10 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 
 interface Props {
   items: Item[];
+  categories: string[];
 }
 
-export default function Items({ items }: Props) {
+export default function Items({ items, categories }: Props) {
   const gridRef = useRef<AgGridReact>(null);
   const [rowData] = useState(items);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -37,6 +38,7 @@ export default function Items({ items }: Props) {
     { field: "description" as const },
     { field: "price" as const },
     { field: "stock" as const },
+    { field: "category" as const, headerName: "Category" },
     { field: "featured" as const, headerName: "Featured?" },
     { field: "super_featured" as const, headerName: "Super featured?" },
     { field: "one_per_user" as const, headerName: "One per user?" },
@@ -63,7 +65,7 @@ export default function Items({ items }: Props) {
 
       <div className="py-6">
         <h2 className="text-2xl font-bold">Create Item</h2>
-        <ItemForm />
+        <ItemForm categories={categories} />
       </div>
 
       <div className="mb-3 flex items-center gap-3">

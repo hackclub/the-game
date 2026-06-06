@@ -6,12 +6,14 @@ import type { Item } from "@/interfaces/item";
 export default function EditItem({
   item,
   versions,
+  categories,
 }: {
   item: Item;
   versions: {
     timestamp: string;
     changes: { [key: string]: [any, any] };
   }[];
+  categories: string[];
 }) {
   function deleteItem(e: React.MouseEvent) {
     e.stopPropagation();
@@ -32,7 +34,7 @@ export default function EditItem({
         </button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2">
-        <ItemForm item={item} />
+        <ItemForm item={item} categories={categories} />
         <div className="flex flex-col gap-3">
           <h2 className="text-2xl font-bold">Versions</h2>
           {versions.map((v) => (

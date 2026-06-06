@@ -81,7 +81,8 @@ class AdminController < ApplicationController
   end
 
   def items
-    render inertia: "admin/items", props: { items: Item.all.map(&:display_hash) }
+    categories = Item.where.not(category: nil).distinct.pluck(:category).sort
+    render inertia: "admin/items", props: { items: Item.all.map(&:display_hash), categories: }
   end
 
   def stats

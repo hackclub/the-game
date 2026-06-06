@@ -25,12 +25,14 @@ class Item < ApplicationRecord
   has_many :purchases, dependent: :destroy
   has_one_attached :image
 
+  CATEGORIES = %w[grants warehouse].freeze
+
   scope :not_black_market, -> { where(black_market: false) }
   scope :black_market, -> { where(black_market: true) }
   scope :visible, -> { where(visible: true) }
 
   def display_hash(stock_left = false)
-    hash = self.as_json.slice("id", "description", "name", "price", "featured", "super_featured", "one_per_user", "stock", "black_market", "event_related", "grants_platform_access", "visible")
+    hash = self.as_json.slice("id", "description", "name", "price", "featured", "super_featured", "one_per_user", "stock", "black_market", "event_related", "grants_platform_access", "visible", "category")
     if image.attached? && image.persisted?
       hash["image"] = Rails.application.routes.url_helpers.rails_blob_path(image, disposition: :inline)
     end

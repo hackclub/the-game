@@ -200,18 +200,25 @@ export default function Orders({
                       {STATUS_LABELS[state] ?? state}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600">
-                    by{" "}
-                    <span
-                      onClick={(e) => {
-                        e.preventDefault();
-                        window.location.href = `/admin/users/${order.user_id}`;
-                      }}
-                      className="underline hover:text-black"
-                    >
-                      {order.username ?? `User #${order.user_id}`}
-                    </span>
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm text-gray-600">
+                      by{" "}
+                      <span
+                        onClick={(e) => {
+                          e.preventDefault();
+                          window.location.href = `/admin/users/${order.user_id}`;
+                        }}
+                        className="underline hover:text-black"
+                      >
+                        {order.username ?? `User #${order.user_id}`}
+                      </span>
+                    </p>
+                    {order.item?.category && (
+                      <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
+                        {order.item.category}
+                      </span>
+                    )}
+                  </div>
                   <div className="mt-auto flex items-center justify-between pt-2 text-sm text-gray-500">
                     <span>{order.amount_paid} tickets</span>
                     <span title={new Date(order.created_at).toUTCString()}>

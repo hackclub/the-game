@@ -1,7 +1,7 @@
 import { useForm } from "@inertiajs/react";
 import type { Item } from "@/interfaces/item";
 
-export default function ItemForm({ item }: { item?: Item }) {
+export default function ItemForm({ item, categories = [] }: { item?: Item; categories?: string[] }) {
   const { data, setData, post, patch, progress } = useForm({
     name: item?.name,
     description: item?.description,
@@ -15,6 +15,7 @@ export default function ItemForm({ item }: { item?: Item }) {
     event_related: item?.event_related,
     grants_platform_access: item?.grants_platform_access,
     visible: item?.visible ?? true,
+    category: item?.category ?? null,
   });
 
   function handleSubmit(e: React.FormEvent) {
@@ -150,6 +151,24 @@ export default function ItemForm({ item }: { item?: Item }) {
         <label htmlFor="visible" className="font-bold">
           Visible in shop
         </label>
+      </div>
+
+      <div className="flex flex-col">
+        <label className="font-bold">Category</label>
+        <input
+          className="rounded-md p-2"
+          list="category-suggestions"
+          placeholder="Uncategorized"
+          value={data.category ?? ""}
+          onChange={(e) => setData("category", e.target.value || null)}
+        />
+        <datalist id="category-suggestions">
+          <option value="grants" />
+          <option value="warehouse" />
+          {categories.filter((c) => c !== "grants" && c !== "warehouse").map((c) => (
+            <option key={c} value={c} />
+          ))}
+        </datalist>
       </div>
 
       <div className="flex flex-col">

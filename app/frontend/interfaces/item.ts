@@ -12,4 +12,5 @@ export interface Item {
   event_related: boolean;
   grants_platform_access: boolean;
   visible: boolean;
+  category: string | null;
 }
