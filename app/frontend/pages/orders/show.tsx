@@ -109,11 +109,18 @@ export default function ShowOrder({ order, order_user, item }: Props) {
               </Field>
 
               <Field label="Status">
-                <span
-                  className={`inline-block rounded-full px-3 py-1 text-sm font-bold ${STATUS_COLORS[state] ?? "bg-gray-100 text-gray-800"}`}
-                >
-                  {STATUS_LABELS[state] ?? state}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`inline-block rounded-full px-3 py-1 text-sm font-bold ${STATUS_COLORS[state] ?? "bg-gray-100 text-gray-800"}`}
+                  >
+                    {STATUS_LABELS[state] ?? state}
+                  </span>
+                  {item.category && (
+                    <span className="rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-600">
+                      {item.category}
+                    </span>
+                  )}
+                </div>
               </Field>
 
               <Field label="Email">

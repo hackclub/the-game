@@ -117,6 +117,11 @@ export default function AdminPage() {
             title="Ticket Transfers"
             description="View and approve/reject ticket transfers"
           />
+          <AdminNav
+            href="/admin/grants"
+            title="Grants"
+            description="Export grant CSVs for pending orders"
+          />
         </div>
       </div>
     </Layout>

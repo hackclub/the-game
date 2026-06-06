@@ -116,6 +116,8 @@ Rails.application.routes.draw do
     post "/users/:id/sync_to_platform", to: "admin#sync_user_to_platform"
     patch "/users/:id/role", to: "admin#update_user_role", as: "update_user_role"
     get "/ticket_transfers", to: "admin#ticket_transfers"
+    get "/grants", to: "admin#grants", as: "grants"
+    get "/grants/:item_id/csv", to: "admin#grants_csv", as: "grants_csv"
     get "/users/:id", to: "users#show", as: :user
   end
 

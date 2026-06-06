@@ -1,7 +1,7 @@
 class AdminController < ApplicationController
   skip_after_action :verify_authorized
-  before_action :signed_in_admin, except: [ :index, :orders, :ticket_transfers ]
-  before_action :signed_in_fulfiller, only: [ :index, :orders, :ticket_transfers ]
+  before_action :signed_in_admin, except: [ :index, :orders, :ticket_transfers, :grants, :grants_csv ]
+  before_action :signed_in_fulfiller, only: [ :index, :orders, :ticket_transfers, :grants, :grants_csv ]
 
   def index
     render inertia: "admin/index"
@@ -287,5 +287,34 @@ class AdminController < ApplicationController
         total_count: paginated_transfers.total_count
       }
     }
+  end
+
+  def grants
+    items = Item.where(category: "grants").map do |item|
+      item.display_hash.merge("pending_count" => Item::Purchase.where(item_id: item.id, aasm_state: [ :pending, :hold ]).count)
+    end
+    render inertia: "admin/grants", props: { items: }
+  end
+
+  def grants_csv
+    require "csv"
+
+    item = Item.find(params[:item_id])
+    amount_cents = params[:amount_cents].to_i
+    purpose = params[:purpose].to_s.truncate(30)
+    one_time_use = ActiveModel::Type::Boolean.new.cast(params[:one_time_use])
+    merchant_lock = params[:merchant_lock].to_s
+    invite_message = params[:invite_message].to_s
+
+    orders = Item::Purchase.where(item_id: item.id, aasm_state: [ :pending, :hold ]).includes(:user)
+
+    csv = CSV.generate(headers: true) do |csv|
+      csv << [ "email", "amount_cents", "purpose", "one_time_use", "invite_message", "merchant_lock", "category_lock", "keyword_lock", "banned_merchants", "banned_categories" ]
+      orders.each do |order|
+        csv << [ order.user.email, amount_cents, purpose, one_time_use, invite_message, merchant_lock, "", "", "", "" ]
+      end
+    end
+
+    send_data csv, filename: "#{item.name.parameterize}-grants.csv", type: "text/csv", disposition: "attachment"
   end
 end
