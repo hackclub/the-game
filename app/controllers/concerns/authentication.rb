@@ -81,8 +81,14 @@ module Authentication
   end
 
   def signed_in_reviewer
-    unless current_user.admin? || current_user.reviewer?
+    unless current_user.admin? || current_user.reviewer? || current_user.fulfiller?
       redirect_back_or_to home_path, flash: { alert: "You'll need to sign in as an admin/reviewer" }
+    end
+  end
+
+  def signed_in_fulfiller
+    unless current_user.admin? || current_user.fulfiller?
+      redirect_back_or_to home_path, flash: { alert: "You'll need to sign in as an admin/fulfiller" }
     end
   end
 end

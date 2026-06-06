@@ -1,5 +1,5 @@
 class OrdersController < ApplicationController
-  before_action :signed_in_admin, except: :index
+  before_action :signed_in_fulfiller, except: :index
   before_action :get_order, only: [ :show, :destroy, :hold, :fulfill, :update ]
   skip_after_action :verify_authorized
 

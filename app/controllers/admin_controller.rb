@@ -1,6 +1,7 @@
 class AdminController < ApplicationController
   skip_after_action :verify_authorized
-  before_action :signed_in_admin
+  before_action :signed_in_admin, except: [ :index, :orders, :ticket_transfers ]
+  before_action :signed_in_fulfiller, only: [ :index, :orders, :ticket_transfers ]
 
   def index
     render inertia: "admin/index"
@@ -201,6 +202,14 @@ class AdminController < ApplicationController
         total_count: paginated.total_count
       }
     }
+  end
+
+  def update_user_role
+    user = User.find(params[:id])
+    user.update!(role: params[:role])
+    redirect_to admin_user_path(user), notice: "Role updated to #{params[:role]}"
+  rescue ArgumentError
+    redirect_to admin_user_path(user), alert: "Invalid role"
   end
 
   def user_hackatime_projects

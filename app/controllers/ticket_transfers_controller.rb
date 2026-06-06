@@ -2,7 +2,7 @@ class TicketTransfersController < ApplicationController
   include ActionView::Helpers::TextHelper
 
   skip_after_action :verify_authorized
-  before_action :signed_in_admin, except: :create
+  before_action :signed_in_fulfiller, except: :create
   before_action :set_transfer, only: [ :show, :destroy, :approve, :reject ]
 
   def create

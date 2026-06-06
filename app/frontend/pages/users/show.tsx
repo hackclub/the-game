@@ -1,4 +1,4 @@
-import { Link, usePage } from "@inertiajs/react";
+import { Link, usePage, router } from "@inertiajs/react";
 import Layout from "@/layouts/layout";
 import MissingAccountFields from "@/components/settings/MissingAccountFields";
 import { ACCOUNT_REQUIRED_FIELDS, PrivateUser } from "@/interfaces/user";
@@ -9,6 +9,7 @@ import inviteIcon from "@/assets/icons/invite.svg";
 import type { Order } from "@/interfaces/order";
 import type { Item } from "@/interfaces/item";
 import OrderCard from "@/components/orders/Order";
+import { useState } from "react";
 
 interface Props {
   page_user: PrivateUser;
@@ -22,11 +23,18 @@ interface Props {
   [_: string]: unknown;
 }
 
+const ROLES = ["user", "reviewer", "fulfiller", "admin"] as const;
+
 export default function UserPage() {
   const { props } = usePage<Props>();
   const missingFields = ACCOUNT_REQUIRED_FIELDS.filter(
     (f) => !props.page_user[f as keyof PrivateUser],
   );
+  const [selectedRole, setSelectedRole] = useState(props.page_user.role);
+
+  function updateRole() {
+    router.patch(`/admin/users/${props.page_user.id}/role`, { role: selectedRole });
+  }
 
   return (
     <Layout>
@@ -47,17 +55,33 @@ export default function UserPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2">
         <div className="smoothing-black flex flex-col gap-4 p-8 text-xl">
-          {props.page_user.role === "admin" && (
-            <p>
-              {props.custom ? `${props.page_user.username} is ` : "You are"} an
-              admin.
-            </p>
+          {props.page_user.role === "admin" && !props.custom && (
+            <p>You are an admin.</p>
           )}
-          {props.page_user.role === "reviewer" && (
-            <p>
-              {props.custom ? `${props.page_user.username} is ` : "You are"} a
-              reviewer.
-            </p>
+          {props.page_user.role === "reviewer" && !props.custom && (
+            <p>You are a reviewer.</p>
+          )}
+          {props.custom && props.user.role === "admin" && (
+            <div className="flex items-center gap-2">
+              <select
+                className="rounded-md border px-2 py-1 text-base"
+                value={selectedRole}
+                onChange={(e) => setSelectedRole(e.target.value)}
+              >
+                {ROLES.map((r) => (
+                  <option key={r} value={r}>
+                    {r.charAt(0).toUpperCase() + r.slice(1)}
+                  </option>
+                ))}
+              </select>
+              <button
+                className="cursor-pointer rounded-md bg-black px-3 py-1 text-sm text-white hover:bg-gray-800 disabled:opacity-50"
+                onClick={updateRole}
+                disabled={selectedRole === props.page_user.role}
+              >
+                Save role
+              </button>
+            </div>
           )}
           {props.page_user.can_overspend && (
             <p className="rounded-md border-2 border-blue-400 bg-blue-100 px-4 py-2 font-bold text-blue-800">

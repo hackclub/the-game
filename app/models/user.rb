@@ -88,7 +88,7 @@ class User < ApplicationRecord
   belongs_to :referrer, class_name: "User", optional: true
 
   enum :ban_type, { hackatime: 0, blueprint: 1, previous: 2, slack: 3, age: 4 }
-  enum :role, { user: "user", admin: "admin", reviewer: "reviewer" }
+  enum :role, { user: "user", admin: "admin", reviewer: "reviewer", fulfiller: "fulfiller" }
 
   before_create :set_referral_share_code
 
