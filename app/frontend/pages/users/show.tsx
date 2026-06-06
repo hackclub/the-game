@@ -23,7 +23,7 @@ interface Props {
   [_: string]: unknown;
 }
 
-const ROLES = ["user", "reviewer", "fulfiller", "admin"] as const;
+const BASE_ROLES = ["user", "admin"] as const;
 
 export default function UserPage() {
   const { props } = usePage<Props>();
@@ -31,10 +31,21 @@ export default function UserPage() {
     (f) => !props.page_user[f as keyof PrivateUser],
   );
   const [selectedRole, setSelectedRole] = useState(props.page_user.role);
+  const [isReviewer, setIsReviewer] = useState(props.page_user.is_reviewer);
+  const [isFulfiller, setIsFulfiller] = useState(props.page_user.is_fulfiller);
 
   function updateRole() {
-    router.patch(`/admin/users/${props.page_user.id}/role`, { role: selectedRole });
+    router.patch(`/admin/users/${props.page_user.id}/role`, {
+      role: selectedRole,
+      is_reviewer: isReviewer,
+      is_fulfiller: isFulfiller,
+    });
   }
+
+  const rolesChanged =
+    selectedRole !== props.page_user.role ||
+    isReviewer !== props.page_user.is_reviewer ||
+    isFulfiller !== props.page_user.is_fulfiller;
 
   return (
     <Layout>
@@ -58,29 +69,47 @@ export default function UserPage() {
           {props.page_user.role === "admin" && !props.custom && (
             <p>You are an admin.</p>
           )}
-          {props.page_user.role === "reviewer" && !props.custom && (
+          {props.page_user.is_reviewer && !props.custom && (
             <p>You are a reviewer.</p>
           )}
           {props.custom && props.user.role === "admin" && (
-            <div className="flex items-center gap-2">
-              <select
-                className="rounded-md border px-2 py-1 text-base"
-                value={selectedRole}
-                onChange={(e) => setSelectedRole(e.target.value)}
-              >
-                {ROLES.map((r) => (
-                  <option key={r} value={r}>
-                    {r.charAt(0).toUpperCase() + r.slice(1)}
-                  </option>
-                ))}
-              </select>
-              <button
-                className="cursor-pointer rounded-md bg-black px-3 py-1 text-sm text-white hover:bg-gray-800 disabled:opacity-50"
-                onClick={updateRole}
-                disabled={selectedRole === props.page_user.role}
-              >
-                Save role
-              </button>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <select
+                  className="rounded-md border px-2 py-1 text-base"
+                  value={selectedRole}
+                  onChange={(e) => setSelectedRole(e.target.value)}
+                >
+                  {BASE_ROLES.map((r) => (
+                    <option key={r} value={r}>
+                      {r.charAt(0).toUpperCase() + r.slice(1)}
+                    </option>
+                  ))}
+                </select>
+                <label className="flex items-center gap-1 text-base">
+                  <input
+                    type="checkbox"
+                    checked={isReviewer}
+                    onChange={(e) => setIsReviewer(e.target.checked)}
+                  />
+                  Reviewer
+                </label>
+                <label className="flex items-center gap-1 text-base">
+                  <input
+                    type="checkbox"
+                    checked={isFulfiller}
+                    onChange={(e) => setIsFulfiller(e.target.checked)}
+                  />
+                  Fulfiller
+                </label>
+                <button
+                  className="cursor-pointer rounded-md bg-black px-3 py-1 text-sm text-white hover:bg-gray-800 disabled:opacity-50"
+                  onClick={updateRole}
+                  disabled={!rolesChanged}
+                >
+                  Save roles
+                </button>
+              </div>
             </div>
           )}
           {props.page_user.can_overspend && (
