@@ -5,6 +5,7 @@ import type { PrivateUser } from "@/interfaces/user";
 import type { Item } from "@/interfaces/item";
 import { router } from "@inertiajs/react";
 import { useState } from "react";
+import { categoryBadgeClass } from "@/utils/categoryColor";
 
 interface Props {
   order: Order;
@@ -118,19 +119,22 @@ export default function ShowOrder({ order, order_user, item }: Props) {
               </Field>
 
               <Field label="Status">
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`inline-block rounded-full px-3 py-1 text-sm font-bold ${STATUS_COLORS[state] ?? "bg-gray-100 text-gray-800"}`}
-                  >
-                    {STATUS_LABELS[state] ?? state}
-                  </span>
-                  {item.category && (
-                    <span className="rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-600">
-                      {item.category}
-                    </span>
-                  )}
-                </div>
+                <span
+                  className={`inline-block rounded-full px-3 py-1 text-sm font-bold ${STATUS_COLORS[state] ?? "bg-gray-100 text-gray-800"}`}
+                >
+                  {STATUS_LABELS[state] ?? state}
+                </span>
               </Field>
+
+              {item.category && (
+                <Field label="Category">
+                  <span
+                    className={`inline-block rounded-full border px-3 py-1 text-sm font-semibold ${categoryBadgeClass(item.category)}`}
+                  >
+                    {item.category}
+                  </span>
+                </Field>
+              )}
 
               <Field label="Email">
                 <p>{order_user.email}</p>

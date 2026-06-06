@@ -5,6 +5,7 @@ import type { Order } from "@/interfaces/order";
 import type { PublicUser } from "@/interfaces/user";
 import type { Item } from "@/interfaces/item";
 import type { Pagination } from "@/interfaces/pagination";
+import { categoryBadgeClass } from "@/utils/categoryColor";
 
 interface OrderWithDetails extends Order {
   username?: string;
@@ -191,9 +192,18 @@ export default function Orders({
                 )}
                 <div className="flex flex-1 flex-col gap-1 p-4">
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="text-lg font-bold leading-tight">
-                      {order.item?.name ?? "Unknown item"}
-                    </h3>
+                    <div className="flex min-w-0 flex-col gap-1">
+                      {order.item?.category && (
+                        <span
+                          className={`w-fit rounded-full border px-2 py-0.5 text-xs font-semibold ${categoryBadgeClass(order.item.category)}`}
+                        >
+                          {order.item.category}
+                        </span>
+                      )}
+                      <h3 className="text-lg font-bold leading-tight">
+                        {order.item?.name ?? "Unknown item"}
+                      </h3>
+                    </div>
                     <span
                       className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-bold ${STATUS_COLORS[state] ?? "bg-gray-100 text-gray-800"}`}
                     >
@@ -213,11 +223,6 @@ export default function Orders({
                         {order.username ?? `User #${order.user_id}`}
                       </span>
                     </p>
-                    {order.item?.category && (
-                      <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
-                        {order.item.category}
-                      </span>
-                    )}
                   </div>
                   <div className="mt-auto flex items-center justify-between pt-2 text-sm text-gray-500">
                     <span>{order.amount_paid} tickets</span>

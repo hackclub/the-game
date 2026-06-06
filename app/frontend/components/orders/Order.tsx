@@ -1,6 +1,7 @@
 import { Order } from "@/interfaces/order";
 import { Item } from "@/interfaces/item";
 import { usePage } from "@inertiajs/react";
+import { categoryBadgeClass } from "@/utils/categoryColor";
 
 export default function OrderCard({
   order,
@@ -20,6 +21,13 @@ export default function OrderCard({
       )}
       <div className="flex flex-1 items-center justify-between">
         <div>
+          {order.item.category && (
+            <span
+              className={`mb-1 inline-block rounded-full border px-2 py-0.5 text-xs font-semibold ${categoryBadgeClass(order.item.category)}`}
+            >
+              {order.item.category}
+            </span>
+          )}
           <p className="font-bold">
             {order.quantity > 1 ? `${order.quantity}x ` : ""}
             {order.item.name}
