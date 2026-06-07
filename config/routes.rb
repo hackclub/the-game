@@ -126,4 +126,6 @@ Rails.application.routes.draw do
 
   get "hackatime/link", to: "auth#hackatime_link"
   get "hackatime/callback", to: "auth#hackatime_callback"
+
+  post "/api/sidekick", to: "api/sidekick#handle"
 end

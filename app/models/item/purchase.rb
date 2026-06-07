@@ -11,6 +11,7 @@
 #  hold_at      :datetime
 #  note         :text
 #  quantity     :integer          default(1), not null
+#  reference    :string
 #  user_note    :text
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null

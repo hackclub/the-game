@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_03_000001) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_06_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
   enable_extension "pg_catalog.plpgsql"
@@ -140,6 +140,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_03_000001) do
     t.bigint "item_id", null: false
     t.text "note"
     t.integer "quantity", default: 1, null: false
+    t.string "reference"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.text "user_note"
@@ -149,10 +150,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_03_000001) do
 
   create_table "items", force: :cascade do |t|
     t.boolean "black_market", default: false, null: false
+    t.string "category"
     t.datetime "created_at", null: false
     t.text "description", null: false
     t.boolean "event_related", default: false, null: false
     t.boolean "featured", default: false, null: false
+    t.text "fulfiller_context"
     t.boolean "grants_platform_access", default: false, null: false
     t.string "name", null: false
     t.boolean "one_per_user", default: false, null: false
@@ -160,7 +163,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_03_000001) do
     t.integer "stock"
     t.boolean "super_featured", default: false, null: false
     t.datetime "updated_at", null: false
-    t.boolean "visible", default: true, null: false
   end
 
   create_table "milestones", force: :cascade do |t|

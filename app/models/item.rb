@@ -4,16 +4,17 @@
 #
 #  id                     :bigint           not null, primary key
 #  black_market           :boolean          default(FALSE), not null
+#  category               :string
 #  description            :text             not null
 #  event_related          :boolean          default(FALSE), not null
 #  featured               :boolean          default(FALSE), not null
+#  fulfiller_context      :text
 #  grants_platform_access :boolean          default(FALSE), not null
 #  name                   :string           not null
 #  one_per_user           :boolean          default(FALSE), not null
 #  price                  :integer          not null
 #  stock                  :integer
 #  super_featured         :boolean          default(FALSE), not null
-#  visible                :boolean          default(TRUE), not null
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #
