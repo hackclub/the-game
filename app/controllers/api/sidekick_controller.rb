@@ -189,15 +189,48 @@ class Api::SidekickController < ActionController::API
     { items: Item.all.map { |item| serialize_item(item) } }
   end
 
-  ORDER_SORT_COLUMNS = {
-    "id" => { expr: "item_purchases.id" },
-    "user" => { expr: "COALESCE(users.username, users.first_name, users.email)", join: true },
-    "item" => { expr: "items.name", join: true },
-    "quantity" => { expr: "item_purchases.quantity" },
-    "date" => { expr: "item_purchases.created_at" },
+  STATUS_EXPR = "CASE WHEN item_purchases.deleted_at IS NOT NULL THEN 'cancelled' " \
+                "WHEN item_purchases.aasm_state = 'fulfilled' THEN 'fulfilled' ELSE 'pending' END"
+  private_constant :STATUS_EXPR
+
+  ORDER_SORT_SQL = {
+    "id" => {
+      asc: Arel.sql("item_purchases.id ASC, item_purchases.id ASC"),
+      desc: Arel.sql("item_purchases.id DESC, item_purchases.id DESC"),
+      asc_cursor: "(item_purchases.id, item_purchases.id) > (?, ?)",
+      desc_cursor: "(item_purchases.id, item_purchases.id) < (?, ?)"
+    },
+    "user" => {
+      join: true,
+      asc: Arel.sql("COALESCE(users.username, users.first_name, users.email) ASC, item_purchases.id ASC"),
+      desc: Arel.sql("COALESCE(users.username, users.first_name, users.email) DESC, item_purchases.id DESC"),
+      asc_cursor: "(COALESCE(users.username, users.first_name, users.email), item_purchases.id) > (?, ?)",
+      desc_cursor: "(COALESCE(users.username, users.first_name, users.email), item_purchases.id) < (?, ?)"
+    },
+    "item" => {
+      join: true,
+      asc: Arel.sql("items.name ASC, item_purchases.id ASC"),
+      desc: Arel.sql("items.name DESC, item_purchases.id DESC"),
+      asc_cursor: "(items.name, item_purchases.id) > (?, ?)",
+      desc_cursor: "(items.name, item_purchases.id) < (?, ?)"
+    },
+    "quantity" => {
+      asc: Arel.sql("item_purchases.quantity ASC, item_purchases.id ASC"),
+      desc: Arel.sql("item_purchases.quantity DESC, item_purchases.id DESC"),
+      asc_cursor: "(item_purchases.quantity, item_purchases.id) > (?, ?)",
+      desc_cursor: "(item_purchases.quantity, item_purchases.id) < (?, ?)"
+    },
+    "date" => {
+      asc: Arel.sql("item_purchases.created_at ASC, item_purchases.id ASC"),
+      desc: Arel.sql("item_purchases.created_at DESC, item_purchases.id DESC"),
+      asc_cursor: "(item_purchases.created_at, item_purchases.id) > (?, ?)",
+      desc_cursor: "(item_purchases.created_at, item_purchases.id) < (?, ?)"
+    },
     "status" => {
-      expr: "CASE WHEN item_purchases.deleted_at IS NOT NULL THEN 'cancelled' " \
-            "WHEN item_purchases.aasm_state = 'fulfilled' THEN 'fulfilled' ELSE 'pending' END"
+      asc: Arel.sql("#{STATUS_EXPR} ASC, item_purchases.id ASC"),
+      desc: Arel.sql("#{STATUS_EXPR} DESC, item_purchases.id DESC"),
+      asc_cursor: "(#{STATUS_EXPR}, item_purchases.id) > (?, ?)",
+      desc_cursor: "(#{STATUS_EXPR}, item_purchases.id) < (?, ?)"
     }
   }.freeze
 
@@ -209,11 +242,11 @@ class Api::SidekickController < ActionController::API
     sort_by = @input[:sortBy] || "date"
     sort_dir = @input[:sortOrder] == "desc" ? :desc : :asc
 
-    sort_config = ORDER_SORT_COLUMNS[sort_by]
-    raise ArgumentError, "Invalid sortBy: #{sort_by}" unless sort_config
+    sort_sql = ORDER_SORT_SQL[sort_by]
+    raise ArgumentError, "Invalid sortBy: #{sort_by}" unless sort_sql
 
     scope = Item::Purchase.with_deleted
-    scope = sort_config[:join] ? scope.eager_load(:user, :item) : scope.includes(:user, :item)
+    scope = sort_sql[:join] ? scope.eager_load(:user, :item) : scope.includes(:user, :item)
 
     case status
     when "pending"
@@ -234,13 +267,11 @@ class Api::SidekickController < ActionController::API
 
     total_count = scope.count
 
-    dir_sql = sort_dir == :desc ? "DESC" : "ASC"
-    scope = scope.order(Arel.sql("#{sort_config[:expr]} #{dir_sql}, item_purchases.id #{dir_sql}"))
+    scope = scope.order(sort_dir == :desc ? sort_sql[:desc] : sort_sql[:asc])
 
     if cursor.present?
       cursor_val, cursor_id = decode_order_cursor(cursor)
-      op = sort_dir == :asc ? ">" : "<"
-      scope = scope.where("(#{sort_config[:expr]}, item_purchases.id) #{op} (?, ?)", cursor_val, cursor_id)
+      scope = scope.where(sort_dir == :asc ? sort_sql[:asc_cursor] : sort_sql[:desc_cursor], cursor_val, cursor_id)
     end
 
     purchases = scope.limit(limit + 1).to_a
@@ -629,7 +660,7 @@ class Api::SidekickController < ActionController::API
     when "status"
       purchase.deleted? ? "cancelled" : (purchase.aasm_state == "fulfilled" ? "fulfilled" : "pending")
     end
-    Base64.strict_encode64(JSON.generate([val, purchase.id]))
+    Base64.strict_encode64(JSON.generate([ val, purchase.id ]))
   end
 
   def decode_order_cursor(cursor)
