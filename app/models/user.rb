@@ -22,6 +22,7 @@
 #  last_active            :datetime
 #  last_name              :string
 #  onboarding_completed   :boolean          default(FALSE), not null
+#  phone_number           :string
 #  referral_code          :string
 #  referral_share_code    :string
 #  role                   :string           default("user")
@@ -129,7 +130,7 @@ class User < ApplicationRecord
 
   def display_hash(private: false, review: false)
     if private
-      hash = self.as_json.slice("id", "first_name", "last_name", "github_username", "address_street", "address_locality", "address_region", "address_country", "address_postal", "birthday", "avatar", "email", "role", "username", "ysws_verified", "verification_status", "account_id", "hackatime_id", "slack_id", "onboarding_completed")
+      hash = self.as_json.slice("id", "first_name", "last_name", "github_username", "address_street", "address_locality", "address_region", "address_country", "address_postal", "phone_number", "birthday", "avatar", "email", "role", "username", "ysws_verified", "verification_status", "account_id", "hackatime_id", "slack_id", "onboarding_completed")
       hash["balance"] = self.balance
       hash["total_reported_seconds"] = self.total_reported_seconds
       hash["total_in_review_seconds"] = self.total_in_review_seconds
