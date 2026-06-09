@@ -189,13 +189,31 @@ class Api::SidekickController < ActionController::API
     { items: Item.all.map { |item| serialize_item(item) } }
   end
 
+  ORDER_SORT_COLUMNS = {
+    "id" => { expr: "item_purchases.id" },
+    "user" => { expr: "COALESCE(users.username, users.first_name, users.email)", join: true },
+    "item" => { expr: "items.name", join: true },
+    "quantity" => { expr: "item_purchases.quantity" },
+    "date" => { expr: "item_purchases.created_at" },
+    "status" => {
+      expr: "CASE WHEN item_purchases.deleted_at IS NOT NULL THEN 'cancelled' " \
+            "WHEN item_purchases.aasm_state = 'fulfilled' THEN 'fulfilled' ELSE 'pending' END"
+    }
+  }.freeze
+
   def fetch_orders
     status = @input[:status]
     search_user = @input[:searchUser]
     cursor = @input[:cursor]
     limit = (@input[:limit] || 50).to_i.clamp(1, 100)
+    sort_by = @input[:sortBy] || "date"
+    sort_dir = @input[:sortOrder] == "desc" ? :desc : :asc
 
-    scope = Item::Purchase.with_deleted.includes(:user, :item)
+    sort_config = ORDER_SORT_COLUMNS[sort_by]
+    raise ArgumentError, "Invalid sortBy: #{sort_by}" unless sort_config
+
+    scope = Item::Purchase.with_deleted
+    scope = sort_config[:join] ? scope.eager_load(:user, :item) : scope.includes(:user, :item)
 
     case status
     when "pending"
@@ -215,10 +233,14 @@ class Api::SidekickController < ActionController::API
     end
 
     total_count = scope.count
-    scope = scope.order(created_at: :desc, id: :desc)
+
+    dir_sql = sort_dir == :desc ? "DESC" : "ASC"
+    scope = scope.order(Arel.sql("#{sort_config[:expr]} #{dir_sql}, item_purchases.id #{dir_sql}"))
 
     if cursor.present?
-      scope = scope.where("item_purchases.id < ?", decode_cursor(cursor))
+      cursor_val, cursor_id = decode_order_cursor(cursor)
+      op = sort_dir == :asc ? ">" : "<"
+      scope = scope.where("(#{sort_config[:expr]}, item_purchases.id) #{op} (?, ?)", cursor_val, cursor_id)
     end
 
     purchases = scope.limit(limit + 1).to_a
@@ -234,7 +256,7 @@ class Api::SidekickController < ActionController::API
       items: items_map,
       totalCount: total_count
     }
-    response[:nextCursor] = encode_cursor(purchases.last.id) if has_more && purchases.any?
+    response[:nextCursor] = encode_order_cursor(purchases.last, sort_by) if has_more && purchases.any?
     response
   end
 
@@ -593,6 +615,25 @@ class Api::SidekickController < ActionController::API
 
   def decode_cursor(cursor)
     Base64.decode64(cursor).to_i
+  end
+
+  def encode_order_cursor(purchase, sort_by)
+    val = case sort_by
+    when "id" then purchase.id
+    when "user"
+      user = purchase.user
+      user.username || user.first_name || user.email
+    when "item" then purchase.item.name
+    when "quantity" then purchase.quantity
+    when "date" then purchase.created_at.utc.iso8601(6)
+    when "status"
+      purchase.deleted? ? "cancelled" : (purchase.aasm_state == "fulfilled" ? "fulfilled" : "pending")
+    end
+    Base64.strict_encode64(JSON.generate([val, purchase.id]))
+  end
+
+  def decode_order_cursor(cursor)
+    JSON.parse(Base64.decode64(cursor))
   end
 
   def sanitize_sql_like(string)
