@@ -1,9 +1,13 @@
 # Hack Club: The Game (YSWS)
 This is the Rails app behind [Hack Club: The Game](https://game.hackclub.com) - the YSWS (You Ship, We Ship) platform for HC:TG. For the mobile website used at our flagship in-person event, check out [`hackclub/theplatform`](https://github.com/hackclub/theplatform)!
 
+<br>
+
 <p align="center">
-  <img src="./etc/screenshot.png" alt="Screenshot of Hack Club: The Game" height="200">
+  <img src="./etc/screenshot.png" alt="Screenshot of Hack Club: The Game" height="300">
 </p>
+
+<br>
 
 ## Getting Started
 
