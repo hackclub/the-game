@@ -150,11 +150,12 @@ export default function Sidebar() {
             <SidebarLink link="/shop" name="Shop" icon={shopIcon} />
             <SidebarLink link="/docs" name="Docs" icon={docsIcon} />
             {(props.user.role === "admin" ||
-              props.user.is_reviewer) && (
+              props.user.role === "reviewer" ||
+              props.user.role === "fulfiller") && (
               <SidebarLink link="/review" name="Review" icon={reviewIcon} />
             )}
             {(props.user.role === "admin" ||
-              props.user.is_fulfiller) && (
+              props.user.role === "fulfiller") && (
               <SidebarLink link="/admin" name="Admin" icon={adminIcon} />
             )}
           </nav>

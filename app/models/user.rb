@@ -88,15 +88,7 @@ class User < ApplicationRecord
   belongs_to :referrer, class_name: "User", optional: true
 
   enum :ban_type, { hackatime: 0, blueprint: 1, previous: 2, slack: 3, age: 4 }
-  enum :role, { user: "user", admin: "admin" }
-
-  def reviewer?
-    is_reviewer? || admin?
-  end
-
-  def fulfiller?
-    is_fulfiller? || admin?
-  end
+  enum :role, { user: "user", admin: "admin", reviewer: "reviewer", fulfiller: "fulfiller" }
 
   before_create :set_referral_share_code
 
@@ -137,7 +129,7 @@ class User < ApplicationRecord
 
   def display_hash(private: false, review: false)
     if private
-      hash = self.as_json.slice("id", "first_name", "last_name", "github_username", "address_street", "address_locality", "address_region", "address_country", "address_postal", "birthday", "avatar", "email", "role", "username", "ysws_verified", "verification_status", "account_id", "hackatime_id", "slack_id", "onboarding_completed", "is_reviewer", "is_fulfiller")
+      hash = self.as_json.slice("id", "first_name", "last_name", "github_username", "address_street", "address_locality", "address_region", "address_country", "address_postal", "birthday", "avatar", "email", "role", "username", "ysws_verified", "verification_status", "account_id", "hackatime_id", "slack_id", "onboarding_completed")
       hash["balance"] = self.balance
       hash["total_reported_seconds"] = self.total_reported_seconds
       hash["total_in_review_seconds"] = self.total_in_review_seconds
@@ -150,9 +142,9 @@ class User < ApplicationRecord
 
       hash
     elsif review
-      self.as_json.slice("id", "avatar", "role", "username", "email", "hackatime_id", "slack_id", "verification_status", "is_reviewer", "is_fulfiller")
+      self.as_json.slice("id", "avatar", "role", "username", "email", "hackatime_id", "slack_id", "verification_status")
     else
-      self.as_json.slice("id", "avatar", "role", "username", "is_reviewer", "is_fulfiller")
+      self.as_json.slice("id", "avatar", "role", "username")
     end
   end
 

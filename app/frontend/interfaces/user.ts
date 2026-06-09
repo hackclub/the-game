@@ -21,8 +21,6 @@ export interface PrivateUser {
   avatar: string;
   email: string;
   role: string;
-  is_reviewer: boolean;
-  is_fulfiller: boolean;
   username: string;
   ysws_verified: boolean;
   account_id: string;
@@ -47,8 +45,6 @@ export interface ReviewerUser {
   id: number;
   avatar: string;
   role: string;
-  is_reviewer: boolean;
-  is_fulfiller: boolean;
   username: string;
 
   email: string;
@@ -61,8 +57,6 @@ export interface PublicUser {
   id: number;
   avatar: string;
   role: string;
-  is_reviewer: boolean;
-  is_fulfiller: boolean;
   username: string;
 }
 

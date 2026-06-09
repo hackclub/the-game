@@ -61,14 +61,7 @@ class AdminController < ApplicationController
     end
 
     if params[:role].present?
-      case params[:role]
-      when "reviewer"
-        filtered_users = filtered_users.where(is_reviewer: true)
-      when "fulfiller"
-        filtered_users = filtered_users.where(is_fulfiller: true)
-      else
-        filtered_users = filtered_users.where(role: params[:role])
-      end
+      filtered_users = filtered_users.where(role: params[:role])
     end
 
     paginated_users = filtered_users.order(created_at: :desc).page(params[:page]).per(10)
@@ -214,12 +207,8 @@ class AdminController < ApplicationController
 
   def update_user_role
     user = User.find(params[:id])
-    attrs = {}
-    attrs[:role] = params[:role] if params[:role].present?
-    attrs[:is_reviewer] = ActiveModel::Type::Boolean.new.cast(params[:is_reviewer]) if params.key?(:is_reviewer)
-    attrs[:is_fulfiller] = ActiveModel::Type::Boolean.new.cast(params[:is_fulfiller]) if params.key?(:is_fulfiller)
-    user.update!(attrs)
-    redirect_to admin_user_path(user), notice: "Roles updated"
+    user.update!(role: params[:role])
+    redirect_to admin_user_path(user), notice: "Role updated to #{params[:role]}"
   rescue ArgumentError
     redirect_to admin_user_path(user), alert: "Invalid role"
   end
