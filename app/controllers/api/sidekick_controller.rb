@@ -320,7 +320,9 @@ class Api::SidekickController < ActionController::API
     case @input[:newStatus]
     when "fulfilled"
       purchase.restore if purchase.deleted?
-      purchase.fulfill! unless purchase.fulfilled?
+      was_fulfilled = purchase.fulfilled?
+      purchase.fulfill! unless was_fulfilled
+      purchase.notify_fulfillment! unless was_fulfilled
     when "pending"
       purchase.restore if purchase.deleted?
       purchase.update_column(:aasm_state, "pending") unless purchase.aasm_state == "pending"
