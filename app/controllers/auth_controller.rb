@@ -43,6 +43,7 @@ class AuthController < ApplicationController
         address_country: user_info["address"]&.[]("country"),
         birthday: user_info["birthdate"],
         slack_id: user_info["slack_id"],
+        phone_number: user_info["phone_number"],
         verification_status: User.normalized_verification_status(user_info["verification_status"]),
         referral_code: current_user.nil? && user.nil? ? session[:referral_code] : nil
       }

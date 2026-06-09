@@ -5,7 +5,7 @@ Rails.application.config.middleware.use OmniAuth::Builder do
   provider :openid_connect,
     name: :hca,
     allow_authorize_params: [ :login_hint ],
-    scope: Rails.env.production? ? [ :openid, :email, :profile, :address, :birthdate, :slack_id, :verification_status ] : [ :openid, :profile, :email, :name, :slack_id, :verification_status ],
+    scope: Rails.env.production? ? [ :openid, :email, :profile, :address, :birthdate, :slack_id, :verification_status, :phone ] : [ :openid, :profile, :email, :name, :slack_id, :verification_status, :phone ],
     response_type: :code,
     issuer: ENV.fetch("HCA_URL", "https://auth.hackclub.com"),
     discovery: true,
