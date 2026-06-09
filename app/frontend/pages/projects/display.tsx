@@ -35,13 +35,15 @@ export default function DisplayProject({ project }: Props) {
           )}
           <div className="flex items-center gap-1.5">
             <img src={clockIcon} alt="Clock" className="h-5 w-5" />
-            <span className="text-lg">{formatTime(project.approved_seconds)}</span>
+            <span className="text-lg">
+              {formatTime(project.approved_seconds)}
+            </span>
           </div>
         </div>
 
         <div className="mt-6 flex flex-col gap-6 md:flex-row">
           {project.screenshot && (
-            <div className="md:w-1/2 shrink-0">
+            <div className="shrink-0 md:w-1/2">
               <img
                 src={project.screenshot}
                 alt={project.title ?? "Project screenshot"}
@@ -50,10 +52,14 @@ export default function DisplayProject({ project }: Props) {
             </div>
           )}
 
-          <div className={`flex flex-col ${project.screenshot ? "md:w-1/2" : "w-full"}`}>
+          <div
+            className={`flex flex-col ${project.screenshot ? "md:w-1/2" : "w-full"}`}
+          >
             <div className="flex flex-1 items-center justify-center">
               {project.desc && (
-                <p className="text-center text-lg whitespace-pre-wrap">{project.desc}</p>
+                <p className="text-center text-lg whitespace-pre-wrap">
+                  {project.desc}
+                </p>
               )}
             </div>
 
@@ -65,8 +71,19 @@ export default function DisplayProject({ project }: Props) {
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 rounded-xl border-2 border-black bg-white px-4 py-3 text-lg font-semibold tracking-[-0.02em] transition-transform hover:scale-[1.02]"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 shrink-0"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="2" y1="12" x2="22" y2="12" />
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
                   </svg>
                   Demo
                 </a>
@@ -78,8 +95,18 @@ export default function DisplayProject({ project }: Props) {
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 rounded-xl border-2 border-black bg-white px-4 py-3 text-lg font-semibold tracking-[-0.02em] transition-transform hover:scale-[1.02]"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 shrink-0"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polyline points="16 18 22 12 16 6" />
+                    <polyline points="8 6 2 12 8 18" />
                   </svg>
                   Repository
                 </a>

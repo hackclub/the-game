@@ -35,7 +35,9 @@ export default function AdminPage() {
             {isAdmin ? "Admin Dashboard" : "Fulfillment"}
           </h1>
           <p className="text-gray-500 italic">
-            {isAdmin ? "absolute power corrupts absolutely..." : "stuff for fulfilling :p"}
+            {isAdmin
+              ? "absolute power corrupts absolutely..."
+              : "stuff for fulfilling :p"}
           </p>
         </div>
 
@@ -106,7 +108,9 @@ export default function AdminPage() {
           </div>
         )}
 
-        <div className={`grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 ${isAdmin ? "" : "mt-4"}`}>
+        <div
+          className={`grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 ${isAdmin ? "" : "mt-4"}`}
+        >
           <AdminNav
             href="/admin/orders"
             title="Shop Orders"

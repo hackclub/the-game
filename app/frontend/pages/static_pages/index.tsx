@@ -31,7 +31,9 @@ export default function RsvpPage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const nyTime = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }));
+  const nyTime = new Date(
+    new Date().toLocaleString("en-US", { timeZone: "America/New_York" }),
+  );
   const nyMonth = nyTime.getMonth();
   const nyDay = nyTime.getDate();
   const showEventBanner = nyMonth === 4 && nyDay >= 22 && nyDay <= 24;
@@ -44,11 +46,13 @@ export default function RsvpPage() {
       {showEventBanner && (
         <a
           href="https://platform.game.hackclub.com"
-          className="event-banner relative z-50 flex w-full min-h-[25svh] md:min-h-0 items-center justify-center px-6 py-4 md:py-3 text-center no-underline"
+          className="event-banner relative z-50 flex min-h-[25svh] w-full items-center justify-center px-6 py-4 text-center no-underline md:min-h-0 md:py-3"
         >
-          <span className="text-xl md:text-base font-bold text-black drop-shadow-sm">
+          <span className="text-xl font-bold text-black drop-shadow-sm md:text-base">
             Hack Club: The Game starts now!{" "}
-            <span className="underline">Click here to go to the IRL platform.</span>
+            <span className="underline">
+              Click here to go to the IRL platform.
+            </span>
           </span>
         </a>
       )}

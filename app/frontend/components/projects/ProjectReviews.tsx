@@ -159,9 +159,9 @@ export default function ProjectReviews({
             )}
           </div>
 
-          {(props.user.role === "reviewer" || props.user.role === "fulfiller" || props.user.role === "admin") && (
-            <ReviewForm project={project} />
-          )}
+          {(props.user.role === "reviewer" ||
+            props.user.role === "fulfiller" ||
+            props.user.role === "admin") && <ReviewForm project={project} />}
         </>
       )}
     </div>

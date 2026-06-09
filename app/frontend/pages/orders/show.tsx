@@ -40,7 +40,13 @@ function relativeDate(dateStr: string): string {
   return "just now";
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="flex flex-col gap-3">
       <h2 className="text-2xl font-bold">{title}</h2>
@@ -51,7 +57,13 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <div>
       <h3 className="text-lg font-bold">{label}</h3>
@@ -75,7 +87,6 @@ export default function ShowOrder({ order, order_user, item }: Props) {
       />
 
       <div className="mt-6 flex flex-col gap-6 px-4 pb-10 md:px-16">
-
         <Section title="Order details">
           <div className="flex flex-col gap-5 md:flex-row md:gap-8">
             <div className="flex flex-1 flex-col gap-4">
@@ -113,7 +124,8 @@ export default function ShowOrder({ order, order_user, item }: Props) {
                 </p>
                 {order.quantity > 1 && (
                   <p className="text-sm text-gray-500">
-                    {item.price} tickets × {order.quantity} units = {order.amount_paid} tickets total
+                    {item.price} tickets × {order.quantity} units ={" "}
+                    {order.amount_paid} tickets total
                   </p>
                 )}
               </Field>
@@ -142,7 +154,9 @@ export default function ShowOrder({ order, order_user, item }: Props) {
 
               <Field label="Full name">
                 <p>
-                  {[order_user.first_name, order_user.last_name].filter(Boolean).join(" ") || "—"}
+                  {[order_user.first_name, order_user.last_name]
+                    .filter(Boolean)
+                    .join(" ") || "—"}
                 </p>
               </Field>
 
@@ -151,7 +165,11 @@ export default function ShowOrder({ order, order_user, item }: Props) {
                   <>
                     <p>{order_user.address_street}</p>
                     <p>
-                      {[order_user.address_locality, order_user.address_region, order_user.address_postal]
+                      {[
+                        order_user.address_locality,
+                        order_user.address_region,
+                        order_user.address_postal,
+                      ]
                         .filter(Boolean)
                         .join(", ")}
                     </p>
@@ -186,7 +204,8 @@ export default function ShowOrder({ order, order_user, item }: Props) {
 
               {order_user.balance < 0 && (
                 <p className="rounded-md border-2 border-yellow-400 bg-yellow-100 p-3 font-bold text-yellow-800">
-                  ⚠ User has a negative balance — an approval may have been undone.
+                  ⚠ User has a negative balance — an approval may have been
+                  undone.
                 </p>
               )}
               {order_user.can_overspend && (
@@ -226,7 +245,9 @@ export default function ShowOrder({ order, order_user, item }: Props) {
               <button
                 className="cursor-pointer rounded-xl border-2 border-black bg-black px-4 py-2 font-semibold text-white transition-colors hover:bg-gray-800"
                 onClick={() =>
-                  router.patch(`/shop/orders/${order.id}`, { admin_note: adminNote })
+                  router.patch(`/shop/orders/${order.id}`, {
+                    admin_note: adminNote,
+                  })
                 }
               >
                 Update notes
@@ -251,7 +272,9 @@ export default function ShowOrder({ order, order_user, item }: Props) {
               <button
                 className="cursor-pointer rounded-xl border-2 border-black bg-black px-4 py-2 font-semibold text-white transition-colors hover:bg-gray-800"
                 onClick={() =>
-                  router.patch(`/shop/orders/${order.id}`, { user_note: userNote })
+                  router.patch(`/shop/orders/${order.id}`, {
+                    user_note: userNote,
+                  })
                 }
               >
                 Save note
@@ -266,7 +289,9 @@ export default function ShowOrder({ order, order_user, item }: Props) {
               {order.aasm_state !== "fulfilled" && (
                 <button
                   className="cursor-pointer rounded-xl border-2 border-black bg-green-500 px-4 py-3 font-bold text-white transition-colors hover:bg-green-600"
-                  onClick={() => router.patch(`/shop/orders/${order.id}/fulfill`)}
+                  onClick={() =>
+                    router.patch(`/shop/orders/${order.id}/fulfill`)
+                  }
                 >
                   Mark as fulfilled
                 </button>
@@ -282,7 +307,8 @@ export default function ShowOrder({ order, order_user, item }: Props) {
               <button
                 className="cursor-pointer rounded-xl border-2 border-black bg-red-500 px-4 py-3 font-bold text-white transition-colors hover:bg-red-600"
                 onClick={() => {
-                  if (confirm("Refund this order?")) router.delete(`/shop/orders/${order.id}`);
+                  if (confirm("Refund this order?"))
+                    router.delete(`/shop/orders/${order.id}`);
                 }}
               >
                 Refund order
@@ -290,11 +316,11 @@ export default function ShowOrder({ order, order_user, item }: Props) {
             </div>
           ) : (
             <p className="text-center text-sm text-gray-500">
-              Order is {STATUS_LABELS[state]?.toLowerCase() ?? state} — no actions available.
+              Order is {STATUS_LABELS[state]?.toLowerCase() ?? state} — no
+              actions available.
             </p>
           )}
         </Section>
-
       </div>
     </Layout>
   );

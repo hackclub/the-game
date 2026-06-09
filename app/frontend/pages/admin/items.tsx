@@ -81,15 +81,19 @@ export default function Items({ items, categories }: Props) {
       </div>
 
       <div className="mb-3 flex flex-wrap items-center gap-x-6 gap-y-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-        <span className="text-sm font-medium text-gray-500">{selectionLabel}</span>
+        <span className="text-sm font-medium text-gray-500">
+          {selectionLabel}
+        </span>
 
         <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-gray-700">Adjust price by</label>
+          <label className="text-sm font-medium text-gray-700">
+            Adjust price by
+          </label>
           <input
             type="number"
             value={percentage}
             onChange={(e) => setPercentage(parseFloat(e.target.value) || 0)}
-            className="w-20 rounded-lg border border-gray-200 px-2 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-20 rounded-lg border border-gray-200 px-2 py-1.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
           />
           <span className="text-sm text-gray-500">%</span>
           <button
@@ -102,14 +106,16 @@ export default function Items({ items, categories }: Props) {
         </div>
 
         <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-gray-700">Set category</label>
+          <label className="text-sm font-medium text-gray-700">
+            Set category
+          </label>
           <div className="relative">
             <input
               list="bulk-category-list"
               value={bulkCategory}
               onChange={(e) => setBulkCategory(e.target.value)}
               placeholder="(none)"
-              className="w-36 rounded-lg border border-gray-200 px-2 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-36 rounded-lg border border-gray-200 px-2 py-1.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
             />
             <datalist id="bulk-category-list">
               {categories.map((c) => (

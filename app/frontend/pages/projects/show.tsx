@@ -27,7 +27,9 @@ export default function ShowProject() {
   const { project, ships, hackatime_projects, tags, user } = props;
 
   const showUserInfo =
-    (user.role === "admin" || user.role === "reviewer" || user.role === "fulfiller") &&
+    (user.role === "admin" ||
+      user.role === "reviewer" ||
+      user.role === "fulfiller") &&
     project.user?.id !== user.id;
 
   return (

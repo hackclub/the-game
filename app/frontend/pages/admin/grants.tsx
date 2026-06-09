@@ -28,10 +28,16 @@ function GrantCard({ item }: { item: Item & { pending_count: number } }) {
       <div className="flex items-start justify-between">
         <div>
           <h3 className="text-xl font-bold">{item.name}</h3>
-          <p className="text-sm text-gray-500">{item.pending_count} pending order{item.pending_count !== 1 && "s"}</p>
+          <p className="text-sm text-gray-500">
+            {item.pending_count} pending order{item.pending_count !== 1 && "s"}
+          </p>
         </div>
         {item.image && (
-          <img src={item.image} alt={item.name} className="h-12 w-12 rounded-lg object-contain" />
+          <img
+            src={item.image}
+            alt={item.name}
+            className="h-12 w-12 rounded-lg object-contain"
+          />
         )}
       </div>
 
@@ -49,7 +55,10 @@ function GrantCard({ item }: { item: Item & { pending_count: number } }) {
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-bold">Purpose <span className="font-normal text-gray-400">(max 30 chars)</span></label>
+          <label className="text-sm font-bold">
+            Purpose{" "}
+            <span className="font-normal text-gray-400">(max 30 chars)</span>
+          </label>
           <input
             className="rounded-md border-2 border-black px-2 py-1"
             type="text"
@@ -70,7 +79,10 @@ function GrantCard({ item }: { item: Item & { pending_count: number } }) {
         </div>
 
         <div className="flex flex-col gap-1 sm:col-span-2">
-          <label className="text-sm font-bold">Invite message <span className="font-normal text-gray-400">(optional)</span></label>
+          <label className="text-sm font-bold">
+            Invite message{" "}
+            <span className="font-normal text-gray-400">(optional)</span>
+          </label>
           <input
             className="rounded-md border-2 border-black px-2 py-1"
             type="text"
@@ -86,7 +98,12 @@ function GrantCard({ item }: { item: Item & { pending_count: number } }) {
             checked={oneTimeUse}
             onChange={(e) => setOneTimeUse(e.target.checked)}
           />
-          <label htmlFor={`one_time_use_${item.id}`} className="text-sm font-bold">One-time use</label>
+          <label
+            htmlFor={`one_time_use_${item.id}`}
+            className="text-sm font-bold"
+          >
+            One-time use
+          </label>
         </div>
       </div>
 
@@ -101,12 +118,18 @@ function GrantCard({ item }: { item: Item & { pending_count: number } }) {
   );
 }
 
-export default function Grants({ items }: { items: (Item & { pending_count: number })[] }) {
+export default function Grants({
+  items,
+}: {
+  items: (Item & { pending_count: number })[];
+}) {
   return (
     <Layout>
       <div className="px-8 py-6">
         <h1 className="mb-1 text-4xl font-bold">Grants</h1>
-        <p className="mb-6 text-gray-500 italic">Export grant CSVs for pending orders</p>
+        <p className="mb-6 text-gray-500 italic">
+          Export grant CSVs for pending orders
+        </p>
 
         {items.length === 0 ? (
           <p className="rounded-2xl border-2 border-black bg-white p-6 text-center text-gray-500">
