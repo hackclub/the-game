@@ -15,6 +15,7 @@
 #  price                  :integer          not null
 #  stock                  :integer
 #  super_featured         :boolean          default(FALSE), not null
+#  visible                :boolean          default(TRUE), not null
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #
