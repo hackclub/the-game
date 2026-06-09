@@ -78,7 +78,7 @@ function CategoryCombobox({
             <button
               key={c}
               type="button"
-              className="block w-full px-3 py-2 text-left text-sm hover:bg-blue-50 hover:text-blue-700 first:rounded-t-lg last:rounded-b-lg"
+              className="block w-full px-3 py-2 text-left text-sm first:rounded-t-lg last:rounded-b-lg hover:bg-blue-50 hover:text-blue-700"
               onMouseDown={() => {
                 onChange(c);
                 setOpen(false);
@@ -129,7 +129,7 @@ export default function ItemForm({
     <form onSubmit={handleSubmit} className="flex max-w-xl flex-col gap-5">
       {/* Basic Info */}
       <div className="flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-        <p className="text-xs font-bold uppercase tracking-wider text-gray-400">
+        <p className="text-xs font-bold tracking-wider text-gray-400 uppercase">
           Basic Info
         </p>
         <div>
@@ -157,7 +157,7 @@ export default function ItemForm({
 
       {/* Pricing & Stock */}
       <div className="flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-        <p className="text-xs font-bold uppercase tracking-wider text-gray-400">
+        <p className="text-xs font-bold tracking-wider text-gray-400 uppercase">
           Pricing & Stock
         </p>
         <div className="grid grid-cols-2 gap-4">
@@ -188,7 +188,7 @@ export default function ItemForm({
 
       {/* Flags */}
       <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-        <p className="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">
+        <p className="mb-3 text-xs font-bold tracking-wider text-gray-400 uppercase">
           Flags
         </p>
         <div className="grid grid-cols-2 gap-2">
@@ -211,7 +211,7 @@ export default function ItemForm({
 
       {/* Category */}
       <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-        <p className="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">
+        <p className="mb-3 text-xs font-bold tracking-wider text-gray-400 uppercase">
           Category
         </p>
         <CategoryCombobox
@@ -243,7 +243,7 @@ export default function ItemForm({
 
       {/* Image */}
       <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-        <p className="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">
+        <p className="mb-3 text-xs font-bold tracking-wider text-gray-400 uppercase">
           Image
         </p>
         {data.image === 0 && item?.image && (
@@ -255,7 +255,7 @@ export default function ItemForm({
             />
             <button
               type="button"
-              className="absolute right-2 top-2 h-7 w-7 cursor-pointer rounded-full bg-black/70 text-sm font-bold text-white hover:bg-black"
+              className="absolute top-2 right-2 h-7 w-7 cursor-pointer rounded-full bg-black/70 text-sm font-bold text-white hover:bg-black"
               onClick={() => setData("image", null)}
             >
               ✕

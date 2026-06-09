@@ -65,17 +65,17 @@ export default function Orders({
   const [userSearch, setUserSearch] = useState("");
 
   const filteredItems = items.filter((i) =>
-    i.name?.toLowerCase().includes(itemSearch.toLowerCase())
+    i.name?.toLowerCase().includes(itemSearch.toLowerCase()),
   );
   const filteredUsers = users.filter((u) =>
-    (u.username || "").toLowerCase().includes(userSearch.toLowerCase())
+    (u.username || "").toLowerCase().includes(userSearch.toLowerCase()),
   );
 
   function search() {
     router.get(
       "/admin/orders",
       { status: newStatus, item_id: newItemId, user_id: newUserId },
-      { preserveScroll: true }
+      { preserveScroll: true },
     );
   }
 
@@ -83,7 +83,7 @@ export default function Orders({
     router.get(
       "/admin/orders",
       { page, status, item_id, user_id },
-      { preserveScroll: true }
+      { preserveScroll: true },
     );
   }
 
@@ -122,11 +122,15 @@ export default function Orders({
               size={4}
               className="rounded-b-md border-2 border-black px-2 py-1 text-sm"
               value={newItemId}
-              onChange={(e) => setNewItemId(e.target.value ? Number(e.target.value) : "")}
+              onChange={(e) =>
+                setNewItemId(e.target.value ? Number(e.target.value) : "")
+              }
             >
               <option value="">All items</option>
               {filteredItems.map((i) => (
-                <option key={i.id} value={i.id}>{i.name}</option>
+                <option key={i.id} value={i.id}>
+                  {i.name}
+                </option>
               ))}
             </select>
           </div>
@@ -144,11 +148,15 @@ export default function Orders({
               size={4}
               className="rounded-b-md border-2 border-black px-2 py-1 text-sm"
               value={newUserId}
-              onChange={(e) => setNewUserId(e.target.value ? Number(e.target.value) : "")}
+              onChange={(e) =>
+                setNewUserId(e.target.value ? Number(e.target.value) : "")
+              }
             >
               <option value="">All users</option>
               {filteredUsers.map((u) => (
-                <option key={u.id} value={u.id}>{u.username || u.id}</option>
+                <option key={u.id} value={u.id}>
+                  {u.username || u.id}
+                </option>
               ))}
             </select>
           </div>
@@ -200,7 +208,7 @@ export default function Orders({
                           {order.item.category}
                         </span>
                       )}
-                      <h3 className="text-lg font-bold leading-tight">
+                      <h3 className="text-lg leading-tight font-bold">
                         {order.item?.name ?? "Unknown item"}
                       </h3>
                     </div>

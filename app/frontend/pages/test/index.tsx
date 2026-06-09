@@ -20,10 +20,7 @@ export default function TestPage({
 
   return (
     <Layout>
-      <PageHeading
-        title="Test"
-        subtitle="testing abababababa"
-      />
+      <PageHeading title="Test" subtitle="testing abababababa" />
 
       <div className="mt-4 flex gap-2 pl-8">
         {pagination.prev_page && (

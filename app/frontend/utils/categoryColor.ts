@@ -4,5 +4,8 @@ const COLORS: Record<string, string> = {
 };
 
 export function categoryBadgeClass(category: string): string {
-  return COLORS[category.toLowerCase()] ?? "bg-amber-100 text-amber-700 border-amber-200";
+  return (
+    COLORS[category.toLowerCase()] ??
+    "bg-amber-100 text-amber-700 border-amber-200"
+  );
 }

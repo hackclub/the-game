@@ -26,7 +26,10 @@ export default function ShowTransfer({ transfer, from_user, to_user }: Props) {
       <PageHeading eyebrow="Transfers" title={`Transfer #${transfer.id}`} />
 
       <p className="px-4 py-5 text-xl md:px-16">
-        <a className="text-blue-500 underline" href={`/admin/users/${from_user.id}`}>
+        <a
+          className="text-blue-500 underline"
+          href={`/admin/users/${from_user.id}`}
+        >
           {from_user.username}
         </a>{" "}
         has requested to transfer{" "}
@@ -34,7 +37,10 @@ export default function ShowTransfer({ transfer, from_user, to_user }: Props) {
           {transfer.amount} ticket{transfer.amount != 1 && "s"}
         </span>{" "}
         to{" "}
-        <a className="text-blue-500 underline" href={`/admin/users/${to_user.id}`}>
+        <a
+          className="text-blue-500 underline"
+          href={`/admin/users/${to_user.id}`}
+        >
           {to_user.username}
         </a>
       </p>

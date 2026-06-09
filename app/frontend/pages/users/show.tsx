@@ -33,7 +33,9 @@ export default function UserPage() {
   const [selectedRole, setSelectedRole] = useState(props.page_user.role);
 
   function updateRole() {
-    router.patch(`/admin/users/${props.page_user.id}/role`, { role: selectedRole });
+    router.patch(`/admin/users/${props.page_user.id}/role`, {
+      role: selectedRole,
+    });
   }
 
   return (
@@ -117,7 +119,9 @@ export default function UserPage() {
                 className={`${props.page_user.account_id ? "text-yellow-600" : "text-red-500"} underline`}
                 href="/auth/hca"
               >
-                {props.page_user.account_id ? "Reauthenticate" : "Click here to link"}
+                {props.page_user.account_id
+                  ? "Reauthenticate"
+                  : "Click here to link"}
               </a>
             )}
           </p>
