@@ -320,7 +320,9 @@ class Api::SidekickController < ActionController::API
     case @input[:newStatus]
     when "fulfilled"
       purchase.restore if purchase.deleted?
-      purchase.fulfill! unless purchase.fulfilled?
+      was_fulfilled = purchase.fulfilled?
+      purchase.fulfill! unless was_fulfilled
+      purchase.notify_fulfillment! unless was_fulfilled
     when "pending"
       purchase.restore if purchase.deleted?
       purchase.update_column(:aasm_state, "pending") unless purchase.aasm_state == "pending"
@@ -339,6 +341,7 @@ class Api::SidekickController < ActionController::API
     updates = {}
     updates[:reference] = @input[:reference] if @input.key?(:reference)
     updates[:admin_note] = @input[:adminNotes] if @input.key?(:adminNotes)
+    updates[:user_note] = @input[:userNotes] if @input.key?(:userNotes)
     purchase.update!(updates) if updates.any?
     { success: true }
   end
@@ -403,6 +406,7 @@ class Api::SidekickController < ActionController::API
       status: status,
       reference: purchase.reference,
       adminNotes: purchase.admin_note,
+      userNotes: purchase.user_note,
       createdAt: purchase.created_at.iso8601,
       fulfilledAt: purchase.fulfilled_at&.iso8601,
       metadata: {}
