@@ -341,6 +341,7 @@ class Api::SidekickController < ActionController::API
     updates = {}
     updates[:reference] = @input[:reference] if @input.key?(:reference)
     updates[:admin_note] = @input[:adminNotes] if @input.key?(:adminNotes)
+    updates[:user_note] = @input[:userNotes] if @input.key?(:userNotes)
     purchase.update!(updates) if updates.any?
     { success: true }
   end
@@ -405,6 +406,7 @@ class Api::SidekickController < ActionController::API
       status: status,
       reference: purchase.reference,
       adminNotes: purchase.admin_note,
+      userNotes: purchase.user_note,
       createdAt: purchase.created_at.iso8601,
       fulfilledAt: purchase.fulfilled_at&.iso8601,
       metadata: {}

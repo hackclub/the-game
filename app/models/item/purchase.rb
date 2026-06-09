@@ -11,7 +11,7 @@
 #  hold_at      :datetime
 #  note         :text
 #  quantity     :integer          default(1), not null
-#  reference    :string
+#  reference    :text
 #  user_note    :text
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
@@ -61,7 +61,11 @@ class Item
     def notify_fulfillment!
       return unless user.slack_id.present?
 
-      suffix = user_note.present? ? "Here's a note from the team: #{user_note}" : "Enjoy!"
+      grant = reference&.start_with?("https://hcb.hackclub.com/grants/")
+      parts = []
+      parts << "<#{reference}|Use it here!>" if grant
+      parts << (user_note.present? ? "Here's a note from the team: #{user_note}" : ("Enjoy!" unless grant))
+      suffix = parts.compact.join(" ")
       SlackApiService.post_message(
         channel: user.slack_id,
         text: "Hey #{user.username}! Your order for \"#{item.name}\" has been fulfilled. #{suffix}"
