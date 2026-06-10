@@ -161,6 +161,8 @@ class Api::SidekickController < ActionController::API
         admin_content: @input[:commentText]
       )
       serialize_comment_event(review, internal: true)
+    when "authorize", "deauthorize"
+      { type: "comment", actorId: actor_id_for(reviewer), message: "", isInternal: true, timestamp: Time.current.iso8601 }
     else
       raise ArgumentError, "Unknown review action: #{review_action}"
     end
