@@ -306,6 +306,7 @@ class Api::SidekickController < ActionController::API
     {
       firstName: user.first_name,
       lastName: user.last_name,
+      phoneNumber: user.phone_number,
       line1: user.address_street,
       city: user.address_locality,
       stateProvince: user.address_region,
