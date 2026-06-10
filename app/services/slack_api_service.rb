@@ -3,7 +3,7 @@ class SlackApiService
 
   class << self
     def available?
-      ENV["SLACK_BOT_TOKEN"].present?
+      ENV["SLACK_BOT_TOKEN"].present? && !ENV["DRY_RUN"].present?
     end
 
     def client
