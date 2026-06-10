@@ -7,7 +7,7 @@ class AirtableService
   TABLE_ID = "tbldCj1zJQS2U5x9N".freeze
 
   def self.enabled?
-    ENV["AIRTABLE_API_KEY"].present?
+    ENV["AIRTABLE_API_KEY"].present? && !ENV["DRY_RUN"].present?
   end
 
   def self.optional_env?

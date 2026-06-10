@@ -3,7 +3,7 @@ class SlackChannelInviteService
   CHANNELS = SlackChannels::ALL.except(SlackChannels::TRACKER).freeze
 
   def self.available?
-    ENV["SLACK_XOXD_TOKEN"].present? && ENV["SLACK_XOXC_TOKEN"].present?
+    ENV["SLACK_XOXD_TOKEN"].present? && ENV["SLACK_XOXC_TOKEN"].present? && !ENV["DRY_RUN"].present?
   end
 
   def self.invite_user(slack_id)
