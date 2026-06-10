@@ -265,6 +265,9 @@ class Api::SidekickController < ActionController::API
       scope = scope.where(user_id: user_ids)
     end
 
+    filter_item_id = @input[:filterItemId]
+    scope = scope.where(item_id: filter_item_id) if filter_item_id.present?
+
     total_count = scope.count
 
     scope = scope.order(sort_dir == :desc ? sort_sql[:desc] : sort_sql[:asc])
