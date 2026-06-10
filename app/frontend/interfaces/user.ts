@@ -16,7 +16,6 @@ export interface PrivateUser {
   address_region: string;
   address_country: string;
   address_postal: string;
-  phone_number: string | null;
 
   birthday: string;
   avatar: string;

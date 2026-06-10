@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_09_200638) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_09_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
   enable_extension "pg_catalog.plpgsql"
@@ -319,7 +319,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_200638) do
     t.datetime "last_active"
     t.string "last_name"
     t.boolean "onboarding_completed", default: false, null: false
-    t.string "phone_number"
     t.string "referral_code"
     t.string "referral_share_code"
     t.bigint "referrer_id"

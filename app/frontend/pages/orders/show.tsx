@@ -160,12 +160,6 @@ export default function ShowOrder({ order, order_user, item }: Props) {
                 </p>
               </Field>
 
-              {order_user.phone_number && (
-                <Field label="Phone number">
-                  <p>{order_user.phone_number}</p>
-                </Field>
-              )}
-
               <Field label="Shipping address">
                 {order_user.address_street ? (
                   <>
