@@ -161,7 +161,13 @@ class Api::SidekickController < ActionController::API
         admin_content: @input[:commentText]
       )
       serialize_comment_event(review, internal: true)
-    when "authorize", "deauthorize"
+    when "authorize"
+      if @input.key?(:hoursAssigned)
+        review = find_approval_for_ship(project, ship_id)
+        review.update!(approved_seconds: (@input[:hoursAssigned].to_f * 3600).to_i)
+      end
+      { type: "comment", actorId: actor_id_for(reviewer), message: "", isInternal: true, timestamp: Time.current.iso8601 }
+    when "deauthorize"
       { type: "comment", actorId: actor_id_for(reviewer), message: "", isInternal: true, timestamp: Time.current.iso8601 }
     else
       raise ArgumentError, "Unknown review action: #{review_action}"
@@ -616,6 +622,25 @@ class Api::SidekickController < ActionController::API
     version = PaperTrail::Version.find(version_id)
     raise ActiveRecord::RecordNotFound, "Ship does not reference a project" unless version.item_type == "Project"
     Project.find(version.item_id)
+  end
+
+  def find_approval_for_ship(project, ship_id)
+    version_id = ship_id.delete_prefix("v").to_i
+    version = PaperTrail::Version.find(version_id)
+    submitted_at = version.created_at
+
+    next_submission = project.versions
+      .where("created_at > ?", submitted_at)
+      .order(:created_at)
+      .to_a
+      .find { |v| v.object_changes&.dig("aasm_state", 1) == "submitted" }
+
+    scope = project.reviews
+      .where(review_type: "approval")
+      .where("created_at >= ?", submitted_at)
+
+    scope = scope.where("created_at < ?", next_submission.created_at) if next_submission
+    scope.order(:created_at).last!
   end
 
   def find_review_for_ship(project, ship_id, reviewer, review_type)
