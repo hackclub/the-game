@@ -45,6 +45,7 @@ class Notification < ApplicationRecord
 
   def notify_slack
     return if user.slack_id.nil?
+    return if ENV["DRY_RUN"].present?
 
     client = Slack::Web::Client.new
 
