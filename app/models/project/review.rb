@@ -138,6 +138,8 @@ class Project
     end
 
     def create_ysws_record
+      return if ENV["DRY_RUN"].present?
+
       project.reload
       tracked_time = format_duration(project.approved_seconds)
       adjusted_time = format_duration(approved_seconds)
