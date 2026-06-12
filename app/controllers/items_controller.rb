@@ -1,7 +1,7 @@
 class ItemsController < ApplicationController
   before_action :set_item, only: [ :buy, :claim_referral_item, :edit, :update, :destroy ]
-  before_action :signed_in_admin, only: [ :create, :edit, :update, :destroy, :bulk_adjust_price, :bulk_set_category ]
-  skip_after_action :verify_authorized, only: [ :index, :buy, :claim_referral_item, :create, :edit, :update, :destroy, :bulk_adjust_price, :bulk_set_category ]
+  before_action :signed_in_admin, only: [ :create, :edit, :update, :destroy, :bulk_adjust_price, :bulk_set_category, :revert_price_changes, :preview_price_revert ]
+  skip_after_action :verify_authorized, only: [ :index, :buy, :claim_referral_item, :create, :edit, :update, :destroy, :bulk_adjust_price, :bulk_set_category, :revert_price_changes, :preview_price_revert ]
 
   def index
     program = ReferralProgram.instance
@@ -99,6 +99,43 @@ class ItemsController < ApplicationController
       item.update!(price: new_price)
     end
 
+    inertia_location admin_items_path
+  end
+
+  def preview_price_revert
+    preview = []
+    Item.find_each do |item|
+      version = item.versions.reverse_each.find do |v|
+        v.object_changes.is_a?(Hash) && v.object_changes.key?("price")
+      end
+      next unless version
+
+      preview << {
+        id: item.id,
+        name: item.name,
+        current_price: item.price,
+        revert_to: version.object_changes["price"][0],
+        changed_at: version.created_at
+      }
+    end
+
+    render json: preview
+  end
+
+  def revert_price_changes
+    reverted = 0
+    Item.find_each do |item|
+      price_change_version = item.versions.reverse_each.find do |v|
+        v.object_changes.is_a?(Hash) && v.object_changes.key?("price")
+      end
+      next unless price_change_version
+
+      old_price = price_change_version.object_changes["price"][0]
+      item.update!(price: old_price)
+      reverted += 1
+    end
+
+    flash[:notice] = "Reverted prices for #{reverted} item#{"s" if reverted != 1}"
     inertia_location admin_items_path
   end
 

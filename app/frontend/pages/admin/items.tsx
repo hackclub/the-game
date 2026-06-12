@@ -6,6 +6,14 @@ import { useRef, useState } from "react";
 import ItemForm from "@/components/admin/items/ItemForm";
 import { router } from "@inertiajs/react";
 
+interface PriceRevertPreviewItem {
+  id: number;
+  name: string;
+  current_price: number;
+  revert_to: number;
+  changed_at: string;
+}
+
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 interface Props {
@@ -19,6 +27,8 @@ export default function Items({ items, categories }: Props) {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [percentage, setPercentage] = useState<number>(0);
   const [bulkCategory, setBulkCategory] = useState<string>("");
+  const [revertPreview, setRevertPreview] = useState<PriceRevertPreviewItem[] | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
 
   const [colDefs] = useState([
     {
@@ -65,6 +75,19 @@ export default function Items({ items, categories }: Props) {
       item_ids: selectedIds,
       category: bulkCategory || null,
     });
+  };
+
+  const openRevertPreview = async () => {
+    setPreviewLoading(true);
+    const res = await fetch("/admin/items/preview_price_revert");
+    const data: PriceRevertPreviewItem[] = await res.json();
+    setRevertPreview(data);
+    setPreviewLoading(false);
+  };
+
+  const confirmRevert = () => {
+    router.post("/admin/items/revert_price_changes");
+    setRevertPreview(null);
   };
 
   const selectionLabel = `${selectedIds.length} item${selectedIds.length !== 1 ? "s" : ""} selected`;
@@ -131,7 +154,70 @@ export default function Items({ items, categories }: Props) {
             Apply
           </button>
         </div>
+
+        <div className="ml-auto">
+          <button
+            onClick={openRevertPreview}
+            disabled={previewLoading}
+            className="cursor-pointer rounded-lg bg-red-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {previewLoading ? "Loading…" : "Revert All Price Changes"}
+          </button>
+        </div>
       </div>
+
+      {revertPreview !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
+            <h2 className="mb-1 text-lg font-bold">Revert Price Changes</h2>
+            {revertPreview.length === 0 ? (
+              <p className="py-4 text-sm text-gray-500">No price changes found in version history.</p>
+            ) : (
+              <>
+                <p className="mb-4 text-sm text-gray-500">
+                  {revertPreview.length} item{revertPreview.length !== 1 ? "s" : ""} will be reverted:
+                </p>
+                <div className="max-h-72 overflow-y-auto rounded-lg border border-gray-200">
+                  <table className="w-full text-sm">
+                    <thead className="sticky top-0 bg-gray-50 text-xs font-semibold uppercase text-gray-500">
+                      <tr>
+                        <th className="px-3 py-2 text-left">Item</th>
+                        <th className="px-3 py-2 text-right">Current</th>
+                        <th className="px-3 py-2 text-right">Revert to</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {revertPreview.map((row) => (
+                        <tr key={row.id}>
+                          <td className="px-3 py-2">{row.name}</td>
+                          <td className="px-3 py-2 text-right text-gray-400">{row.current_price}</td>
+                          <td className="px-3 py-2 text-right font-medium text-green-700">{row.revert_to}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+            <div className="mt-5 flex justify-end gap-3">
+              <button
+                onClick={() => setRevertPreview(null)}
+                className="cursor-pointer rounded-lg border border-gray-200 px-4 py-1.5 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              {revertPreview.length > 0 && (
+                <button
+                  onClick={confirmRevert}
+                  className="cursor-pointer rounded-lg bg-red-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-red-700"
+                >
+                  Confirm Revert
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div style={{ height: 500 }}>
         <AgGridReact
