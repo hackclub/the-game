@@ -123,8 +123,9 @@ class ItemsController < ApplicationController
   end
 
   def revert_price_changes
+    scope = params[:item_ids].present? ? Item.where(id: Array(params[:item_ids]).map(&:to_i)) : Item.all
     reverted = 0
-    Item.find_each do |item|
+    scope.find_each do |item|
       price_change_version = item.versions.reverse_each.find do |v|
         v.object_changes.is_a?(Hash) && v.object_changes.key?("price")
       end
