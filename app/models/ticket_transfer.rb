@@ -26,6 +26,7 @@ class TicketTransfer < ApplicationRecord
 
   belongs_to :from_user, class_name: "User"
   belongs_to :to_user, class_name: "User"
+  has_many :notifications, as: :notifiable, dependent: :destroy
 
   validates :amount, comparison: { greater_than: 0 }
   validate :is_not_self_transfer

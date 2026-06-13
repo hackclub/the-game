@@ -45,7 +45,7 @@ export default function TestProjectCard({
         style={goldStyle}
       >
         <div className="flex items-start justify-between gap-2">
-          <h2 className="smoothing-black text-4xl font-bold tracking-[-0.03em] wrap-anywhere">
+          <h2 className="smoothing-black min-w-0 text-4xl font-bold tracking-[-0.03em] wrap-anywhere">
             {project.title}
           </h2>
           <div className="flex shrink-0 items-center gap-1.5">

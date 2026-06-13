@@ -31,7 +31,7 @@ class Notification < ApplicationRecord
     hash = self.as_json.slice("id", "message", "notifiable_type", "notifiable_id", "read", "created_at")
 
     if notifiable
-      hash["notifiable"] = self.notifiable.display_hash
+      hash["notifiable"] = self.notifiable&.display_hash
     end
 
     hash
