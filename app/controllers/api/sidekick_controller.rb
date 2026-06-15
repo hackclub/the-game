@@ -138,7 +138,8 @@ class Api::SidekickController < ActionController::API
         admin_content: @input[:justification],
         approved_seconds: (@input[:hoursAssigned].to_f * 3600).to_i
       )
-      serialize_approval_event(review, ship_id)
+      apply_golden_ticket!(project, @input.dig(:fields, :grant_golden_ticket))
+      serialize_approval_event(review, ship_id, project: project)
     when "reject"
       review = project.reviews.create!(
         author: reviewer,
@@ -190,6 +191,7 @@ class Api::SidekickController < ActionController::API
     updates[:admin_content] = @input[:internalMessage] if type == "rejection" && @input.key?(:internalMessage)
 
     review.update!(updates)
+    apply_golden_ticket!(project, @input.dig(:fields, :grant_golden_ticket)) if type == "approval"
     { success: true }
   end
 
@@ -453,12 +455,20 @@ class Api::SidekickController < ActionController::API
       else "pending"
       end
 
-      {
+      ship = {
         id: "v#{version.id}",
         hoursSubmitted: submission_hours(project, version, all_versions),
         submittedAt: submitted_at.iso8601,
         status: status
       }
+
+      if status == "pending"
+        ship[:approveFields] = [
+          { name: "grant_golden_ticket", label: "Grant golden ticket", type: "boolean", defaultValue: project.high_quality? }
+        ]
+      end
+
+      ship
     end.sort_by { |s| s[:submittedAt] }
   end
 
@@ -557,7 +567,8 @@ class Api::SidekickController < ActionController::API
 
   # --- Timeline event serializers ---
 
-  def serialize_approval_event(review, ship_id)
+  def serialize_approval_event(review, ship_id, project: nil)
+    project ||= review.project
     {
       type: "approval",
       shipId: ship_id,
@@ -565,6 +576,7 @@ class Api::SidekickController < ActionController::API
       hoursAssigned: review.approved_seconds / 3600.0,
       feedbackMessage: review.content || "",
       justification: review.admin_content || "",
+      fields: { grant_golden_ticket: project.high_quality? },
       timestamp: review.created_at.iso8601
     }
   end
@@ -592,6 +604,20 @@ class Api::SidekickController < ActionController::API
   end
 
   # --- Helpers ---
+
+  def apply_golden_ticket!(project, grant)
+    return unless grant == true || grant == "true"
+
+    was_high_quality = project.high_quality?
+    project.update!(high_quality: true)
+
+    if !was_high_quality
+      author_ping = project.user.slack_id.present? ? "<@#{project.user.slack_id}>" : project.user.username
+      text = ":rac_woah: #{author_ping} got a golden ticket for their project *#{project.title}*!! check it out <#{project.demo_link}|here!>"
+      channel = ENV.fetch("GOLDEN_TICKET_SLACK_CHANNEL", SlackChannels::THE_GAME)
+      SlackApiService.post_message(channel: channel, text: text)
+    end
+  end
 
   def actor_id_for(user)
     return user.slack_id if user.slack_id.present?
