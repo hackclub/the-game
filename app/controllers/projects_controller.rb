@@ -251,7 +251,9 @@ class ProjectsController < ApplicationController
   def github_api_get(path)
     uri = URI.parse("https://api.github.com#{path}")
     Net::HTTP.start(uri.host, uri.port, use_ssl: true, open_timeout: 5, read_timeout: 5) do |http|
-      http.get(uri.request_uri, { "User-Agent" => "HackClub-TheGame", "Accept" => "application/vnd.github+json" })
+      headers = { "User-Agent" => "HackClub-TheGame", "Accept" => "application/vnd.github+json" }
+      headers["Authorization"] = "Bearer #{ENV['GITHUB_TOKEN']}" if ENV["GITHUB_TOKEN"].present?
+      http.get(uri.request_uri, headers)
     end
   rescue StandardError
     nil
