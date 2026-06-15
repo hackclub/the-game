@@ -127,9 +127,9 @@ export default function ProjectReviews({
                             {review.admin_content}
                           </p>
                         )}
-                        {(props.user.role === "reviewer" ||
-                          props.user.role === "fulfiller" ||
-                          props.user.role === "admin") && (
+                        {(props.user.is_reviewer ||
+                          props.user.is_fulfiller ||
+                          props.user.is_admin) && (
                           <div className="flex gap-3">
                             <Link
                               href={`/projects/${project.id}/reviews/${review.id}/edit`}
@@ -159,9 +159,9 @@ export default function ProjectReviews({
             )}
           </div>
 
-          {(props.user.role === "reviewer" ||
-            props.user.role === "fulfiller" ||
-            props.user.role === "admin") && <ReviewForm project={project} />}
+          {(props.user.is_reviewer ||
+            props.user.is_fulfiller ||
+            props.user.is_admin) && <ReviewForm project={project} />}
         </>
       )}
     </div>

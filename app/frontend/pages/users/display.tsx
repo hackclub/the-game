@@ -8,7 +8,7 @@ interface PageUser {
   id: number;
   username: string | null;
   avatar: string | null;
-  role: string;
+  is_admin: boolean;
 }
 
 export default function UserDisplayPage({
@@ -18,8 +18,8 @@ export default function UserDisplayPage({
   page_user: PageUser;
   projects: (Project & { username: string })[];
 }) {
-  const { user } = usePage<{ user?: { role: string } }>().props;
-  const isAdmin = user?.role === "admin";
+  const { user } = usePage<{ user?: { is_admin: boolean } }>().props;
+  const isAdmin = user?.is_admin;
 
   return (
     <Layout>

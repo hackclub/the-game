@@ -14,7 +14,7 @@ import type { Project } from "@/interfaces/project";
 
 export default function Index({ projects }: { projects: Project[] }) {
   const { props } = usePage<SharedProps>();
-  const isAdmin = props.user.role === "admin";
+  const isAdmin = props.user.is_admin;
   const allPaused =
     !isAdmin &&
     isShippingPaused() &&

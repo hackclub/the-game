@@ -54,7 +54,7 @@ export default function OrderCard({
     </>
   );
 
-  if (props.user.role === "admin") {
+  if (props.user.is_admin) {
     return (
       <a
         key={order.id}

@@ -23,18 +23,34 @@ interface Props {
   [_: string]: unknown;
 }
 
-const ROLES = ["user", "reviewer", "fulfiller", "admin"] as const;
+const PERMISSIONS = ["is_admin", "is_reviewer", "is_fulfiller"] as const;
+const PERMISSION_LABELS: Record<string, string> = {
+  is_admin: "Admin",
+  is_reviewer: "Reviewer",
+  is_fulfiller: "Fulfiller",
+};
 
 export default function UserPage() {
   const { props } = usePage<Props>();
   const missingFields = ACCOUNT_REQUIRED_FIELDS.filter(
     (f) => !props.page_user[f as keyof PrivateUser],
   );
-  const [selectedRole, setSelectedRole] = useState(props.page_user.role);
+  const [permissions, setPermissions] = useState({
+    is_admin: props.page_user.is_admin,
+    is_reviewer: props.page_user.is_reviewer,
+    is_fulfiller: props.page_user.is_fulfiller,
+  });
 
-  function updateRole() {
-    router.patch(`/admin/users/${props.page_user.id}/role`, {
-      role: selectedRole,
+  const permissionsChanged =
+    permissions.is_admin !== props.page_user.is_admin ||
+    permissions.is_reviewer !== props.page_user.is_reviewer ||
+    permissions.is_fulfiller !== props.page_user.is_fulfiller;
+
+  function updatePermissions() {
+    router.patch(`/admin/users/${props.page_user.id}/permissions`, {
+      is_admin: String(permissions.is_admin),
+      is_reviewer: String(permissions.is_reviewer),
+      is_fulfiller: String(permissions.is_fulfiller),
     });
   }
 
@@ -57,31 +73,48 @@ export default function UserPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2">
         <div className="smoothing-black flex flex-col gap-4 p-8 text-xl">
-          {props.page_user.role === "admin" && !props.custom && (
-            <p>You are an admin.</p>
-          )}
-          {props.page_user.role === "reviewer" && !props.custom && (
-            <p>You are a reviewer.</p>
-          )}
-          {props.custom && props.user.role === "admin" && (
-            <div className="flex items-center gap-2">
-              <select
-                className="rounded-md border px-2 py-1 text-base"
-                value={selectedRole}
-                onChange={(e) => setSelectedRole(e.target.value)}
-              >
-                {ROLES.map((r) => (
-                  <option key={r} value={r}>
-                    {r.charAt(0).toUpperCase() + r.slice(1)}
-                  </option>
+          {!props.custom &&
+            (props.page_user.is_admin ||
+              props.page_user.is_reviewer ||
+              props.page_user.is_fulfiller) && (
+              <p>
+                You are{" "}
+                {[
+                  props.page_user.is_admin && "an admin",
+                  props.page_user.is_reviewer && "a reviewer",
+                  props.page_user.is_fulfiller && "a fulfiller",
+                ]
+                  .filter(Boolean)
+                  .join(", ")}
+                .
+              </p>
+            )}
+          {props.custom && props.user.is_admin && (
+            <div className="flex flex-col gap-2">
+              <p className="text-base font-bold">Permissions</p>
+              <div className="flex items-center gap-4">
+                {PERMISSIONS.map((perm) => (
+                  <label key={perm} className="flex items-center gap-1.5">
+                    <input
+                      type="checkbox"
+                      checked={permissions[perm]}
+                      onChange={(e) =>
+                        setPermissions((prev) => ({
+                          ...prev,
+                          [perm]: e.target.checked,
+                        }))
+                      }
+                    />
+                    {PERMISSION_LABELS[perm]}
+                  </label>
                 ))}
-              </select>
+              </div>
               <button
-                className="cursor-pointer rounded-md bg-black px-3 py-1 text-sm text-white hover:bg-gray-800 disabled:opacity-50"
-                onClick={updateRole}
-                disabled={selectedRole === props.page_user.role}
+                className="w-fit cursor-pointer rounded-md bg-black px-3 py-1 text-sm text-white hover:bg-gray-800 disabled:opacity-50"
+                onClick={updatePermissions}
+                disabled={!permissionsChanged}
               >
-                Save role
+                Save permissions
               </button>
             </div>
           )}
@@ -153,7 +186,7 @@ export default function UserPage() {
 
           <div>
             {(props.page_user.ticket_adjustments.length > 0 ||
-              props.user.role === "admin") && (
+              props.user.is_admin) && (
               <>
                 <p className="mb-2 text-2xl font-bold">Ticket adjustments</p>
               </>
@@ -175,7 +208,7 @@ export default function UserPage() {
                       </span>{" "}
                       on {new Date(adjustment.created_at).toLocaleString()}
                     </p>
-                    {props.user.role === "admin" && (
+                    {props.user.is_admin && (
                       <Link
                         href={`/users/${props.user.id}/adjustments/${adjustment.id}`}
                         method="delete"
@@ -189,7 +222,7 @@ export default function UserPage() {
                 </div>
               ))}
             </div>
-            {props.user.role === "admin" && (
+            {props.user.is_admin && (
               <AdjustmentForm user_id={props.page_user.id} />
             )}
           </div>
@@ -218,7 +251,7 @@ export default function UserPage() {
                       <br />
                       <span className="italic">{transfer.reason}</span>
                     </p>
-                    {props.user.role === "admin" && (
+                    {props.user.is_admin && (
                       <Link
                         href={`/users/${props.user.id}/transfers/${transfer.id}`}
                         method="delete"

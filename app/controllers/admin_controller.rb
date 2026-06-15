@@ -60,15 +60,22 @@ class AdminController < ApplicationController
       end
     end
 
-    if params[:role].present?
-      filtered_users = filtered_users.where(role: params[:role])
+    if params[:permission].present?
+      case params[:permission]
+      when "admin"
+        filtered_users = filtered_users.where(is_admin: true)
+      when "reviewer"
+        filtered_users = filtered_users.where(is_reviewer: true)
+      when "fulfiller"
+        filtered_users = filtered_users.where(is_fulfiller: true)
+      end
     end
 
     paginated_users = filtered_users.order(created_at: :desc).page(params[:page]).per(10)
 
     render inertia: "admin/users", props: {
       users: paginated_users.map { |user| user.display_hash(private: true) },
-      role: params[:role],
+      permission: params[:permission],
       q: params[:q],
       pagination: {
         current_page: paginated_users.current_page,
@@ -205,12 +212,14 @@ class AdminController < ApplicationController
     }
   end
 
-  def update_user_role
+  def update_user_permissions
     user = User.find(params[:id])
-    user.update!(role: params[:role])
-    redirect_to admin_user_path(user), notice: "Role updated to #{params[:role]}"
-  rescue ArgumentError
-    redirect_to admin_user_path(user), alert: "Invalid role"
+    user.update!(
+      is_admin: params[:is_admin] == "true",
+      is_reviewer: params[:is_reviewer] == "true",
+      is_fulfiller: params[:is_fulfiller] == "true"
+    )
+    redirect_to admin_user_path(user), notice: "Permissions updated"
   end
 
   def user_hackatime_projects
