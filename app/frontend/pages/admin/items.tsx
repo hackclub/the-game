@@ -27,7 +27,9 @@ export default function Items({ items, categories }: Props) {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [percentage, setPercentage] = useState<number>(0);
   const [bulkCategory, setBulkCategory] = useState<string>("");
-  const [revertPreview, setRevertPreview] = useState<PriceRevertPreviewItem[] | null>(null);
+  const [revertPreview, setRevertPreview] = useState<
+    PriceRevertPreviewItem[] | null
+  >(null);
   const [revertSelected, setRevertSelected] = useState<Set<number>>(new Set());
   const [previewLoading, setPreviewLoading] = useState(false);
 
@@ -192,21 +194,31 @@ export default function Items({ items, categories }: Props) {
           <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
             <h2 className="mb-1 text-lg font-bold">Revert Price Changes</h2>
             {revertPreview.length === 0 ? (
-              <p className="py-4 text-sm text-gray-500">No price changes found in version history.</p>
+              <p className="py-4 text-sm text-gray-500">
+                No price changes found in version history.
+              </p>
             ) : (
               <>
                 <p className="mb-4 text-sm text-gray-500">
-                  {revertSelected.size} of {revertPreview.length} item{revertPreview.length !== 1 ? "s" : ""} selected to revert:
+                  {revertSelected.size} of {revertPreview.length} item
+                  {revertPreview.length !== 1 ? "s" : ""} selected to revert:
                 </p>
                 <div className="max-h-72 overflow-y-auto rounded-lg border border-gray-200">
                   <table className="w-full text-sm">
-                    <thead className="sticky top-0 bg-gray-50 text-xs font-semibold uppercase text-gray-500">
+                    <thead className="sticky top-0 bg-gray-50 text-xs font-semibold text-gray-500 uppercase">
                       <tr>
                         <th className="px-3 py-2 text-left">
                           <input
                             type="checkbox"
-                            checked={revertSelected.size === revertPreview.length}
-                            ref={(el) => { if (el) el.indeterminate = revertSelected.size > 0 && revertSelected.size < revertPreview.length; }}
+                            checked={
+                              revertSelected.size === revertPreview.length
+                            }
+                            ref={(el) => {
+                              if (el)
+                                el.indeterminate =
+                                  revertSelected.size > 0 &&
+                                  revertSelected.size < revertPreview.length;
+                            }}
                             onChange={toggleRevertAll}
                             className="cursor-pointer"
                           />
@@ -233,8 +245,12 @@ export default function Items({ items, categories }: Props) {
                             />
                           </td>
                           <td className="px-3 py-2">{row.name}</td>
-                          <td className="px-3 py-2 text-right text-gray-400">{row.current_price}</td>
-                          <td className="px-3 py-2 text-right font-medium text-green-700">{row.revert_to}</td>
+                          <td className="px-3 py-2 text-right text-gray-400">
+                            {row.current_price}
+                          </td>
+                          <td className="px-3 py-2 text-right font-medium text-green-700">
+                            {row.revert_to}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
