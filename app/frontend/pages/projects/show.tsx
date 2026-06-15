@@ -27,9 +27,7 @@ export default function ShowProject() {
   const { project, ships, hackatime_projects, tags, user } = props;
 
   const showUserInfo =
-    (user.role === "admin" ||
-      user.role === "reviewer" ||
-      user.role === "fulfiller") &&
+    (user.is_admin || user.is_reviewer || user.is_fulfiller) &&
     project.user?.id !== user.id;
 
   return (
@@ -133,7 +131,7 @@ export default function ShowProject() {
                 className="h-28 w-28"
               />
               <div>
-                {props.user.role === "admin" ? (
+                {props.user.is_admin ? (
                   <Link
                     href={`/admin/users/${project.user!.id}`}
                     className="font-bold text-blue-500 underline"

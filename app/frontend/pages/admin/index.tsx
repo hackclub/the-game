@@ -25,7 +25,7 @@ function AdminNav({
 
 export default function AdminPage() {
   const { user } = usePage<{ user: PrivateUser }>().props;
-  const isAdmin = user.role === "admin";
+  const isAdmin = user.is_admin;
 
   return (
     <Layout>

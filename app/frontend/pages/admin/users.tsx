@@ -11,13 +11,13 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 interface Props {
   users: PrivateUser[];
   q: string;
-  role: string;
+  permission: string;
   pagination: Pagination;
 }
 
-export default function Users({ users, q, role, pagination }: Props) {
+export default function Users({ users, q, permission, pagination }: Props) {
   const [newQuery, setNewQuery] = useState(q || "");
-  const [newRole, setNewRole] = useState(role || "");
+  const [newPermission, setNewPermission] = useState(permission || "");
 
   const [rowData, setRowData] = useState(users);
   const [colDefs, setColDefs] = useState([
@@ -46,7 +46,16 @@ export default function Users({ users, q, role, pagination }: Props) {
     },
     { field: "username" as const },
     { field: "email" as const },
-    { field: "role" as const },
+    {
+      headerName: "Permissions",
+      valueGetter: (params: any) => {
+        const flags = [];
+        if (params.data.is_admin) flags.push("Admin");
+        if (params.data.is_reviewer) flags.push("Reviewer");
+        if (params.data.is_fulfiller) flags.push("Fulfiller");
+        return flags.join(", ") || "User";
+      },
+    },
     { field: "ysws_verified" as const, headerName: "YSWS Verified?" },
     { field: "slack_id" as const, headerName: "Slack ID" },
     { field: "account_id" as const, headerName: "HCA ID" },
@@ -85,13 +94,17 @@ export default function Users({ users, q, role, pagination }: Props) {
   ]);
 
   function goToPage(page: number) {
-    router.get("/admin/users", { page, q, role }, { preserveScroll: true });
+    router.get(
+      "/admin/users",
+      { page, q, permission },
+      { preserveScroll: true },
+    );
   }
 
   function search() {
     router.get(
       "/admin/users",
-      { q: newQuery, role: newRole },
+      { q: newQuery, permission: newPermission },
       { preserveScroll: true },
     );
   }
@@ -108,20 +121,15 @@ export default function Users({ users, q, role, pagination }: Props) {
           onChange={(e) => setNewQuery(e.target.value)}
         />
 
-        {["user", "reviewer", "fulfiller", "admin"].map((r) => (
+        {["admin", "reviewer", "fulfiller"].map((p) => (
           <button
-            className={`cursor-pointer rounded-full border px-3 py-2 ${newRole === r ? "bg-blue-300" : "bg-white"}`}
+            key={p}
+            className={`cursor-pointer rounded-full border px-3 py-2 ${newPermission === p ? "bg-blue-300" : "bg-white"}`}
             onClick={() => {
-              setNewRole((currentRole) => {
-                if (currentRole === r) {
-                  return "";
-                } else {
-                  return r;
-                }
-              });
+              setNewPermission((current) => (current === p ? "" : p));
             }}
           >
-            {r[0].toUpperCase() + r.slice(1)}
+            {p[0].toUpperCase() + p.slice(1)}
           </button>
         ))}
 

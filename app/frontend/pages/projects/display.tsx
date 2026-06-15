@@ -11,8 +11,8 @@ interface Props {
 }
 
 export default function DisplayProject({ project }: Props) {
-  const { user } = usePage<{ user?: { role: string } }>().props;
-  const isAdmin = user?.role === "admin";
+  const { user } = usePage<{ user?: { is_admin: boolean } }>().props;
+  const isAdmin = user?.is_admin;
 
   return (
     <Layout>

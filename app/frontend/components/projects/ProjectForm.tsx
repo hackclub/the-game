@@ -273,7 +273,7 @@ export default function ProjectForm({
 
   const disabled = project?.aasm_state === "submitted";
   const idvVerified = props.user.verification_status === "verified";
-  const isAdmin = props.user.role === "admin";
+  const isAdmin = props.user.is_admin;
   const shippingPaused = isAdmin
     ? false
     : project
