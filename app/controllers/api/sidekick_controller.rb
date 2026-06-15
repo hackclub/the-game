@@ -459,7 +459,7 @@ class Api::SidekickController < ActionController::API
         submittedAt: submitted_at.iso8601,
         status: status
       }
-    end
+    end.sort_by { |s| s[:submittedAt] }
   end
 
   def submission_hours(project, version, all_versions)
