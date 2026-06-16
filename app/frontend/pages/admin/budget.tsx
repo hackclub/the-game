@@ -1,7 +1,7 @@
 import Layout from "@/layouts/layout";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useMemo } from "react";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -69,7 +69,10 @@ export default function Budget({
   const itemGridRef = useRef<AgGridReact>(null);
   const orderGridRef = useRef<AgGridReact>(null);
 
-  const itemsById = Object.fromEntries(items.map((i) => [i.id, i]));
+  const itemsById = useMemo(
+    () => Object.fromEntries(items.map((i) => [i.id, i])),
+    [items],
+  );
 
   const totalShopRealPrice = orders.reduce((sum, o) => {
     const item = itemsById[o.item_id];
@@ -105,103 +108,109 @@ export default function Budget({
     [],
   );
 
-  const [itemColDefs] = useState([
-    { field: "id" as const, headerName: "ID", width: 70 },
-    { field: "name" as const, flex: 2 },
-    { field: "category" as const, width: 120 },
-    {
-      field: "price" as const,
-      headerName: "Tickets",
-      width: 100,
-    },
-    {
-      headerName: "WG Unit Price",
-      width: 140,
-      valueGetter: (params: any) => params.data.price * ticketRate,
-      valueFormatter: (params: any) => fmt(params.value),
-    },
-    {
-      field: "real_price" as const,
-      headerName: "Real Price ($)",
-      width: 140,
-      editable: true,
-      valueFormatter: (params: any) =>
-        params.value != null ? fmt(params.value) : "—",
-      valueSetter: (params: any) => {
-        const raw = params.newValue;
-        const parsed = raw === "" || raw == null ? null : parseFloat(raw);
-        if (parsed !== null && isNaN(parsed)) return false;
-        params.data.real_price = parsed;
-        saveRealPrice(params.data.id, parsed);
-        return true;
+  const itemColDefs = useMemo(
+    () => [
+      { field: "id" as const, headerName: "ID", width: 70 },
+      { field: "name" as const, flex: 2 },
+      { field: "category" as const, width: 120 },
+      {
+        field: "price" as const,
+        headerName: "Tickets",
+        width: 100,
       },
-    },
-  ]);
+      {
+        headerName: "WG Unit Price",
+        width: 140,
+        valueGetter: (params: any) => params.data.price * ticketRate,
+        valueFormatter: (params: any) => fmt(params.value),
+      },
+      {
+        field: "real_price" as const,
+        headerName: "Real Price ($)",
+        width: 140,
+        editable: true,
+        valueFormatter: (params: any) =>
+          params.value != null ? fmt(params.value) : "—",
+        valueSetter: (params: any) => {
+          const raw = params.newValue;
+          const parsed = raw === "" || raw == null ? null : parseFloat(raw);
+          if (parsed !== null && isNaN(parsed)) return false;
+          params.data.real_price = parsed;
+          saveRealPrice(params.data.id, parsed);
+          return true;
+        },
+      },
+    ],
+    [ticketRate, saveRealPrice],
+  );
 
-  const [orderColDefs] = useState([
-    { field: "id" as const, headerName: "ID", width: 70 },
-    {
-      field: "item_name" as const,
-      headerName: "Item",
-      flex: 2,
-    },
-    {
-      field: "username" as const,
-      headerName: "User",
-      flex: 1,
-      cellRenderer: (params: any) => (
-        <a
-          className="text-blue-500 underline"
-          href={`/admin/users/${params.data.user_id}`}
-        >
-          {params.value}
-        </a>
-      ),
-    },
-    { field: "quantity" as const, width: 80 },
-    {
-      field: "amount_paid" as const,
-      headerName: "Tickets Paid",
-      width: 120,
-    },
-    {
-      headerName: "Real Cost",
-      width: 120,
-      valueGetter: (params: any) => {
-        const item = itemsById[params.data.item_id];
-        const rp = item?.real_price ?? 0;
-        return rp * params.data.quantity;
+  const orderColDefs = useMemo(
+    () => [
+      { field: "id" as const, headerName: "ID", width: 70 },
+      {
+        field: "item_name" as const,
+        headerName: "Item",
+        flex: 2,
       },
-      valueFormatter: (params: any) =>
-        params.value > 0 ? fmt(params.value) : "—",
-    },
-    {
-      field: "aasm_state" as const,
-      headerName: "Status",
-      width: 110,
-      cellRenderer: (params: any) => {
-        const colors: Record<string, string> = {
-          pending: "bg-yellow-100 text-yellow-800",
-          fulfilled: "bg-green-100 text-green-800",
-          hold: "bg-orange-100 text-orange-800",
-        };
-        return (
-          <span
-            className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${colors[params.value] || "bg-gray-100 text-gray-800"}`}
+      {
+        field: "username" as const,
+        headerName: "User",
+        flex: 1,
+        cellRenderer: (params: any) => (
+          <a
+            className="text-blue-500 underline"
+            href={`/admin/users/${params.data.user_id}`}
           >
             {params.value}
-          </span>
-        );
+          </a>
+        ),
       },
-    },
-    {
-      field: "created_at" as const,
-      headerName: "Date",
-      width: 130,
-      valueFormatter: (params: any) =>
-        new Date(params.value).toLocaleDateString(),
-    },
-  ]);
+      { field: "quantity" as const, width: 80 },
+      {
+        field: "amount_paid" as const,
+        headerName: "Tickets Paid",
+        width: 120,
+      },
+      {
+        headerName: "Real Cost",
+        width: 120,
+        valueGetter: (params: any) => {
+          const item = itemsById[params.data.item_id];
+          const rp = item?.real_price ?? 0;
+          return rp * params.data.quantity;
+        },
+        valueFormatter: (params: any) =>
+          params.value > 0 ? fmt(params.value) : "—",
+      },
+      {
+        field: "aasm_state" as const,
+        headerName: "Status",
+        width: 110,
+        cellRenderer: (params: any) => {
+          const colors: Record<string, string> = {
+            pending: "bg-yellow-100 text-yellow-800",
+            fulfilled: "bg-green-100 text-green-800",
+            hold: "bg-orange-100 text-orange-800",
+          };
+          return (
+            <span
+              className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${colors[params.value] || "bg-gray-100 text-gray-800"}`}
+            >
+              {params.value}
+            </span>
+          );
+        },
+      },
+      {
+        field: "created_at" as const,
+        headerName: "Date",
+        width: 130,
+        valueFormatter: (params: any) =>
+          new Date(params.value).toLocaleDateString(),
+      },
+    ],
+    [itemsById],
+  );
 
   return (
     <Layout>

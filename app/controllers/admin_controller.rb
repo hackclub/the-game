@@ -324,7 +324,17 @@ class AdminController < ApplicationController
     end
 
     excluded_user_ids = [ 424, 539, 399 ]
-    total_user_balance_tickets = User.where.not(id: excluded_user_ids).sum { |u| u.balance }
+    users = User.where.not(id: excluded_user_ids)
+      .includes(:approved_reviews, :purchases, :ticket_adjustments, :incoming_ticket_transfers, :outgoing_ticket_transfers)
+
+    total_user_balance_tickets = users.sum do |u|
+      revenue = ((u.approved_reviews.reduce(0) { |acc, r| acc + (r.approved_seconds || 0) }) / 3600.0).floor
+      expenses = u.purchases.reduce(0) { |acc, p| acc + p.amount_paid }
+      adjustments = u.ticket_adjustments.reduce(0) { |acc, a| acc + a.amount }
+      incoming = u.incoming_ticket_transfers.select { |t| t.aasm_state == "approved" }.reduce(0) { |acc, t| acc + t.amount }
+      outgoing = u.outgoing_ticket_transfers.select { |t| t.aasm_state != "rejected" }.reduce(0) { |acc, t| acc + t.amount }
+      revenue + adjustments - expenses + incoming - outgoing
+    end
 
     render inertia: "admin/budget", props: {
       items:,
