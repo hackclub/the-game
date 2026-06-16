@@ -3,6 +3,7 @@ export interface Item {
   name: string;
   description: string;
   price: number;
+  real_price: number | null;
   image?: string;
   featured: boolean;
   super_featured: boolean;

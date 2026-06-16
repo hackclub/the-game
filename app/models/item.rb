@@ -13,6 +13,7 @@
 #  name                   :string           not null
 #  one_per_user           :boolean          default(FALSE), not null
 #  price                  :integer          not null
+#  real_price             :decimal(10, 2)
 #  stock                  :integer
 #  super_featured         :boolean          default(FALSE), not null
 #  visible                :boolean          default(TRUE), not null

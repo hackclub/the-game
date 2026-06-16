@@ -94,6 +94,11 @@ export default function AdminPage() {
               description="Og referral page"
             />
             <AdminNav
+              href="/admin/budget"
+              title="Budget Overview"
+              description="Shop costs, user balances, and total spend"
+            />
+            <AdminNav
               href="/admin/audit-log"
               title="Audit Log"
               description="Browse all paper trail records across models"
