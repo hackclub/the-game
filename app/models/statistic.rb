@@ -13,7 +13,7 @@ class Statistic < AirpplicationRecord
   field :user_project_shipped_count
 
   def self.generate_statistic_data
-    approved_hours = Project.all.reduce(0) { |acc, project| acc + (project.approved_seconds || 0) } / 3600.0
+    approved_hours = Project.sum(:approved_seconds) / 3600.0
     project_count = Project.count
 
     user_count = User.count

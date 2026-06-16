@@ -274,21 +274,51 @@ class User < ApplicationRecord
   end
 
   def total_reviewed_seconds
-    projects.reduce(0) { |acc, project| acc + (project.approved_seconds || 0) }
+    projects.sum(:approved_seconds)
   end
 
   def total_approved_seconds
-    projects.reduce(0) { |acc, project| acc + project.real_approved_seconds }
+    Project::Review.joins(:project)
+      .where(projects: { user_id: id }, review_type: :approval)
+      .sum(:approved_seconds)
   end
 
   def balance
-    revenue = ((approved_reviews.reduce(0) { |acc, review| acc + (review.approved_seconds || 0) }) / 3600.0).floor
-    expenses = purchases.reduce(0) { |acc, purchase| acc + purchase.amount_paid }
-    adjustments = ticket_adjustments.reduce(0) { |acc, adjustment| acc + adjustment.amount }
-    incoming_transfers = incoming_ticket_transfers.select { |t| t.aasm_state == "approved" }.reduce(0) { |acc, transfer| acc + transfer.amount }
-    outgoing_transfers = outgoing_ticket_transfers.select { |t| t.aasm_state != "rejected" }.reduce(0) { |acc, transfer| acc + transfer.amount }
+    revenue = (approved_reviews.sum(:approved_seconds) / 3600.0).floor
+    expenses = purchases.sum(:amount_paid)
+    adjustments = ticket_adjustments.sum(:amount)
+    incoming = incoming_ticket_transfers.where(aasm_state: "approved").sum(:amount)
+    outgoing = outgoing_ticket_transfers.where.not(aasm_state: "rejected").sum(:amount)
 
-    revenue + adjustments - expenses + incoming_transfers - outgoing_transfers
+    revenue + adjustments - expenses + incoming - outgoing
+  end
+
+  def self.batch_balances(user_ids)
+    return {} if user_ids.empty?
+
+    revenues = Project::Review.joins(:project)
+      .where(projects: { user_id: user_ids }, review_type: :approval)
+      .group("projects.user_id")
+      .sum(:approved_seconds)
+      .transform_values { |v| (v / 3600.0).floor }
+
+    expenses = Item::Purchase.where(user_id: user_ids)
+      .group(:user_id).sum(:amount_paid)
+
+    adjustments = TicketAdjustment.where(user_id: user_ids)
+      .group(:user_id).sum(:amount)
+
+    incoming = TicketTransfer.where(to_user_id: user_ids, aasm_state: "approved")
+      .group(:to_user_id).sum(:amount)
+
+    outgoing = TicketTransfer.where(from_user_id: user_ids)
+      .where.not(aasm_state: "rejected")
+      .group(:from_user_id).sum(:amount)
+
+    user_ids.each_with_object({}) do |uid, hash|
+      hash[uid] = (revenues[uid] || 0) + (adjustments[uid] || 0) -
+        (expenses[uid] || 0) + (incoming[uid] || 0) - (outgoing[uid] || 0)
+    end
   end
 
   def mark_adjustment_notifications_read
