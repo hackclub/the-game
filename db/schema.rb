@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_15_000001) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_16_025756) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
   enable_extension "pg_catalog.plpgsql"
@@ -160,6 +160,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_15_000001) do
     t.string "name", null: false
     t.boolean "one_per_user", default: false, null: false
     t.integer "price", null: false
+    t.decimal "real_price", precision: 10, scale: 2
     t.integer "stock"
     t.boolean "super_featured", default: false, null: false
     t.datetime "updated_at", null: false

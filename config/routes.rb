@@ -112,6 +112,8 @@ Rails.application.routes.draw do
     get  "/items/preview_price_revert", to: "items#preview_price_revert"
     post "/items/revert_price_changes", to: "items#revert_price_changes"
     get "/stats", to: "admin#stats"
+    get "/budget", to: "admin#budget"
+    patch "/budget/items/:id/real_price", to: "admin#update_item_real_price", as: "update_item_real_price"
     get "/orders", to: "admin#orders"
     get "/audit-log", to: "admin#audit_log"
     get "/users/search", to: "admin#users_search"

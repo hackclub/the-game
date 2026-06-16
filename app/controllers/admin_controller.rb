@@ -298,6 +298,47 @@ class AdminController < ApplicationController
     }
   end
 
+  def budget
+    items = Item.all.order(:name).map do |item|
+      {
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        real_price: item.real_price&.to_f,
+        category: item.category
+      }
+    end
+
+    orders = Item::Purchase.includes(:user, :item).order(created_at: :desc).map do |o|
+      {
+        id: o.id,
+        item_id: o.item_id,
+        item_name: o.item.name,
+        user_id: o.user_id,
+        username: o.user&.username,
+        quantity: o.quantity,
+        amount_paid: o.amount_paid,
+        aasm_state: o.aasm_state,
+        created_at: o.created_at
+      }
+    end
+
+    excluded_user_ids = [ 424, 539, 399 ]
+    total_user_balance_tickets = User.where.not(id: excluded_user_ids).sum { |u| u.balance }
+
+    render inertia: "admin/budget", props: {
+      items:,
+      orders:,
+      total_user_balance_tickets:
+    }
+  end
+
+  def update_item_real_price
+    item = Item.find(params[:id])
+    item.update!(real_price: params[:real_price])
+    head :ok
+  end
+
   def grants
     items = Item.where(category: "grants").map do |item|
       item.display_hash.merge("pending_count" => Item::Purchase.where(item_id: item.id, aasm_state: [ :pending, :hold ]).count)
