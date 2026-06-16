@@ -110,16 +110,16 @@ class Project < ApplicationRecord
     (total_seconds || 0) - (approved_seconds || 0)
   end
 
-  def display_hash(reviews: false, user: false, admin: false, reviewer: false)
+  def display_hash(reviews: false, user: false, admin: false, reviewer: false, notifications: true)
     hash = self.as_json.slice("id", "aasm_state", "approved_at", "demo_link", "desc", "rejected_at", "repo_link", "submitted_at", "title", "ysws", "created_at", "updated_at", "user_id", "high_quality", "ai_declaration")
     hash["reported_seconds"] = reported_seconds
     hash["total_seconds"] = total_seconds
     hash["approved_seconds"] = approved_seconds
     hash["real_approved_seconds"] = real_approved_seconds
-    hash["hackatime_projects"] = hackatime_projects.pluck(:id)
-    hash["tags"] = tags.pluck(:id)
+    hash["hackatime_projects"] = hackatime_projects.loaded? ? hackatime_projects.map(&:id) : hackatime_projects.pluck(:id)
+    hash["tags"] = tags.loaded? ? tags.map(&:id) : tags.pluck(:id)
     hash["status"] = display_status
-    hash["unread_notification_count"] = unread_notifications.count
+    hash["unread_notification_count"] = notifications ? unread_notifications.count : 0
 
     if screenshot.attached? && screenshot.persisted?
       hash["screenshot"] = "/rails/active_storage/blobs/redirect/#{screenshot.blob.signed_id}/#{screenshot.blob.filename}"
@@ -176,7 +176,11 @@ class Project < ApplicationRecord
   end
 
   def real_approved_seconds
-    reviews.approval.reduce(0) { |acc, review| acc + review.approved_seconds }
+    if reviews.loaded?
+      reviews.select { |r| r.review_type == "approval" }.sum(&:approved_seconds)
+    else
+      reviews.approval.sum(:approved_seconds)
+    end
   end
 
   def github_username
