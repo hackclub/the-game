@@ -309,7 +309,7 @@ class AdminController < ApplicationController
       }
     end
 
-    orders = Item::Purchase.includes(:user, :item).order(created_at: :desc).map do |o|
+    orders = Item::Purchase.where(aasm_state: :pending).includes(:user, :item).order(created_at: :desc).map do |o|
       {
         id: o.id,
         item_id: o.item_id,

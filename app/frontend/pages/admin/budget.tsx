@@ -183,25 +183,6 @@ export default function Budget({
           params.value > 0 ? fmt(params.value) : "—",
       },
       {
-        field: "aasm_state" as const,
-        headerName: "Status",
-        width: 110,
-        cellRenderer: (params: any) => {
-          const colors: Record<string, string> = {
-            pending: "bg-yellow-100 text-yellow-800",
-            fulfilled: "bg-green-100 text-green-800",
-            hold: "bg-orange-100 text-orange-800",
-          };
-          return (
-            <span
-              className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${colors[params.value] || "bg-gray-100 text-gray-800"}`}
-            >
-              {params.value}
-            </span>
-          );
-        },
-      },
-      {
         field: "created_at" as const,
         headerName: "Date",
         width: 130,
@@ -218,7 +199,7 @@ export default function Budget({
         <div className="mb-6">
           <h1 className="text-3xl font-bold">Budget Overview</h1>
           <p className="text-gray-500 italic">
-            Shop costs, user balances, and total projected spend
+            Pending shop orders, user balances, and total projected spend
           </p>
         </div>
 
@@ -241,9 +222,9 @@ export default function Budget({
 
         <div className="mb-8 flex flex-wrap gap-4">
           <StatCard
-            label="Total Shop Orders (Real Price)"
+            label="Pending Orders (Real Price)"
             value={fmt(totalShopRealPrice)}
-            sublabel={`Across ${orders.length} orders`}
+            sublabel={`Across ${orders.length} pending orders`}
           />
           <StatCard
             label="Total Remaining Balances"
@@ -272,7 +253,7 @@ export default function Budget({
           />
         </div>
 
-        <h2 className="mb-3 text-xl font-bold">Shop Orders</h2>
+        <h2 className="mb-3 text-xl font-bold">Pending Shop Orders</h2>
         <div style={{ height: 500 }}>
           <AgGridReact
             ref={orderGridRef}
