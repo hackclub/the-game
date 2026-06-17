@@ -76,7 +76,11 @@ Rails.application.routes.draw do
   get "/me", to: "users#show"
 
   namespace :admin do
-    resources :announcements, only: [ :index, :create, :edit, :update, :destroy ]
+    resources :announcements, only: [ :index, :create, :edit, :update, :destroy ] do
+      collection do
+        post :block_slack
+      end
+    end
     resources :tags, only: [ :index, :create, :edit, :update, :destroy ]
     resources :projects, only: [ :new, :create ]
     resources :referrals, only: [ :index ] do

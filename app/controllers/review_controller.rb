@@ -15,8 +15,8 @@ class ReviewController < ApplicationController
     balances = User.batch_balances(user_ids)
 
     render inertia: "review/index", props: {
-      queue: queue.map { |project| project.display_hash.merge(username: project.user&.username) },
-      all_queued: all_queued.map { |project| project.display_hash(notifications: false).merge(username: project.user&.username, ticket_count: balances[project.user_id] || 0) },
+      queue: queue.map { |project| project.display_hash(raw_seconds: true).merge(username: project.user&.username) },
+      all_queued: all_queued.map { |project| project.display_hash(notifications: false, raw_seconds: true).merge(username: project.user&.username, ticket_count: balances[project.user_id] || 0) },
       queue_count: all_queued.count,
       week_leaderboard: week_reviews_by_user.map { |user_id, count| { id: user_id, name: leaderboard_users[user_id]&.username, count: count } },
       alltime_leaderboard: alltime_reviews_by_user.map { |user_id, count| { id: user_id, name: leaderboard_users[user_id]&.username, count: count } }

@@ -7,7 +7,7 @@ import compassIcon from "@/assets/icons/compass.svg";
 import adminIcon from "@/assets/icons/admin.svg";
 import shopIcon from "@/assets/icons/shop.svg";
 import reviewIcon from "@/assets/icons/review.svg";
-import docsIcon from "@/assets/icons/link.svg";
+import docsIcon from "@/assets/icons/docs.svg";
 
 import clsx from "clsx";
 

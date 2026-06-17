@@ -4,7 +4,23 @@ class AdminController < ApplicationController
   before_action :signed_in_fulfiller, only: [ :index, :orders, :ticket_transfers, :grants, :grants_csv, :users ]
 
   def index
-    render inertia: "admin/index"
+    if current_user.admin?
+      quick_stats = {
+        total_users: User.count,
+        active_today: User.where("last_active > ?", 24.hours.ago).count,
+        active_this_week: User.where("last_active > ?", 1.week.ago).count,
+        total_projects: Project.count,
+        projects_submitted: Project.submitted.count,
+        projects_approved: Project.approved.count,
+        pending_orders: Item::Purchase.where(aasm_state: :pending).count,
+        shipped_users: User.joins(:projects).where(projects: { aasm_state: :approved }).distinct.count,
+        review_queue: Project.submitted.count
+      }
+    end
+
+    render inertia: "admin/index", props: {
+      quick_stats: quick_stats || nil
+    }
   end
 
   def announcements
@@ -27,16 +43,26 @@ class AdminController < ApplicationController
     end
 
     if params[:q].present?
-      filtered_projects = filtered_projects.search_by_title(params[:q])
+      q = params[:q].strip
+      if q.match?(/\A\d+\z/)
+        filtered_projects = filtered_projects.where(id: q)
+          .or(filtered_projects.where(user_id: q))
+      else
+        filtered_projects = filtered_projects
+          .left_joins(:user)
+          .where("projects.title ILIKE :q OR users.username ILIKE :q", q: "%#{ActiveRecord::Base.sanitize_sql_like(q)}%")
+      end
     end
 
-    paginated_projects = filtered_projects.order(created_at: :desc).page(params[:page]).per(10)
+    per = [ (params[:per_page] || 10).to_i, 100 ].min
+    paginated_projects = filtered_projects.order(created_at: :desc).page(params[:page]).per(per)
     render inertia: "admin/projects", props: {
-      projects: paginated_projects.map { |project| project.display_hash(user: true) },
+      projects: paginated_projects.map { |project| project.display_hash(user: true, raw_seconds: true) },
       q: params[:q],
       status: params[:status],
       high_quality: params[:high_quality] == "true",
       tag: params[:tag],
+      per_page: per,
       available_tags: Project::Tag.all.map(&:display_hash),
       pagination: {
         current_page: paginated_projects.current_page,
@@ -52,11 +78,14 @@ class AdminController < ApplicationController
     filtered_users = User.all
 
     if params[:q].present?
+      q = params[:q].strip
       slack_id_pattern = /\A(?:https:\/\/[a-z0-9.]+\.slack\.com\/team\/)?(U[A-Z0-9]{8,})\z/
-      if (match = params[:q].strip.match(slack_id_pattern))
+      if q.match?(/\A\d+\z/)
+        filtered_users = filtered_users.where(id: q)
+      elsif (match = q.match(slack_id_pattern))
         filtered_users = filtered_users.where(slack_id: match[1])
       else
-        filtered_users = filtered_users.search_by_name(params[:q])
+        filtered_users = filtered_users.search_by_name(q)
       end
     end
 
@@ -71,12 +100,14 @@ class AdminController < ApplicationController
       end
     end
 
-    paginated_users = filtered_users.order(created_at: :desc).page(params[:page]).per(10)
+    per = [ (params[:per_page] || 10).to_i, 100 ].min
+    paginated_users = filtered_users.order(created_at: :desc).page(params[:page]).per(per)
 
     render inertia: "admin/users", props: {
-      users: paginated_users.map { |user| user.display_hash(private: true) },
+      users: paginated_users.includes(:projects).map { |user| user.display_hash(private: true, lightweight: true) },
       permission: params[:permission],
       q: params[:q],
+      per_page: per,
       pagination: {
         current_page: paginated_users.current_page,
         next_page: paginated_users.next_page,
@@ -122,8 +153,16 @@ class AdminController < ApplicationController
       invite_projected_count = nil
     end
 
+    activity_stats = {
+      active_today: User.where("last_active > ?", 24.hours.ago).count,
+      active_this_week: User.where("last_active > ?", 1.week.ago).count,
+      shipped_this_week: Project.where(aasm_state: :submitted).where("submitted_at > ?", 1.week.ago).count,
+      approved_this_week: Project.where(aasm_state: :approved).where("approved_at > ?", 1.week.ago).count
+    }
+
     render inertia: "admin/stats", props: {
       stats: Statistic.generate_statistic_data,
+      activity_stats:,
       invite_purchase_count:,
       invite_projected_count:,
       orders_over_time:,
@@ -257,9 +296,13 @@ class AdminController < ApplicationController
     paginated_orders = filtered_orders.order(created_at: :desc).page(params[:page]).per(30)
 
     render inertia: "admin/orders", props: {
-      orders: paginated_orders.map { |o| o.display_hash(item: true).merge(username: o.user&.username) },
-      items: Item.all.order(name: :asc).map(&:display_hash),
-      users: User.all.order(username: :asc).map(&:display_hash),
+      orders: paginated_orders.map { |o|
+        o.display_hash(item: true).merge(
+          username: o.user&.username,
+          user_avatar: o.user&.avatar
+        )
+      },
+      items: Item.all.order(name: :asc).map { |i| { id: i.id, name: i.name, category: i.category } },
       status: params[:status],
       item_id: params[:item_id],
       user_id: params[:user_id],
@@ -324,10 +367,9 @@ class AdminController < ApplicationController
     end
 
     excluded_user_ids = [ 424, 539, 399 ]
-    users = User.where.not(id: excluded_user_ids)
-      .includes(:approved_reviews, :purchases, :ticket_adjustments, :incoming_ticket_transfers, :outgoing_ticket_transfers)
-
-    total_user_balance_tickets = users.sum { |u| u.balance }
+    all_user_ids = User.where.not(id: excluded_user_ids).pluck(:id)
+    balances = User.batch_balances(all_user_ids)
+    total_user_balance_tickets = balances.values.sum
 
     render inertia: "admin/budget", props: {
       items:,

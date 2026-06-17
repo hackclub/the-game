@@ -21,7 +21,7 @@ export default function Announcements({
             href={announcement.permalink}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex flex-col"
+            className="flex flex-col transition-transform duration-200 hover:scale-[1.03]"
           >
             <div className="h-[37px] rounded-tl-2xl rounded-tr-2xl bg-black" />
             <div className="flex-1 overflow-clip rounded-br-2xl rounded-bl-2xl border-2 border-t-0 border-black bg-white px-5 py-5">
