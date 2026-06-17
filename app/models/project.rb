@@ -110,9 +110,9 @@ class Project < ApplicationRecord
     (total_seconds || 0) - (approved_seconds || 0)
   end
 
-  def display_hash(reviews: false, user: false, admin: false, reviewer: false, notifications: true)
+  def display_hash(reviews: false, user: false, admin: false, reviewer: false, notifications: true, raw_seconds: false)
     hash = self.as_json.slice("id", "aasm_state", "approved_at", "demo_link", "desc", "rejected_at", "repo_link", "submitted_at", "title", "ysws", "created_at", "updated_at", "user_id", "high_quality", "ai_declaration")
-    hash["reported_seconds"] = reported_seconds
+    hash["reported_seconds"] = raw_seconds ? (total_seconds || approved_seconds || 0) : reported_seconds
     hash["total_seconds"] = total_seconds
     hash["approved_seconds"] = approved_seconds
     hash["real_approved_seconds"] = real_approved_seconds

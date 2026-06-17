@@ -18,7 +18,7 @@ class ExploreController < ApplicationController
     })
 
     render inertia: "explore/index", props: {
-      projects: projects.map { |p| p.display_hash.merge(username: p.user&.username) },
+      projects: projects.map { |p| p.display_hash(raw_seconds: true).merge(username: p.user&.username) },
       seed:,
       pagination: {
         current_page:,

@@ -2,23 +2,27 @@ import Layout from "@/layouts/layout";
 import { useState } from "react";
 import { router } from "@inertiajs/react";
 import type { Order } from "@/interfaces/order";
-import type { PublicUser } from "@/interfaces/user";
 import type { Item } from "@/interfaces/item";
 import type { Pagination } from "@/interfaces/pagination";
 import { categoryBadgeClass } from "@/utils/categoryColor";
 
 interface OrderWithDetails extends Order {
   username?: string;
+  user_avatar?: string;
   item?: Item;
+}
+
+interface LightweightItem {
+  id: number;
+  name: string;
+  category: string | null;
 }
 
 interface Props {
   orders: OrderWithDetails[];
   status: string;
   item_id: number;
-  items: Item[];
-  user_id: number;
-  users: PublicUser[];
+  items: LightweightItem[];
   pagination: Pagination;
 }
 
@@ -53,28 +57,21 @@ export default function Orders({
   orders,
   pagination,
   items,
-  users,
   status,
   item_id,
-  user_id,
 }: Props) {
   const [newStatus, setNewStatus] = useState(status || "");
   const [newItemId, setNewItemId] = useState<number | "">(item_id || "");
-  const [newUserId, setNewUserId] = useState<number | "">(user_id || "");
   const [itemSearch, setItemSearch] = useState("");
-  const [userSearch, setUserSearch] = useState("");
 
   const filteredItems = items.filter((i) =>
     i.name?.toLowerCase().includes(itemSearch.toLowerCase()),
-  );
-  const filteredUsers = users.filter((u) =>
-    (u.username || "").toLowerCase().includes(userSearch.toLowerCase()),
   );
 
   function search() {
     router.get(
       "/admin/orders",
-      { status: newStatus, item_id: newItemId, user_id: newUserId },
+      { status: newStatus, item_id: newItemId },
       { preserveScroll: true },
     );
   }
@@ -82,7 +79,7 @@ export default function Orders({
   function goToPage(page: number) {
     router.get(
       "/admin/orders",
-      { page, status, item_id, user_id },
+      { page, status, item_id },
       { preserveScroll: true },
     );
   }
@@ -93,7 +90,7 @@ export default function Orders({
 
       <div className="mb-6 rounded-2xl border-2 border-black bg-white p-4">
         <h2 className="mb-3 text-xl font-bold">Filter</h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1">
             <span className="font-medium">Status</span>
             <div className="flex flex-wrap gap-2">
@@ -134,32 +131,6 @@ export default function Orders({
               ))}
             </select>
           </div>
-
-          <div className="flex flex-col gap-1">
-            <span className="font-medium">User</span>
-            <input
-              type="text"
-              placeholder="Search users..."
-              value={userSearch}
-              onChange={(e) => setUserSearch(e.target.value)}
-              className="rounded-t-md border-2 border-b-0 border-black px-2 py-1 text-sm"
-            />
-            <select
-              size={4}
-              className="rounded-b-md border-2 border-black px-2 py-1 text-sm"
-              value={newUserId}
-              onChange={(e) =>
-                setNewUserId(e.target.value ? Number(e.target.value) : "")
-              }
-            >
-              <option value="">All users</option>
-              {filteredUsers.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.username || u.id}
-                </option>
-              ))}
-            </select>
-          </div>
         </div>
 
         <button
@@ -182,64 +153,99 @@ export default function Orders({
           No orders found matching the filter.
         </p>
       ) : (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="flex flex-col gap-2">
           {orders.map((order) => {
             const state = order.deleted_at ? "deleted" : order.aasm_state;
             return (
-              <a
+              <div
                 key={order.id}
-                href={`/shop/orders/${order.id}`}
-                className="group relative flex flex-col overflow-hidden rounded-2xl border-2 border-black bg-white transition-transform hover:scale-[1.02]"
+                className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm transition-colors hover:bg-gray-50"
               >
-                {order.item?.image && (
-                  <img
-                    src={order.item.image}
-                    alt={order.item.name}
-                    className="aspect-[5/3] w-full bg-gray-100 object-contain"
-                  />
-                )}
-                <div className="flex flex-1 flex-col gap-1 p-4">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex min-w-0 flex-col gap-1">
-                      {order.item?.category && (
-                        <span
-                          className={`w-fit rounded-full border px-2 py-0.5 text-xs font-semibold ${categoryBadgeClass(order.item.category)}`}
-                        >
-                          {order.item.category}
-                        </span>
-                      )}
-                      <h3 className="text-lg leading-tight font-bold">
-                        {order.item?.name ?? "Unknown item"}
-                      </h3>
+                {/* Item thumbnail */}
+                <div className="hidden shrink-0 sm:block">
+                  {order.item?.image ? (
+                    <img
+                      src={order.item.image}
+                      alt={order.item.name}
+                      className="h-14 w-14 rounded-lg bg-gray-100 object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-gray-100 text-xs text-gray-400">
+                      No img
                     </div>
-                    <span
-                      className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-bold ${STATUS_COLORS[state] ?? "bg-gray-100 text-gray-800"}`}
-                    >
-                      {STATUS_LABELS[state] ?? state}
-                    </span>
-                  </div>
+                  )}
+                </div>
+
+                {/* Item name + category */}
+                <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm text-gray-600">
-                      by{" "}
+                    <a
+                      href={`/shop/orders/${order.id}`}
+                      className="truncate text-sm font-bold text-gray-900 hover:underline"
+                    >
+                      {order.item?.name ?? "Unknown item"}
+                    </a>
+                    {order.item?.category && (
                       <span
-                        onClick={(e) => {
-                          e.preventDefault();
-                          window.location.href = `/admin/users/${order.user_id}`;
-                        }}
-                        className="underline hover:text-black"
+                        className={`shrink-0 rounded-full border px-2 py-0.5 text-xs font-semibold ${categoryBadgeClass(order.item.category)}`}
                       >
-                        {order.username ?? `User #${order.user_id}`}
+                        {order.item.category}
                       </span>
-                    </p>
+                    )}
                   </div>
-                  <div className="mt-auto flex items-center justify-between pt-2 text-sm text-gray-500">
-                    <span>{order.amount_paid} tickets</span>
-                    <span title={new Date(order.created_at).toUTCString()}>
-                      {relativeDate(order.created_at)}
-                    </span>
+                  <div className="flex items-center gap-1.5 text-sm text-gray-500">
+                    {order.user_avatar ? (
+                      <img
+                        src={order.user_avatar}
+                        alt=""
+                        className="h-5 w-5 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-200 text-[10px] font-bold text-gray-500">
+                        {(order.username ?? "?")[0].toUpperCase()}
+                      </div>
+                    )}
+                    <a
+                      href={`/admin/users/${order.user_id}`}
+                      className="truncate hover:text-black hover:underline"
+                    >
+                      {order.username ?? `User #${order.user_id}`}
+                    </a>
                   </div>
                 </div>
-              </a>
+
+                {/* Quantity + amount */}
+                <div className="hidden shrink-0 flex-col items-end gap-0.5 text-sm md:flex">
+                  <span className="text-gray-700">
+                    {order.quantity > 1 ? `${order.quantity}x ` : ""}
+                    {order.amount_paid} tickets
+                  </span>
+                </div>
+
+                {/* Status badge */}
+                <div className="shrink-0">
+                  <span
+                    className={`inline-block rounded-full px-2.5 py-1 text-xs font-bold ${STATUS_COLORS[state] ?? "bg-gray-100 text-gray-800"}`}
+                  >
+                    {STATUS_LABELS[state] ?? state}
+                  </span>
+                </div>
+
+                {/* Date */}
+                <div className="hidden shrink-0 text-xs text-gray-400 lg:block">
+                  <span title={new Date(order.created_at).toUTCString()}>
+                    {relativeDate(order.created_at)}
+                  </span>
+                </div>
+
+                {/* View link */}
+                <a
+                  href={`/shop/orders/${order.id}`}
+                  className="shrink-0 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-600 transition-colors hover:bg-gray-100 hover:text-black"
+                >
+                  View
+                </a>
+              </div>
             );
           })}
         </div>
@@ -251,7 +257,7 @@ export default function Orders({
             className="cursor-pointer rounded-xl border-2 border-black px-4 py-2 font-semibold hover:bg-gray-100"
             onClick={() => goToPage(pagination.prev_page)}
           >
-            ← Prev
+            Prev
           </button>
         )}
         <span className="text-sm text-gray-600">
@@ -262,7 +268,7 @@ export default function Orders({
             className="cursor-pointer rounded-xl border-2 border-black px-4 py-2 font-semibold hover:bg-gray-100"
             onClick={() => goToPage(pagination.next_page)}
           >
-            Next →
+            Next
           </button>
         )}
       </div>

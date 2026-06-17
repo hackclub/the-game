@@ -13,8 +13,16 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+interface ActivityStats {
+  active_today: number;
+  active_this_week: number;
+  shipped_this_week: number;
+  approved_this_week: number;
+}
+
 interface StatsProps {
   stats: Statistic;
+  activity_stats: ActivityStats;
   invite_purchase_count: number;
   invite_projected_count: number | null;
   orders_over_time: OrderEntry[];
@@ -35,6 +43,7 @@ function StatRow({ label, value }: { label: string; value: React.ReactNode }) {
 
 export default function Stats({
   stats,
+  activity_stats,
   invite_purchase_count,
   invite_projected_count,
   orders_over_time,
@@ -104,6 +113,33 @@ export default function Stats({
                 },
               ]
             : []),
+        ].map(({ label, value }) => (
+          <div
+            key={label}
+            className="flex min-w-40 flex-col gap-1 rounded-lg border border-gray-200 p-5"
+          >
+            <span className="text-4xl font-bold tabular-nums">{value}</span>
+            <span className="text-sm text-gray-500">{label}</span>
+          </div>
+        ))}
+      </div>
+
+      <SectionHeading>Activity</SectionHeading>
+      <div className="flex flex-wrap gap-4">
+        {[
+          { label: "DAU (active today)", value: activity_stats.active_today },
+          {
+            label: "WAU (active this week)",
+            value: activity_stats.active_this_week,
+          },
+          {
+            label: "Shipped this week",
+            value: activity_stats.shipped_this_week,
+          },
+          {
+            label: "Approved this week",
+            value: activity_stats.approved_this_week,
+          },
         ].map(({ label, value }) => (
           <div
             key={label}

@@ -2,7 +2,7 @@ import Layout from "@/layouts/layout";
 import { Item } from "@/interfaces/item";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
-import { useRef, useState } from "react";
+import { useRef, useState, useMemo } from "react";
 import ItemForm from "@/components/admin/items/ItemForm";
 import { router } from "@inertiajs/react";
 
@@ -23,7 +23,6 @@ interface Props {
 
 export default function Items({ items, categories }: Props) {
   const gridRef = useRef<AgGridReact>(null);
-  const [rowData] = useState(items);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [percentage, setPercentage] = useState<number>(0);
   const [bulkCategory, setBulkCategory] = useState<string>("");
@@ -32,6 +31,13 @@ export default function Items({ items, categories }: Props) {
   >(null);
   const [revertSelected, setRevertSelected] = useState<Set<number>>(new Set());
   const [previewLoading, setPreviewLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredItems = useMemo(() => {
+    if (!searchQuery.trim()) return items;
+    const q = searchQuery.toLowerCase();
+    return items.filter((item) => item.name.toLowerCase().includes(q));
+  }, [items, searchQuery]);
 
   const [colDefs] = useState([
     {
@@ -39,6 +45,7 @@ export default function Items({ items, categories }: Props) {
       headerName: "ID",
       checkboxSelection: true,
       headerCheckboxSelection: true,
+      width: 90,
       cellRenderer: (field: any) => (
         <a
           className="text-blue-500 underline"
@@ -47,6 +54,25 @@ export default function Items({ items, categories }: Props) {
           {field.value}
         </a>
       ),
+    },
+    {
+      field: "image" as const,
+      headerName: "",
+      width: 60,
+      sortable: false,
+      filter: false,
+      cellRenderer: (params: any) =>
+        params.value ? (
+          <img
+            src={params.value}
+            alt=""
+            className="h-10 w-10 rounded object-cover"
+          />
+        ) : (
+          <div className="flex h-10 w-10 items-center justify-center rounded bg-gray-100 text-xs text-gray-400">
+            --
+          </div>
+        ),
     },
     { field: "name" as const },
     { field: "description" as const },
@@ -184,7 +210,7 @@ export default function Items({ items, categories }: Props) {
             disabled={previewLoading}
             className="cursor-pointer rounded-lg bg-red-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            {previewLoading ? "Loading…" : "Revert All Price Changes"}
+            {previewLoading ? "Loading..." : "Revert All Price Changes"}
           </button>
         </div>
       </div>
@@ -279,14 +305,25 @@ export default function Items({ items, categories }: Props) {
         </div>
       )}
 
+      <div className="mb-3">
+        <input
+          type="text"
+          placeholder="Search items by name..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm shadow-sm placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+        />
+      </div>
+
       <div style={{ height: 500 }}>
         <AgGridReact
           ref={gridRef}
-          rowData={rowData}
+          rowData={filteredItems}
           columnDefs={colDefs}
           loadThemeGoogleFonts={true}
           enableCellTextSelection={true}
           rowSelection="multiple"
+          rowHeight={50}
           onSelectionChanged={onSelectionChanged}
         />
       </div>

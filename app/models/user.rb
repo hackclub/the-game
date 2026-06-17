@@ -141,13 +141,21 @@ class User < ApplicationRecord
     end
   end
 
-  def display_hash(private: false, review: false)
+  def display_hash(private: false, review: false, lightweight: false)
     if private
       hash = self.as_json.slice("id", "first_name", "last_name", "github_username", "address_street", "address_locality", "address_region", "address_country", "address_postal", "phone_number", "birthday", "avatar", "email", "username", "ysws_verified", "verification_status", "account_id", "hackatime_id", "slack_id", "onboarding_completed", "is_admin", "is_reviewer", "is_fulfiller")
-      hash["balance"] = self.balance
-      hash["total_reported_seconds"] = self.total_reported_seconds
-      hash["total_in_review_seconds"] = self.total_in_review_seconds
-      hash["total_approved_seconds"] = self.total_approved_seconds
+      hash["project_count"] = projects.size
+      if lightweight
+        hash["balance"] = 0
+        hash["total_reported_seconds"] = 0
+        hash["total_in_review_seconds"] = 0
+        hash["total_approved_seconds"] = 0
+      else
+        hash["balance"] = self.balance
+        hash["total_reported_seconds"] = self.total_reported_seconds
+        hash["total_in_review_seconds"] = self.total_in_review_seconds
+        hash["total_approved_seconds"] = self.total_approved_seconds
+      end
       hash["ticket_adjustments"] = self.ticket_adjustments.order(created_at: :desc).map(&:display_hash)
       hash["incoming_ticket_transfers"] = self.incoming_ticket_transfers.order(created_at: :desc).map(&:display_hash)
       hash["outgoing_ticket_transfers"] = self.outgoing_ticket_transfers.order(created_at: :desc).map(&:display_hash)

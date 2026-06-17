@@ -1,7 +1,5 @@
 class DocsController < ApplicationController
   DOCS = %w[
-    travel-guide
-    travel-packlist
     faq
   ].freeze
 

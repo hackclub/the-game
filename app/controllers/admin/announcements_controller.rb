@@ -5,7 +5,11 @@ module Admin
     skip_after_action :verify_authorized
 
     def index
-      render inertia: "admin/announcements/index", props: { announcements: Announcement.all.map(&:display_hash) }
+      slack_announcements = SlackAnnouncementsService.available? ? SlackAnnouncementsService.fetch_announcements : []
+      render inertia: "admin/announcements/index", props: {
+        announcements: Announcement.all.map(&:display_hash),
+        slack_announcements: slack_announcements
+      }
     end
 
     def create
@@ -27,6 +31,11 @@ module Admin
     def destroy
       @announcement.destroy!
 
+      redirect_to admin_announcements_path
+    end
+
+    def block_slack
+      SlackAnnouncementsService.block_message(params[:ts])
       redirect_to admin_announcements_path
     end
 

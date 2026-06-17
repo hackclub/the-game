@@ -36,7 +36,23 @@ class SlackAnnouncementsService
       announcements
     end
 
+    def block_message(ts)
+      blocks = blocked_timestamps
+      blocks << ts unless blocks.include?(ts)
+      Rails.cache.write("slack_announcement_blocks", blocks, expires_in: 1.year)
+    end
+
     private
+
+    def blocked_timestamps
+      Rails.cache.fetch("slack_announcement_blocks", expires_in: 1.year) { [] }
+    end
+
+    def unblock_message(ts)
+      blocks = blocked_timestamps
+      blocks.delete(ts)
+      Rails.cache.write("slack_announcement_blocks", blocks, expires_in: 1.year)
+    end
 
     def fetch_and_filter_messages
       response = SlackApiService.client.get("conversations.history") do |req|
@@ -46,11 +62,13 @@ class SlackAnnouncementsService
       return [] unless response.success? && response.body["ok"]
 
       all_messages = response.body["messages"]
+      dynamic_blocks = blocked_timestamps
       messages = []
 
       all_messages.each do |msg|
         next unless msg["text"]&.match?(/<!channel>|<!here>/)
         next if ignored_message?(msg["ts"])
+        next if dynamic_blocks.include?(msg["ts"])
 
         # If message has @here and is less than 8 chars, use previous message instead
         if msg["text"].include?("<!here>") && msg["text"].length < 16
@@ -80,6 +98,7 @@ class SlackAnnouncementsService
         author_avatar_url: user[:avatar_url],
         content: format_message(message["text"]),
         timestamp: Time.at(message["ts"].to_f).utc.iso8601,
+        slack_ts: message["ts"],
         permalink: permalink
       }
     end
