@@ -96,9 +96,11 @@ function CategoryCombobox({
 export default function ItemForm({
   item,
   categories = [],
+  className = "flex max-w-xl flex-col gap-5",
 }: {
   item?: Item;
   categories?: string[];
+  className?: string;
 }) {
   const { data, setData, post, patch, progress } = useForm({
     name: item?.name ?? "",
@@ -108,7 +110,7 @@ export default function ItemForm({
     featured: item?.featured ?? false,
     super_featured: item?.super_featured ?? false,
     one_per_user: item?.one_per_user ?? false,
-    stock: item?.stock ?? 0,
+    stock: item?.stock ?? null,
     black_market: item?.black_market ?? false,
     event_related: item?.event_related ?? false,
     grants_platform_access: item?.grants_platform_access ?? false,
@@ -126,7 +128,7 @@ export default function ItemForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex max-w-xl flex-col gap-5">
+    <form onSubmit={handleSubmit} className={className}>
       {/* Basic Info */}
       <div className="flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
         <p className="text-xs font-bold tracking-wider text-gray-400 uppercase">
@@ -176,12 +178,29 @@ export default function ItemForm({
             <label className="mb-1 block text-sm font-semibold text-gray-700">
               Stock
             </label>
-            <input
-              className={INPUT}
-              type="number"
-              value={data.stock}
-              onChange={(e) => setData("stock", parseInt(e.target.value) || 0)}
-            />
+            {data.stock === null ? (
+              <div className={INPUT + " text-gray-400 italic"}>Unlimited</div>
+            ) : (
+              <input
+                className={INPUT}
+                type="number"
+                value={data.stock}
+                onChange={(e) =>
+                  setData("stock", parseInt(e.target.value) || 0)
+                }
+              />
+            )}
+            <label className="mt-1.5 flex cursor-pointer items-center gap-1.5 text-xs text-gray-500">
+              <input
+                type="checkbox"
+                checked={data.stock === null}
+                onChange={(e) =>
+                  setData("stock", e.target.checked ? null : 0)
+                }
+                className="h-3.5 w-3.5 rounded accent-blue-600"
+              />
+              Unlimited
+            </label>
           </div>
         </div>
       </div>

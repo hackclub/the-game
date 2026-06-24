@@ -32,6 +32,7 @@ export default function Items({ items, categories }: Props) {
   const [revertSelected, setRevertSelected] = useState<Set<number>>(new Set());
   const [previewLoading, setPreviewLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [panelOpen, setPanelOpen] = useState(false);
 
   const filteredItems = useMemo(() => {
     if (!searchQuery.trim()) return items;
@@ -139,82 +140,102 @@ export default function Items({ items, categories }: Props) {
     setRevertPreview(null);
   };
 
-  const selectionLabel = `${selectedIds.length} item${selectedIds.length !== 1 ? "s" : ""} selected`;
-
   return (
     <Layout>
-      <h1 className="text-3xl font-bold">Items</h1>
-
-      <div className="py-6">
-        <h2 className="text-2xl font-bold">Create Item</h2>
-        <div className="mt-4">
-          <ItemForm categories={categories} />
-        </div>
+      {/* Top bar */}
+      <div className="mb-3 flex items-center gap-3">
+        <input
+          type="text"
+          placeholder="Search items..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="flex-1 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm shadow-sm placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+        />
+        <button
+          onClick={openRevertPreview}
+          disabled={previewLoading}
+          className="cursor-pointer rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-600 shadow-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {previewLoading ? "Loading..." : "Revert price changes"}
+        </button>
+        <button
+          onClick={() => setPanelOpen(true)}
+          className="cursor-pointer rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
+        >
+          + New item
+        </button>
       </div>
 
-      <div className="mb-3 flex flex-wrap items-center gap-x-6 gap-y-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-        <span className="text-sm font-medium text-gray-500">
-          {selectionLabel}
-        </span>
+      {/* Contextual selection toolbar */}
+      <div
+        className={`mb-3 overflow-hidden transition-all duration-200 ${selectedIds.length > 0 ? "max-h-20 opacity-100" : "max-h-0 opacity-0"}`}
+      >
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl bg-gray-900 px-4 py-3 text-white">
+          <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-xs font-semibold tabular-nums">
+            {selectedIds.length} selected
+          </span>
 
-        <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-gray-700">
-            Adjust price by
-          </label>
-          <input
-            type="number"
-            value={percentage}
-            onChange={(e) => setPercentage(parseFloat(e.target.value) || 0)}
-            className="w-20 rounded-lg border border-gray-200 px-2 py-1.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-          />
-          <span className="text-sm text-gray-500">%</span>
-          <button
-            onClick={applyPriceAdjustment}
-            disabled={selectedIds.length === 0 || percentage === 0}
-            className="cursor-pointer rounded-lg bg-gray-900 px-4 py-1.5 text-sm font-semibold text-white hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            Apply
-          </button>
-        </div>
+          <div className="h-4 w-px bg-white/20" />
 
-        <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-gray-700">
-            Set category
-          </label>
-          <div className="relative">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-300">Price</span>
+            <input
+              type="number"
+              value={percentage}
+              onChange={(e) => setPercentage(parseFloat(e.target.value) || 0)}
+              className="w-20 rounded-md border border-white/20 bg-white/10 px-2 py-1 text-sm text-white focus:border-white/40 focus:outline-none"
+            />
+            <span className="text-sm text-gray-400">%</span>
+            <button
+              onClick={applyPriceAdjustment}
+              disabled={percentage === 0}
+              className="cursor-pointer rounded-md bg-white/10 px-3 py-1 text-sm font-semibold hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Apply
+            </button>
+          </div>
+
+          <div className="h-4 w-px bg-white/20" />
+
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-300">Category</span>
             <input
               list="bulk-category-list"
               value={bulkCategory}
               onChange={(e) => setBulkCategory(e.target.value)}
               placeholder="(none)"
-              className="w-36 rounded-lg border border-gray-200 px-2 py-1.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+              className="w-32 rounded-md border border-white/20 bg-white/10 px-2 py-1 text-sm text-white placeholder:text-gray-500 focus:border-white/40 focus:outline-none"
             />
             <datalist id="bulk-category-list">
               {categories.map((c) => (
                 <option key={c} value={c} />
               ))}
             </datalist>
+            <button
+              onClick={applyBulkCategory}
+              className="cursor-pointer rounded-md bg-white/10 px-3 py-1 text-sm font-semibold hover:bg-white/20"
+            >
+              Apply
+            </button>
           </div>
-          <button
-            onClick={applyBulkCategory}
-            disabled={selectedIds.length === 0}
-            className="cursor-pointer rounded-lg bg-blue-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            Apply
-          </button>
-        </div>
-
-        <div className="ml-auto">
-          <button
-            onClick={openRevertPreview}
-            disabled={previewLoading}
-            className="cursor-pointer rounded-lg bg-red-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            {previewLoading ? "Loading..." : "Revert All Price Changes"}
-          </button>
         </div>
       </div>
 
+      {/* Grid */}
+      <div style={{ height: "calc(100vh - 170px)" }}>
+        <AgGridReact
+          ref={gridRef}
+          rowData={filteredItems}
+          columnDefs={colDefs}
+          loadThemeGoogleFonts={true}
+          enableCellTextSelection={true}
+          rowSelection="multiple"
+          rowHeight={50}
+          onSelectionChanged={onSelectionChanged}
+        />
+      </div>
+
+      {/* Revert price changes modal */}
       {revertPreview !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
@@ -305,27 +326,24 @@ export default function Items({ items, categories }: Props) {
         </div>
       )}
 
-      <div className="mb-3">
-        <input
-          type="text"
-          placeholder="Search items by name..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm shadow-sm placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-        />
-      </div>
-
-      <div style={{ height: 500 }}>
-        <AgGridReact
-          ref={gridRef}
-          rowData={filteredItems}
-          columnDefs={colDefs}
-          loadThemeGoogleFonts={true}
-          enableCellTextSelection={true}
-          rowSelection="multiple"
-          rowHeight={50}
-          onSelectionChanged={onSelectionChanged}
-        />
+      {/* New item slide-over */}
+      <div
+        className={`fixed inset-0 z-40 bg-black/30 transition-opacity duration-300 ${panelOpen ? "opacity-100" : "pointer-events-none opacity-0"}`}
+        onClick={() => setPanelOpen(false)}
+      />
+      <div
+        className={`fixed inset-y-0 right-0 z-50 w-[640px] overflow-y-auto bg-[#ededed] p-8 shadow-2xl transition-transform duration-300 ${panelOpen ? "translate-x-0" : "translate-x-full"}`}
+      >
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-xl font-bold">New item</h2>
+          <button
+            onClick={() => setPanelOpen(false)}
+            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-gray-400 hover:bg-gray-200 hover:text-gray-700"
+          >
+            ✕
+          </button>
+        </div>
+        <ItemForm categories={categories} />
       </div>
     </Layout>
   );
