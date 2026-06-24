@@ -8,7 +8,7 @@ export interface Item {
   featured: boolean;
   super_featured: boolean;
   one_per_user: boolean;
-  stock: number;
+  stock: number | null;
   black_market: boolean;
   event_related: boolean;
   grants_platform_access: boolean;
