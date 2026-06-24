@@ -141,6 +141,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_16_025756) do
     t.text "note"
     t.integer "quantity", default: 1, null: false
     t.text "reference"
+    t.string "reference_url"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.text "user_note"
@@ -149,6 +150,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_16_025756) do
   end
 
   create_table "items", force: :cascade do |t|
+    t.text "admin_notes"
     t.boolean "black_market", default: false, null: false
     t.string "category"
     t.datetime "created_at", null: false
@@ -164,7 +166,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_16_025756) do
     t.integer "stock"
     t.boolean "super_featured", default: false, null: false
     t.datetime "updated_at", null: false
-    t.boolean "visible", default: true, null: false
   end
 
   create_table "milestones", force: :cascade do |t|
