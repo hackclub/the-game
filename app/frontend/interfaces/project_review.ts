@@ -7,4 +7,5 @@ export interface ProjectReview {
   created_at: string;
   project_id: number;
   approved_seconds: number;
+  pending_hq?: boolean;
 }

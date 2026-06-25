@@ -1,4 +1,4 @@
-import { useForm } from "@inertiajs/react";
+import { useForm, usePage } from "@inertiajs/react";
 import { useState, useEffect } from "react";
 import { Project } from "@/interfaces/project";
 import { ProjectReview } from "@/interfaces/project_review";
@@ -27,6 +27,9 @@ export default function ReviewForm({
   project: Project;
   review?: ProjectReview;
 }) {
+  const { props } = usePage();
+  const isHq = props.user.is_admin;
+
   const seconds =
     review?.approved_seconds ??
     project.total_seconds - project.approved_seconds;
@@ -195,6 +198,12 @@ export default function ReviewForm({
           required
           placeholder="Justify this review - this is only shown to admins and reviewers"
         />
+      )}
+      {!isHq && data.review_type === "approval" && (
+        <p className="rounded-md border-2 border-dashed border-yellow-600 bg-yellow-100 p-3 text-base text-yellow-800">
+          Your approval will be queued for an HQ reviewer to authorize before it's
+          published to the user and sent to Airtable.
+        </p>
       )}
       <button
         className="cursor-pointer bg-black px-6 py-2 text-lg font-bold text-white hover:bg-gray-800"

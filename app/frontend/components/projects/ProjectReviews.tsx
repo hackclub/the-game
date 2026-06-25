@@ -114,6 +114,11 @@ export default function ProjectReviews({
                             {review.review_type === "approval" &&
                               `for ${formatTime(review.approved_seconds)}`}
                           </span>
+                          {review.pending_hq && (
+                            <span className="ml-2 rounded-md bg-yellow-200 px-2 py-0.5 text-sm font-semibold text-yellow-800">
+                              Pending HQ authorization
+                            </span>
+                          )}
                           <span className="text-sm">
                             <br></br>on{" "}
                             {new Date(review.created_at).toLocaleString()}
@@ -137,18 +142,39 @@ export default function ProjectReviews({
                             >
                               Edit
                             </Link>
-                            {(index == timeline.length - 1 ||
-                              review.review_type === "comment") && (
-                              <Link
-                                href={`/projects/${project.id}/reviews/${review.id}`}
-                                className="cursor-pointer text-red-500 underline"
-                                method="delete"
-                              >
-                                {review.review_type === "comment"
-                                  ? "Delete"
-                                  : "Undo"}
-                              </Link>
+                            {props.user.is_admin && review.pending_hq && (
+                              <>
+                                <Link
+                                  href={`/projects/${project.id}/reviews/${review.id}/publish`}
+                                  className="cursor-pointer font-semibold text-green-600 underline"
+                                  method="post"
+                                  as="button"
+                                >
+                                  Authorize
+                                </Link>
+                                <Link
+                                  href={`/projects/${project.id}/reviews/${review.id}/discard`}
+                                  className="cursor-pointer text-red-500 underline"
+                                  method="post"
+                                  as="button"
+                                >
+                                  Discard
+                                </Link>
+                              </>
                             )}
+                            {!review.pending_hq &&
+                              (index == timeline.length - 1 ||
+                                review.review_type === "comment") && (
+                                <Link
+                                  href={`/projects/${project.id}/reviews/${review.id}`}
+                                  className="cursor-pointer text-red-500 underline"
+                                  method="delete"
+                                >
+                                  {review.review_type === "comment"
+                                    ? "Delete"
+                                    : "Undo"}
+                                </Link>
+                              )}
                           </div>
                         )}
                       </div>

@@ -21,6 +21,7 @@ export interface Project {
   approved_seconds: number;
   real_approved_seconds: number;
   high_quality: boolean;
+  pending_hq?: boolean;
   unread_notification_count: number;
   tags: number[];
   ai_declaration: string | null;

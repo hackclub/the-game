@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_16_025756) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_25_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
   enable_extension "pg_catalog.plpgsql"
@@ -199,6 +199,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_16_025756) do
     t.text "admin_content"
     t.integer "approved_seconds"
     t.bigint "author_id", null: false
+    t.datetime "authorized_at"
+    t.bigint "authorized_by_id"
     t.text "content"
     t.datetime "created_at", null: false
     t.datetime "deleted_at"
@@ -206,6 +208,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_16_025756) do
     t.string "review_type"
     t.datetime "updated_at", null: false
     t.index ["author_id"], name: "index_project_reviews_on_author_id"
+    t.index ["authorized_by_id"], name: "index_project_reviews_on_authorized_by_id"
     t.index ["project_id"], name: "index_project_reviews_on_project_id"
   end
 

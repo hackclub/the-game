@@ -119,6 +119,7 @@ class Project < ApplicationRecord
     hash["hackatime_projects"] = hackatime_projects.loaded? ? hackatime_projects.map(&:id) : hackatime_projects.pluck(:id)
     hash["tags"] = tags.loaded? ? tags.map(&:id) : tags.pluck(:id)
     hash["status"] = display_status
+    hash["pending_hq"] = pending_hq?
     hash["unread_notification_count"] = notifications ? unread_notifications.count : 0
 
     if screenshot.attached? && screenshot.persisted?
@@ -129,7 +130,7 @@ class Project < ApplicationRecord
       if admin || reviewer
         hash["reviews"] = self.reviews.map { |review| review.display_hash(author: true, admin: true) }
       else
-        hash["reviews"] = self.reviews.not_admin_only.map { |review| review.display_hash(author: true) }
+        hash["reviews"] = self.reviews.not_admin_only.author_visible.map { |review| review.display_hash(author: true) }
       end
     end
 
@@ -173,6 +174,16 @@ class Project < ApplicationRecord
     end
 
     missing
+  end
+
+  # True when a community reviewer has approved but an HQ reviewer has not yet
+  # authorized the approval (the project is still under review for the author).
+  def pending_hq?
+    if reviews.loaded?
+      reviews.any? { |r| r.review_type == "approval" && r.authorized_at.nil? }
+    else
+      reviews.pending_hq.exists?
+    end
   end
 
   def real_approved_seconds

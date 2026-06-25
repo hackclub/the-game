@@ -100,6 +100,17 @@ class User < ApplicationRecord
     is_reviewer
   end
 
+  # HQ reviewers (admins) may authorize community reviewers' approvals and have
+  # their own approvals published immediately. Community reviewers' approvals are
+  # held until an HQ reviewer authorizes them.
+  def hq_reviewer?
+    is_admin
+  end
+
+  def community_reviewer?
+    is_reviewer && !is_admin
+  end
+
   def fulfiller?
     is_fulfiller
   end

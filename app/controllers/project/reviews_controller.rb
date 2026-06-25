@@ -2,12 +2,22 @@ class Project
   class ReviewsController < ApplicationController
     before_action :signed_in_reviewer
     before_action :set_project
-    before_action :set_review, only: [ :edit, :update, :destroy ]
+    before_action :set_review, only: [ :edit, :update, :destroy, :publish, :discard ]
+    before_action :require_hq_reviewer, only: [ :publish, :discard ]
 
     skip_after_action :verify_authorized
 
     def create
-      review = @project.reviews.create!(review_params)
+      review = @project.reviews.new(review_params)
+
+      # HQ reviewers' approvals publish immediately; community reviewers' approvals
+      # are held in pending_hq until an HQ reviewer authorizes them.
+      if review.approval? && current_user.hq_reviewer?
+        review.authorized_at = Time.current
+        review.authorized_by = current_user
+      end
+
+      review.save!
 
       if params[:high_quality].present? && review.approval?
         was_high_quality = @project.high_quality?
@@ -19,12 +29,28 @@ class Project
       when "comment"
         "Added comment on"
       when "approval"
-        "Approved"
+        review.pending_hq? ? "Submitted approval for HQ review on" : "Approved"
       when "rejection"
         "Rejected"
       end
 
       flash[:notice] = "#{human_review_desc} \"#{@project.title}\"#{" for #{params[:approved_hours]} hours" if review.approval? && params[:approved_hours].present?}"
+
+      redirect_back_or_to manage_project_path(@project)
+    end
+
+    def publish
+      @review.authorize!(authorized_by: current_user)
+
+      flash[:notice] = "Authorized review"
+
+      redirect_back_or_to manage_project_path(@project)
+    end
+
+    def discard
+      @review.destroy!
+
+      flash[:notice] = "Discarded pending approval"
 
       redirect_back_or_to manage_project_path(@project)
     end
@@ -63,6 +89,10 @@ class Project
 
     def set_review
       @review = Project::Review.find(params[:id])
+    end
+
+    def require_hq_reviewer
+      raise Pundit::NotAuthorizedError unless current_user.hq_reviewer?
     end
 
     def post_golden_ticket_announcement(project)

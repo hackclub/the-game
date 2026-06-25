@@ -65,8 +65,10 @@ class Api::SidekickController < ActionController::API
   end
 
   def get_program_stats
+    pending_hq_project_ids = Project::Review.pending_hq.where(deleted_at: nil).select(:project_id)
     {
-      pendingReviewCount: Project.where(aasm_state: "submitted").count,
+      pendingReviewCount: Project.where(aasm_state: "submitted").where.not(id: pending_hq_project_ids).count,
+      pendingHqCount: Project::Review.pending_hq.where(deleted_at: nil).count,
       pendingFulfillmentCount: Item::Purchase.where(aasm_state: "pending").count
     }
   end
@@ -78,12 +80,16 @@ class Api::SidekickController < ActionController::API
 
     scope = Project.includes(:user, :hackatime_projects, reviews: :author)
 
+    pending_hq_project_ids = Project::Review.pending_hq.where(deleted_at: nil).select(:project_id)
+
     case status
     when "pending"
-      scope = scope.where(aasm_state: "submitted")
+      scope = scope.where(aasm_state: "submitted").where.not(id: pending_hq_project_ids)
+    when "pending_hq"
+      scope = scope.where(id: pending_hq_project_ids)
     when "approved"
       scope = scope.where(
-        id: Project::Review.where(review_type: "approval", deleted_at: nil).select(:project_id)
+        id: Project::Review.where(review_type: "approval", deleted_at: nil).where.not(authorized_at: nil).select(:project_id)
       )
     when "rejected"
       scope = scope.where(
@@ -131,12 +137,17 @@ class Api::SidekickController < ActionController::API
     review_action = @input[:action]
     event = case review_action
     when "approve"
+      # HQ reviewers' approvals publish immediately; community reviewers' are held
+      # in pending_hq until an HQ reviewer authorizes them.
+      hq = reviewer.hq_reviewer?
       review = project.reviews.create!(
         author: reviewer,
         review_type: "approval",
         content: @input[:feedbackMessage],
         admin_content: @input[:justification],
-        approved_seconds: (@input[:hoursAssigned].to_f * 3600).to_i
+        approved_seconds: (@input[:hoursAssigned].to_f * 3600).to_i,
+        authorized_at: hq ? Time.current : nil,
+        authorized_by: hq ? reviewer : nil
       )
       apply_golden_ticket!(project, @input.dig(:fields, :grant_golden_ticket))
       serialize_approval_event(review, ship_id, project: project)
@@ -163,12 +174,16 @@ class Api::SidekickController < ActionController::API
       )
       serialize_comment_event(review, internal: true)
     when "authorize"
-      if @input.key?(:hoursAssigned)
-        review = find_approval_for_ship(project, ship_id)
-        review.update!(approved_seconds: (@input[:hoursAssigned].to_f * 3600).to_i)
-      end
-      { type: "comment", actorId: actor_id_for(reviewer), message: "", isInternal: true, timestamp: Time.current.iso8601 }
+      # HQ authorization of a pending_hq ship: publish the held approval, using the
+      # overridden hours if provided. Idempotent for already-authorized approvals.
+      review = find_approval_for_ship(project, ship_id)
+      approved_seconds = @input.key?(:hoursAssigned) ? (@input[:hoursAssigned].to_f * 3600).to_i : nil
+      review.authorize!(authorized_by: reviewer, approved_seconds: approved_seconds)
+      serialize_approval_event(review, ship_id, project: project)
     when "deauthorize"
+      # Revert a pending_hq ship back to pending by discarding the held approval.
+      review = find_approval_for_ship(project, ship_id)
+      review.destroy! if review.pending_hq?
       { type: "comment", actorId: actor_id_for(reviewer), message: "", isInternal: true, timestamp: Time.current.iso8601 }
     else
       raise ArgumentError, "Unknown review action: #{review_action}"
@@ -449,10 +464,14 @@ class Api::SidekickController < ActionController::API
         r.created_at >= submitted_at && (next_submitted_at.nil? || r.created_at < next_submitted_at)
       end
 
-      status = case review&.review_type
-      when "approval" then "approved"
-      when "rejection" then "rejected"
-      else "pending"
+      status = if review.nil?
+        "pending"
+      elsif review.rejection?
+        "rejected"
+      elsif review.pending_hq?
+        "pending_hq"
+      else
+        "approved"
       end
 
       ship = {

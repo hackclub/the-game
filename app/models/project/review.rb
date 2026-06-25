@@ -5,18 +5,21 @@
 #  id               :bigint           not null, primary key
 #  admin_content    :text
 #  approved_seconds :integer
+#  authorized_at    :datetime
 #  content          :text
 #  deleted_at       :datetime
 #  review_type      :string
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
 #  author_id        :bigint           not null
+#  authorized_by_id :bigint
 #  project_id       :bigint           not null
 #
 # Indexes
 #
-#  index_project_reviews_on_author_id   (author_id)
-#  index_project_reviews_on_project_id  (project_id)
+#  index_project_reviews_on_author_id         (author_id)
+#  index_project_reviews_on_authorized_by_id  (authorized_by_id)
+#  index_project_reviews_on_project_id        (project_id)
 #
 class Project
   class Review < ApplicationRecord
@@ -26,45 +29,83 @@ class Project
 
     belongs_to :author, class_name: "User"
     belongs_to :project
+    belongs_to :authorized_by, class_name: "User", optional: true
 
     has_one :notification, required: false, as: :notifiable
 
     enum :review_type, { comment: "comment", rejection: "rejection", approval: "approval" }
 
     scope :not_admin_only, -> { where.not(content: nil).where.not(content: "") }
+    # An approval is only visible to the project author once an HQ reviewer has
+    # authorized it. Comments and rejections are always visible.
+    scope :author_visible, -> { where("review_type <> 'approval' OR authorized_at IS NOT NULL") }
+    scope :pending_hq, -> { where(review_type: "approval", authorized_at: nil) }
 
     validate :non_comments_have_justification
     validate :only_approvals_have_seconds
     validate :project_is_under_review, on: :create
 
     after_create_commit do
-      if rejection? && !project.rejected?
-        project.mark_rejected!
-      elsif approval? && !project.approved?
-        project.mark_approved!
+      case review_type
+      when "rejection"
+        project.mark_rejected! unless project.rejected?
+        create_notification if content.present?
+      when "approval"
+        # Community approvals are held until an HQ reviewer authorizes them.
+        publish_approval! if authorized?
+      else # comment
+        create_notification if content.present?
       end
-    end
-
-    after_create_commit do
-      create_notification if content.present?
-      create_ysws_record if approval?
     end
 
     # undo
     after_destroy_commit do
-      unless comment?
-        project_version = project.versions.where_object_changes_to(aasm_state: project.aasm_state).last
-        project_version.reify.save!
-        project.versions.last.delete
+      next if comment?
+      # A held (not-yet-authorized) approval never published anything, so there
+      # is no project state, notification, or Airtable record to roll back.
+      next if approval? && !authorized?
 
-        create_destroy_notification
+      project_version = project.versions.where_object_changes_to(aasm_state: project.aasm_state).last
+      project_version.reify.save!
+      project.versions.last.delete
 
-        ysws_record&.destroy
+      create_destroy_notification
+
+      ysws_record&.destroy
+    end
+
+    def authorized?
+      authorized_at.present?
+    end
+
+    # True for an approval that is still waiting on HQ authorization.
+    def pending_hq?
+      approval? && authorized_at.nil?
+    end
+
+    # Promotes a held community approval into a published one: transitions the
+    # project to approved, notifies the author, and syncs to Airtable. Used by
+    # both the web HQ interface and the Sidekick `authorize` action. Idempotent.
+    def authorize!(authorized_by:, approved_seconds: nil)
+      raise ArgumentError, "Only approvals can be authorized" unless approval?
+
+      if authorized?
+        update!(approved_seconds: approved_seconds) if approved_seconds.present? && approved_seconds != self.approved_seconds
+        return false
       end
+
+      update!(
+        authorized_at: Time.current,
+        authorized_by: authorized_by,
+        approved_seconds: approved_seconds.presence || self.approved_seconds
+      )
+      publish_approval!
+      true
     end
 
     def display_hash(author: false, admin: false)
       hash = self.as_json.slice("id", "content", "review_type", "author_id", "created_at", "project_id", "approved_seconds")
+      hash["pending_hq"] = pending_hq?
 
       if author
         hash["author"] = self.author.display_hash
@@ -86,6 +127,14 @@ class Project
     end
 
     private
+
+    # Performs the user-visible effects of an approval: project state, author
+    # notification, and Airtable sync. Only ever runs for authorized approvals.
+    def publish_approval!
+      project.mark_approved! unless project.approved?
+      create_notification if content.present?
+      create_ysws_record
+    end
 
     def non_comments_have_justification
       if (!content.present? || !admin_content.present?) && !comment?
