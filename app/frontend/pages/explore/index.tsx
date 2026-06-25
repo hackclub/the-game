@@ -70,7 +70,7 @@ function SubwayPagination({
         {/* Subway line with station dots */}
         <div className="relative flex items-center">
           {/* The continuous line behind the dots */}
-          <div className="absolute top-1/2 right-0 left-0 h-[3px] -translate-y-1/2 bg-[#0f0f0f]" />
+          <div className="absolute top-1/2 right-0 left-0 h-[1.5px] -translate-y-1/2 bg-[#0f0f0f]" />
 
           <div className="relative flex items-center">
             {pageNumbers.map((item, index) => {
@@ -92,19 +92,19 @@ function SubwayPagination({
                 <button
                   key={item}
                   onClick={() => goToPage(item)}
-                  className="group relative z-10 flex cursor-pointer flex-col items-center px-1"
+                  className="group relative z-10 flex cursor-pointer flex-col items-center px-1 outline-none"
                   aria-label={`Page ${item}`}
                   aria-current={isActive ? "page" : undefined}
                 >
                   <div
-                    className={`flex items-center justify-center rounded-full border-2 border-[#0f0f0f] transition-all ${
+                    className={`relative rounded-full border-2 border-[#0f0f0f] transition-all ${
                       isActive
                         ? "h-10 w-10 bg-[#fecb0d]"
-                        : "h-7 w-7 bg-white group-hover:bg-[#fecb0d]/40"
+                        : "h-7 w-7 bg-white group-hover:bg-[#fecb0d]"
                     }`}
                   >
                     <span
-                      className={`font-bold leading-none ${
+                      className={`absolute inset-0 flex items-center justify-center font-bold ${
                         isActive ? "text-sm text-[#0f0f0f]" : "text-[11px] text-[#0f0f0f]"
                       }`}
                     >
