@@ -41,6 +41,12 @@ class Project < ApplicationRecord
   pg_search_scope :search_by_title, against: :title
   scope :high_quality, -> { where(high_quality: true) }
 
+  # Submitted projects that a reviewer may still place a verdict on: no approval
+  # is currently waiting on HQ authorization.
+  scope :awaiting_review, -> { submitted.where.not(id: Project::Review.pending_hq.select(:project_id)) }
+  # Submitted projects whose community approval is held pending HQ authorization.
+  scope :pending_hq_review, -> { submitted.where(id: Project::Review.pending_hq.select(:project_id)) }
+
   acts_as_paranoid
   has_paper_trail
 
@@ -186,11 +192,14 @@ class Project < ApplicationRecord
     end
   end
 
+  # Only authorized approvals count toward approved time. A community approval
+  # held pending HQ authorization must stay invisible to the author until it is
+  # published, so it is excluded here.
   def real_approved_seconds
     if reviews.loaded?
-      reviews.select { |r| r.review_type == "approval" }.sum(&:approved_seconds)
+      reviews.select { |r| r.review_type == "approval" && r.authorized_at.present? }.sum(&:approved_seconds)
     else
-      reviews.approval.sum(:approved_seconds)
+      reviews.approval.where.not(authorized_at: nil).sum(:approved_seconds)
     end
   end
 

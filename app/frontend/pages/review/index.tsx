@@ -8,7 +8,10 @@ import formatTime from "@/utils/formatTime";
 interface Props {
   queue: (Project & { username: string })[];
   all_queued: (Project & { username: string; ticket_count: number })[];
+  hq_queued: (Project & { username: string; ticket_count: number })[];
   queue_count: number;
+  hq_queue_count: number;
+  can_authorize: boolean;
   week_leaderboard: { id: number; name: string; count: number }[];
   alltime_leaderboard: { id: number; name: string; count: number }[];
 }
@@ -16,7 +19,10 @@ interface Props {
 export default function Review({
   queue,
   all_queued,
+  hq_queued,
   queue_count,
+  hq_queue_count,
+  can_authorize,
   week_leaderboard,
   alltime_leaderboard,
 }: Props) {
@@ -230,6 +236,99 @@ export default function Review({
             </table>
           </div>
         </div>
+
+        {hq_queued.length > 0 && (
+          <div className="py-5">
+            <div className="mb-3 flex flex-col gap-1">
+              <div className="flex items-baseline gap-4">
+                <h2 className="text-3xl font-semibold">
+                  Pending HQ Authorization
+                </h2>
+                <span className="text-gray-500">
+                  {hq_queue_count} project{hq_queue_count !== 1 && "s"}
+                </span>
+              </div>
+              <p className="text-gray-500 italic">
+                {can_authorize
+                  ? "Review the history of each approval, then authorize or discard it."
+                  : "Approvals waiting for an HQ reviewer to authorize them."}
+              </p>
+            </div>
+
+            <div className="max-h-[600px] overflow-auto rounded-lg border border-yellow-300">
+              <table className="w-full border-collapse text-left text-sm">
+                <thead className="sticky top-0 z-10 bg-[#0f0f0f] text-white">
+                  <tr>
+                    <th className="py-2.5 pr-3 pl-3 text-xs font-semibold uppercase tracking-wider">
+                      #
+                    </th>
+                    <th className="py-2.5 pr-3 text-xs font-semibold uppercase tracking-wider">
+                      Title
+                    </th>
+                    <th className="py-2.5 pr-3 text-xs font-semibold uppercase tracking-wider">
+                      Author
+                    </th>
+                    <th className="py-2.5 pr-3 text-xs font-semibold uppercase tracking-wider">
+                      Submitted
+                    </th>
+                    <th className="py-2.5 pr-3 text-xs font-semibold uppercase tracking-wider">
+                      Reported
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white">
+                  {hq_queued.map((project, index) => (
+                    <tr
+                      key={project.id}
+                      className="border-b border-gray-100 transition-colors hover:bg-[#fecb0d]/10"
+                    >
+                      <td className="py-0 pr-3 pl-3">
+                        <Link
+                          href={`/review/${project.id}`}
+                          className="block py-2 text-gray-400"
+                        >
+                          {index + 1}
+                        </Link>
+                      </td>
+                      <td className="py-0 pr-3">
+                        <Link
+                          href={`/review/${project.id}`}
+                          className="block py-2 font-medium text-[#0f0f0f] hover:underline"
+                        >
+                          {project.title}
+                        </Link>
+                      </td>
+                      <td className="py-0 pr-3">
+                        <Link
+                          href={`/review/${project.id}`}
+                          className="block py-2 text-gray-600"
+                        >
+                          {project.username}
+                        </Link>
+                      </td>
+                      <td className="py-0 pr-3">
+                        <Link
+                          href={`/review/${project.id}`}
+                          className="block py-2 text-gray-500"
+                        >
+                          {new Date(project.submitted_at!).toLocaleDateString()}
+                        </Link>
+                      </td>
+                      <td className="py-0 pr-3">
+                        <Link
+                          href={`/review/${project.id}`}
+                          className="block py-2 text-gray-500"
+                        >
+                          {formatTime(project.reported_seconds)}
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
 
         <div className="py-5">
           <div className="mb-4 flex flex-col gap-1">

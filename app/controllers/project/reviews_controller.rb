@@ -4,10 +4,18 @@ class Project
     before_action :set_project
     before_action :set_review, only: [ :edit, :update, :destroy, :publish, :discard ]
     before_action :require_hq_reviewer, only: [ :publish, :discard ]
+    before_action :require_pending_hq_review, only: [ :publish, :discard ]
 
     skip_after_action :verify_authorized
 
     def create
+      # A project with an approval awaiting HQ authorization is locked: it must be
+      # authorized or discarded before any new review can be placed.
+      if @project.pending_hq?
+        flash[:alert] = "This project has an approval awaiting HQ authorization."
+        return redirect_back_or_to manage_project_path(@project)
+      end
+
       review = @project.reviews.new(review_params)
 
       # HQ reviewers' approvals publish immediately; community reviewers' approvals
@@ -93,6 +101,16 @@ class Project
 
     def require_hq_reviewer
       raise Pundit::NotAuthorizedError unless current_user.hq_reviewer?
+    end
+
+    # publish/discard only apply to an approval still awaiting HQ authorization;
+    # anything else (a published approval, rejection, or comment) goes through the
+    # normal edit/undo flow.
+    def require_pending_hq_review
+      unless @review.pending_hq?
+        flash[:alert] = "This review is not awaiting HQ authorization."
+        redirect_back_or_to manage_project_path(@project)
+      end
     end
 
     def post_golden_ticket_announcement(project)

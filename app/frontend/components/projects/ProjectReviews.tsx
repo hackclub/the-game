@@ -187,7 +187,16 @@ export default function ProjectReviews({
 
           {(props.user.is_reviewer ||
             props.user.is_fulfiller ||
-            props.user.is_admin) && <ReviewForm project={project} />}
+            props.user.is_admin) &&
+            (project.pending_hq ? (
+              <p className="mt-6 rounded-md border-2 border-dashed border-yellow-600 bg-yellow-100 p-3 text-base text-yellow-800">
+                {props.user.is_admin
+                  ? "This project has an approval awaiting HQ authorization. Authorize or discard it above before placing a new review."
+                  : "This project has an approval awaiting HQ authorization. An HQ reviewer needs to act on it before it can be reviewed further."}
+              </p>
+            ) : (
+              <ReviewForm project={project} />
+            ))}
         </>
       )}
     </div>

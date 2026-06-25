@@ -44,6 +44,7 @@ class Project
     validate :non_comments_have_justification
     validate :only_approvals_have_seconds
     validate :project_is_under_review, on: :create
+    validate :no_verdict_pending_authorization, on: :create
 
     after_create_commit do
       case review_type
@@ -155,6 +156,17 @@ class Project
     def project_is_under_review
       if !comment? && !project.submitted?
         errors.add(:base, "Project must be under review to approve or reject")
+      end
+    end
+
+    # A project with an approval awaiting HQ authorization is locked: an HQ
+    # reviewer must authorize or discard the held approval before any new verdict
+    # can be placed. Comments are always allowed.
+    def no_verdict_pending_authorization
+      return if comment?
+
+      if project.reviews.pending_hq.exists?
+        errors.add(:base, "Project already has an approval awaiting HQ authorization")
       end
     end
 
