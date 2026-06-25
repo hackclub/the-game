@@ -8,4 +8,5 @@ export interface ProjectReview {
   project_id: number;
   approved_seconds: number;
   pending_hq?: boolean;
+  grant_golden_ticket?: boolean;
 }

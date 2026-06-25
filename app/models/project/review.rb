@@ -2,18 +2,19 @@
 #
 # Table name: project_reviews
 #
-#  id               :bigint           not null, primary key
-#  admin_content    :text
-#  approved_seconds :integer
-#  authorized_at    :datetime
-#  content          :text
-#  deleted_at       :datetime
-#  review_type      :string
-#  created_at       :datetime         not null
-#  updated_at       :datetime         not null
-#  author_id        :bigint           not null
-#  authorized_by_id :bigint
-#  project_id       :bigint           not null
+#  id                  :bigint           not null, primary key
+#  admin_content       :text
+#  approved_seconds    :integer
+#  authorized_at       :datetime
+#  content             :text
+#  deleted_at          :datetime
+#  grant_golden_ticket :boolean          default(FALSE), not null
+#  review_type         :string
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
+#  author_id           :bigint           not null
+#  authorized_by_id    :bigint
+#  project_id          :bigint           not null
 #
 # Indexes
 #
@@ -104,6 +105,18 @@ class Project
       true
     end
 
+    # Applies the golden ticket for this approval: marks the project high quality
+    # and announces it. Only ever takes effect for an authorized approval that was
+    # flagged to grant one, and is a no-op once the project is already high quality,
+    # so it is safe to call from every publish/edit path.
+    def apply_golden_ticket!
+      return unless approval? && authorized? && grant_golden_ticket?
+      return if project.high_quality?
+
+      project.update!(high_quality: true)
+      announce_golden_ticket!
+    end
+
     def display_hash(author: false, admin: false)
       hash = self.as_json.slice("id", "content", "review_type", "author_id", "created_at", "project_id", "approved_seconds")
       hash["pending_hq"] = pending_hq?
@@ -114,6 +127,7 @@ class Project
 
       if admin
         hash["admin_content"] = self.admin_content
+        hash["grant_golden_ticket"] = grant_golden_ticket
       end
 
       hash
@@ -130,11 +144,20 @@ class Project
     private
 
     # Performs the user-visible effects of an approval: project state, author
-    # notification, and Airtable sync. Only ever runs for authorized approvals.
+    # notification, Airtable sync, and golden ticket. Only ever runs for authorized
+    # approvals, so a held community approval grants nothing until HQ authorizes it.
     def publish_approval!
       project.mark_approved! unless project.approved?
       create_notification if content.present?
       create_ysws_record
+      apply_golden_ticket!
+    end
+
+    def announce_golden_ticket!
+      author_ping = project.user.slack_id.present? ? "<@#{project.user.slack_id}>" : project.user.username
+      text = ":rac_woah: #{author_ping} got a golden ticket for their project *#{project.title}*!! check it out <#{project.demo_link}|here!>"
+      channel = ENV.fetch("GOLDEN_TICKET_SLACK_CHANNEL", SlackChannels::THE_GAME)
+      SlackApiService.post_message(channel: channel, text: text)
     end
 
     def non_comments_have_justification

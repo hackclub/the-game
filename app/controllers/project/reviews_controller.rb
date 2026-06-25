@@ -17,6 +17,7 @@ class Project
       end
 
       review = @project.reviews.new(review_params)
+      review.author = current_user
 
       # HQ reviewers' approvals publish immediately; community reviewers' approvals
       # are held in pending_hq until an HQ reviewer authorizes them.
@@ -25,13 +26,12 @@ class Project
         review.authorized_by = current_user
       end
 
-      review.save!
+      # Only HQ reviewers grant golden tickets. A community approval is a template
+      # an HQ reviewer can edit (including the golden ticket) before authorizing, so
+      # its golden ticket is never set here. The grant is applied on publish.
+      review.grant_golden_ticket = review.approval? && current_user.hq_reviewer? && golden_ticket_requested?
 
-      if params[:high_quality].present? && review.approval?
-        was_high_quality = @project.high_quality?
-        @project.update!(high_quality: params[:high_quality])
-        post_golden_ticket_announcement(@project) if !was_high_quality && @project.high_quality?
-      end
+      review.save!
 
       human_review_desc = case review.review_type
       when "comment"
@@ -68,7 +68,15 @@ class Project
     end
 
     def update
+      # Editing must not steal authorship from the original (community) reviewer —
+      # leaderboard credit and the Airtable "reviewed by" stay with them, so author
+      # is left untouched here. Only an HQ reviewer may change the golden ticket.
       @review.update!(review_params)
+
+      if current_user.hq_reviewer?
+        @review.update!(grant_golden_ticket: @review.approval? && golden_ticket_requested?)
+        @review.apply_golden_ticket!
+      end
 
       flash[:notice] = "Edited review"
 
@@ -88,7 +96,11 @@ class Project
     def review_params
       p = params.require(:review).permit(:content, :review_type, :admin_content)
 
-      p.merge(author: current_user, approved_seconds: p[:review_type] == "approval" ? params[:approved_hours] * 3600 : nil)
+      p.merge(approved_seconds: p[:review_type] == "approval" ? params[:approved_hours] * 3600 : nil)
+    end
+
+    def golden_ticket_requested?
+      ActiveModel::Type::Boolean.new.cast(params[:high_quality])
     end
 
     def set_project
@@ -111,13 +123,6 @@ class Project
         flash[:alert] = "This review is not awaiting HQ authorization."
         redirect_back_or_to manage_project_path(@project)
       end
-    end
-
-    def post_golden_ticket_announcement(project)
-      author_ping = project.user.slack_id.present? ? "<@#{project.user.slack_id}>" : project.user.username
-      text = ":rac_woah: #{author_ping} got a golden ticket for their project *#{project.title}*!! check it out <#{project.demo_link}|here!>"
-      channel = ENV.fetch("GOLDEN_TICKET_SLACK_CHANNEL", SlackChannels::THE_GAME)
-      SlackApiService.post_message(channel: channel, text: text)
     end
   end
 end

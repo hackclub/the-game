@@ -147,9 +147,12 @@ class Api::SidekickController < ActionController::API
         admin_content: @input[:justification],
         approved_seconds: (@input[:hoursAssigned].to_f * 3600).to_i,
         authorized_at: hq ? Time.current : nil,
-        authorized_by: hq ? reviewer : nil
+        authorized_by: hq ? reviewer : nil,
+        # Only HQ reviewers grant golden tickets. A community approval is held and
+        # its golden ticket is decided by the authorizing HQ reviewer; it is applied
+        # when the approval publishes (here for HQ, on authorize for community).
+        grant_golden_ticket: hq && golden_ticket_requested?
       )
-      apply_golden_ticket!(project, @input.dig(:fields, :grant_golden_ticket))
       serialize_approval_event(review, ship_id, project: project)
     when "reject"
       review = project.reviews.create!(
@@ -206,7 +209,14 @@ class Api::SidekickController < ActionController::API
     updates[:admin_content] = @input[:internalMessage] if type == "rejection" && @input.key?(:internalMessage)
 
     review.update!(updates)
-    apply_golden_ticket!(project, @input.dig(:fields, :grant_golden_ticket)) if type == "approval"
+
+    # Only HQ reviewers grant golden tickets; apply_golden_ticket! is a no-op until
+    # the approval is authorized, so editing a still-held approval just records intent.
+    if type == "approval" && reviewer.hq_reviewer? && @input.fetch(:fields, {})&.key?(:grant_golden_ticket)
+      review.update!(grant_golden_ticket: golden_ticket_requested?)
+      review.apply_golden_ticket!
+    end
+
     { success: true }
   end
 
@@ -624,18 +634,8 @@ class Api::SidekickController < ActionController::API
 
   # --- Helpers ---
 
-  def apply_golden_ticket!(project, grant)
-    return unless grant == true || grant == "true"
-
-    was_high_quality = project.high_quality?
-    project.update!(high_quality: true)
-
-    if !was_high_quality
-      author_ping = project.user.slack_id.present? ? "<@#{project.user.slack_id}>" : project.user.username
-      text = ":rac_woah: #{author_ping} got a golden ticket for their project *#{project.title}*!! check it out <#{project.demo_link}|here!>"
-      channel = ENV.fetch("GOLDEN_TICKET_SLACK_CHANNEL", SlackChannels::THE_GAME)
-      SlackApiService.post_message(channel: channel, text: text)
-    end
+  def golden_ticket_requested?
+    [ true, "true" ].include?(@input.dig(:fields, :grant_golden_ticket))
   end
 
   def actor_id_for(user)

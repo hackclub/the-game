@@ -39,7 +39,11 @@ export default function ReviewForm({
     content: review?.content ?? "",
     admin_content: review?.admin_content ?? "",
     approved_hours: Number((seconds / 3600).toPrecision(4)),
-    high_quality: (project.high_quality ?? null) as boolean | null,
+    // When editing, seed from the review's own golden-ticket intent (a held
+    // approval hasn't applied it to the project yet); otherwise from the project.
+    high_quality: (review
+      ? (review.grant_golden_ticket ?? false)
+      : (project.high_quality ?? null)) as boolean | null,
   });
   const [adminOnly, setAdminOnly] = useState(false);
   const [showQuickResponses, setShowQuickResponses] = useState(false);
@@ -135,14 +139,16 @@ export default function ReviewForm({
               />
               <label className="text-lg">hours</label>
             </div>
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                value={(data.high_quality || false).toString()}
-                onChange={(e) => setData("high_quality", e.target.checked)}
-              />
-              <label className="text-lg">High quality?</label>
-            </div>
+            {isHq && (
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={data.high_quality || false}
+                  onChange={(e) => setData("high_quality", e.target.checked)}
+                />
+                <label className="text-lg">High quality?</label>
+              </div>
+            )}
           </>
         )}
       </div>

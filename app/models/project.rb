@@ -125,7 +125,10 @@ class Project < ApplicationRecord
     hash["hackatime_projects"] = hackatime_projects.loaded? ? hackatime_projects.map(&:id) : hackatime_projects.pluck(:id)
     hash["tags"] = tags.loaded? ? tags.map(&:id) : tags.pluck(:id)
     hash["status"] = display_status
-    hash["pending_hq"] = pending_hq?
+    # Only computed where it's actually consumed (review/manage views, which either
+    # request reviews or eager-load them); skipping it avoids a per-row pending_hq
+    # existence query on list pages that never read the flag.
+    hash["pending_hq"] = pending_hq? if reviews || self.reviews.loaded?
     hash["unread_notification_count"] = notifications ? unread_notifications.count : 0
 
     if screenshot.attached? && screenshot.persisted?
