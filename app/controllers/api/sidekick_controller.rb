@@ -185,8 +185,9 @@ class Api::SidekickController < ActionController::API
       serialize_approval_event(review, ship_id, project: project)
     when "deauthorize"
       # Revert a pending_hq ship back to pending by discarding the held approval.
-      review = find_approval_for_ship(project, ship_id)
-      review.destroy! if review.pending_hq?
+      # A no-op if there is no held approval (already discarded or authorized).
+      review = find_approval_for_ship(project, ship_id, required: false)
+      review.destroy! if review&.pending_hq?
       { type: "comment", actorId: actor_id_for(reviewer), message: "", isInternal: true, timestamp: Time.current.iso8601 }
     else
       raise ArgumentError, "Unknown review action: #{review_action}"
@@ -202,7 +203,9 @@ class Api::SidekickController < ActionController::API
     type = @input[:type]
     review_type = type == "approval" ? "approval" : "rejection"
 
-    review = find_review_for_ship(project, ship_id, reviewer, review_type)
+    # Approvals are author-agnostic: an HQ reviewer must be able to edit a
+    # community reviewer's held approval, so look it up without an author filter.
+    review = type == "approval" ? find_approval_for_ship(project, ship_id) : find_review_for_ship(project, ship_id, reviewer, review_type)
 
     updates = { content: @input[:feedbackMessage] }
     updates[:admin_content] = @input[:justification] if type == "approval" && @input.key?(:justification)
@@ -669,7 +672,7 @@ class Api::SidekickController < ActionController::API
     Project.find(version.item_id)
   end
 
-  def find_approval_for_ship(project, ship_id)
+  def find_approval_for_ship(project, ship_id, required: true)
     version_id = ship_id.delete_prefix("v").to_i
     version = PaperTrail::Version.find(version_id)
     submitted_at = version.created_at
@@ -685,7 +688,8 @@ class Api::SidekickController < ActionController::API
       .where("created_at >= ?", submitted_at)
 
     scope = scope.where("created_at < ?", next_submission.created_at) if next_submission
-    scope.order(:created_at).last!
+    scope = scope.order(:created_at)
+    required ? scope.last! : scope.last
   end
 
   def find_review_for_ship(project, ship_id, reviewer, review_type)

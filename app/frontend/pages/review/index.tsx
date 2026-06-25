@@ -178,11 +178,6 @@ export default function Review({
                           className="block py-2 font-medium text-[#0f0f0f] hover:underline"
                         >
                           {project.title}
-                          {project.pending_hq && (
-                            <span className="ml-2 rounded bg-yellow-200 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-yellow-800">
-                              Pending HQ
-                            </span>
-                          )}
                         </Link>
                       </td>
                       <td className="py-0 pr-3">
