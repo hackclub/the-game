@@ -105,12 +105,12 @@ export default function ItemForm({
   const { data, setData, post, patch, progress } = useForm({
     name: item?.name ?? "",
     description: item?.description ?? "",
-    price: item?.price ?? 0,
+    price: String(item?.price ?? 0),
     image: item?.image ? (0 as const) : (null as File | null),
     featured: item?.featured ?? false,
     super_featured: item?.super_featured ?? false,
     one_per_user: item?.one_per_user ?? false,
-    stock: item?.stock ?? null,
+    stock: item?.stock != null ? String(item.stock) : null,
     black_market: item?.black_market ?? false,
     event_related: item?.event_related ?? false,
     grants_platform_access: item?.grants_platform_access ?? false,
@@ -120,6 +120,14 @@ export default function ItemForm({
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!/^\d+$/.test(data.price)) {
+      alert("Price must be a whole number.");
+      return;
+    }
+    if (data.stock !== null && !/^\d+$/.test(data.stock)) {
+      alert("Stock must be a whole number.");
+      return;
+    }
     if (item) {
       patch(`/shop/${item.id}`, { forceFormData: true });
     } else {
@@ -169,9 +177,9 @@ export default function ItemForm({
             </label>
             <input
               className={INPUT}
-              type="number"
+              type="text"
               value={data.price}
-              onChange={(e) => setData("price", parseInt(e.target.value) || 0)}
+              onChange={(e) => setData("price", e.target.value)}
             />
           </div>
           <div>
@@ -183,11 +191,9 @@ export default function ItemForm({
             ) : (
               <input
                 className={INPUT}
-                type="number"
+                type="text"
                 value={data.stock}
-                onChange={(e) =>
-                  setData("stock", parseInt(e.target.value) || 0)
-                }
+                onChange={(e) => setData("stock", e.target.value)}
               />
             )}
             <label className="mt-1.5 flex cursor-pointer items-center gap-1.5 text-xs text-gray-500">
@@ -195,7 +201,7 @@ export default function ItemForm({
                 type="checkbox"
                 checked={data.stock === null}
                 onChange={(e) =>
-                  setData("stock", e.target.checked ? null : 0)
+                  setData("stock", e.target.checked ? null : "0")
                 }
                 className="h-3.5 w-3.5 rounded accent-blue-600"
               />
