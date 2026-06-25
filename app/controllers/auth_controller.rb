@@ -93,7 +93,7 @@ class AuthController < ApplicationController
       return redirect_to root_path, alert: "Login failed, please try again."
     end
 
-    redirect_to home_path, notice: "Successfully logged in!"
+    redirect_to url_from(session.delete(:return_to)) || home_path, notice: "Successfully logged in!"
   end
 
   def hackatime_callback

@@ -20,6 +20,7 @@ module Authentication
 
   def authenticate_user!
     unless current_user
+      session[:return_to] = request.url if request.get?
       redirect_to main_app.root_path, alert: "You need to be logged in to see this!"
     end
   end
