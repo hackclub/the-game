@@ -57,7 +57,7 @@ export default function Announcements({
 
               {announcement.content && (
                 <div
-                  className="smoothing-black text-xl leading-snug tracking-[-0.02em] [&_a]:underline [&_code]:rounded [&_code]:bg-black/5 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-base [&_p]:mt-2 [&_p:first-child]:mt-0"
+                  className="smoothing-black text-xl leading-snug tracking-[-0.02em] [&_a]:underline [&_code]:rounded [&_code]:bg-black/5 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-base [&_p]:mt-3.5 [&_p:first-child]:mt-0"
                   dangerouslySetInnerHTML={{ __html: announcement.content }}
                 />
               )}
