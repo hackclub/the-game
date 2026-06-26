@@ -99,7 +99,7 @@ class Item
 
     def set_amount_paid
       if amount_paid.nil?
-        self.amount_paid = (quantity || 1) * item.price
+        self.amount_paid = (quantity || 1) * item.price_for(user)
       end
     end
 

@@ -1,7 +1,7 @@
 class ItemsController < ApplicationController
   before_action :set_item, only: [ :buy, :claim_referral_item, :edit, :update, :destroy ]
-  before_action :signed_in_admin, only: [ :create, :edit, :update, :destroy, :bulk_adjust_price, :bulk_set_category, :revert_price_changes, :preview_price_revert ]
-  skip_after_action :verify_authorized, only: [ :index, :buy, :claim_referral_item, :create, :edit, :update, :destroy, :bulk_adjust_price, :bulk_set_category, :revert_price_changes, :preview_price_revert ]
+  before_action :signed_in_admin, only: [ :create, :edit, :update, :destroy, :bulk_adjust_price, :bulk_set_category, :bulk_set_golden_price, :revert_price_changes, :preview_price_revert ]
+  skip_after_action :verify_authorized, only: [ :index, :buy, :claim_referral_item, :create, :edit, :update, :destroy, :bulk_adjust_price, :bulk_set_category, :bulk_set_golden_price, :revert_price_changes, :preview_price_revert ]
 
   def index
     program = ReferralProgram.instance
@@ -149,6 +149,20 @@ class ItemsController < ApplicationController
     inertia_location admin_items_path
   end
 
+  # Mass-assigns a golden ticket price to every item as a discount off its
+  # regular price. The discount is a percentage and the resulting price is
+  # always rounded up. A discount of 0 clears golden prices entirely.
+  def bulk_set_golden_price
+    discount = params[:discount].to_f.clamp(0, 100)
+
+    Item.find_each do |item|
+      golden = discount.zero? ? nil : [ (item.price * (1 - discount / 100.0)).ceil, 0 ].max
+      item.update!(golden_price: golden)
+    end
+
+    inertia_location admin_items_path
+  end
+
   def create
     Item.create!(item_params)
 
@@ -186,7 +200,8 @@ class ItemsController < ApplicationController
   end
 
   def item_params
-    p = params.permit(:name, :description, :price, :real_price, :featured, :super_featured, :one_per_user, :stock, :black_market, :event_related, :grants_platform_access, :visible, :category)
+    p = params.permit(:name, :description, :price, :golden_price, :real_price, :featured, :super_featured, :one_per_user, :stock, :black_market, :event_related, :grants_platform_access, :visible, :category)
+    p[:golden_price] = p[:golden_price].presence
     p[:featured] = ActiveModel::Type::Boolean.new.cast(p[:featured]) || false
     p[:super_featured] = ActiveModel::Type::Boolean.new.cast(p[:super_featured]) || false
     p[:one_per_user] = ActiveModel::Type::Boolean.new.cast(p[:one_per_user]) || false

@@ -9,6 +9,7 @@
 #  event_related          :boolean          default(FALSE), not null
 #  featured               :boolean          default(FALSE), not null
 #  fulfiller_context      :text
+#  golden_price           :integer
 #  grants_platform_access :boolean          default(FALSE), not null
 #  name                   :string           not null
 #  one_per_user           :boolean          default(FALSE), not null
@@ -34,8 +35,16 @@ class Item < ApplicationRecord
   scope :black_market, -> { where(black_market: true) }
   scope :visible, -> { where(visible: true) }
 
+  # The price a given user pays. Golden ticket holders (wizards) pay golden_price
+  # when one is set; everyone else pays the regular price.
+  def price_for(user)
+    return golden_price if golden_price.present? && user&.wizard?
+
+    price
+  end
+
   def display_hash(stock_left = false)
-    hash = self.as_json.slice("id", "description", "name", "price", "featured", "super_featured", "one_per_user", "stock", "black_market", "event_related", "grants_platform_access", "visible", "category")
+    hash = self.as_json.slice("id", "description", "name", "price", "golden_price", "featured", "super_featured", "one_per_user", "stock", "black_market", "event_related", "grants_platform_access", "visible", "category")
     if image.attached? && image.persisted?
       hash["image"] = Rails.application.routes.url_helpers.rails_blob_path(image, disposition: :inline)
     end

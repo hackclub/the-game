@@ -17,13 +17,18 @@ export default function Item({
   const { props } = usePage<SharedProps>();
   const [quantity, setQuantity] = useState(1);
   const [showConfirm, setShowConfirm] = useState(false);
-  const totalCost = item.price * quantity;
+  const goldenPriced =
+    props.user.wizard &&
+    item.golden_price != null &&
+    item.golden_price < item.price;
+  const unitPrice = goldenPriced ? (item.golden_price as number) : item.price;
+  const totalCost = unitPrice * quantity;
   const canAfford = props.user.balance >= totalCost;
   const idvVerified = props.user.verification_status === "verified";
   const maxQuantity = Math.max(
     1,
     Math.min(
-      Math.floor(props.user.balance / item.price),
+      Math.floor(props.user.balance / unitPrice),
       item.stock != null ? item.stock_left : Infinity,
     ),
   );
@@ -67,7 +72,14 @@ export default function Item({
           </h2>
           <div className="flex items-center gap-1.5">
             <img src={ticketIcon} alt="Tickets" className="h-5 w-5" />
-            <span className="smoothing-black text-2xl tracking-[-0.03em]">
+            {goldenPriced && (
+              <span className="smoothing-black text-2xl tracking-[-0.03em] text-black/40 line-through">
+                {item.price * quantity}
+              </span>
+            )}
+            <span
+              className={`smoothing-black text-2xl tracking-[-0.03em] ${goldenPriced ? "text-[#bb8a00]" : ""}`}
+            >
               {totalCost}
             </span>
           </div>
