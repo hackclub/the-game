@@ -7,12 +7,15 @@ class SlackAnnouncementsService
   ].freeze
 
   CHANNEL_NAMES = SlackChannels::ALL.freeze
+  EMOJI_CACHE_TTL = 6.hours
 
   @cache_mutex = Mutex.new
   @announcements_cache = nil
   @announcements_cached_at = nil
   @channel_cache = {}
   @channel_cache_times = {}
+  @emoji_cache = nil
+  @emoji_cached_at = nil
 
   class << self
     def available?
@@ -128,13 +131,62 @@ class SlackAnnouncementsService
       response.body["permalink"]
     end
 
+    # Returns the cached { name => url/alias } map of workspace custom emoji.
+    def custom_emoji
+      @cache_mutex.synchronize do
+        if @emoji_cache && @emoji_cached_at && @emoji_cached_at > EMOJI_CACHE_TTL.ago
+          return @emoji_cache
+        end
+      end
+
+      emoji = SlackApiService.fetch_emoji_list
+
+      @cache_mutex.synchronize do
+        @emoji_cache = emoji
+        @emoji_cached_at = Time.current
+      end
+
+      emoji
+    end
+
+    # Resolves a custom emoji name to its image URL, following aliases.
+    def custom_emoji_url(name, map)
+      seen = 0
+      while (value = map[name]) && value.start_with?("alias:") && seen < 5
+        name = value.delete_prefix("alias:")
+        seen += 1
+      end
+
+      value = map[name]
+      value if value.present? && !value.start_with?("alias:")
+    end
+
+    # Replaces :shortcode: tokens with custom emoji images or Unicode characters.
+    def render_emoji(text)
+      map = custom_emoji
+
+      text.gsub(/:([a-z0-9_'+-]+):/i) do
+        name = $1
+        url = custom_emoji_url(name, map)
+
+        if url
+          %(<img src="#{url}" alt=":#{name}:" title=":#{name}:" style="display:inline-block;height:1.25em;width:auto;vertical-align:-0.25em">)
+        elsif (emoji = Emoji.find_by_alias(name))
+          emoji.raw
+        else
+          ":#{name}:"
+        end
+      end
+    end
+
     def format_message(text)
       return "" if text.blank?
 
       text = text.gsub(/<#([A-Z0-9]+)(?:\|[^>]+)?>/) { "##{fetch_channel_name($1)}" }
       text = text.gsub(/<@U[A-Z0-9]+>/, "")
       text = text.gsub(/<!channel>|<!here>|<!everyone>/, "")
-      text = text.gsub(/:[a-zA-Z0-9_+-]+:/, "")
+      text = text.gsub(/:skin-tone-\d:/, "")
+      text = render_emoji(text)
       text = text.gsub(/<(https?:\/\/[^|>]+)\|([^>]+)>/) { %(<a href="#{$1}">#{$2}</a>) }
       text = text.gsub(/<(https?:\/\/[^>]+)>/) { %(<a href="#{$1}">#{$1}</a>) }
       text = text.gsub(/\*_(.*?)_\*|_\*(.*?)\*_/) { "<strong><em>#{$1 || $2}</em></strong>" }

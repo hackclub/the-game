@@ -22,6 +22,9 @@ gem "jbuilder"
 
 gem "blazer"
 
+# Maps emoji shortcodes (e.g. :fire:) to their Unicode characters
+gem "gemoji"
+
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 

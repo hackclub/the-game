@@ -37,6 +37,23 @@ class SlackApiService
       nil
     end
 
+    # Fetches the workspace's custom emoji as a { name => image_url_or_alias }
+    # hash. Requires the user session tokens (the bot token lacks emoji:read on
+    # the enterprise grid). Returns {} when unavailable.
+    def fetch_emoji_list
+      return {} if ENV["SLACK_XOXC_TOKEN"].blank? || ENV["SLACK_XOXD_TOKEN"].blank?
+
+      response = Faraday.get("#{BASE_URL}/emoji.list", nil, {
+        "Authorization" => "Bearer #{ENV['SLACK_XOXC_TOKEN']}",
+        "Cookie" => "d=#{ENV['SLACK_XOXD_TOKEN']}"
+      })
+      body = JSON.parse(response.body)
+      body["ok"] ? (body["emoji"] || {}) : {}
+    rescue => e
+      Rails.logger.warn("Failed to fetch Slack emoji list: #{e.message}")
+      {}
+    end
+
     def post_message(channel:, text:)
       return unless available?
 
