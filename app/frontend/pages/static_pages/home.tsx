@@ -1,12 +1,11 @@
-import { usePage, Link } from "@inertiajs/react";
+import { usePage } from "@inertiajs/react";
 import IdvVerificationAlert from "@/components/IdvVerificationAlert";
 import Layout from "@/layouts/layout";
 import LoggedHours from "@/components/home/LoggedHours";
 import Announcements from "@/components/home/Announcements";
 import { Announcement } from "@/interfaces/announcement";
+import { Goal } from "@/interfaces/goal";
 import MissingAccountFields from "@/components/settings/MissingAccountFields";
-import iconTransparentHome from "@/assets/icons/icon_transparent_home.svg";
-import blankTicket from "@/assets/icons/blank_ticket.svg";
 import iconTransparent from "@/assets/icons/icon_transparent.svg";
 import OnboardingForced from "@/pages/onboarding-forced";
 
@@ -17,10 +16,8 @@ export default function Home() {
     reviewTime: number;
     projectCount: number;
     announcements: Announcement[];
-    referralProgram: {
-      homepage_alert_title: string;
-      homepage_alert_description: string;
-    } | null;
+    goals: Goal[];
+    daysUntilEnd: number;
     boughtInvite: boolean;
   }>();
 
@@ -43,41 +40,23 @@ export default function Home() {
           </div>
 
           <p className="smoothing-black text-2xl tracking-[-0.01em]">
-            In this stage of the game, everyone{" "}
-            <span className="font-bold">creates projects!</span> Your goal is to
-            get 40 hours of work on <span className="font-bold">any</span> kind
-            of technical project. After that's done, you'll be guaranteed an
-            invite to the game!
+            The game is over, but you can still create projects! We're adding
+            new shop items every day until we end{" "}
+            <span className="font-bold">
+              in {props.daysUntilEnd} day{props.daysUntilEnd === 1 ? "" : "s"}
+            </span>
+            !
           </p>
         </div>
-
-        {props.referralProgram && (
-          <Link
-            href="/invite"
-            className="flex items-center justify-between rounded-2xl bg-[#fecb0d] p-6 transition-transform hover:scale-[1.01]"
-          >
-            <div>
-              <p className="smoothing-black text-2xl font-bold tracking-[-0.02em]">
-                {props.referralProgram.homepage_alert_title}
-              </p>
-              <p className="smoothing-black text-lg">
-                {props.referralProgram.homepage_alert_description}
-              </p>
-            </div>
-            <span className="smoothing-black text-xl font-bold">→</span>
-          </Link>
-        )}
 
         {isOnboarding ? null : (
           <>
             <MissingAccountFields />
 
             <LoggedHours
-              totalProjectTime={props.totalProjectTime}
               inProgressTime={props.inProgressTime}
-              reviewTime={props.reviewTime}
               tickets={props.user.balance}
-              boughtInvite={props.boughtInvite}
+              goals={props.goals}
             />
 
             <IdvVerificationAlert />
