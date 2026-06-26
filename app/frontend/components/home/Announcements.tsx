@@ -72,7 +72,14 @@ export default function Announcements({
                       height={image.height ?? undefined}
                       alt=""
                       loading="lazy"
-                      className="h-auto max-h-[28rem] w-auto max-w-full rounded-xl border-2 border-black object-contain"
+                      style={{
+                        aspectRatio:
+                          image.width && image.height
+                            ? `${image.width} / ${image.height}`
+                            : undefined,
+                        maxWidth: image.width ? `${image.width}px` : undefined,
+                      }}
+                      className="w-full rounded-xl border-2 border-black object-cover"
                     />
                   ))}
                 </div>
