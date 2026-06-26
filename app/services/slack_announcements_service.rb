@@ -141,7 +141,8 @@ class SlackAnnouncementsService
       text = text.gsub(/\*([^*]+)\*/) { "<strong>#{$1}</strong>" }
       text = text.gsub(/(?<!\w)_([^_]+)_(?!\w)/) { "<em>#{$1}</em>" }
       text = text.gsub(/`([^`]+)`/) { "<code>#{$1}</code>" }
-      text = text.gsub(/\n{3,}/, "\n\n") # collapse big gaps from runs of blank lines
+      text = text.lines.map(&:strip).join("\n") # trim whitespace on each line
+      text = text.gsub(/\n{2,}/, "\n") # collapse blank lines into a single break
       text.strip
     end
 
