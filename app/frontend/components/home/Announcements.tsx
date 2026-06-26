@@ -64,13 +64,15 @@ export default function Announcements({
 
               {announcement.images && announcement.images.length > 0 && (
                 <div className="flex flex-wrap gap-3">
-                  {announcement.images.map((src, imageIndex) => (
+                  {announcement.images.map((image, imageIndex) => (
                     <img
                       key={imageIndex}
-                      src={src}
+                      src={image.url}
+                      width={image.width ?? undefined}
+                      height={image.height ?? undefined}
                       alt=""
                       loading="lazy"
-                      className="max-h-[28rem] w-auto max-w-full rounded-xl border-2 border-black object-contain"
+                      className="h-auto max-h-[28rem] w-auto max-w-full rounded-xl border-2 border-black object-contain"
                     />
                   ))}
                 </div>

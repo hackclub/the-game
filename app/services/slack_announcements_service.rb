@@ -102,24 +102,28 @@ class SlackAnnouncementsService
         author_name: user[:username] || "Unknown",
         author_avatar_url: user[:avatar_url],
         content: format_message(message["text"]),
-        images: image_urls(message),
+        images: image_data(message),
         timestamp: Time.at(message["ts"].to_f).utc.iso8601,
         slack_ts: message["ts"],
         permalink: permalink
       }
     end
 
-    # Maps a message's uploaded image files to proxied URLs the browser can load.
-    # Slack's url_private requires the bot token, so images are served through
-    # our own proxy endpoint rather than linked directly.
-    def image_urls(message)
+    # Maps a message's uploaded image files to proxied URLs (Slack's url_private
+    # requires auth, so images go through our proxy) plus their original pixel
+    # dimensions so the frontend can reserve space and avoid layout shift.
+    def image_data(message)
       Array(message["files"]).filter_map do |file|
         next unless file["mimetype"].to_s.start_with?("image/")
 
         url = file["url_private"].presence
         next unless url
 
-        "/announcements/image?#{{ url: url }.to_query}"
+        {
+          url: "/announcements/image?#{{ url: url }.to_query}",
+          width: file["original_w"],
+          height: file["original_h"]
+        }
       end
     end
 
