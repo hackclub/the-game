@@ -142,8 +142,13 @@ class SlackAnnouncementsService
       text = text.gsub(/(?<!\w)_([^_]+)_(?!\w)/) { "<em>#{$1}</em>" }
       text = text.gsub(/`([^`]+)`/) { "<code>#{$1}</code>" }
       text = text.lines.map(&:strip).join("\n") # trim whitespace on each line
-      text = text.gsub(/\n{2,}/, "\n") # collapse blank lines into a single break
-      text.strip
+
+      # Group lines into paragraphs (a blank line starts a new paragraph) so the
+      # gap between them is controlled by CSS margin rather than an empty line.
+      # Single newlines stay as <br> to preserve line breaks without big gaps.
+      text.split(/\n{2,}/).map(&:strip).reject(&:blank?).map do |paragraph|
+        "<p>#{paragraph.gsub("\n", '<br>')}</p>"
+      end.join
     end
 
     def fetch_channel_name(channel_id)
