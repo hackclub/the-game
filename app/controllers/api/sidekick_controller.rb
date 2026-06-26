@@ -65,10 +65,9 @@ class Api::SidekickController < ActionController::API
   end
 
   def get_program_stats
-    pending_hq_project_ids = Project::Review.pending_hq.where(deleted_at: nil).select(:project_id)
     {
-      pendingReviewCount: Project.where(aasm_state: "submitted").where.not(id: pending_hq_project_ids).count,
-      pendingHqCount: Project::Review.pending_hq.where(deleted_at: nil).count,
+      pendingReviewCount: Project.awaiting_review.count,
+      pendingHqCount: Project.pending_hq_review.count,
       pendingFulfillmentCount: Item::Purchase.where(aasm_state: "pending").count
     }
   end
@@ -78,18 +77,16 @@ class Api::SidekickController < ActionController::API
     cursor = @input[:cursor]
     limit = (@input[:limit] || 50).to_i.clamp(1, 100)
 
-    scope = Project.includes(:user, :hackatime_projects, reviews: :author)
-
-    pending_hq_project_ids = Project::Review.pending_hq.where(deleted_at: nil).select(:project_id)
+    scope = Project.includes(:user, :hackatime_projects, :pending_approvals, reviews: :author)
 
     case status
     when "pending"
-      scope = scope.where(aasm_state: "submitted").where.not(id: pending_hq_project_ids)
+      scope = scope.awaiting_review
     when "pending_hq"
-      scope = scope.where(id: pending_hq_project_ids)
+      scope = scope.pending_hq_review
     when "approved"
       scope = scope.where(
-        id: Project::Review.where(review_type: "approval", deleted_at: nil).where.not(authorized_at: nil).select(:project_id)
+        id: Project::Review.where(review_type: "approval", deleted_at: nil).select(:project_id)
       )
     when "rejected"
       scope = scope.where(
@@ -137,23 +134,29 @@ class Api::SidekickController < ActionController::API
     review_action = @input[:action]
     event = case review_action
     when "approve"
-      # HQ reviewers' approvals publish immediately; community reviewers' are held
-      # in pending_hq until an HQ reviewer authorizes them.
-      hq = reviewer.hq_reviewer?
-      review = project.reviews.create!(
-        author: reviewer,
-        review_type: "approval",
-        content: @input[:feedbackMessage],
-        admin_content: @input[:justification],
-        approved_seconds: (@input[:hoursAssigned].to_f * 3600).to_i,
-        authorized_at: hq ? Time.current : nil,
-        authorized_by: hq ? reviewer : nil,
-        # Only HQ reviewers grant golden tickets. A community approval is held and
-        # its golden ticket is decided by the authorizing HQ reviewer; it is applied
-        # when the approval publishes (here for HQ, on authorize for community).
-        grant_golden_ticket: hq && golden_ticket_requested?
-      )
-      serialize_approval_event(review, ship_id, project: project)
+      if reviewer.hq_reviewer?
+        # HQ reviewers' approvals publish immediately.
+        review = project.reviews.create!(
+          author: reviewer,
+          review_type: "approval",
+          content: @input[:feedbackMessage],
+          admin_content: @input[:justification],
+          approved_seconds: (@input[:hoursAssigned].to_f * 3600).to_i,
+          authorized_by: reviewer,
+          grant_golden_ticket: golden_ticket_requested?
+        )
+        serialize_approval_event(review, ship_id, project: project)
+      else
+        # Community reviewers' approvals are held as a Project::PendingApproval until
+        # an HQ reviewer authorizes them; while held they grant nothing.
+        pending = project.pending_approvals.create!(
+          author: reviewer,
+          content: @input[:feedbackMessage],
+          admin_content: @input[:justification],
+          approved_seconds: (@input[:hoursAssigned].to_f * 3600).to_i
+        )
+        serialize_approval_event(pending, ship_id, project: project, pending: true)
+      end
     when "reject"
       review = project.reviews.create!(
         author: reviewer,
@@ -177,17 +180,20 @@ class Api::SidekickController < ActionController::API
       )
       serialize_comment_event(review, internal: true)
     when "authorize"
-      # HQ authorization of a pending_hq ship: publish the held approval, using the
-      # overridden hours if provided. Idempotent for already-authorized approvals.
-      review = find_approval_for_ship(project, ship_id)
+      # HQ authorization of a pending_hq ship: publish the held approval as a real
+      # review, using the overridden hours/golden ticket if provided.
+      require_hq_reviewer!(reviewer)
+      pending = find_pending_approval_for_ship(project, ship_id)
+      pending.update!(grant_golden_ticket: golden_ticket_requested?) if @input.dig(:fields)&.key?(:grant_golden_ticket)
       approved_seconds = @input.key?(:hoursAssigned) ? (@input[:hoursAssigned].to_f * 3600).to_i : nil
-      review.authorize!(authorized_by: reviewer, approved_seconds: approved_seconds)
+      review = pending.authorize!(authorized_by: reviewer, approved_seconds: approved_seconds)
       serialize_approval_event(review, ship_id, project: project)
     when "deauthorize"
       # Revert a pending_hq ship back to pending by discarding the held approval.
       # A no-op if there is no held approval (already discarded or authorized).
-      review = find_approval_for_ship(project, ship_id, required: false)
-      review.destroy! if review&.pending_hq?
+      require_hq_reviewer!(reviewer)
+      pending = find_pending_approval_for_ship(project, ship_id, required: false)
+      pending&.destroy!
       { type: "comment", actorId: actor_id_for(reviewer), message: "", isInternal: true, timestamp: Time.current.iso8601 }
     else
       raise ArgumentError, "Unknown review action: #{review_action}"
@@ -203,9 +209,14 @@ class Api::SidekickController < ActionController::API
     type = @input[:type]
     review_type = type == "approval" ? "approval" : "rejection"
 
-    # Approvals are author-agnostic: an HQ reviewer must be able to edit a
-    # community reviewer's held approval, so look it up without an author filter.
-    review = type == "approval" ? find_approval_for_ship(project, ship_id) : find_review_for_ship(project, ship_id, reviewer, review_type)
+    # Approvals are author-agnostic: an HQ reviewer must be able to edit a community
+    # reviewer's approval. A held approval is a Project::PendingApproval; once
+    # authorized it is a Project::Review — edit whichever exists for this ship.
+    review = if type == "approval"
+      find_pending_approval_for_ship(project, ship_id, required: false) || find_approval_for_ship(project, ship_id)
+    else
+      find_review_for_ship(project, ship_id, reviewer, review_type)
+    end
 
     updates = { content: @input[:feedbackMessage] }
     updates[:admin_content] = @input[:justification] if type == "approval" && @input.key?(:justification)
@@ -213,11 +224,11 @@ class Api::SidekickController < ActionController::API
 
     review.update!(updates)
 
-    # Only HQ reviewers grant golden tickets; apply_golden_ticket! is a no-op until
-    # the approval is authorized, so editing a still-held approval just records intent.
+    # Only HQ reviewers grant golden tickets. For a still-held approval this just
+    # records the intent; once published, apply it to the project.
     if type == "approval" && reviewer.hq_reviewer? && @input.fetch(:fields, {})&.key?(:grant_golden_ticket)
       review.update!(grant_golden_ticket: golden_ticket_requested?)
-      review.apply_golden_ticket!
+      review.apply_golden_ticket! if review.is_a?(Project::Review)
     end
 
     { success: true }
@@ -469,20 +480,22 @@ class Api::SidekickController < ActionController::API
       .order(:created_at)
       .to_a
 
+    pending_approvals = project.pending_approvals.order(:created_at).to_a
+
     submission_versions.each_with_index.map do |version, i|
       submitted_at = version.created_at
       next_submitted_at = submission_versions[i + 1]&.created_at
+      in_window = ->(t) { t >= submitted_at && (next_submitted_at.nil? || t < next_submitted_at) }
 
-      review = reviews.find do |r|
-        r.created_at >= submitted_at && (next_submitted_at.nil? || r.created_at < next_submitted_at)
-      end
+      review = reviews.find { |r| in_window.call(r.created_at) }
+      pending = pending_approvals.find { |p| in_window.call(p.created_at) }
 
-      status = if review.nil?
+      status = if pending
+        "pending_hq"
+      elsif review.nil?
         "pending"
       elsif review.rejection?
         "rejected"
-      elsif review.pending_hq?
-        "pending_hq"
       else
         "approved"
       end
@@ -494,9 +507,11 @@ class Api::SidekickController < ActionController::API
         status: status
       }
 
-      if status == "pending"
+      # The golden ticket is decided when an approval is placed (pending) or when a
+      # held community approval is authorized (pending_hq).
+      if status == "pending" || status == "pending_hq"
         ship[:approveFields] = [
-          { name: "grant_golden_ticket", label: "Grant golden ticket", type: "boolean", defaultValue: project.high_quality? }
+          { name: "grant_golden_ticket", label: "Grant golden ticket", type: "boolean", defaultValue: pending&.grant_golden_ticket || project.high_quality? }
         ]
       end
 
@@ -545,6 +560,13 @@ class Api::SidekickController < ActionController::API
         internal = review.content.blank? && review.admin_content.present?
         serialize_comment_event(review, internal: internal)
       end
+    end
+
+    # Held community approvals aren't reviews yet, but HQ needs to see them in the
+    # timeline to authorize or discard them.
+    project.pending_approvals.includes(:author).order(:created_at).each do |pending|
+      ship_id = find_ship_id_for_review(pending, submission_versions)
+      events << serialize_approval_event(pending, ship_id, pending: true)
     end
 
     events.compact.sort_by { |e| e[:timestamp] }
@@ -599,8 +621,11 @@ class Api::SidekickController < ActionController::API
 
   # --- Timeline event serializers ---
 
-  def serialize_approval_event(review, ship_id, project: nil)
+  # `review` may be a Project::Review or a held Project::PendingApproval; both
+  # respond to the same reading interface.
+  def serialize_approval_event(review, ship_id, project: nil, pending: false)
     project ||= review.project
+    grant_golden_ticket = pending ? review.grant_golden_ticket : project.high_quality?
     {
       type: "approval",
       shipId: ship_id,
@@ -608,7 +633,8 @@ class Api::SidekickController < ActionController::API
       hoursAssigned: review.approved_seconds / 3600.0,
       feedbackMessage: review.content || "",
       justification: review.admin_content || "",
-      fields: { grant_golden_ticket: project.high_quality? },
+      pending: pending,
+      fields: { grant_golden_ticket: grant_golden_ticket },
       timestamp: review.created_at.iso8601
     }
   end
@@ -639,6 +665,10 @@ class Api::SidekickController < ActionController::API
 
   def golden_ticket_requested?
     [ true, "true" ].include?(@input.dig(:fields, :grant_golden_ticket))
+  end
+
+  def require_hq_reviewer!(reviewer)
+    raise ArgumentError, "Only HQ reviewers can authorize approvals" unless reviewer.hq_reviewer?
   end
 
   def actor_id_for(user)
@@ -672,9 +702,10 @@ class Api::SidekickController < ActionController::API
     Project.find(version.item_id)
   end
 
-  def find_approval_for_ship(project, ship_id, required: true)
-    version_id = ship_id.delete_prefix("v").to_i
-    version = PaperTrail::Version.find(version_id)
+  # [start, end] timestamps bounding the submission a ship refers to: from this
+  # submission until the next one (or nil = open-ended).
+  def submission_window(project, ship_id)
+    version = PaperTrail::Version.find(ship_id.delete_prefix("v").to_i)
     submitted_at = version.created_at
 
     next_submission = project.versions
@@ -683,31 +714,36 @@ class Api::SidekickController < ActionController::API
       .to_a
       .find { |v| v.object_changes&.dig("aasm_state", 1) == "submitted" }
 
-    scope = project.reviews
-      .where(review_type: "approval")
-      .where("created_at >= ?", submitted_at)
+    [ submitted_at, next_submission&.created_at ]
+  end
 
-    scope = scope.where("created_at < ?", next_submission.created_at) if next_submission
+  def find_approval_for_ship(project, ship_id, required: true)
+    from, to = submission_window(project, ship_id)
+
+    scope = project.reviews.where(review_type: "approval").where("created_at >= ?", from)
+    scope = scope.where("created_at < ?", to) if to
+    scope = scope.order(:created_at)
+    required ? scope.last! : scope.last
+  end
+
+  # The held community approval (Project::PendingApproval) for a ship, if any.
+  def find_pending_approval_for_ship(project, ship_id, required: true)
+    from, to = submission_window(project, ship_id)
+
+    scope = project.pending_approvals.where("created_at >= ?", from)
+    scope = scope.where("created_at < ?", to) if to
     scope = scope.order(:created_at)
     required ? scope.last! : scope.last
   end
 
   def find_review_for_ship(project, ship_id, reviewer, review_type)
-    version_id = ship_id.delete_prefix("v").to_i
-    version = PaperTrail::Version.find(version_id)
-    submitted_at = version.created_at
-
-    next_submission = project.versions
-      .where("created_at > ?", submitted_at)
-      .order(:created_at)
-      .to_a
-      .find { |v| v.object_changes&.dig("aasm_state", 1) == "submitted" }
+    from, to = submission_window(project, ship_id)
 
     scope = project.reviews
       .where(author: reviewer, review_type: review_type)
-      .where("created_at >= ?", submitted_at)
+      .where("created_at >= ?", from)
 
-    scope = scope.where("created_at < ?", next_submission.created_at) if next_submission
+    scope = scope.where("created_at < ?", to) if to
     scope.first!
   end
 

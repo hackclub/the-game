@@ -22,6 +22,11 @@ export default function ProjectReviews({
     ...project.reviews.map((review) => ({
       review,
     })),
+    // A held community approval isn't a review yet, but reviewers/HQ see it inline
+    // so it can be authorized or discarded.
+    ...(project.pending_approval
+      ? [{ review: project.pending_approval, pending: true as const }]
+      : []),
     ...ships.map((ship) => ({
       ship,
     })),
@@ -47,7 +52,7 @@ export default function ProjectReviews({
       ) : (
         <>
           <div className="flex flex-col gap-5">
-            {project.reviews.length == 0 ? (
+            {project.reviews.length == 0 && !project.pending_approval ? (
               <p className="text-xl">
                 We haven't reviewed your project yet - give us some time!
               </p>
@@ -92,9 +97,13 @@ export default function ProjectReviews({
 
                 if ("review" in item) {
                   const review = item.review;
+                  const isPending = "pending" in item && item.pending;
+                  const editHref = isPending
+                    ? `/projects/${project.id}/pending_approvals/${review.id}/edit`
+                    : `/projects/${project.id}/reviews/${review.id}/edit`;
 
                   return (
-                    <div className="flex gap-3" key={review.id}>
+                    <div className="flex gap-3" key={`${isPending ? "pending-" : ""}${review.id}`}>
                       <img
                         src={review.author.avatar}
                         alt={`Avatar of ${review.author.username}`}
@@ -114,7 +123,7 @@ export default function ProjectReviews({
                             {review.review_type === "approval" &&
                               `for ${formatTime(review.approved_seconds)}`}
                           </span>
-                          {review.pending_hq && (
+                          {isPending && (
                             <span className="ml-2 rounded-md bg-yellow-200 px-2 py-0.5 text-sm font-semibold text-yellow-800">
                               Pending HQ authorization
                             </span>
@@ -137,15 +146,15 @@ export default function ProjectReviews({
                           props.user.is_admin) && (
                           <div className="flex gap-3">
                             <Link
-                              href={`/projects/${project.id}/reviews/${review.id}/edit`}
+                              href={editHref}
                               className="text-blue-500 underline"
                             >
                               Edit
                             </Link>
-                            {props.user.is_admin && review.pending_hq && (
+                            {props.user.is_admin && isPending && (
                               <>
                                 <Link
-                                  href={`/projects/${project.id}/reviews/${review.id}/publish`}
+                                  href={`/projects/${project.id}/pending_approvals/${review.id}/publish`}
                                   className="cursor-pointer font-semibold text-green-600 underline"
                                   method="post"
                                   as="button"
@@ -153,7 +162,7 @@ export default function ProjectReviews({
                                   Authorize
                                 </Link>
                                 <Link
-                                  href={`/projects/${project.id}/reviews/${review.id}/discard`}
+                                  href={`/projects/${project.id}/pending_approvals/${review.id}/discard`}
                                   className="cursor-pointer text-red-500 underline"
                                   method="post"
                                   as="button"
@@ -162,7 +171,7 @@ export default function ProjectReviews({
                                 </Link>
                               </>
                             )}
-                            {!review.pending_hq &&
+                            {!isPending &&
                               (index == timeline.length - 1 ||
                                 review.review_type === "comment") && (
                                 <Link

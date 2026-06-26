@@ -5,7 +5,6 @@
 #  id                  :bigint           not null, primary key
 #  admin_content       :text
 #  approved_seconds    :integer
-#  authorized_at       :datetime
 #  content             :text
 #  deleted_at          :datetime
 #  grant_golden_ticket :boolean          default(FALSE), not null
@@ -37,15 +36,11 @@ class Project
     enum :review_type, { comment: "comment", rejection: "rejection", approval: "approval" }
 
     scope :not_admin_only, -> { where.not(content: nil).where.not(content: "") }
-    # An approval is only visible to the project author once an HQ reviewer has
-    # authorized it. Comments and rejections are always visible.
-    scope :author_visible, -> { where("review_type <> 'approval' OR authorized_at IS NOT NULL") }
-    scope :pending_hq, -> { where(review_type: "approval", authorized_at: nil) }
 
     validate :non_comments_have_justification
     validate :only_approvals_have_seconds
     validate :project_is_under_review, on: :create
-    validate :no_verdict_pending_authorization, on: :create
+    validate :no_pending_approval, on: :create
 
     after_create_commit do
       case review_type
@@ -53,8 +48,7 @@ class Project
         project.mark_rejected! unless project.rejected?
         create_notification if content.present?
       when "approval"
-        # Community approvals are held until an HQ reviewer authorizes them.
-        publish_approval! if authorized?
+        publish_approval!
       else # comment
         create_notification if content.present?
       end
@@ -63,9 +57,6 @@ class Project
     # undo
     after_destroy_commit do
       next if comment?
-      # A held (not-yet-authorized) approval never published anything, so there
-      # is no project state, notification, or Airtable record to roll back.
-      next if approval? && !authorized?
 
       project_version = project.versions.where_object_changes_to(aasm_state: project.aasm_state).last
       project_version.reify.save!
@@ -76,41 +67,12 @@ class Project
       ysws_record&.destroy
     end
 
-    def authorized?
-      authorized_at.present?
-    end
-
-    # True for an approval that is still waiting on HQ authorization.
-    def pending_hq?
-      approval? && authorized_at.nil?
-    end
-
-    # Promotes a held community approval into a published one: transitions the
-    # project to approved, notifies the author, and syncs to Airtable. Used by
-    # both the web HQ interface and the Sidekick `authorize` action. Idempotent.
-    def authorize!(authorized_by:, approved_seconds: nil)
-      raise ArgumentError, "Only approvals can be authorized" unless approval?
-
-      if authorized?
-        update!(approved_seconds: approved_seconds) if approved_seconds.present? && approved_seconds != self.approved_seconds
-        return false
-      end
-
-      update!(
-        authorized_at: Time.current,
-        authorized_by: authorized_by,
-        approved_seconds: approved_seconds.presence || self.approved_seconds
-      )
-      publish_approval!
-      true
-    end
-
     # Applies the golden ticket for this approval: marks the project high quality
-    # and announces it. Only ever takes effect for an authorized approval that was
-    # flagged to grant one, and is a no-op once the project is already high quality,
-    # so it is safe to call from every publish/edit path.
+    # and announces it. Only takes effect for an approval flagged to grant one, and
+    # is a no-op once the project is already high quality, so it is safe to call
+    # from every publish/edit path.
     def apply_golden_ticket!
-      return unless approval? && authorized? && grant_golden_ticket?
+      return unless approval? && grant_golden_ticket?
       return if project.high_quality?
 
       project.update!(high_quality: true)
@@ -119,7 +81,6 @@ class Project
 
     def display_hash(author: false, admin: false)
       hash = self.as_json.slice("id", "content", "review_type", "author_id", "created_at", "project_id", "approved_seconds")
-      hash["pending_hq"] = pending_hq?
 
       if author
         hash["author"] = self.author.display_hash
@@ -144,8 +105,9 @@ class Project
     private
 
     # Performs the user-visible effects of an approval: project state, author
-    # notification, Airtable sync, and golden ticket. Only ever runs for authorized
-    # approvals, so a held community approval grants nothing until HQ authorizes it.
+    # notification, Airtable sync, and golden ticket. A Project::Review only ever
+    # exists once it is authorized (held community approvals live in
+    # Project::PendingApproval), so this always runs for a published approval.
     def publish_approval!
       project.mark_approved! unless project.approved?
       create_notification if content.present?
@@ -182,13 +144,15 @@ class Project
       end
     end
 
-    # A project with an approval awaiting HQ authorization is locked: an HQ
-    # reviewer must authorize or discard the held approval before any new verdict
-    # can be placed. Comments are always allowed.
-    def no_verdict_pending_authorization
+    # A project with a community approval awaiting HQ authorization is locked: an
+    # HQ reviewer must authorize or discard the held approval before any new verdict
+    # can be placed. Comments are always allowed. (Project::PendingApproval#authorize!
+    # removes the placeholder before creating the published review, so this guard
+    # does not block the very approval being authorized.)
+    def no_pending_approval
       return if comment?
 
-      if project.reviews.pending_hq.exists?
+      if project.pending_approvals.exists?
         errors.add(:base, "Project already has an approval awaiting HQ authorization")
       end
     end

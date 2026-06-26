@@ -70,7 +70,11 @@ export default function ReviewForm({
     e.preventDefault();
 
     if (review?.id) {
-      patch(`/projects/${project.id}/reviews/${review.id}`);
+      patch(
+        review.is_pending_approval
+          ? `/projects/${project.id}/pending_approvals/${review.id}`
+          : `/projects/${project.id}/reviews/${review.id}`,
+      );
     } else {
       post(`/projects/${project.id}/reviews`, {
         onSuccess: () => reset(),

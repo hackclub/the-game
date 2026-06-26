@@ -2,9 +2,7 @@ class Project
   class ReviewsController < ApplicationController
     before_action :signed_in_reviewer
     before_action :set_project
-    before_action :set_review, only: [ :edit, :update, :destroy, :publish, :discard ]
-    before_action :require_hq_reviewer, only: [ :publish, :discard ]
-    before_action :require_pending_hq_review, only: [ :publish, :discard ]
+    before_action :set_review, only: [ :edit, :update, :destroy ]
 
     skip_after_action :verify_authorized
 
@@ -16,20 +14,31 @@ class Project
         return redirect_back_or_to manage_project_path(@project)
       end
 
+      # A community reviewer's approval is held for HQ authorization: it is recorded
+      # as a Project::PendingApproval and grants nothing until an HQ reviewer
+      # authorizes it. HQ reviewers' approvals (and all rejections/comments) become
+      # a real Project::Review immediately.
+      if params.dig(:review, :review_type) == "approval" && !current_user.hq_reviewer?
+        @project.pending_approvals.create!(
+          author: current_user,
+          content: params.dig(:review, :content),
+          admin_content: params.dig(:review, :admin_content),
+          approved_seconds: (params[:approved_hours].to_f * 3600).to_i
+        )
+
+        flash[:notice] = "Submitted approval for HQ review on \"#{@project.title}\"#{" for #{params[:approved_hours]} hours" if params[:approved_hours].present?}"
+        return redirect_back_or_to manage_project_path(@project)
+      end
+
       review = @project.reviews.new(review_params)
       review.author = current_user
 
-      # HQ reviewers' approvals publish immediately; community reviewers' approvals
-      # are held in pending_hq until an HQ reviewer authorizes them.
+      # Only HQ reviewers grant golden tickets, and an HQ approval publishes (and so
+      # grants it) immediately.
       if review.approval? && current_user.hq_reviewer?
-        review.authorized_at = Time.current
         review.authorized_by = current_user
+        review.grant_golden_ticket = golden_ticket_requested?
       end
-
-      # Only HQ reviewers grant golden tickets. A community approval is a template
-      # an HQ reviewer can edit (including the golden ticket) before authorizing, so
-      # its golden ticket is never set here. The grant is applied on publish.
-      review.grant_golden_ticket = review.approval? && current_user.hq_reviewer? && golden_ticket_requested?
 
       review.save!
 
@@ -37,28 +46,12 @@ class Project
       when "comment"
         "Added comment on"
       when "approval"
-        review.pending_hq? ? "Submitted approval for HQ review on" : "Approved"
+        "Approved"
       when "rejection"
         "Rejected"
       end
 
       flash[:notice] = "#{human_review_desc} \"#{@project.title}\"#{" for #{params[:approved_hours]} hours" if review.approval? && params[:approved_hours].present?}"
-
-      redirect_back_or_to manage_project_path(@project)
-    end
-
-    def publish
-      @review.authorize!(authorized_by: current_user)
-
-      flash[:notice] = "Authorized review"
-
-      redirect_back_or_to manage_project_path(@project)
-    end
-
-    def discard
-      @review.destroy!
-
-      flash[:notice] = "Discarded pending approval"
 
       redirect_back_or_to manage_project_path(@project)
     end
@@ -109,20 +102,6 @@ class Project
 
     def set_review
       @review = Project::Review.find(params[:id])
-    end
-
-    def require_hq_reviewer
-      raise Pundit::NotAuthorizedError unless current_user.hq_reviewer?
-    end
-
-    # publish/discard only apply to an approval still awaiting HQ authorization;
-    # anything else (a published approval, rejection, or comment) goes through the
-    # normal edit/undo flow.
-    def require_pending_hq_review
-      unless @review.pending_hq?
-        flash[:alert] = "This review is not awaiting HQ authorization."
-        redirect_back_or_to manage_project_path(@project)
-      end
     end
   end
 end
