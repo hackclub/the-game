@@ -77,9 +77,11 @@ export default function Announcements({
                           image.width && image.height
                             ? `${image.width} / ${image.height}`
                             : undefined,
-                        maxWidth: image.width ? `${image.width}px` : undefined,
+                        maxWidth: image.width
+                          ? `min(${image.width}px, 28rem)`
+                          : "28rem",
                       }}
-                      className="w-full rounded-xl border-2 border-black object-cover"
+                      className="max-h-[28rem] w-full rounded-xl border-2 border-black object-contain"
                     />
                   ))}
                 </div>
