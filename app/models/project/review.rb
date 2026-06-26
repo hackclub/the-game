@@ -2,21 +2,24 @@
 #
 # Table name: project_reviews
 #
-#  id               :bigint           not null, primary key
-#  admin_content    :text
-#  approved_seconds :integer
-#  content          :text
-#  deleted_at       :datetime
-#  review_type      :string
-#  created_at       :datetime         not null
-#  updated_at       :datetime         not null
-#  author_id        :bigint           not null
-#  project_id       :bigint           not null
+#  id                  :bigint           not null, primary key
+#  admin_content       :text
+#  approved_seconds    :integer
+#  content             :text
+#  deleted_at          :datetime
+#  grant_golden_ticket :boolean          default(FALSE), not null
+#  review_type         :string
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
+#  author_id           :bigint           not null
+#  authorized_by_id    :bigint
+#  project_id          :bigint           not null
 #
 # Indexes
 #
-#  index_project_reviews_on_author_id   (author_id)
-#  index_project_reviews_on_project_id  (project_id)
+#  index_project_reviews_on_author_id         (author_id)
+#  index_project_reviews_on_authorized_by_id  (authorized_by_id)
+#  index_project_reviews_on_project_id        (project_id)
 #
 class Project
   class Review < ApplicationRecord
@@ -26,6 +29,7 @@ class Project
 
     belongs_to :author, class_name: "User"
     belongs_to :project
+    belongs_to :authorized_by, class_name: "User", optional: true
 
     has_one :notification, required: false, as: :notifiable
 
@@ -36,31 +40,43 @@ class Project
     validate :non_comments_have_justification
     validate :only_approvals_have_seconds
     validate :project_is_under_review, on: :create
+    validate :no_pending_approval, on: :create
 
     after_create_commit do
-      if rejection? && !project.rejected?
-        project.mark_rejected!
-      elsif approval? && !project.approved?
-        project.mark_approved!
+      case review_type
+      when "rejection"
+        project.mark_rejected! unless project.rejected?
+        create_notification if content.present?
+      when "approval"
+        publish_approval!
+      else # comment
+        create_notification if content.present?
       end
-    end
-
-    after_create_commit do
-      create_notification if content.present?
-      create_ysws_record if approval?
     end
 
     # undo
     after_destroy_commit do
-      unless comment?
-        project_version = project.versions.where_object_changes_to(aasm_state: project.aasm_state).last
-        project_version.reify.save!
-        project.versions.last.delete
+      next if comment?
 
-        create_destroy_notification
+      project_version = project.versions.where_object_changes_to(aasm_state: project.aasm_state).last
+      project_version.reify.save!
+      project.versions.last.delete
 
-        ysws_record&.destroy
-      end
+      create_destroy_notification
+
+      ysws_record&.destroy
+    end
+
+    # Applies the golden ticket for this approval: marks the project high quality
+    # and announces it. Only takes effect for an approval flagged to grant one, and
+    # is a no-op once the project is already high quality, so it is safe to call
+    # from every publish/edit path.
+    def apply_golden_ticket!
+      return unless approval? && grant_golden_ticket?
+      return if project.high_quality?
+
+      project.update!(high_quality: true)
+      announce_golden_ticket!
     end
 
     def display_hash(author: false, admin: false)
@@ -72,6 +88,7 @@ class Project
 
       if admin
         hash["admin_content"] = self.admin_content
+        hash["grant_golden_ticket"] = grant_golden_ticket
       end
 
       hash
@@ -86,6 +103,24 @@ class Project
     end
 
     private
+
+    # Performs the user-visible effects of an approval: project state, author
+    # notification, Airtable sync, and golden ticket. A Project::Review only ever
+    # exists once it is authorized (held community approvals live in
+    # Project::PendingApproval), so this always runs for a published approval.
+    def publish_approval!
+      project.mark_approved! unless project.approved?
+      create_notification if content.present?
+      create_ysws_record
+      apply_golden_ticket!
+    end
+
+    def announce_golden_ticket!
+      author_ping = project.user.slack_id.present? ? "<@#{project.user.slack_id}>" : project.user.username
+      text = ":rac_woah: #{author_ping} got a golden ticket for their project *#{project.title}*!! check it out <#{project.demo_link}|here!>"
+      channel = ENV.fetch("GOLDEN_TICKET_SLACK_CHANNEL", SlackChannels::THE_GAME)
+      SlackApiService.post_message(channel: channel, text: text)
+    end
 
     def non_comments_have_justification
       if (!content.present? || !admin_content.present?) && !comment?
@@ -106,6 +141,19 @@ class Project
     def project_is_under_review
       if !comment? && !project.submitted?
         errors.add(:base, "Project must be under review to approve or reject")
+      end
+    end
+
+    # A project with a community approval awaiting HQ authorization is locked: an
+    # HQ reviewer must authorize or discard the held approval before any new verdict
+    # can be placed. Comments are always allowed. (Project::PendingApproval#authorize!
+    # removes the placeholder before creating the published review, so this guard
+    # does not block the very approval being authorized.)
+    def no_pending_approval
+      return if comment?
+
+      if project.pending_approvals.exists?
+        errors.add(:base, "Project already has an approval awaiting HQ authorization")
       end
     end
 

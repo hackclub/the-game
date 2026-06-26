@@ -7,4 +7,8 @@ export interface ProjectReview {
   created_at: string;
   project_id: number;
   approved_seconds: number;
+  grant_golden_ticket?: boolean;
+  // Set on a held community approval (a Project::PendingApproval surfaced through
+  // the same shape as a review) so the UI can route edits/authorization correctly.
+  is_pending_approval?: boolean;
 }

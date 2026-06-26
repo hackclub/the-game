@@ -1,4 +1,4 @@
-import { useForm } from "@inertiajs/react";
+import { useForm, usePage } from "@inertiajs/react";
 import { useState, useEffect } from "react";
 import { Project } from "@/interfaces/project";
 import { ProjectReview } from "@/interfaces/project_review";
@@ -27,6 +27,9 @@ export default function ReviewForm({
   project: Project;
   review?: ProjectReview;
 }) {
+  const { props } = usePage();
+  const isHq = props.user.is_admin;
+
   const seconds =
     review?.approved_seconds ??
     project.total_seconds - project.approved_seconds;
@@ -36,7 +39,11 @@ export default function ReviewForm({
     content: review?.content ?? "",
     admin_content: review?.admin_content ?? "",
     approved_hours: Number((seconds / 3600).toPrecision(4)),
-    high_quality: (project.high_quality ?? null) as boolean | null,
+    // When editing, seed from the review's own golden-ticket intent (a held
+    // approval hasn't applied it to the project yet); otherwise from the project.
+    high_quality: (review
+      ? (review.grant_golden_ticket ?? false)
+      : (project.high_quality ?? null)) as boolean | null,
   });
   const [adminOnly, setAdminOnly] = useState(false);
   const [showQuickResponses, setShowQuickResponses] = useState(false);
@@ -63,7 +70,11 @@ export default function ReviewForm({
     e.preventDefault();
 
     if (review?.id) {
-      patch(`/projects/${project.id}/reviews/${review.id}`);
+      patch(
+        review.is_pending_approval
+          ? `/projects/${project.id}/pending_approvals/${review.id}`
+          : `/projects/${project.id}/reviews/${review.id}`,
+      );
     } else {
       post(`/projects/${project.id}/reviews`, {
         onSuccess: () => reset(),
@@ -132,14 +143,16 @@ export default function ReviewForm({
               />
               <label className="text-lg">hours</label>
             </div>
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                value={(data.high_quality || false).toString()}
-                onChange={(e) => setData("high_quality", e.target.checked)}
-              />
-              <label className="text-lg">High quality?</label>
-            </div>
+            {isHq && (
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={data.high_quality || false}
+                  onChange={(e) => setData("high_quality", e.target.checked)}
+                />
+                <label className="text-lg">High quality?</label>
+              </div>
+            )}
           </>
         )}
       </div>
@@ -195,6 +208,12 @@ export default function ReviewForm({
           required
           placeholder="Justify this review - this is only shown to admins and reviewers"
         />
+      )}
+      {!isHq && data.review_type === "approval" && (
+        <p className="rounded-md border-2 border-dashed border-yellow-600 bg-yellow-100 p-3 text-base text-yellow-800">
+          Your approval will be queued for an HQ reviewer to authorize before it's
+          published to the user and sent to Airtable.
+        </p>
       )}
       <button
         className="cursor-pointer bg-black px-6 py-2 text-lg font-bold text-white hover:bg-gray-800"

@@ -1,3 +1,6 @@
+import type { ProjectReview } from "@/interfaces/project_review";
+import type { PublicUser } from "@/interfaces/user";
+
 export interface Project {
   id: number;
   aasm_state: string;
@@ -21,6 +24,10 @@ export interface Project {
   approved_seconds: number;
   real_approved_seconds: number;
   high_quality: boolean;
+  pending_hq?: boolean;
+  // The single held community approval awaiting HQ authorization, surfaced only to
+  // reviewers/HQ. Shaped like a review so it can reuse the review components.
+  pending_approval?: (ProjectReview & { author: PublicUser }) | null;
   unread_notification_count: number;
   tags: number[];
   ai_declaration: string | null;

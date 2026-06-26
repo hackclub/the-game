@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_16_025756) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_25_000003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
   enable_extension "pg_catalog.plpgsql"
@@ -141,7 +141,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_16_025756) do
     t.text "note"
     t.integer "quantity", default: 1, null: false
     t.text "reference"
-    t.string "reference_url"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.text "user_note"
@@ -150,7 +149,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_16_025756) do
   end
 
   create_table "items", force: :cascade do |t|
-    t.text "admin_notes"
     t.boolean "black_market", default: false, null: false
     t.string "category"
     t.datetime "created_at", null: false
@@ -166,6 +164,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_16_025756) do
     t.integer "stock"
     t.boolean "super_featured", default: false, null: false
     t.datetime "updated_at", null: false
+    t.boolean "visible", default: true, null: false
   end
 
   create_table "milestones", force: :cascade do |t|
@@ -195,17 +194,33 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_16_025756) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "project_reviews", force: :cascade do |t|
+  create_table "project_pending_approvals", force: :cascade do |t|
     t.text "admin_content"
     t.integer "approved_seconds"
     t.bigint "author_id", null: false
     t.text "content"
     t.datetime "created_at", null: false
+    t.boolean "grant_golden_ticket", default: false, null: false
+    t.bigint "project_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["author_id"], name: "index_project_pending_approvals_on_author_id"
+    t.index ["project_id"], name: "index_project_pending_approvals_on_project_id"
+  end
+
+  create_table "project_reviews", force: :cascade do |t|
+    t.text "admin_content"
+    t.integer "approved_seconds"
+    t.bigint "author_id", null: false
+    t.bigint "authorized_by_id"
+    t.text "content"
+    t.datetime "created_at", null: false
     t.datetime "deleted_at"
+    t.boolean "grant_golden_ticket", default: false, null: false
     t.bigint "project_id", null: false
     t.string "review_type"
     t.datetime "updated_at", null: false
     t.index ["author_id"], name: "index_project_reviews_on_author_id"
+    t.index ["authorized_by_id"], name: "index_project_reviews_on_authorized_by_id"
     t.index ["project_id"], name: "index_project_reviews_on_project_id"
   end
 

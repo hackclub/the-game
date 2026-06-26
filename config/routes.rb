@@ -31,6 +31,12 @@ Rails.application.routes.draw do
 
   resources :projects, only: [ :index, :new, :create, :update, :destroy ] do
     resources :reviews, only: [ :create, :edit, :update, :destroy ], module: :project
+    resources :pending_approvals, only: [ :edit, :update ], module: :project do
+      member do
+        post :publish
+        post :discard
+      end
+    end
 
     member do
       patch :ship

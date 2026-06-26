@@ -3,7 +3,6 @@
 # Table name: items
 #
 #  id                     :bigint           not null, primary key
-#  admin_notes            :text
 #  black_market           :boolean          default(FALSE), not null
 #  category               :string
 #  description            :text             not null
@@ -17,6 +16,7 @@
 #  real_price             :decimal(10, 2)
 #  stock                  :integer
 #  super_featured         :boolean          default(FALSE), not null
+#  visible                :boolean          default(TRUE), not null
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #

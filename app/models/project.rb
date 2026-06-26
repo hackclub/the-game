@@ -41,6 +41,12 @@ class Project < ApplicationRecord
   pg_search_scope :search_by_title, against: :title
   scope :high_quality, -> { where(high_quality: true) }
 
+  # Submitted projects that a reviewer may still place a verdict on: no approval
+  # is currently waiting on HQ authorization.
+  scope :awaiting_review, -> { submitted.where.not(id: Project::PendingApproval.select(:project_id)) }
+  # Submitted projects whose community approval is held pending HQ authorization.
+  scope :pending_hq_review, -> { submitted.where(id: Project::PendingApproval.select(:project_id)) }
+
   acts_as_paranoid
   has_paper_trail
 
@@ -52,6 +58,7 @@ class Project < ApplicationRecord
   after_create_commit :sync_user_airtable_if_first_project
   after_update_commit :sync_user_airtable_if_first_ship
   has_many :reviews, class_name: "Project::Review"
+  has_many :pending_approvals, class_name: "Project::PendingApproval", dependent: :destroy
   has_and_belongs_to_many :tags, join_table: :project_tags_projects, association_foreign_key: :project_tag_id
   has_one_attached :screenshot
 
@@ -119,6 +126,10 @@ class Project < ApplicationRecord
     hash["hackatime_projects"] = hackatime_projects.loaded? ? hackatime_projects.map(&:id) : hackatime_projects.pluck(:id)
     hash["tags"] = tags.loaded? ? tags.map(&:id) : tags.pluck(:id)
     hash["status"] = display_status
+    # Only computed where it's actually consumed (review/manage views, which either
+    # request reviews or eager-load them); skipping it avoids a per-row pending
+    # existence query on list pages that never read the flag.
+    hash["pending_hq"] = pending_hq? if reviews || self.reviews.loaded?
     hash["unread_notification_count"] = notifications ? unread_notifications.count : 0
 
     if screenshot.attached? && screenshot.persisted?
@@ -128,6 +139,9 @@ class Project < ApplicationRecord
     if reviews
       if admin || reviewer
         hash["reviews"] = self.reviews.map { |review| review.display_hash(author: true, admin: true) }
+        # The held approval is only ever surfaced to reviewers/HQ; it stays invisible
+        # to the author until it is authorized and becomes a real review.
+        hash["pending_approval"] = pending_approval&.display_hash(author: true, admin: true)
       else
         hash["reviews"] = self.reviews.not_admin_only.map { |review| review.display_hash(author: true) }
       end
@@ -173,6 +187,18 @@ class Project < ApplicationRecord
     end
 
     missing
+  end
+
+  # The single held community approval awaiting HQ authorization, if any. At most
+  # one can exist at a time (PendingApproval guards against a second).
+  def pending_approval
+    pending_approvals.loaded? ? pending_approvals.first : pending_approvals.order(:created_at).first
+  end
+
+  # True when a community reviewer has approved but an HQ reviewer has not yet
+  # authorized the approval (the project is still under review for the author).
+  def pending_hq?
+    pending_approvals.loaded? ? pending_approvals.any? : pending_approvals.exists?
   end
 
   def real_approved_seconds
