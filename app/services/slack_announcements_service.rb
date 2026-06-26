@@ -10,6 +10,7 @@ class SlackAnnouncementsService
 
   CHANNEL_NAMES = SlackChannels::ALL.freeze
   EMOJI_CACHE_TTL = 6.hours
+  MIN_CONTENT_LENGTH = 32
 
   @cache_mutex = Mutex.new
   @announcements_cache = nil
@@ -76,12 +77,19 @@ class SlackAnnouncementsService
         next if dynamic_blocks.include?(msg["ts"])
 
         # If message has @here and is less than 8 chars, use previous message instead
-        if msg["text"].include?("<!here>") && msg["text"].length < 16
-          prev_msg = all_messages[all_messages.index(msg) + 1]
-          messages << prev_msg if prev_msg
+        candidate = if msg["text"].include?("<!here>") && msg["text"].length < 16
+          all_messages[all_messages.index(msg) + 1]
         else
-          messages << msg
+          msg
         end
+
+        next if candidate.nil?
+
+        # Skip trivially short announcements, unless they carry an image.
+        next if image_data(candidate).empty? &&
+                visible_length(candidate["text"]) < MIN_CONTENT_LENGTH
+
+        messages << candidate
 
         break if messages.length >= MAX_ANNOUNCEMENTS
       end
@@ -183,6 +191,14 @@ class SlackAnnouncementsService
           ":#{name}:"
         end
       end
+    end
+
+    # Visible character count of a message after formatting (tags stripped,
+    # whitespace collapsed). Used to drop trivially short announcements.
+    def visible_length(text)
+      return 0 if text.blank?
+
+      format_message(text).gsub(/<[^>]*>/, " ").gsub(/\s+/, " ").strip.length
     end
 
     def format_message(text)
