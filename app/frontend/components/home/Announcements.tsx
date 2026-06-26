@@ -1,5 +1,15 @@
 import { Announcement } from "@/interfaces/announcement";
 
+function formatDate(timestamp: string) {
+  const date = new Date(timestamp);
+  if (isNaN(date.getTime())) return null;
+  return date.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
 export default function Announcements({
   announcements,
 }: {
@@ -37,11 +47,17 @@ export default function Announcements({
                 <span className="smoothing-black text-2xl font-bold tracking-[-0.02em]">
                   @{announcement.author_name}
                 </span>
+
+                {formatDate(announcement.timestamp) && (
+                  <span className="ml-auto text-base font-medium text-[#909090]">
+                    {formatDate(announcement.timestamp)}
+                  </span>
+                )}
               </div>
 
               {announcement.content && (
                 <div
-                  className="smoothing-black text-xl tracking-[-0.02em] whitespace-pre-wrap [&_a]:underline [&_code]:rounded [&_code]:bg-black/5 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-base"
+                  className="smoothing-black text-xl leading-snug tracking-[-0.02em] whitespace-pre-wrap [&_a]:underline [&_code]:rounded [&_code]:bg-black/5 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-base"
                   dangerouslySetInnerHTML={{ __html: announcement.content }}
                 />
               )}

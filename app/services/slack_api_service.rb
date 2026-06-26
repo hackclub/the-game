@@ -21,14 +21,17 @@ class SlackApiService
       end
     end
 
-    # Fetches a private Slack file (e.g. an uploaded image) using the bot token.
-    # Returns the raw Faraday response, or nil on failure.
+    # Fetches a private Slack file (e.g. an uploaded image). Files on the
+    # enterprise grid aren't accessible to the bot token, so we authenticate
+    # with the user session cookie (SLACK_XOXD_TOKEN), the same way channel
+    # invites do. Returns the raw Faraday response, or nil on failure.
     def fetch_file(url)
-      return unless available?
+      return if ENV["SLACK_XOXD_TOKEN"].blank?
 
-      Faraday.get(url) do |req|
-        req.headers["Authorization"] = "Bearer #{ENV['SLACK_BOT_TOKEN']}"
-      end
+      headers = { "Cookie" => "d=#{ENV['SLACK_XOXD_TOKEN']}" }
+      headers["Authorization"] = "Bearer #{ENV['SLACK_XOXC_TOKEN']}" if ENV["SLACK_XOXC_TOKEN"].present?
+
+      Faraday.get(url, nil, headers)
     rescue => e
       Rails.logger.warn("Failed to fetch Slack file #{url}: #{e.message}")
       nil
