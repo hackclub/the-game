@@ -1,3 +1,5 @@
+require "emoji"
+
 class SlackAnnouncementsService
   CHANNEL_ID = SlackChannels::BULLETIN
   CACHE_TTL = 5.minutes
@@ -171,7 +173,7 @@ class SlackAnnouncementsService
 
         if url
           %(<img src="#{url}" alt=":#{name}:" title=":#{name}:" style="display:inline-block;height:1.25em;width:auto;vertical-align:-0.25em">)
-        elsif (emoji = Emoji.find_by_alias(name))
+        elsif (emoji = ::Emoji.find_by_alias(name))
           emoji.raw
         else
           ":#{name}:"
