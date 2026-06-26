@@ -19,11 +19,14 @@ class ItemsController < ApplicationController
     items_scope = Item.visible.with_attached_image.order(super_featured: :desc, featured: :desc, price: :asc)
     items_scope = items_scope.where.not(id: program.referred_item_id) if program.referred_item_id.present?
 
+    goal_by_item = current_user.admin? ? Goal.pluck(:item_id, :id).to_h : {}
+
     render inertia: "items/index", props: {
       items: items_scope.map { |item| item.display_hash(true) },
       has_purchased: current_user.purchases.any?,
       referred_item: referred_item,
-      purchased_item_ids: purchased_item_ids
+      purchased_item_ids: purchased_item_ids,
+      goal_by_item: goal_by_item
     }
   end
 

@@ -19,11 +19,13 @@ export default function Shop({
   has_purchased,
   referred_item,
   purchased_item_ids,
+  goal_by_item,
 }: {
   items: (Item & { stock_left: number })[];
   has_purchased: boolean;
   referred_item: Item | null;
   purchased_item_ids: number[];
+  goal_by_item: Record<number, number>;
 }) {
   const [selected, setSelected] = useState<string | null>(null);
 
@@ -62,6 +64,7 @@ export default function Shop({
             alreadyPurchased={
               item.one_per_user && purchased_item_ids.includes(item.id)
             }
+            goalId={goal_by_item[item.id]}
             className={item.super_featured ? "col-span-full" : undefined}
           />
         ))}

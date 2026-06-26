@@ -8,10 +8,12 @@ import ConfirmPurchaseModal from "./ConfirmPurchaseModal";
 export default function Item({
   item,
   alreadyPurchased,
+  goalId,
   className,
 }: {
   item: Item & { stock_left: number };
   alreadyPurchased: boolean;
+  goalId?: number;
   className?: string;
 }) {
   const { props } = usePage<SharedProps>();
@@ -59,6 +61,34 @@ export default function Item({
         )}
       </div>
       <div className="flex flex-1 flex-col rounded-br-2xl rounded-bl-2xl border-2 border-t-0 border-black bg-white px-6 py-4">
+        {props.user.is_admin &&
+          (goalId != null ? (
+            <button
+              type="button"
+              onClick={() =>
+                router.delete(`/admin/goals/${goalId}`, {
+                  preserveScroll: true,
+                })
+              }
+              className="mb-3 cursor-pointer self-start rounded-full border-2 border-[#fecb0d] bg-[#fff7e0] px-3 py-1 text-sm font-bold text-[#8a6800] transition-colors hover:bg-[#fdeec0]"
+            >
+              ★ Homepage goal — remove
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() =>
+                router.post(
+                  "/admin/goals",
+                  { item_id: item.id },
+                  { preserveScroll: true },
+                )
+              }
+              className="mb-3 cursor-pointer self-start rounded-full border-2 border-black bg-white px-3 py-1 text-sm font-bold text-black transition-colors hover:bg-[#fecb0d]"
+            >
+              + Add as homepage goal
+            </button>
+          ))}
         {item.image && (
           <img
             src={item.image}

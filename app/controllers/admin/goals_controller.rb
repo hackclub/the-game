@@ -12,15 +12,17 @@ module Admin
 
     def create
       item = Item.find(params[:item_id])
-      Goal.create!(item: item, position: (Goal.maximum(:position) || 0) + 1)
+      unless Goal.exists?(item: item)
+        Goal.create!(item: item, position: (Goal.maximum(:position) || 0) + 1)
+      end
 
-      redirect_to admin_goals_path
+      redirect_back_or_to admin_goals_path
     end
 
     def destroy
       Goal.find(params[:id]).destroy!
 
-      redirect_to admin_goals_path
+      redirect_back_or_to admin_goals_path
     end
   end
 end
