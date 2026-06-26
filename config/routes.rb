@@ -62,6 +62,8 @@ Rails.application.routes.draw do
     end
   end
 
+  get "/announcements/image", to: "announcements#image"
+
   get "/explore", to: "explore#index"
   get "/test", to: "test#index"
   get "/test/project", to: "test#project"

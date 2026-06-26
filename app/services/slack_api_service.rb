@@ -21,6 +21,19 @@ class SlackApiService
       end
     end
 
+    # Fetches a private Slack file (e.g. an uploaded image) using the bot token.
+    # Returns the raw Faraday response, or nil on failure.
+    def fetch_file(url)
+      return unless available?
+
+      Faraday.get(url) do |req|
+        req.headers["Authorization"] = "Bearer #{ENV['SLACK_BOT_TOKEN']}"
+      end
+    rescue => e
+      Rails.logger.warn("Failed to fetch Slack file #{url}: #{e.message}")
+      nil
+    end
+
     def post_message(channel:, text:)
       return unless available?
 
