@@ -2,8 +2,16 @@ class SlackApiService
   BASE_URL = "https://slack.com/api"
 
   class << self
+    # Whether the Slack API can be reached. Read-only calls (fetching
+    # announcements, looking up users) only need a token. DRY_RUN does NOT
+    # disable reads — it only suppresses writes (see #post_message).
     def available?
-      ENV["SLACK_BOT_TOKEN"].present? && !ENV["DRY_RUN"].present?
+      ENV["SLACK_BOT_TOKEN"].present?
+    end
+
+    # When true, outbound Slack writes are suppressed.
+    def dry_run?
+      ENV["DRY_RUN"].present?
     end
 
     def client
@@ -15,6 +23,11 @@ class SlackApiService
 
     def post_message(channel:, text:)
       return unless available?
+
+      if dry_run?
+        Rails.logger.info("[DRY_RUN] Skipping Slack message to #{channel}: #{text}")
+        return
+      end
 
       response = client.post("chat.postMessage") do |req|
         req.headers["Content-Type"] = "application/json; charset=utf-8"
