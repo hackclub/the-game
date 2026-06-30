@@ -119,6 +119,7 @@ Rails.application.routes.draw do
     get "/", to: "admin#index"
     get "/projects", to: "admin#projects"
     get "/users", to: "admin#users"
+    get "/users/unshipped_hackatime/csv", to: "admin#unshipped_hackatime_csv", as: "unshipped_hackatime_csv"
     get "/items", to: "admin#items"
     post "/items/bulk_adjust_price", to: "items#bulk_adjust_price"
     post "/items/bulk_set_category", to: "items#bulk_set_category"

@@ -391,6 +391,14 @@ class AdminController < ApplicationController
     render inertia: "admin/grants", props: { items: }
   end
 
+  def unshipped_hackatime_csv
+    csv = UnshippedHackatimeReport.generate_csv
+    send_data csv,
+      filename: "unshipped-hackatime-#{Date.current.iso8601}.csv",
+      type: "text/csv",
+      disposition: "attachment"
+  end
+
   def grants_csv
     require "csv"
 

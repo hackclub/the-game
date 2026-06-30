@@ -41,12 +41,14 @@ function NavCard({
   description,
   badge,
   external,
+  download,
 }: {
   href: string;
   title: string;
   description: string;
   badge?: number;
   external?: boolean;
+  download?: boolean;
 }) {
   const content = (
     <div className="flex items-center justify-between rounded-md border border-gray-200 bg-white px-4 py-3 transition-colors hover:border-gray-300 hover:bg-gray-50">
@@ -68,6 +70,12 @@ function NavCard({
         {content}
       </a>
     );
+  }
+
+  // A plain anchor (not an Inertia visit) so the browser downloads the file
+  // returned by the endpoint instead of trying to navigate to it.
+  if (download) {
+    return <a href={href}>{content}</a>;
   }
 
   return <Link href={href}>{content}</Link>;
@@ -180,6 +188,12 @@ export default function AdminPage() {
                   href="/admin/audit-log"
                   title="Audit Log"
                   description="Browse paper trail records across models"
+                />
+                <NavCard
+                  href="/admin/users/unshipped_hackatime/csv"
+                  title="Unshipped Hackatime CSV"
+                  description="Export users with 30+ min of unshipped Hackatime time"
+                  download
                 />
               </div>
             </div>
