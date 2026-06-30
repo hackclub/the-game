@@ -11,9 +11,21 @@ require "csv"
 # fanned out across a bounded thread pool. All ActiveRecord access happens up
 # front on the calling thread — the worker threads only do HTTP — so we never
 # contend on the connection pool.
+#
+# Hackatime time isn't stored locally, so the only way to know a user's
+# unshipped time is to ask Hackatime. To avoid fetching for users who won't act
+# on a "ship your update" nudge anyway, we first narrow to engaged candidates
+# using cheap database signals (not banned, onboarded, recently active on the
+# platform) and only fetch for those. `active_within_days` controls the
+# recency window; pass nil/0 to fetch for every Hackatime user.
+#
+# Note: `last_active` tracks platform (web) activity, not Hackatime coding
+# activity — a heads-down coder who hasn't opened the site recently is filtered
+# out. Widen the window if you want to reach them too.
 class UnshippedHackatimeReport
   MIN_SECONDS = 30 * 60
   THREADS = 20
+  DEFAULT_ACTIVE_WITHIN_DAYS = 30
   COLUMNS = %w[
     slack_id username project_to_ship project_id
     has_golden_ticket approved_at last_activity_at
@@ -25,8 +37,12 @@ class UnshippedHackatimeReport
     keyword_init: true
   )
 
-  def self.generate_csv
-    new.generate_csv
+  def self.generate_csv(...)
+    new(...).generate_csv
+  end
+
+  def initialize(active_within_days: DEFAULT_ACTIVE_WITHIN_DAYS)
+    @active_within_days = active_within_days
   end
 
   def generate_csv
@@ -61,11 +77,24 @@ class UnshippedHackatimeReport
     rows.sort_by { |row| row[:last_activity_at].to_s }.reverse
   end
 
+  # The set of users worth fetching Hackatime data for: they have synced
+  # Hackatime projects, aren't banned, have finished onboarding (a prerequisite
+  # for shipping), and — unless the window is disabled — have been active on the
+  # platform recently.
+  def engaged_users
+    scope = User.joins(:hackatime_projects).distinct
+                .where(is_banned: false, onboarding_completed: true)
+    if @active_within_days.to_i.positive?
+      scope = scope.where("last_active > ?", @active_within_days.to_i.days.ago)
+    end
+    scope
+  end
+
   # Loads everything we need from the database in a handful of grouped queries
   # (no per-user lookups) and returns plain structs the worker threads can use
   # without touching ActiveRecord.
   def load_candidates
-    user_ids = User.joins(:hackatime_projects).distinct.pluck(:id)
+    user_ids = engaged_users.pluck(:id)
     return [] if user_ids.empty?
 
     golden_user_ids = Project.where(high_quality: true, user_id: user_ids)

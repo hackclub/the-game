@@ -192,7 +192,7 @@ export default function AdminPage() {
                 <NavCard
                   href="/admin/users/unshipped_hackatime/csv"
                   title="Unshipped Hackatime CSV"
-                  description="Export users with 30+ min of unshipped Hackatime time"
+                  description="Engaged users with 30+ min of unshipped Hackatime time"
                   download
                 />
               </div>

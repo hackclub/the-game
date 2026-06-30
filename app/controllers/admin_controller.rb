@@ -392,7 +392,12 @@ class AdminController < ApplicationController
   end
 
   def unshipped_hackatime_csv
-    csv = UnshippedHackatimeReport.generate_csv
+    days = params[:active_within_days].presence
+    csv = if days
+      UnshippedHackatimeReport.generate_csv(active_within_days: days.to_i)
+    else
+      UnshippedHackatimeReport.generate_csv
+    end
     send_data csv,
       filename: "unshipped-hackatime-#{Date.current.iso8601}.csv",
       type: "text/csv",
