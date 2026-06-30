@@ -482,13 +482,21 @@ class Api::SidekickController < ActionController::API
 
     pending_approvals = project.pending_approvals.order(:created_at).to_a
 
-    submission_versions.each_with_index.map do |version, i|
+    submission_versions.each_with_index.filter_map do |version, i|
       submitted_at = version.created_at
       next_submitted_at = submission_versions[i + 1]&.created_at
       in_window = ->(t) { t >= submitted_at && (next_submitted_at.nil? || t < next_submitted_at) }
 
       review = reviews.find { |r| in_window.call(r.created_at) }
       pending = pending_approvals.find { |p| in_window.call(p.created_at) }
+
+      # A submission with no surviving verdict that was superseded by a later one was
+      # never concluded in the ledger — its review may have been deleted (a deleted
+      # approval is not an approval), or it was re-shipped while still pending. It
+      # isn't a ship in its own right: merge it into the submission that followed by
+      # skipping it here, so the ledger never surfaces a stale, actionable "pending"
+      # ship behind the live one. Only the latest submission can be genuinely pending.
+      next if review.nil? && pending.nil? && next_submitted_at
 
       status = if pending
         "pending_hq"
@@ -497,15 +505,7 @@ class Api::SidekickController < ActionController::API
       elsif review
         "approved"
       else
-        # No surviving review for this submission. A submission that is followed by
-        # another one was necessarily concluded — the project had to leave
-        # "submitted" to be re-shipped — but its review may be gone (undone, or
-        # predating the current review records). Recover the verdict from the
-        # aasm_state transition history so a superseded ship is never reported as an
-        # actionable "pending"; otherwise Sidekick would surface a stale ship for
-        # review instead of the live submission. Only the latest ship can be truly
-        # pending.
-        resolved_status_from_versions(all_versions, submitted_at, next_submitted_at) || "pending"
+        "pending"
       end
 
       ship = {
@@ -527,18 +527,28 @@ class Api::SidekickController < ActionController::API
     end.sort_by { |s| s[:submittedAt] }
   end
 
-  # The verdict a submission resolved to, read from the aasm_state transition
-  # history within [from, to). Used as a fallback when the Project::Review for a
-  # superseded submission is missing, so the ship still reflects its real outcome.
-  def resolved_status_from_versions(all_versions, from, to)
-    transition = all_versions.reverse.find do |v|
-      new_state = v.object_changes&.dig("aasm_state", 1)
-      next false unless %w[approved rejected].include?(new_state)
+  # Submissions that count as ships in the ledger: the latest submission, plus any
+  # concluded by a surviving verdict — a non-deleted approval/rejection review or a
+  # held community approval — within its window. A superseded submission with no
+  # verdict was never really a ship (its review may have been deleted, or it was
+  # re-shipped while still pending); it merges into the following ship instead, so
+  # neither the ships list nor the timeline shows two ships in a row with no verdict
+  # between them. This mirrors the skip rule in #build_ships.
+  def terminal_submission_versions(project, submission_versions)
+    reviews = project.reviews
+      .where(review_type: %w[approval rejection], deleted_at: nil)
+      .order(:created_at).to_a
+    pending_approvals = project.pending_approvals.order(:created_at).to_a
 
-      v.created_at >= from && (to.nil? || v.created_at < to)
+    submission_versions.each_with_index.filter_map do |version, i|
+      next_submitted_at = submission_versions[i + 1]&.created_at
+      next version if next_submitted_at.nil?
+
+      in_window = ->(t) { t >= version.created_at && t < next_submitted_at }
+      concluded = reviews.any? { |r| in_window.call(r.created_at) } ||
+        pending_approvals.any? { |p| in_window.call(p.created_at) }
+      version if concluded
     end
-
-    transition&.object_changes&.dig("aasm_state", 1)
   end
 
   def submission_hours(project, version, all_versions)
@@ -566,18 +576,19 @@ class Api::SidekickController < ActionController::API
       v.object_changes&.dig("aasm_state", 1) == "submitted"
     end
 
-    submission_versions.each_with_index do |version, i|
-      prev = i > 0 ? submission_versions[i - 1] : nil
+    # Superseded submissions with no surviving verdict aren't ships of their own;
+    # they merge into the next real ship (see #terminal_submission_versions). Walking
+    # only the terminal submissions means a merged ship's diff spans from the previous
+    # real ship, and no two ship events sit in a row with no verdict between them.
+    ship_versions = terminal_submission_versions(project, submission_versions)
+
+    ship_versions.each_with_index do |version, i|
+      prev = i > 0 ? ship_versions[i - 1] : nil
       events << build_ship_event(project, version, prev, all_versions)
     end
 
-    # [ship_id, type] pairs already represented by a real review, so reconstruction
-    # below doesn't duplicate a verdict that has a surviving record.
-    covered_verdicts = []
-
     project.reviews.includes(:author).order(:created_at).each do |review|
-      ship_id = find_ship_id_for_review(review, submission_versions)
-      covered_verdicts << [ ship_id, review.review_type ] if %w[approval rejection].include?(review.review_type)
+      ship_id = find_ship_id_for_review(review, ship_versions)
       events << case review.review_type
       when "approval"
         serialize_approval_event(review, ship_id)
@@ -589,16 +600,10 @@ class Api::SidekickController < ActionController::API
       end
     end
 
-    # Verdicts recorded in the aasm_state history that no surviving Project::Review
-    # accounts for (legacy approvals applied straight to the state, or reviews since
-    # removed) would otherwise leave two consecutive ships with nothing between them.
-    # Reconstruct them from the version history so the timeline reflects what happened.
-    events.concat(reconstruct_missing_verdict_events(project, all_versions, submission_versions, covered_verdicts))
-
     # Held community approvals aren't reviews yet, but HQ needs to see them in the
     # timeline to authorize or discard them.
     project.pending_approvals.includes(:author).order(:created_at).each do |pending|
-      ship_id = find_ship_id_for_review(pending, submission_versions)
+      ship_id = find_ship_id_for_review(pending, ship_versions)
       events << serialize_approval_event(pending, ship_id, pending: true)
     end
 
@@ -650,57 +655,6 @@ class Api::SidekickController < ActionController::API
   def find_ship_id_for_review(review, submission_versions)
     version = submission_versions.reverse.find { |v| v.created_at <= review.created_at }
     version ? "v#{version.id}" : nil
-  end
-
-  # Synthesizes approval/rejection timeline events for aasm_state transitions that no
-  # surviving Project::Review accounts for. Actor and (for approvals) assigned hours
-  # are recovered from the version history; feedback/justification are genuinely gone,
-  # so they are left blank with an internal note explaining the reconstruction.
-  def reconstruct_missing_verdict_events(project, all_versions, submission_versions, covered_verdicts)
-    note = "Reconstructed from project history — the original review record is unavailable."
-
-    all_versions.filter_map do |version|
-      new_state = version.object_changes&.dig("aasm_state", 1)
-      next unless %w[approved rejected].include?(new_state)
-
-      type = new_state == "approved" ? "approval" : "rejection"
-      ship_id = find_ship_id_for_review(version, submission_versions)
-      next if covered_verdicts.include?([ ship_id, type ])
-
-      if type == "approval"
-        {
-          type: "approval",
-          shipId: ship_id,
-          actorId: version_actor_id(version, project),
-          hoursAssigned: recovered_approved_seconds(version, all_versions) / 3600.0,
-          feedbackMessage: "",
-          justification: note,
-          fields: { grant_golden_ticket: project.high_quality? },
-          timestamp: version.created_at.iso8601
-        }
-      else
-        {
-          type: "rejection",
-          shipId: ship_id,
-          actorId: version_actor_id(version, project),
-          feedbackMessage: "",
-          internalMessage: note,
-          timestamp: version.created_at.iso8601
-        }
-      end
-    end
-  end
-
-  # The approved_seconds recorded when a project was approved, read from the first
-  # version at/after the approval transition that sets it (the mark_approved callback
-  # writes it immediately after the state change).
-  def recovered_approved_seconds(approval_version, all_versions)
-    start_idx = all_versions.index(approval_version) || 0
-    all_versions[start_idx..].each do |v|
-      change = v.object_changes&.dig("approved_seconds")
-      return change[1] if change && change[1]
-    end
-    0
   end
 
   # --- Timeline event serializers ---
