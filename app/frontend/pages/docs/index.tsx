@@ -151,9 +151,7 @@ export default function DocsPage() {
                 >
                   <button
                     type="button"
-                    onClick={() =>
-                      setOpenIndex(isOpen ? null : index)
-                    }
+                    onClick={() => setOpenIndex(isOpen ? null : index)}
                     className="flex w-full cursor-pointer items-center justify-between p-6 text-left"
                   >
                     <h3 className="smoothing-black pr-4 text-xl font-bold tracking-[-0.02em]">

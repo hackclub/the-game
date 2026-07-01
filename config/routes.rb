@@ -62,6 +62,8 @@ Rails.application.routes.draw do
     end
   end
 
+  get "/announcements/image", to: "announcements#image"
+
   get "/explore", to: "explore#index"
   get "/test", to: "test#index"
   get "/test/project", to: "test#project"
@@ -95,6 +97,7 @@ Rails.application.routes.draw do
         post :roll_raffle
       end
     end
+    resources :goals, only: [ :index, :create, :destroy ]
   end
 
   get "/review", to: "review#index"
@@ -119,6 +122,7 @@ Rails.application.routes.draw do
     get "/items", to: "admin#items"
     post "/items/bulk_adjust_price", to: "items#bulk_adjust_price"
     post "/items/bulk_set_category", to: "items#bulk_set_category"
+    post "/items/bulk_set_golden_price", to: "items#bulk_set_golden_price"
     get  "/items/preview_price_revert", to: "items#preview_price_revert"
     post "/items/revert_price_changes", to: "items#revert_price_changes"
     get "/stats", to: "admin#stats"

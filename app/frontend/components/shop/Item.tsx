@@ -8,22 +8,29 @@ import ConfirmPurchaseModal from "./ConfirmPurchaseModal";
 export default function Item({
   item,
   alreadyPurchased,
+  goalId,
   className,
 }: {
   item: Item & { stock_left: number };
   alreadyPurchased: boolean;
+  goalId?: number;
   className?: string;
 }) {
   const { props } = usePage<SharedProps>();
   const [quantity, setQuantity] = useState(1);
   const [showConfirm, setShowConfirm] = useState(false);
-  const totalCost = item.price * quantity;
+  const goldenPriced =
+    props.user.wizard &&
+    item.golden_price != null &&
+    item.golden_price < item.price;
+  const unitPrice = goldenPriced ? (item.golden_price as number) : item.price;
+  const totalCost = unitPrice * quantity;
   const canAfford = props.user.balance >= totalCost;
   const idvVerified = props.user.verification_status === "verified";
   const maxQuantity = Math.max(
     1,
     Math.min(
-      Math.floor(props.user.balance / item.price),
+      Math.floor(props.user.balance / unitPrice),
       item.stock != null ? item.stock_left : Infinity,
     ),
   );
@@ -54,6 +61,34 @@ export default function Item({
         )}
       </div>
       <div className="flex flex-1 flex-col rounded-br-2xl rounded-bl-2xl border-2 border-t-0 border-black bg-white px-6 py-4">
+        {props.user.is_admin &&
+          (goalId != null ? (
+            <button
+              type="button"
+              onClick={() =>
+                router.delete(`/admin/goals/${goalId}`, {
+                  preserveScroll: true,
+                })
+              }
+              className="mb-3 cursor-pointer self-start rounded-full border-2 border-[#fecb0d] bg-[#fff7e0] px-3 py-1 text-sm font-bold text-[#8a6800] transition-colors hover:bg-[#fdeec0]"
+            >
+              ★ Homepage goal — remove
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() =>
+                router.post(
+                  "/admin/goals",
+                  { item_id: item.id },
+                  { preserveScroll: true },
+                )
+              }
+              className="mb-3 cursor-pointer self-start rounded-full border-2 border-black bg-white px-3 py-1 text-sm font-bold text-black transition-colors hover:bg-[#fecb0d]"
+            >
+              + Add as homepage goal
+            </button>
+          ))}
         {item.image && (
           <img
             src={item.image}
@@ -67,7 +102,14 @@ export default function Item({
           </h2>
           <div className="flex items-center gap-1.5">
             <img src={ticketIcon} alt="Tickets" className="h-5 w-5" />
-            <span className="smoothing-black text-2xl tracking-[-0.03em]">
+            {goldenPriced && (
+              <span className="smoothing-black text-2xl tracking-[-0.03em] text-black/40 line-through">
+                {item.price * quantity}
+              </span>
+            )}
+            <span
+              className={`smoothing-black text-2xl tracking-[-0.03em] ${goldenPriced ? "text-[#bb8a00]" : ""}`}
+            >
               {totalCost}
             </span>
           </div>

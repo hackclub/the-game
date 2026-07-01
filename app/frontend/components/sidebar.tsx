@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Link, usePage } from "@inertiajs/react";
 import ticketIcon from "@/assets/icons/ticket.svg";
 import homeIcon from "@/assets/icons/home.svg";
@@ -7,7 +7,6 @@ import compassIcon from "@/assets/icons/compass.svg";
 import adminIcon from "@/assets/icons/admin.svg";
 import shopIcon from "@/assets/icons/shop.svg";
 import reviewIcon from "@/assets/icons/review.svg";
-import docsIcon from "@/assets/icons/docs.svg";
 
 import clsx from "clsx";
 
@@ -148,7 +147,6 @@ export default function Sidebar() {
             />
             <SidebarLink link="/explore" name="Gallery" icon={compassIcon} />
             <SidebarLink link="/shop" name="Shop" icon={shopIcon} />
-            <SidebarLink link="/docs" name="Docs" icon={docsIcon} />
             {(props.user.is_admin ||
               props.user.is_reviewer ||
               props.user.is_fulfiller) && (

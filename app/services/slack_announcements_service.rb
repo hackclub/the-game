@@ -1,3 +1,5 @@
+require "emoji"
+
 class SlackAnnouncementsService
   CHANNEL_ID = SlackChannels::BULLETIN
   CACHE_TTL = 5.minutes
@@ -7,12 +9,16 @@ class SlackAnnouncementsService
   ].freeze
 
   CHANNEL_NAMES = SlackChannels::ALL.freeze
+  EMOJI_CACHE_TTL = 6.hours
+  MIN_CONTENT_LENGTH = 32
 
   @cache_mutex = Mutex.new
   @announcements_cache = nil
   @announcements_cached_at = nil
   @channel_cache = {}
   @channel_cache_times = {}
+  @emoji_cache = nil
+  @emoji_cached_at = nil
 
   class << self
     def available?
@@ -71,12 +77,19 @@ class SlackAnnouncementsService
         next if dynamic_blocks.include?(msg["ts"])
 
         # If message has @here and is less than 8 chars, use previous message instead
-        if msg["text"].include?("<!here>") && msg["text"].length < 16
-          prev_msg = all_messages[all_messages.index(msg) + 1]
-          messages << prev_msg if prev_msg
+        candidate = if msg["text"].include?("<!here>") && msg["text"].length < 16
+          all_messages[all_messages.index(msg) + 1]
         else
-          messages << msg
+          msg
         end
+
+        next if candidate.nil?
+
+        # Skip trivially short announcements, unless they carry an image.
+        next if image_data(candidate).empty? &&
+                visible_length(candidate["text"]) < MIN_CONTENT_LENGTH
+
+        messages << candidate
 
         break if messages.length >= MAX_ANNOUNCEMENTS
       end
@@ -97,10 +110,29 @@ class SlackAnnouncementsService
         author_name: user[:username] || "Unknown",
         author_avatar_url: user[:avatar_url],
         content: format_message(message["text"]),
+        images: image_data(message),
         timestamp: Time.at(message["ts"].to_f).utc.iso8601,
         slack_ts: message["ts"],
         permalink: permalink
       }
+    end
+
+    # Maps a message's uploaded image files to proxied URLs (Slack's url_private
+    # requires auth, so images go through our proxy) plus their original pixel
+    # dimensions so the frontend can reserve space and avoid layout shift.
+    def image_data(message)
+      Array(message["files"]).filter_map do |file|
+        next unless file["mimetype"].to_s.start_with?("image/")
+
+        url = file["url_private"].presence
+        next unless url
+
+        {
+          url: "/announcements/image?#{{ url: url }.to_query}",
+          width: file["original_w"],
+          height: file["original_h"]
+        }
+      end
     end
 
     def fetch_permalink(message_ts)
@@ -113,20 +145,84 @@ class SlackAnnouncementsService
       response.body["permalink"]
     end
 
+    # Returns the cached { name => url/alias } map of workspace custom emoji.
+    def custom_emoji
+      @cache_mutex.synchronize do
+        if @emoji_cache && @emoji_cached_at && @emoji_cached_at > EMOJI_CACHE_TTL.ago
+          return @emoji_cache
+        end
+      end
+
+      emoji = SlackApiService.fetch_emoji_list
+
+      @cache_mutex.synchronize do
+        @emoji_cache = emoji
+        @emoji_cached_at = Time.current
+      end
+
+      emoji
+    end
+
+    # Resolves a custom emoji name to its image URL, following aliases.
+    def custom_emoji_url(name, map)
+      seen = 0
+      while (value = map[name]) && value.start_with?("alias:") && seen < 5
+        name = value.delete_prefix("alias:")
+        seen += 1
+      end
+
+      value = map[name]
+      value if value.present? && !value.start_with?("alias:")
+    end
+
+    # Replaces :shortcode: tokens with custom emoji images or Unicode characters.
+    def render_emoji(text)
+      map = custom_emoji
+
+      text.gsub(/:([a-z0-9_'+-]+):/i) do
+        name = $1
+        url = custom_emoji_url(name, map)
+
+        if url
+          %(<img src="#{url}" alt=":#{name}:" title=":#{name}:" style="display:inline-block;height:1.25em;width:auto;vertical-align:-0.25em">)
+        elsif (emoji = ::Emoji.find_by_alias(name))
+          emoji.raw
+        else
+          ":#{name}:"
+        end
+      end
+    end
+
+    # Visible character count of a message after formatting (tags stripped,
+    # whitespace collapsed). Used to drop trivially short announcements.
+    def visible_length(text)
+      return 0 if text.blank?
+
+      format_message(text).gsub(/<[^>]*>/, " ").gsub(/\s+/, " ").strip.length
+    end
+
     def format_message(text)
       return "" if text.blank?
 
       text = text.gsub(/<#([A-Z0-9]+)(?:\|[^>]+)?>/) { "##{fetch_channel_name($1)}" }
       text = text.gsub(/<@U[A-Z0-9]+>/, "")
       text = text.gsub(/<!channel>|<!here>|<!everyone>/, "")
-      text = text.gsub(/:[a-zA-Z0-9_+-]+:/, "")
+      text = text.gsub(/:skin-tone-\d:/, "")
+      text = render_emoji(text)
       text = text.gsub(/<(https?:\/\/[^|>]+)\|([^>]+)>/) { %(<a href="#{$1}">#{$2}</a>) }
       text = text.gsub(/<(https?:\/\/[^>]+)>/) { %(<a href="#{$1}">#{$1}</a>) }
       text = text.gsub(/\*_(.*?)_\*|_\*(.*?)\*_/) { "<strong><em>#{$1 || $2}</em></strong>" }
       text = text.gsub(/\*([^*]+)\*/) { "<strong>#{$1}</strong>" }
       text = text.gsub(/(?<!\w)_([^_]+)_(?!\w)/) { "<em>#{$1}</em>" }
       text = text.gsub(/`([^`]+)`/) { "<code>#{$1}</code>" }
-      text.strip
+      text = text.lines.map(&:strip).join("\n") # trim whitespace on each line
+
+      # Group lines into paragraphs (a blank line starts a new paragraph) so the
+      # gap between them is controlled by CSS margin rather than an empty line.
+      # Single newlines stay as <br> to preserve line breaks without big gaps.
+      text.split(/\n{2,}/).map(&:strip).reject(&:blank?).map do |paragraph|
+        "<p>#{paragraph.gsub("\n", '<br>')}</p>"
+      end.join
     end
 
     def fetch_channel_name(channel_id)

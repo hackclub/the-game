@@ -102,28 +102,28 @@ export default function Review({
             <table className="w-full border-collapse text-left text-sm">
               <thead className="sticky top-0 z-10 bg-[#0f0f0f] text-white">
                 <tr>
-                  <th className="py-2.5 pr-3 pl-3 text-xs font-semibold uppercase tracking-wider">
+                  <th className="py-2.5 pr-3 pl-3 text-xs font-semibold tracking-wider uppercase">
                     #
                   </th>
-                  <th className="py-2.5 pr-3 text-xs font-semibold uppercase tracking-wider">
+                  <th className="py-2.5 pr-3 text-xs font-semibold tracking-wider uppercase">
                     Screenshot
                   </th>
-                  <th className="py-2.5 pr-3 text-xs font-semibold uppercase tracking-wider">
+                  <th className="py-2.5 pr-3 text-xs font-semibold tracking-wider uppercase">
                     Title
                   </th>
-                  <th className="py-2.5 pr-3 text-xs font-semibold uppercase tracking-wider">
+                  <th className="py-2.5 pr-3 text-xs font-semibold tracking-wider uppercase">
                     Author
                   </th>
-                  <th className="py-2.5 pr-3 text-xs font-semibold uppercase tracking-wider">
+                  <th className="py-2.5 pr-3 text-xs font-semibold tracking-wider uppercase">
                     Submitted
                   </th>
-                  <th className="py-2.5 pr-3 text-xs font-semibold uppercase tracking-wider">
+                  <th className="py-2.5 pr-3 text-xs font-semibold tracking-wider uppercase">
                     Reported
                   </th>
-                  <th className="py-2.5 pr-3 text-xs font-semibold uppercase tracking-wider">
+                  <th className="py-2.5 pr-3 text-xs font-semibold tracking-wider uppercase">
                     Prior Approved
                   </th>
-                  <th className="py-2.5 pr-3 text-xs font-semibold uppercase tracking-wider">
+                  <th className="py-2.5 pr-3 text-xs font-semibold tracking-wider uppercase">
                     Tickets
                   </th>
                 </tr>
@@ -193,9 +193,7 @@ export default function Review({
                           href={`/review/${project.id}`}
                           className="block py-2 text-gray-500"
                         >
-                          {new Date(
-                            project.submitted_at!,
-                          ).toLocaleDateString()}
+                          {new Date(project.submitted_at!).toLocaleDateString()}
                         </Link>
                       </td>
                       <td className="py-0 pr-3">
@@ -254,19 +252,19 @@ export default function Review({
               <table className="w-full border-collapse text-left text-sm">
                 <thead className="sticky top-0 z-10 bg-[#0f0f0f] text-white">
                   <tr>
-                    <th className="py-2.5 pr-3 pl-3 text-xs font-semibold uppercase tracking-wider">
+                    <th className="py-2.5 pr-3 pl-3 text-xs font-semibold tracking-wider uppercase">
                       #
                     </th>
-                    <th className="py-2.5 pr-3 text-xs font-semibold uppercase tracking-wider">
+                    <th className="py-2.5 pr-3 text-xs font-semibold tracking-wider uppercase">
                       Title
                     </th>
-                    <th className="py-2.5 pr-3 text-xs font-semibold uppercase tracking-wider">
+                    <th className="py-2.5 pr-3 text-xs font-semibold tracking-wider uppercase">
                       Author
                     </th>
-                    <th className="py-2.5 pr-3 text-xs font-semibold uppercase tracking-wider">
+                    <th className="py-2.5 pr-3 text-xs font-semibold tracking-wider uppercase">
                       Submitted
                     </th>
-                    <th className="py-2.5 pr-3 text-xs font-semibold uppercase tracking-wider">
+                    <th className="py-2.5 pr-3 text-xs font-semibold tracking-wider uppercase">
                       Reported
                     </th>
                   </tr>

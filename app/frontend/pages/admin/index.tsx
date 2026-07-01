@@ -14,19 +14,13 @@ interface QuickStats {
   review_queue: number;
 }
 
-function StatCard({
-  label,
-  value,
-}: {
-  label: string;
-  value: number;
-}) {
+function StatCard({ label, value }: { label: string; value: number }) {
   return (
     <div className="flex flex-col rounded-md border border-gray-200 bg-white px-4 py-3">
       <span className="text-xs font-medium tracking-wide text-gray-500 uppercase">
         {label}
       </span>
-      <span className="text-2xl font-bold tabular-nums text-gray-900">
+      <span className="text-2xl font-bold text-gray-900 tabular-nums">
         {value.toLocaleString()}
       </span>
     </div>
@@ -122,14 +116,8 @@ export default function AdminPage() {
             <StatCard label="DAU" value={quick_stats.active_today} />
             <StatCard label="WAU" value={quick_stats.active_this_week} />
             <StatCard label="Total Users" value={quick_stats.total_users} />
-            <StatCard
-              label="Approved"
-              value={quick_stats.projects_approved}
-            />
-            <StatCard
-              label="Review Queue"
-              value={quick_stats.review_queue}
-            />
+            <StatCard label="Approved" value={quick_stats.projects_approved} />
+            <StatCard label="Review Queue" value={quick_stats.review_queue} />
             <StatCard
               label="Pending Orders"
               value={quick_stats.pending_orders}
@@ -161,6 +149,11 @@ export default function AdminPage() {
                   href="/admin/referrals"
                   title="Referral Program"
                   description="Manage referral rollout, settings, and stats"
+                />
+                <NavCard
+                  href="/admin/goals"
+                  title="Homepage Goals"
+                  description="Set shop items tracked as goals on the homepage"
                 />
               </div>
             </div>

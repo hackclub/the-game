@@ -35,7 +35,7 @@ export default function EditItem({
           </a>
           <div>
             <p className="text-xs font-medium text-gray-400">Item #{item.id}</p>
-            <h1 className="text-2xl font-bold leading-tight">{item.name}</h1>
+            <h1 className="text-2xl leading-tight font-bold">{item.name}</h1>
           </div>
         </div>
         <button
@@ -83,7 +83,10 @@ export default function EditItem({
                     </p>
                     <div className="flex flex-col gap-1.5">
                       {Object.entries(v.changes).map(([key, [from, to]]) => (
-                        <div key={key} className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 text-sm">
+                        <div
+                          key={key}
+                          className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 text-sm"
+                        >
                           <span className="font-mono text-xs font-medium text-gray-500">
                             {key}
                           </span>

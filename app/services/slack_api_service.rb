@@ -2,8 +2,16 @@ class SlackApiService
   BASE_URL = "https://slack.com/api"
 
   class << self
+    # Whether the Slack API can be reached. Read-only calls (fetching
+    # announcements, looking up users) only need a token. DRY_RUN does NOT
+    # disable reads — it only suppresses writes (see #post_message).
     def available?
-      ENV["SLACK_BOT_TOKEN"].present? && !ENV["DRY_RUN"].present?
+      ENV["SLACK_BOT_TOKEN"].present?
+    end
+
+    # When true, outbound Slack writes are suppressed.
+    def dry_run?
+      ENV["DRY_RUN"].present?
     end
 
     def client
@@ -13,8 +21,46 @@ class SlackApiService
       end
     end
 
+    # Fetches a private Slack file (e.g. an uploaded image). Files on the
+    # enterprise grid aren't accessible to the bot token, so we authenticate
+    # with the user session cookie (SLACK_XOXD_TOKEN), the same way channel
+    # invites do. Returns the raw Faraday response, or nil on failure.
+    def fetch_file(url)
+      return if ENV["SLACK_XOXD_TOKEN"].blank?
+
+      headers = { "Cookie" => "d=#{ENV['SLACK_XOXD_TOKEN']}" }
+      headers["Authorization"] = "Bearer #{ENV['SLACK_XOXC_TOKEN']}" if ENV["SLACK_XOXC_TOKEN"].present?
+
+      Faraday.get(url, nil, headers)
+    rescue => e
+      Rails.logger.warn("Failed to fetch Slack file #{url}: #{e.message}")
+      nil
+    end
+
+    # Fetches the workspace's custom emoji as a { name => image_url_or_alias }
+    # hash. Requires the user session tokens (the bot token lacks emoji:read on
+    # the enterprise grid). Returns {} when unavailable.
+    def fetch_emoji_list
+      return {} if ENV["SLACK_XOXC_TOKEN"].blank? || ENV["SLACK_XOXD_TOKEN"].blank?
+
+      response = Faraday.get("#{BASE_URL}/emoji.list", nil, {
+        "Authorization" => "Bearer #{ENV['SLACK_XOXC_TOKEN']}",
+        "Cookie" => "d=#{ENV['SLACK_XOXD_TOKEN']}"
+      })
+      body = JSON.parse(response.body)
+      body["ok"] ? (body["emoji"] || {}) : {}
+    rescue => e
+      Rails.logger.warn("Failed to fetch Slack emoji list: #{e.message}")
+      {}
+    end
+
     def post_message(channel:, text:)
       return unless available?
+
+      if dry_run?
+        Rails.logger.info("[DRY_RUN] Skipping Slack message to #{channel}: #{text}")
+        return
+      end
 
       response = client.post("chat.postMessage") do |req|
         req.headers["Content-Type"] = "application/json; charset=utf-8"

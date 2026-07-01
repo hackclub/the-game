@@ -119,6 +119,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_30_000001) do
     t.index ["user_id"], name: "index_daily_active_users_on_user_id"
   end
 
+  create_table "goals", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "item_id", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["item_id"], name: "index_goals_on_item_id"
+  end
+
   create_table "hackatime_projects", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name"
@@ -156,6 +164,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_30_000001) do
     t.boolean "event_related", default: false, null: false
     t.boolean "featured", default: false, null: false
     t.text "fulfiller_context"
+    t.integer "golden_price"
     t.boolean "grants_platform_access", default: false, null: false
     t.string "name", null: false
     t.boolean "one_per_user", default: false, null: false
@@ -368,6 +377,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_30_000001) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "daily_active_users", "users"
+  add_foreign_key "goals", "items"
   add_foreign_key "hackatime_projects", "users"
   add_foreign_key "projects", "users"
   add_foreign_key "referral_program", "items", column: "referred_item_id"

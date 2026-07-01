@@ -33,6 +33,8 @@ export default function Items({ items, categories }: Props) {
   const [previewLoading, setPreviewLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [panelOpen, setPanelOpen] = useState(false);
+  const [goldenModalOpen, setGoldenModalOpen] = useState(false);
+  const [goldenDiscount, setGoldenDiscount] = useState<number>(10);
 
   const filteredItems = useMemo(() => {
     if (!searchQuery.trim()) return items;
@@ -78,6 +80,16 @@ export default function Items({ items, categories }: Props) {
     { field: "name" as const },
     { field: "description" as const },
     { field: "price" as const },
+    {
+      field: "golden_price" as const,
+      headerName: "Golden price",
+      cellRenderer: (p: any) =>
+        p.value == null ? (
+          <span className="text-gray-400">--</span>
+        ) : (
+          <span className="font-semibold text-[#bb8a00]">{p.value}</span>
+        ),
+    },
     { field: "stock" as const },
     { field: "category" as const, headerName: "Category" },
     { field: "featured" as const, headerName: "Featured?" },
@@ -140,6 +152,13 @@ export default function Items({ items, categories }: Props) {
     setRevertPreview(null);
   };
 
+  const applyGoldenPrices = () => {
+    router.post("/admin/items/bulk_set_golden_price", {
+      discount: goldenDiscount,
+    });
+    setGoldenModalOpen(false);
+  };
+
   return (
     <Layout>
       {/* Top bar */}
@@ -157,6 +176,12 @@ export default function Items({ items, categories }: Props) {
           className="cursor-pointer rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-600 shadow-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
         >
           {previewLoading ? "Loading..." : "Revert price changes"}
+        </button>
+        <button
+          onClick={() => setGoldenModalOpen(true)}
+          className="cursor-pointer rounded-lg border border-[#e3c15f] bg-[#fff7e0] px-4 py-2.5 text-sm font-semibold text-[#8a6800] shadow-sm hover:bg-[#fdeec0]"
+        >
+          🔮 Golden prices
         </button>
         <button
           onClick={() => setPanelOpen(true)}
@@ -321,6 +346,56 @@ export default function Items({ items, categories }: Props) {
                   Confirm Revert ({revertSelected.size})
                 </button>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mass-assign golden prices modal */}
+      {goldenModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+            <h2 className="mb-1 flex items-center gap-2 text-lg font-bold">
+              🔮 Set golden ticket prices
+            </h2>
+            <p className="mb-4 text-sm text-gray-500">
+              Sets a discounted price for golden ticket holders on{" "}
+              <span className="font-semibold">all {items.length} items</span>.
+              Prices are rounded up. Set to 0% to clear all golden prices.
+            </p>
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
+              Discount off regular price
+            </label>
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                min={0}
+                max={100}
+                value={goldenDiscount}
+                onChange={(e) =>
+                  setGoldenDiscount(
+                    Math.min(100, Math.max(0, parseFloat(e.target.value) || 0)),
+                  )
+                }
+                className="w-28 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+              />
+              <span className="text-sm text-gray-500">%</span>
+            </div>
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={() => setGoldenModalOpen(false)}
+                className="cursor-pointer rounded-lg border border-gray-200 px-4 py-1.5 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={applyGoldenPrices}
+                className="cursor-pointer rounded-lg bg-[#bb8a00] px-4 py-1.5 text-sm font-semibold text-white hover:bg-[#9a7200]"
+              >
+                {goldenDiscount === 0
+                  ? "Clear golden prices"
+                  : `Apply ${goldenDiscount}% discount`}
+              </button>
             </div>
           </div>
         </div>

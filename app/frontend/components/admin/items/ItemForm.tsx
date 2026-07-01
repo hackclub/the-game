@@ -106,6 +106,7 @@ export default function ItemForm({
     name: item?.name ?? "",
     description: item?.description ?? "",
     price: String(item?.price ?? 0),
+    golden_price: item?.golden_price != null ? String(item.golden_price) : "",
     image: item?.image ? (0 as const) : (null as File | null),
     featured: item?.featured ?? false,
     super_featured: item?.super_featured ?? false,
@@ -122,6 +123,10 @@ export default function ItemForm({
     e.preventDefault();
     if (!/^\d+$/.test(data.price)) {
       alert("Price must be a whole number.");
+      return;
+    }
+    if (data.golden_price !== "" && !/^\d+$/.test(data.golden_price)) {
+      alert("Golden ticket price must be a whole number.");
       return;
     }
     if (data.stock !== null && !/^\d+$/.test(data.stock)) {
@@ -181,6 +186,21 @@ export default function ItemForm({
               value={data.price}
               onChange={(e) => setData("price", e.target.value)}
             />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
+              Golden ticket price
+            </label>
+            <input
+              className={INPUT}
+              type="text"
+              placeholder="Same as price"
+              value={data.golden_price}
+              onChange={(e) => setData("golden_price", e.target.value)}
+            />
+            <p className="mt-1 text-xs text-gray-400">
+              Price for golden ticket holders. Leave blank for no discount.
+            </p>
           </div>
           <div>
             <label className="mb-1 block text-sm font-semibold text-gray-700">

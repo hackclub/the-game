@@ -67,9 +67,7 @@ export default function Announcements({
 
       {slack_announcements.length > 0 && (
         <>
-          <h2 className="mt-10 mb-1 text-2xl font-bold">
-            Slack Announcements
-          </h2>
+          <h2 className="mt-10 mb-1 text-2xl font-bold">Slack Announcements</h2>
           <p className="mb-3 text-sm text-gray-500">
             These are pulled from the Slack bulletin channel. Hiding one removes
             it from the homepage.
