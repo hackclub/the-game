@@ -44,9 +44,7 @@ function StatCard({
     <div className="flex min-w-48 flex-col gap-1 rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
       <span className="text-3xl font-bold tabular-nums">{value}</span>
       <span className="text-sm font-medium text-gray-700">{label}</span>
-      {sublabel && (
-        <span className="text-xs text-gray-400">{sublabel}</span>
-      )}
+      {sublabel && <span className="text-xs text-gray-400">{sublabel}</span>}
     </div>
   );
 }
@@ -212,9 +210,7 @@ export default function Budget({
             type="number"
             step="0.01"
             value={ticketRate}
-            onChange={(e) =>
-              setTicketRate(parseFloat(e.target.value) || 0)
-            }
+            onChange={(e) => setTicketRate(parseFloat(e.target.value) || 0)}
             className="w-24 rounded-lg border border-gray-200 px-2 py-1.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
           />
           <span className="text-sm text-gray-400">per ticket</span>

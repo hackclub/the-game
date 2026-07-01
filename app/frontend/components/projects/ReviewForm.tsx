@@ -211,8 +211,8 @@ export default function ReviewForm({
       )}
       {!isHq && data.review_type === "approval" && (
         <p className="rounded-md border-2 border-dashed border-yellow-600 bg-yellow-100 p-3 text-base text-yellow-800">
-          Your approval will be queued for an HQ reviewer to authorize before it's
-          published to the user and sent to Airtable.
+          Your approval will be queued for an HQ reviewer to authorize before
+          it's published to the user and sent to Airtable.
         </p>
       )}
       <button

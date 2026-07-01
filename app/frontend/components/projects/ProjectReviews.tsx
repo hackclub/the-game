@@ -103,7 +103,10 @@ export default function ProjectReviews({
                     : `/projects/${project.id}/reviews/${review.id}/edit`;
 
                   return (
-                    <div className="flex gap-3" key={`${isPending ? "pending-" : ""}${review.id}`}>
+                    <div
+                      className="flex gap-3"
+                      key={`${isPending ? "pending-" : ""}${review.id}`}
+                    >
                       <img
                         src={review.author.avatar}
                         alt={`Avatar of ${review.author.username}`}

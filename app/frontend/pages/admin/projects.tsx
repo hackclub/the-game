@@ -65,7 +65,10 @@ export default function Projects({
     });
 
     lastServerQuery.current = params.q || "";
-    router.get("/admin/projects", params, { preserveScroll: true, preserveState: true });
+    router.get("/admin/projects", params, {
+      preserveScroll: true,
+      preserveState: true,
+    });
   }
 
   useEffect(() => {

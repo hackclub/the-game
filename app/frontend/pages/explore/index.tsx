@@ -62,7 +62,16 @@ function SubwayPagination({
           className="z-10 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-2 border-[#0f0f0f] bg-white text-sm font-bold transition-colors hover:bg-[#fecb0d] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white"
           aria-label="Previous page"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
@@ -105,7 +114,9 @@ function SubwayPagination({
                   >
                     <span
                       className={`absolute inset-0 flex items-center justify-center font-bold ${
-                        isActive ? "text-sm text-[#0f0f0f]" : "text-[11px] text-[#0f0f0f]"
+                        isActive
+                          ? "text-sm text-[#0f0f0f]"
+                          : "text-[11px] text-[#0f0f0f]"
                       }`}
                     >
                       {item}
@@ -124,7 +135,16 @@ function SubwayPagination({
           className="z-10 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-2 border-[#0f0f0f] bg-white text-sm font-bold transition-colors hover:bg-[#fecb0d] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white"
           aria-label="Next page"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <polyline points="9 18 15 12 9 6" />
           </svg>
         </button>

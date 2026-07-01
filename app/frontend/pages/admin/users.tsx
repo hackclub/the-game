@@ -53,7 +53,10 @@ export default function Users({
     });
 
     lastServerQuery.current = params.q || "";
-    router.get("/admin/users", params, { preserveScroll: true, preserveState: true });
+    router.get("/admin/users", params, {
+      preserveScroll: true,
+      preserveState: true,
+    });
   }
 
   useEffect(() => {
@@ -140,7 +143,11 @@ export default function Users({
         return flags.join(", ") || "User";
       },
     },
-    { field: "ysws_verified" as const, headerName: "YSWS Verified?", width: 120 },
+    {
+      field: "ysws_verified" as const,
+      headerName: "YSWS Verified?",
+      width: 120,
+    },
     { field: "slack_id" as const, headerName: "Slack ID", width: 110 },
     { field: "account_id" as const, headerName: "HCA ID", width: 100 },
     { field: "hackatime_id" as const, headerName: "Hackatime ID", width: 120 },
