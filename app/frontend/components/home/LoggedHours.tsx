@@ -1,4 +1,3 @@
-import formatTime from "@/utils/formatTime";
 import ticketIcon from "@/assets/icons/ticket.svg";
 import type { Goal } from "@/interfaces/goal";
 
@@ -9,7 +8,7 @@ function GoalBar({ goal, tickets }: { goal: Goal; tickets: number }) {
   const remaining = Math.max(target - tickets, 0);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col">
       <div className="relative flex items-center">
         {/* Start node */}
         <div className="relative z-10 h-16 w-16 shrink-0 rounded-full bg-[#fecb0d]" />
@@ -40,7 +39,9 @@ function GoalBar({ goal, tickets }: { goal: Goal; tickets: number }) {
         </div>
       </div>
 
-      <p className="smoothing-black text-center text-xl tracking-[-0.03em]">
+      {/* Pull the caption up toward the track — the 64px end circles overhang
+          the 20px bar, leaving dead space we don't want between bar and text. */}
+      <p className="smoothing-black -mt-2 text-center text-xl tracking-[-0.03em]">
         {complete ? (
           <>
             You can grab the <span className="font-bold">{goal.item.name}</span>
@@ -59,11 +60,9 @@ function GoalBar({ goal, tickets }: { goal: Goal; tickets: number }) {
 }
 
 export default function LoggedHours({
-  inProgressTime,
   tickets,
   goals,
 }: {
-  inProgressTime: number;
   tickets: number;
   goals: Goal[];
 }) {
@@ -75,13 +74,6 @@ export default function LoggedHours({
             <GoalBar key={goal.id} goal={goal} tickets={tickets} />
           ))}
         </div>
-      )}
-
-      {inProgressTime > 0 && (
-        <p className="smoothing-black text-center text-2xl tracking-[-0.04em]">
-          You haven't shipped{" "}
-          <span className="font-bold">{formatTime(inProgressTime)}</span> yet.
-        </p>
       )}
     </div>
   );

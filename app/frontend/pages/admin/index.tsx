@@ -1,6 +1,7 @@
 import Layout from "@/layouts/layout";
 import { Link, usePage } from "@inertiajs/react";
 import type { PrivateUser } from "@/interfaces/user";
+import UnshippedHackatimeExportCard from "@/components/admin/UnshippedHackatimeExportCard";
 
 interface QuickStats {
   total_users: number;
@@ -181,6 +182,7 @@ export default function AdminPage() {
                   title="Audit Log"
                   description="Browse paper trail records across models"
                 />
+                <UnshippedHackatimeExportCard />
               </div>
             </div>
           </div>
