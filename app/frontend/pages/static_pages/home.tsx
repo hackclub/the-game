@@ -53,11 +53,7 @@ export default function Home() {
           <>
             <MissingAccountFields />
 
-            <LoggedHours
-              inProgressTime={props.inProgressTime}
-              tickets={props.user.balance}
-              goals={props.goals}
-            />
+            <LoggedHours tickets={props.user.balance} goals={props.goals} />
 
             <IdvVerificationAlert />
 
