@@ -482,7 +482,7 @@ class Api::SidekickController < ActionController::API
 
     pending_approvals = project.pending_approvals.order(:created_at).to_a
 
-    submission_versions.each_with_index.map do |version, i|
+    submission_versions.each_with_index.filter_map do |version, i|
       submitted_at = version.created_at
       next_submitted_at = submission_versions[i + 1]&.created_at
       in_window = ->(t) { t >= submitted_at && (next_submitted_at.nil? || t < next_submitted_at) }
@@ -490,14 +490,22 @@ class Api::SidekickController < ActionController::API
       review = reviews.find { |r| in_window.call(r.created_at) }
       pending = pending_approvals.find { |p| in_window.call(p.created_at) }
 
+      # A submission with no surviving verdict that was superseded by a later one was
+      # never concluded in the ledger — its review may have been deleted (a deleted
+      # approval is not an approval), or it was re-shipped while still pending. It
+      # isn't a ship in its own right: merge it into the submission that followed by
+      # skipping it here, so the ledger never surfaces a stale, actionable "pending"
+      # ship behind the live one. Only the latest submission can be genuinely pending.
+      next if review.nil? && pending.nil? && next_submitted_at
+
       status = if pending
         "pending_hq"
-      elsif review.nil?
-        "pending"
-      elsif review.rejection?
+      elsif review&.rejection?
         "rejected"
-      else
+      elsif review
         "approved"
+      else
+        "pending"
       end
 
       ship = {
@@ -517,6 +525,30 @@ class Api::SidekickController < ActionController::API
 
       ship
     end.sort_by { |s| s[:submittedAt] }
+  end
+
+  # Submissions that count as ships in the ledger: the latest submission, plus any
+  # concluded by a surviving verdict — a non-deleted approval/rejection review or a
+  # held community approval — within its window. A superseded submission with no
+  # verdict was never really a ship (its review may have been deleted, or it was
+  # re-shipped while still pending); it merges into the following ship instead, so
+  # neither the ships list nor the timeline shows two ships in a row with no verdict
+  # between them. This mirrors the skip rule in #build_ships.
+  def terminal_submission_versions(project, submission_versions)
+    reviews = project.reviews
+      .where(review_type: %w[approval rejection], deleted_at: nil)
+      .order(:created_at).to_a
+    pending_approvals = project.pending_approvals.order(:created_at).to_a
+
+    submission_versions.each_with_index.filter_map do |version, i|
+      next_submitted_at = submission_versions[i + 1]&.created_at
+      next version if next_submitted_at.nil?
+
+      in_window = ->(t) { t >= version.created_at && t < next_submitted_at }
+      concluded = reviews.any? { |r| in_window.call(r.created_at) } ||
+        pending_approvals.any? { |p| in_window.call(p.created_at) }
+      version if concluded
+    end
   end
 
   def submission_hours(project, version, all_versions)
@@ -544,13 +576,19 @@ class Api::SidekickController < ActionController::API
       v.object_changes&.dig("aasm_state", 1) == "submitted"
     end
 
-    submission_versions.each_with_index do |version, i|
-      prev = i > 0 ? submission_versions[i - 1] : nil
+    # Superseded submissions with no surviving verdict aren't ships of their own;
+    # they merge into the next real ship (see #terminal_submission_versions). Walking
+    # only the terminal submissions means a merged ship's diff spans from the previous
+    # real ship, and no two ship events sit in a row with no verdict between them.
+    ship_versions = terminal_submission_versions(project, submission_versions)
+
+    ship_versions.each_with_index do |version, i|
+      prev = i > 0 ? ship_versions[i - 1] : nil
       events << build_ship_event(project, version, prev, all_versions)
     end
 
     project.reviews.includes(:author).order(:created_at).each do |review|
-      ship_id = find_ship_id_for_review(review, submission_versions)
+      ship_id = find_ship_id_for_review(review, ship_versions)
       events << case review.review_type
       when "approval"
         serialize_approval_event(review, ship_id)
@@ -565,7 +603,7 @@ class Api::SidekickController < ActionController::API
     # Held community approvals aren't reviews yet, but HQ needs to see them in the
     # timeline to authorize or discard them.
     project.pending_approvals.includes(:author).order(:created_at).each do |pending|
-      ship_id = find_ship_id_for_review(pending, submission_versions)
+      ship_id = find_ship_id_for_review(pending, ship_versions)
       events << serialize_approval_event(pending, ship_id, pending: true)
     end
 

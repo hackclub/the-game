@@ -193,6 +193,27 @@ export default function RsvpPage() {
               </button>
             </form>
           )}
+
+          <p className="smoothing-black mt-3 text-sm tracking-[-0.04em] text-[#383636] lg:text-base">
+            made with &lt;3 by{" "}
+            <a
+              href="https://ascpixi.dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold underline decoration-2 underline-offset-2 transition-colors hover:bg-[#383636] hover:text-white"
+            >
+              @ascpixi
+            </a>{" "}
+            &amp;{" "}
+            <a
+              href="https://phthallo.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold underline decoration-2 underline-offset-2 transition-colors hover:bg-[#383636] hover:text-white"
+            >
+              @phthallo
+            </a>
+          </p>
         </div>
 
         {showScrollArrow && (
