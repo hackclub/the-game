@@ -119,6 +119,8 @@ Rails.application.routes.draw do
     get "/", to: "admin#index"
     get "/projects", to: "admin#projects"
     get "/users", to: "admin#users"
+    post "/users/unshipped_hackatime/export", to: "admin#unshipped_hackatime_export", as: "unshipped_hackatime_export"
+    get "/users/unshipped_hackatime/status", to: "admin#unshipped_hackatime_status", as: "unshipped_hackatime_status"
     get "/users/unshipped_hackatime/csv", to: "admin#unshipped_hackatime_csv", as: "unshipped_hackatime_csv"
     get "/items", to: "admin#items"
     post "/items/bulk_adjust_price", to: "items#bulk_adjust_price"

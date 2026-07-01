@@ -391,15 +391,21 @@ class AdminController < ApplicationController
     render inertia: "admin/grants", props: { items: }
   end
 
+  def unshipped_hackatime_export
+    UnshippedHackatimeExport.enqueue!(requested_by: current_user.username)
+    render json: UnshippedHackatimeExport.public_state
+  end
+
+  def unshipped_hackatime_status
+    render json: UnshippedHackatimeExport.public_state
+  end
+
   def unshipped_hackatime_csv
-    days = params[:active_within_days].presence
-    csv = if days
-      UnshippedHackatimeReport.generate_csv(active_within_days: days.to_i)
-    else
-      UnshippedHackatimeReport.generate_csv
-    end
-    send_data csv,
-      filename: "unshipped-hackatime-#{Date.current.iso8601}.csv",
+    blob = UnshippedHackatimeExport.blob
+    return head :not_found if blob.nil?
+
+    send_data blob.download,
+      filename: blob.filename.to_s,
       type: "text/csv",
       disposition: "attachment"
   end

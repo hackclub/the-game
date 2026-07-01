@@ -7,25 +7,21 @@ require "csv"
 # shipped or under the time threshold, and keep the single remaining project per
 # user with the most recent heartbeat.
 #
-# Hackatime data is fetched live (one HTTP request per user), so the work is
-# fanned out across a bounded thread pool. All ActiveRecord access happens up
-# front on the calling thread — the worker threads only do HTTP — so we never
-# contend on the connection pool.
-#
 # Hackatime time isn't stored locally, so the only way to know a user's
-# unshipped time is to ask Hackatime. To avoid fetching for users who won't act
-# on a "ship your update" nudge anyway, we first narrow to engaged candidates
-# using cheap database signals (not banned, onboarded, recently active on the
-# platform) and only fetch for those. `active_within_days` controls the
-# recency window; pass nil/0 to fetch for every Hackatime user.
+# unshipped time is to ask Hackatime — one HTTP request per user. This is a
+# long-running sweep (hundreds of users), so it's meant to run in a background
+# job: `generate` takes a `progress` callback and processes users in small
+# batches with a pause between them to stay gentle on the Hackatime API.
 #
-# Note: `last_active` tracks platform (web) activity, not Hackatime coding
-# activity — a heads-down coder who hasn't opened the site recently is filtered
-# out. Widen the window if you want to reach them too.
+# All ActiveRecord access happens up front on the calling thread; the per-batch
+# worker threads only do HTTP, so we never contend on the connection pool.
 class UnshippedHackatimeReport
   MIN_SECONDS = 30 * 60
-  THREADS = 20
-  DEFAULT_ACTIVE_WITHIN_DAYS = 30
+  # Users fetched concurrently per batch, and how long we pause between batches.
+  # Together these cap the request rate against Hackatime to roughly
+  # BATCH_SIZE / (fetch_time + BATCH_PAUSE) requests per second.
+  BATCH_SIZE = 8
+  BATCH_PAUSE = 1.0
   COLUMNS = %w[
     slack_id username project_to_ship project_id
     has_golden_ticket approved_at last_activity_at
@@ -37,17 +33,42 @@ class UnshippedHackatimeReport
     keyword_init: true
   )
 
-  def self.generate_csv(...)
-    new(...).generate_csv
+  def self.generate(...)
+    new.generate(...)
   end
 
-  def initialize(active_within_days: DEFAULT_ACTIVE_WITHIN_DAYS)
-    @active_within_days = active_within_days
+  # Builds the report, invoking `progress.call(processed, total)` after each
+  # batch so a caller (the job) can report progress. Returns a hash with the
+  # CSV string and the number of rows it contains.
+  def generate(progress: nil)
+    candidates = load_candidates
+    total = candidates.size
+    progress&.call(0, total)
+
+    rows = []
+    processed = 0
+    candidates.each_slice(BATCH_SIZE).with_index do |batch, index|
+      sleep(BATCH_PAUSE) if index.positive?
+
+      fetch_batch(batch).each do |candidate, projects|
+        row = build_row(candidate, projects)
+        rows << row if row
+      end
+
+      processed += batch.size
+      progress&.call(processed, total)
+    end
+
+    # Most recently active users first.
+    rows.sort_by! { |row| row[:last_activity_at].to_s }
+    rows.reverse!
+
+    { csv: to_csv(rows), rows_count: rows.size }
   end
 
-  def generate_csv
-    rows = build_rows
+  private
 
+  def to_csv(rows)
     CSV.generate do |csv|
       csv << COLUMNS
       rows.each do |row|
@@ -64,30 +85,12 @@ class UnshippedHackatimeReport
     end
   end
 
-  private
-
-  def build_rows
-    candidates = load_candidates
-
-    rows = fetch_in_parallel(candidates).filter_map do |candidate, projects|
-      build_row(candidate, projects)
-    end
-
-    # Most recently active users first.
-    rows.sort_by { |row| row[:last_activity_at].to_s }.reverse
-  end
-
-  # The set of users worth fetching Hackatime data for: they have synced
-  # Hackatime projects, aren't banned, have finished onboarding (a prerequisite
-  # for shipping), and — unless the window is disabled — have been active on the
-  # platform recently.
+  # Users worth fetching Hackatime data for: they have synced Hackatime
+  # projects, aren't banned, and have finished onboarding (a prerequisite for
+  # shipping — an un-onboarded user can't act on a "ship your update" nudge).
   def engaged_users
-    scope = User.joins(:hackatime_projects).distinct
-                .where(is_banned: false, onboarding_completed: true)
-    if @active_within_days.to_i.positive?
-      scope = scope.where("last_active > ?", @active_within_days.to_i.days.ago)
-    end
-    scope
+    User.joins(:hackatime_projects).distinct
+        .where(is_banned: false, onboarding_completed: true)
   end
 
   # Loads everything we need from the database in a handful of grouped queries
@@ -132,32 +135,20 @@ class UnshippedHackatimeReport
     end
   end
 
-  # Fans the per-user Hackatime fetches out across a bounded thread pool and
-  # returns an array of [candidate, projects] pairs (projects may be nil if the
-  # fetch failed).
-  def fetch_in_parallel(candidates)
-    queue = Queue.new
-    candidates.each_with_index { |candidate, index| queue << [ index, candidate ] }
-    results = Array.new(candidates.size)
-    mutex = Mutex.new
-
-    workers = THREADS.times.map do
+  # Fetches a single batch of candidates concurrently (one thread each) and
+  # returns [candidate, projects] pairs. The threads only do HTTP — no
+  # ActiveRecord — so they don't touch the connection pool. `projects` is nil
+  # when a fetch fails.
+  def fetch_batch(batch)
+    batch.map do |candidate|
       Thread.new do
-        loop do
-          index, candidate = queue.pop(true)
-          projects = HackatimeService.fetch_project_details(
-            identifier: candidate.identifier,
-            access_token: candidate.access_token
-          )
-          mutex.synchronize { results[index] = [ candidate, projects ] }
-        rescue ThreadError
-          break # queue is empty
-        end
+        projects = HackatimeService.fetch_project_details(
+          identifier: candidate.identifier,
+          access_token: candidate.access_token
+        )
+        [ candidate, projects ]
       end
-    end
-    workers.each(&:join)
-
-    results.compact
+    end.map(&:value)
   end
 
   def build_row(candidate, projects)
