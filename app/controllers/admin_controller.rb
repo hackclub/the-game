@@ -102,9 +102,10 @@ class AdminController < ApplicationController
 
     per = [ (params[:per_page] || 10).to_i, 100 ].min
     paginated_users = filtered_users.order(created_at: :desc).page(params[:page]).per(per)
+    balances = User.batch_balances(paginated_users.map(&:id))
 
     render inertia: "admin/users", props: {
-      users: paginated_users.includes(:projects).map { |user| user.display_hash(private: true, lightweight: true) },
+      users: paginated_users.includes(:projects).map { |user| user.display_hash(private: true, lightweight: true).merge("balance" => balances[user.id]) },
       permission: params[:permission],
       q: params[:q],
       per_page: per,
