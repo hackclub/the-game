@@ -287,6 +287,9 @@ class Project
       end_ms = end_time.to_i * 1000
 
       client = Faraday.new(url: "https://api.lapse.hackclub.com/api/hackatime") do |conn|
+        # Unauthenticated requests only return public timelapses; a program key
+        # also surfaces the user's unlisted ones.
+        conn.request :authorization, "Bearer", ENV["LAPSE_API_KEY"] if ENV["LAPSE_API_KEY"].present?
         conn.response :json, content_type: /\bjson$/
       end
 
@@ -303,7 +306,12 @@ class Project
           body = response.body
           next unless body["ok"] && body.dig("data", "timelapses")
 
-          body["data"]["timelapses"].each do |t|
+          returned = body["data"]["timelapses"]
+          if body["data"]["count"].to_i > returned.length
+            Rails.logger.warn("[Lapse] #{hp.name}: #{body["data"]["count"]} timelapses exist but only #{returned.length} returned — unlisted ones omitted; check LAPSE_API_KEY")
+          end
+
+          returned.each do |t|
             ms = t["createdAt"]
             timelapses << t if ms >= start_ms && ms <= end_ms
           end
