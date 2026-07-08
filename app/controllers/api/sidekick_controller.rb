@@ -221,6 +221,7 @@ class Api::SidekickController < ActionController::API
     updates = { content: @input[:feedbackMessage] }
     updates[:admin_content] = @input[:justification] if type == "approval" && @input.key?(:justification)
     updates[:admin_content] = @input[:internalMessage] if type == "rejection" && @input.key?(:internalMessage)
+    updates[:approved_seconds] = (@input[:hoursAssigned].to_f * 3600).to_i if type == "approval" && @input.key?(:hoursAssigned)
 
     review.update!(updates)
 
