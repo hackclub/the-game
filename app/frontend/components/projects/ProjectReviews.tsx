@@ -1,7 +1,7 @@
 import type { Project, ProjectChange } from "@/interfaces/project";
 import type { ProjectReview } from "@/interfaces/project_review";
 import type { PublicUser } from "@/interfaces/user";
-import { usePage, Link } from "@inertiajs/react";
+import { usePage, Link, router } from "@inertiajs/react";
 import formatTime from "@/utils/formatTime";
 import ReviewForm from "./ReviewForm";
 import { humanize } from "@/utils/humanize";
@@ -196,6 +196,28 @@ export default function ProjectReviews({
               })
             )}
           </div>
+
+          {project.reship_gate_active &&
+            (project.reship_allowed ? (
+              <p className="mt-6 rounded-md border-2 border-dashed border-green-600 bg-green-100 p-3 text-base text-green-800">
+                This project has been cleared to be reshipped - the owner can
+                resubmit it.
+              </p>
+            ) : (
+              (props.user.is_reviewer ||
+                props.user.is_fulfiller ||
+                props.user.is_admin) && (
+                <button
+                  type="button"
+                  className="mt-6 w-fit cursor-pointer rounded-md bg-black px-4 py-2 text-base font-semibold text-white hover:bg-gray-800"
+                  onClick={() =>
+                    router.post(`/projects/${project.id}/allow_reship`)
+                  }
+                >
+                  Allow Reship
+                </button>
+              )
+            ))}
 
           {(props.user.is_reviewer ||
             props.user.is_fulfiller ||

@@ -24,6 +24,7 @@ export interface PrivateUser {
   is_admin: boolean;
   is_reviewer: boolean;
   is_fulfiller: boolean;
+  is_debt: boolean;
   username: string;
   ysws_verified: boolean;
   account_id: string;
@@ -36,6 +37,7 @@ export interface PrivateUser {
   unread_notification_count: number;
   unread_project_notification_count: number;
   referral_program_active: boolean;
+  ships_enabled: boolean;
 
   ticket_adjustments: TicketAdjustment[];
   incoming_ticket_transfers: TicketTransfer[];

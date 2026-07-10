@@ -2,31 +2,34 @@
 #
 # Table name: projects
 #
-#  id               :bigint           not null, primary key
-#  aasm_state       :string
-#  ai_declaration   :text
-#  approved_at      :datetime
-#  approved_seconds :integer
-#  deleted_at       :datetime
-#  demo_link        :string
-#  desc             :text
-#  high_quality     :boolean          default(FALSE), not null
-#  internal_notes   :text
-#  project_type     :string
-#  rejected_at      :datetime
-#  repo_link        :string
-#  submitted_at     :datetime
-#  title            :string
-#  total_seconds    :integer
-#  ysws             :string
-#  created_at       :datetime         not null
-#  updated_at       :datetime         not null
-#  user_id          :bigint           not null
+#  id                   :bigint           not null, primary key
+#  aasm_state           :string
+#  ai_declaration       :text
+#  approved_at          :datetime
+#  approved_seconds     :integer
+#  deleted_at           :datetime
+#  demo_link            :string
+#  desc                 :text
+#  high_quality         :boolean          default(FALSE), not null
+#  internal_notes       :text
+#  project_type         :string
+#  rejected_at          :datetime
+#  repo_link            :string
+#  reship_allowed_at    :datetime
+#  submitted_at         :datetime
+#  title                :string
+#  total_seconds        :integer
+#  ysws                 :string
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#  reship_allowed_by_id :bigint
+#  user_id              :bigint           not null
 #
 # Indexes
 #
-#  index_projects_on_deleted_at  (deleted_at)
-#  index_projects_on_user_id     (user_id)
+#  index_projects_on_deleted_at            (deleted_at)
+#  index_projects_on_reship_allowed_by_id  (reship_allowed_by_id)
+#  index_projects_on_user_id               (user_id)
 #
 # Foreign Keys
 #
@@ -53,6 +56,7 @@ class Project < ApplicationRecord
   REQUIRED_FIELDS = [ :title, :desc, :repo_link, :demo_link ]
 
   belongs_to :user
+  belongs_to :reship_allowed_by, class_name: "User", optional: true
   has_many :hackatime_projects, dependent: :destroy
 
   after_create_commit :sync_user_airtable_if_first_project
@@ -95,7 +99,9 @@ class Project < ApplicationRecord
     event :mark_rejected do
       transitions from: :submitted, to: :rejected
       after do
-        update!(total_seconds: nil)
+        # Each rejection requires a fresh, explicit reship allowance from a
+        # reviewer - any allowance granted before this rejection no longer applies.
+        update!(total_seconds: nil, reship_allowed_at: nil, reship_allowed_by_id: nil)
         PostHog.capture({
           distinct_id: user_id.to_s,
           event: "project_rejected",
@@ -126,6 +132,9 @@ class Project < ApplicationRecord
     hash["hackatime_projects"] = hackatime_projects.loaded? ? hackatime_projects.map(&:id) : hackatime_projects.pluck(:id)
     hash["tags"] = tags.loaded? ? tags.map(&:id) : tags.pluck(:id)
     hash["status"] = display_status
+    hash["reship_allowed"] = reship_allowed?
+    hash["reship_gate_active"] = reship_gate_active?
+    hash["needs_reship_allowance"] = needs_reship_allowance?
     # Only computed where it's actually consumed (review/manage views, which either
     # request reviews or eager-load them); skipping it avoids a per-row pending
     # existence query on list pages that never read the flag.
@@ -167,6 +176,30 @@ class Project < ApplicationRecord
     else
       "Unknown"
     end
+  end
+
+  # Projects rejected before this were rejected under the old rules (freely
+  # reshippable) and are grandfathered in - only rejections from this point on
+  # require an explicit reviewer reship allowance.
+  RESHIP_GATE_STARTS_AT = Time.parse("2026-07-10 08:22:00 UTC").freeze
+
+  def reship_allowed?
+    reship_allowed_at.present?
+  end
+
+  # Whether this project is subject to the reship-allowance gate at all - false
+  # for projects rejected before the gate existed, so they're treated like the
+  # feature was never added (still subject to the platform-wide toggle though).
+  def reship_gate_active?
+    rejected? && rejected_at.present? && rejected_at >= RESHIP_GATE_STARTS_AT
+  end
+
+  def needs_reship_allowance?
+    reship_gate_active? && !reship_allowed?
+  end
+
+  def allow_reship!(user)
+    update!(reship_allowed_at: Time.current, reship_allowed_by_id: user.id)
   end
 
   def missing_fields

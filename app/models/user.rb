@@ -20,6 +20,7 @@
 #  internal_notes         :text
 #  is_admin               :boolean          default(FALSE), not null
 #  is_banned              :boolean          default(FALSE), not null
+#  is_debt                :boolean          default(FALSE), not null
 #  is_fulfiller           :boolean          default(FALSE), not null
 #  is_reviewer            :boolean          default(FALSE), not null
 #  last_active            :datetime
@@ -115,6 +116,12 @@ class User < ApplicationRecord
     is_fulfiller
   end
 
+  # Bypasses the platform-wide shipping toggle only (not a project's own reship
+  # gate) - an independent flag that doesn't interact with the other roles.
+  def debt?
+    is_debt
+  end
+
   before_create :set_referral_share_code
 
   after_save_commit :link_hackatime, if: -> { slack_id_previously_changed? && hackatime_id.nil? }
@@ -154,7 +161,7 @@ class User < ApplicationRecord
 
   def display_hash(private: false, review: false, lightweight: false)
     if private
-      hash = self.as_json.slice("id", "first_name", "last_name", "github_username", "address_street", "address_locality", "address_region", "address_country", "address_postal", "phone_number", "birthday", "avatar", "email", "username", "ysws_verified", "verification_status", "account_id", "hackatime_id", "slack_id", "onboarding_completed", "is_admin", "is_reviewer", "is_fulfiller")
+      hash = self.as_json.slice("id", "first_name", "last_name", "github_username", "address_street", "address_locality", "address_region", "address_country", "address_postal", "phone_number", "birthday", "avatar", "email", "username", "ysws_verified", "verification_status", "account_id", "hackatime_id", "slack_id", "onboarding_completed", "is_admin", "is_reviewer", "is_fulfiller", "is_debt")
       hash["project_count"] = projects.size
       if lightweight
         hash["balance"] = 0

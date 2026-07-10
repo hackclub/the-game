@@ -1,6 +1,6 @@
 class ProjectsController < ApplicationController
   skip_after_action :verify_authorized, only: [ :index, :new, :create, :display ]
-  before_action :set_project, only: [ :show, :update, :destroy, :ship, :check_repo ]
+  before_action :set_project, only: [ :show, :update, :destroy, :ship, :check_repo, :allow_reship ]
 
   def index
     projects = current_user.projects.map { |project| project.display_hash }
@@ -140,6 +140,26 @@ class ProjectsController < ApplicationController
     end
 
     unless current_user.admin?
+      if @project.needs_reship_allowance?
+        track_event("project_ship_failed", {
+          project_id: @project.id,
+          reason: "reship_not_allowed"
+        })
+        redirect_to manage_project_path(@project), flash: { alert: "This project was rejected. A reviewer needs to allow it to be reshipped before you can resubmit it." }
+        return
+      end
+
+      if !@project.reship_allowed? && !current_user.debt? && !PlatformSetting.instance.shipping_enabled?
+        track_event("project_ship_failed", {
+          project_id: @project.id,
+          reason: "shipping_disabled"
+        })
+        redirect_to manage_project_path(@project), flash: { alert: "Shipping is currently closed platform-wide. Please check back later." }
+        return
+      end
+    end
+
+    unless current_user.admin?
       unless current_user.idv_verified?
         track_event("project_ship_failed", {
           project_id: @project.id,
@@ -186,6 +206,12 @@ class ProjectsController < ApplicationController
     accessible = repo_accessible?(@project.repo_link)
     has_readme = accessible ? readme_exists?(@project.repo_link) : false
     render json: { is_github:, accessible: accessible, has_readme: has_readme }
+  end
+
+  def allow_reship
+    authorize @project
+    @project.allow_reship!(current_user)
+    redirect_back_or_to manage_project_path(@project), notice: "Reship allowed for #{@project.title}"
   end
 
   private

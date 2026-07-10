@@ -1,7 +1,12 @@
 import Layout from "@/layouts/layout";
-import { Link, usePage } from "@inertiajs/react";
+import { Link, usePage, router } from "@inertiajs/react";
 import type { PrivateUser } from "@/interfaces/user";
 import UnshippedHackatimeExportCard from "@/components/admin/UnshippedHackatimeExportCard";
+
+interface PlatformSetting {
+  id: number;
+  shipping_enabled: boolean;
+}
 
 interface QuickStats {
   total_users: number;
@@ -75,12 +80,19 @@ function NavCard({
 }
 
 export default function AdminPage() {
-  const { user, quick_stats } = usePage<{
+  const { user, quick_stats, platform_setting } = usePage<{
     user: PrivateUser;
     quick_stats: QuickStats;
+    platform_setting: PlatformSetting | null;
   }>().props;
 
   const isAdmin = user.is_admin;
+
+  function setShippingEnabled(enabled: boolean) {
+    router.patch("/admin/platform_setting", {
+      shipping_enabled: String(enabled),
+    });
+  }
 
   return (
     <Layout>
@@ -111,6 +123,44 @@ export default function AdminPage() {
             </div>
           )}
         </div>
+
+        {isAdmin && platform_setting && (
+          <div
+            className={`mb-6 flex items-center justify-between rounded-md border px-4 py-3 ${
+              platform_setting.shipping_enabled
+                ? "border-gray-200 bg-white"
+                : "border-red-300 bg-red-50"
+            }`}
+          >
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold text-gray-900">
+                Project submissions:{" "}
+                {platform_setting.shipping_enabled ? "Open" : "Closed"}
+              </span>
+              <span className="text-xs text-gray-500">
+                {platform_setting.shipping_enabled
+                  ? "Projects can be submitted/shipped platform-wide (subject to per-project and per-user gates)."
+                  : "Submissions are closed platform-wide. Only admins, users with the debt role, and projects with an explicit reship allowance can ship."}
+              </span>
+            </div>
+            <div className="flex shrink-0 gap-2">
+              <button
+                onClick={() => setShippingEnabled(false)}
+                disabled={!platform_setting.shipping_enabled}
+                className="cursor-pointer rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Close Submissions
+              </button>
+              <button
+                onClick={() => setShippingEnabled(true)}
+                disabled={platform_setting.shipping_enabled}
+                className="cursor-pointer rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Open Submissions
+              </button>
+            </div>
+          </div>
+        )}
 
         {isAdmin && quick_stats && (
           <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">

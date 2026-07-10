@@ -281,6 +281,13 @@ export default function ProjectForm({
       : isShippingPaused();
   const hasRejectionException =
     !isAdmin && isShippingPaused() && !shippingPaused;
+  const rejectedAwaitingReship = project?.needs_reship_allowance ?? false;
+  const shipsGloballyDisabled =
+    !props.user.ships_enabled &&
+    !props.user.is_debt &&
+    !project?.reship_allowed;
+  const shipStopped =
+    !isAdmin && (rejectedAwaitingReship || shipsGloballyDisabled);
   const [showShipChecklist, setShowShipChecklist] = useState(false);
   const [repoChecking, setRepoChecking] = useState(false);
   const [repoAccessible, setRepoAccessible] = useState<boolean | null>(null);
@@ -663,16 +670,21 @@ export default function ProjectForm({
                     <button
                       className={clsx(
                         "group flex h-[59px] w-full items-center justify-center gap-3 text-xl font-bold transition-colors",
-                        shippingPaused
+                        shippingPaused || shipStopped
                           ? "cursor-not-allowed bg-gray-300 text-gray-500"
                           : "cursor-pointer bg-[#fecb0d] text-black hover:bg-[#e5b80b] disabled:cursor-not-allowed disabled:opacity-50",
                       )}
                       type="button"
-                      onClick={shippingPaused ? undefined : openShipChecklist}
+                      onClick={
+                        shippingPaused || shipStopped
+                          ? undefined
+                          : openShipChecklist
+                      }
                       disabled={
                         processing ||
                         (!isAdmin && !idvVerified) ||
-                        shippingPaused
+                        shippingPaused ||
+                        shipStopped
                       }
                     >
                       {!isAdmin && !idvVerified
@@ -716,6 +728,23 @@ export default function ProjectForm({
                       pause began. Note: if your project is rejected again while
                       shipping is paused, you will not be able to re-ship it
                       until the pause ends at 5:00pm ET on May 11th, 2026.
+                    </p>
+                  )}
+                {!shippingPaused &&
+                  rejectedAwaitingReship &&
+                  project.reported_seconds > project.approved_seconds && (
+                    <p className="rounded-lg border-2 border-red-300 bg-red-50 px-4 py-3 text-base font-semibold text-red-800">
+                      This project was rejected. A reviewer needs to allow it
+                      to be reshipped before you can resubmit it.
+                    </p>
+                  )}
+                {!shippingPaused &&
+                  !rejectedAwaitingReship &&
+                  shipsGloballyDisabled &&
+                  project.reported_seconds > project.approved_seconds && (
+                    <p className="rounded-lg border-2 border-red-300 bg-red-50 px-4 py-3 text-base font-semibold text-red-800">
+                      Shipping is currently closed platform-wide. Please check
+                      back later.
                     </p>
                   )}
               </div>
