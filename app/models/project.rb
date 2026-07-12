@@ -87,7 +87,9 @@ class Project < ApplicationRecord
     event :mark_approved do
       transitions from: [ :submitted, :rejected ], to: :approved
       after do
-        update!(approved_seconds: total_seconds, total_seconds: nil)
+        # Each approval requires a fresh, explicit reship allowance from a
+        # reviewer - any allowance granted before this approval no longer applies.
+        update!(approved_seconds: total_seconds, total_seconds: nil, reship_allowed_at: nil, reship_allowed_by_id: nil)
         PostHog.capture({
           distinct_id: user_id.to_s,
           event: "project_approved",
@@ -135,6 +137,7 @@ class Project < ApplicationRecord
     hash["reship_allowed"] = reship_allowed?
     hash["reship_gate_active"] = reship_gate_active?
     hash["needs_reship_allowance"] = needs_reship_allowance?
+    hash["approved_reship_gate_active"] = approved_reship_gate_active?
     # Only computed where it's actually consumed (review/manage views, which either
     # request reviews or eager-load them); skipping it avoids a per-row pending
     # existence query on list pages that never read the flag.
@@ -196,6 +199,15 @@ class Project < ApplicationRecord
 
   def needs_reship_allowance?
     reship_gate_active? && !reship_allowed?
+  end
+
+  # Whether an approved project should offer reviewers an "Allow Reship" control -
+  # only relevant while platform-wide shipping is closed, since an approved
+  # project can otherwise already be reshipped without any explicit allowance.
+  # Stays true once granted (even if shipping later reopens) so the "cleared"
+  # state remains visible until the project moves out of the approved state.
+  def approved_reship_gate_active?
+    approved? && (!PlatformSetting.instance.shipping_enabled? || reship_allowed?)
   end
 
   def allow_reship!(user)
