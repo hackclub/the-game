@@ -5,10 +5,10 @@ import type { ProjectTag } from "@/interfaces/project_tag";
 import type { SharedProps } from "@/types";
 import formatTime from "@/utils/formatTime";
 import {
-  isShippingPaused,
-  isShippingPausedForProject,
-  SHIPPING_PAUSE_MESSAGE,
-} from "@/utils/shippingPause";
+  isShippingLocked,
+  isShippingLockedForProject,
+  SHIPPING_LOCK_MESSAGE,
+} from "@/utils/shippingLock";
 import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import arrowIcon from "@/assets/icons/arrow.svg";
 import clsx from "clsx";
@@ -274,13 +274,13 @@ export default function ProjectForm({
   const disabled = project?.aasm_state === "submitted";
   const idvVerified = props.user.verification_status === "verified";
   const isAdmin = props.user.is_admin;
-  const shippingPaused = isAdmin
+  const shippingLocked = isAdmin
     ? false
     : project
-      ? isShippingPausedForProject(project)
-      : isShippingPaused();
+      ? isShippingLockedForProject(project)
+      : isShippingLocked();
   const hasRejectionException =
-    !isAdmin && isShippingPaused() && !shippingPaused;
+    !isAdmin && isShippingLocked() && !shippingLocked;
   const [showShipChecklist, setShowShipChecklist] = useState(false);
   const [repoChecking, setRepoChecking] = useState(false);
   const [repoAccessible, setRepoAccessible] = useState<boolean | null>(null);
@@ -663,16 +663,16 @@ export default function ProjectForm({
                     <button
                       className={clsx(
                         "group flex h-[59px] w-full items-center justify-center gap-3 text-xl font-bold transition-colors",
-                        shippingPaused
+                        shippingLocked
                           ? "cursor-not-allowed bg-gray-300 text-gray-500"
                           : "cursor-pointer bg-[#fecb0d] text-black hover:bg-[#e5b80b] disabled:cursor-not-allowed disabled:opacity-50",
                       )}
                       type="button"
-                      onClick={shippingPaused ? undefined : openShipChecklist}
+                      onClick={shippingLocked ? undefined : openShipChecklist}
                       disabled={
                         processing ||
                         (!isAdmin && !idvVerified) ||
-                        shippingPaused
+                        shippingLocked
                       }
                     >
                       {!isAdmin && !idvVerified
@@ -702,20 +702,18 @@ export default function ProjectForm({
                     Delete
                   </button>
                 </div>
-                {shippingPaused &&
+                {shippingLocked &&
                   project.reported_seconds > project.approved_seconds && (
                     <p className="rounded-lg border border-gray-300 bg-gray-100 px-4 py-3 text-sm text-gray-700">
-                      {SHIPPING_PAUSE_MESSAGE}
+                      {SHIPPING_LOCK_MESSAGE}
                     </p>
                   )}
                 {hasRejectionException &&
                   project.reported_seconds > project.approved_seconds && (
                     <p className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                      Shipping is temporarily paused, but you can re-ship this
-                      project because it was rejected in the two days before the
-                      pause began. Note: if your project is rejected again while
-                      shipping is paused, you will not be able to re-ship it
-                      until the pause ends at 5:00pm ET on May 11th, 2026.
+                      Shipping is locked now that the game has ended, but you
+                      can re-ship this project because it was rejected after
+                      shipping locked.
                     </p>
                   )}
               </div>

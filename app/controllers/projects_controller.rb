@@ -121,20 +121,21 @@ class ProjectsController < ApplicationController
     end
   end
 
-  SHIPPING_PAUSE_START = Time.parse("2026-05-10 22:00:00 UTC").freeze
-  SHIPPING_RESUME = Time.parse("2026-05-11 22:00:00 UTC").freeze
-  REJECTION_EXCEPTION_START = (SHIPPING_PAUSE_START - 2.days).freeze
+  # Shipping locked for good when the game ended on July 6th, 2026. Projects
+  # rejected after the lock may still be re-shipped, so their authors can
+  # address the rejection.
+  SHIPPING_LOCKED_AT = Time.parse("2026-07-06 00:00:00 UTC").freeze
 
   def ship
     authorize @project
 
-    if Time.current >= SHIPPING_PAUSE_START && Time.current < SHIPPING_RESUME
-      unless recently_rejected_reship? || current_user.admin?
+    if Time.current >= SHIPPING_LOCKED_AT
+      unless rejected_after_lock? || current_user.admin?
         track_event("project_ship_failed", {
           project_id: @project.id,
-          reason: "shipping_paused"
+          reason: "shipping_locked"
         })
-        redirect_to manage_project_path(@project), flash: { alert: "Shipping is temporarily paused as reviewers work to review projects of people who are qualifying for the HCTG event. It will be unpaused at 6:00pm ET on May 11th, 2026." }
+        redirect_to manage_project_path(@project), flash: { alert: "Shipping is locked now that the game has ended. Projects rejected after shipping locked can still be re-shipped." }
         return
       end
     end
@@ -190,11 +191,10 @@ class ProjectsController < ApplicationController
 
   private
 
-  def recently_rejected_reship?
+  def rejected_after_lock?
     @project.aasm_state == "rejected" &&
       @project.rejected_at.present? &&
-      @project.rejected_at >= REJECTION_EXCEPTION_START &&
-      @project.rejected_at < SHIPPING_PAUSE_START
+      @project.rejected_at >= SHIPPING_LOCKED_AT
   end
 
   def project_params
