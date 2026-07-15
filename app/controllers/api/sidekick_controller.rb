@@ -421,6 +421,9 @@ class Api::SidekickController < ActionController::API
       authorId: actor_id_for(project.user),
       hackatimeId: project.user.hackatime_id,
       hackatimeProjectKeys: project.hackatime_projects.map(&:name),
+      # Scope Sidekick's own Hackatime aggregation to the season, matching how
+      # the-game counts hours (HackatimeService::SEASON_START).
+      hackatimeStartDate: Date.parse(HackatimeService::SEASON_START).iso8601,
       ships: build_ships(project, versions),
       metadata: {}
     }.compact
