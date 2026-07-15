@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_30_000001) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_09_000003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
   enable_extension "pg_catalog.plpgsql"
@@ -203,6 +203,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_30_000001) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "platform_settings", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.boolean "shipping_enabled", default: true, null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "project_pending_approvals", force: :cascade do |t|
     t.text "admin_content"
     t.integer "approved_seconds"
@@ -260,6 +266,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_30_000001) do
     t.string "project_type"
     t.datetime "rejected_at"
     t.string "repo_link"
+    t.datetime "reship_allowed_at"
+    t.bigint "reship_allowed_by_id"
     t.datetime "submitted_at"
     t.string "title"
     t.integer "total_seconds"
@@ -267,6 +275,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_30_000001) do
     t.bigint "user_id", null: false
     t.string "ysws"
     t.index ["deleted_at"], name: "index_projects_on_deleted_at"
+    t.index ["reship_allowed_by_id"], name: "index_projects_on_reship_allowed_by_id"
     t.index ["user_id"], name: "index_projects_on_user_id"
   end
 
@@ -343,6 +352,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_30_000001) do
     t.text "internal_notes"
     t.boolean "is_admin", default: false, null: false
     t.boolean "is_banned", default: false, null: false
+    t.boolean "is_debt", default: false, null: false
     t.boolean "is_fulfiller", default: false, null: false
     t.boolean "is_reviewer", default: false, null: false
     t.datetime "last_active"

@@ -19,7 +19,8 @@ class AdminController < ApplicationController
     end
 
     render inertia: "admin/index", props: {
-      quick_stats: quick_stats || nil
+      quick_stats: quick_stats || nil,
+      platform_setting: current_user.admin? ? PlatformSetting.instance.display_hash : nil
     }
   end
 
@@ -97,7 +98,14 @@ class AdminController < ApplicationController
         filtered_users = filtered_users.where(is_reviewer: true)
       when "fulfiller"
         filtered_users = filtered_users.where(is_fulfiller: true)
+      when "debt"
+        filtered_users = filtered_users.where(is_debt: true)
       end
+    end
+
+    if params[:negative_balance] == "true"
+      negative_ids = User.batch_balances(filtered_users.pluck(:id)).select { |_, balance| balance < 0 }.keys
+      filtered_users = filtered_users.where(id: negative_ids)
     end
 
     per = [ (params[:per_page] || 10).to_i, 100 ].min
@@ -107,6 +115,7 @@ class AdminController < ApplicationController
     render inertia: "admin/users", props: {
       users: paginated_users.includes(:projects).map { |user| user.display_hash(private: true, lightweight: true).merge("balance" => balances[user.id]) },
       permission: params[:permission],
+      negative_balance: params[:negative_balance] == "true",
       q: params[:q],
       per_page: per,
       pagination: {
@@ -257,9 +266,15 @@ class AdminController < ApplicationController
     user.update!(
       is_admin: params[:is_admin] == "true",
       is_reviewer: params[:is_reviewer] == "true",
-      is_fulfiller: params[:is_fulfiller] == "true"
+      is_fulfiller: params[:is_fulfiller] == "true",
+      is_debt: params[:is_debt] == "true"
     )
     redirect_to admin_user_path(user), notice: "Permissions updated"
+  end
+
+  def update_platform_setting
+    PlatformSetting.instance.update!(shipping_enabled: params[:shipping_enabled] == "true")
+    redirect_to admin_path, notice: "Shipping setting updated"
   end
 
   def user_hackatime_projects

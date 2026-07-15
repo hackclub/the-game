@@ -23,11 +23,17 @@ interface Props {
   [_: string]: unknown;
 }
 
-const PERMISSIONS = ["is_admin", "is_reviewer", "is_fulfiller"] as const;
+const PERMISSIONS = [
+  "is_admin",
+  "is_reviewer",
+  "is_fulfiller",
+  "is_debt",
+] as const;
 const PERMISSION_LABELS: Record<string, string> = {
   is_admin: "Admin",
   is_reviewer: "Reviewer",
   is_fulfiller: "Fulfiller",
+  is_debt: "Debt",
 };
 
 export default function UserPage() {
@@ -39,18 +45,21 @@ export default function UserPage() {
     is_admin: props.page_user.is_admin,
     is_reviewer: props.page_user.is_reviewer,
     is_fulfiller: props.page_user.is_fulfiller,
+    is_debt: props.page_user.is_debt,
   });
 
   const permissionsChanged =
     permissions.is_admin !== props.page_user.is_admin ||
     permissions.is_reviewer !== props.page_user.is_reviewer ||
-    permissions.is_fulfiller !== props.page_user.is_fulfiller;
+    permissions.is_fulfiller !== props.page_user.is_fulfiller ||
+    permissions.is_debt !== props.page_user.is_debt;
 
   function updatePermissions() {
     router.patch(`/admin/users/${props.page_user.id}/permissions`, {
       is_admin: String(permissions.is_admin),
       is_reviewer: String(permissions.is_reviewer),
       is_fulfiller: String(permissions.is_fulfiller),
+      is_debt: String(permissions.is_debt),
     });
   }
 
@@ -76,13 +85,15 @@ export default function UserPage() {
           {!props.custom &&
             (props.page_user.is_admin ||
               props.page_user.is_reviewer ||
-              props.page_user.is_fulfiller) && (
+              props.page_user.is_fulfiller ||
+              props.page_user.is_debt) && (
               <p>
                 You are{" "}
                 {[
                   props.page_user.is_admin && "an admin",
                   props.page_user.is_reviewer && "a reviewer",
                   props.page_user.is_fulfiller && "a fulfiller",
+                  props.page_user.is_debt && "exempt from ship stops",
                 ]
                   .filter(Boolean)
                   .join(", ")}

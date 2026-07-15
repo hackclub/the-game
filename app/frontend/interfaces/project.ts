@@ -24,6 +24,10 @@ export interface Project {
   approved_seconds: number;
   real_approved_seconds: number;
   high_quality: boolean;
+  reship_allowed: boolean;
+  reship_gate_active: boolean;
+  needs_reship_allowance: boolean;
+  approved_reship_gate_active: boolean;
   pending_hq?: boolean;
   // The single held community approval awaiting HQ authorization, surfaced only to
   // reviewers/HQ. Shaped like a review so it can reuse the review components.

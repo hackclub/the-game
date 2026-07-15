@@ -12,6 +12,7 @@ interface Props {
   users: PrivateUser[];
   q: string;
   permission: string;
+  negative_balance: boolean;
   per_page: number;
   pagination: Pagination;
 }
@@ -20,11 +21,15 @@ export default function Users({
   users,
   q,
   permission,
+  negative_balance,
   per_page,
   pagination,
 }: Props) {
   const [newQuery, setNewQuery] = useState(q || "");
   const [newPermission, setNewPermission] = useState(permission || "");
+  const [newNegativeBalance, setNewNegativeBalance] = useState(
+    negative_balance || false,
+  );
   const [perPage, setPerPage] = useState(per_page || 25);
   const [goToPageInput, setGoToPageInput] = useState(
     String(pagination.current_page),
@@ -42,6 +47,7 @@ export default function Users({
     const params: Record<string, any> = {
       q: newQuery,
       permission: newPermission,
+      negative_balance: newNegativeBalance,
       per_page: perPage,
       ...overrides,
     };
@@ -78,6 +84,12 @@ export default function Users({
     const nextPermission = newPermission === p ? "" : p;
     setNewPermission(nextPermission);
     navigateWithFilters({ permission: nextPermission });
+  };
+
+  const handleNegativeBalanceToggle = () => {
+    const next = !newNegativeBalance;
+    setNewNegativeBalance(next);
+    navigateWithFilters({ negative_balance: next });
   };
 
   const handlePerPageChange = (value: number) => {
@@ -140,6 +152,7 @@ export default function Users({
         if (params.data.is_admin) flags.push("Admin");
         if (params.data.is_reviewer) flags.push("Reviewer");
         if (params.data.is_fulfiller) flags.push("Fulfiller");
+        if (params.data.is_debt) flags.push("Debt");
         return flags.join(", ") || "User";
       },
     },
@@ -200,7 +213,7 @@ export default function Users({
           onChange={(e) => setNewQuery(e.target.value)}
         />
 
-        {["admin", "reviewer", "fulfiller"].map((p) => (
+        {["admin", "reviewer", "fulfiller", "debt"].map((p) => (
           <button
             key={p}
             className={`cursor-pointer rounded-full border px-3 py-2 ${newPermission === p ? "bg-blue-300" : "bg-white"}`}
@@ -209,6 +222,13 @@ export default function Users({
             {p[0].toUpperCase() + p.slice(1)}
           </button>
         ))}
+
+        <button
+          className={`cursor-pointer rounded-full border px-3 py-2 ${newNegativeBalance ? "bg-blue-300" : "bg-white"}`}
+          onClick={handleNegativeBalanceToggle}
+        >
+          Negative Balance
+        </button>
       </div>
 
       <div style={{ height: 500 }}>

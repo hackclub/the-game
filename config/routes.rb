@@ -41,6 +41,7 @@ Rails.application.routes.draw do
     member do
       patch :ship
       post :check_repo
+      post :allow_reship
     end
   end
   get "/projects/:id", to: "projects#display"
@@ -137,6 +138,7 @@ Rails.application.routes.draw do
     get "/users/:id/hackatime_projects", to: "admin#user_hackatime_projects"
     post "/users/:id/sync_to_platform", to: "admin#sync_user_to_platform"
     patch "/users/:id/permissions", to: "admin#update_user_permissions", as: "update_user_permissions"
+    patch "/platform_setting", to: "admin#update_platform_setting", as: "update_platform_setting"
     get "/ticket_transfers", to: "admin#ticket_transfers"
     get "/grants", to: "admin#grants", as: "grants"
     get "/grants/:item_id/csv", to: "admin#grants_csv", as: "grants_csv"
