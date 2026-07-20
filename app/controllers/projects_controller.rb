@@ -122,20 +122,20 @@ class ProjectsController < ApplicationController
   end
 
   # Shipping locked for good when the game ended on July 6th, 2026. Projects
-  # rejected after the lock may still be re-shipped, so their authors can
-  # address the rejection.
+  # created before the lock may still be re-shipped, as may projects rejected
+  # after the lock, so their authors can address the rejection.
   SHIPPING_LOCKED_AT = Time.parse("2026-07-06 00:00:00 UTC").freeze
 
   def ship
     authorize @project
 
     if Time.current >= SHIPPING_LOCKED_AT
-      unless rejected_after_lock? || current_user.admin?
+      unless created_before_lock? || rejected_after_lock? || current_user.admin?
         track_event("project_ship_failed", {
           project_id: @project.id,
           reason: "shipping_locked"
         })
-        redirect_to manage_project_path(@project), flash: { alert: "Shipping is locked now that the game has ended. Projects rejected after shipping locked can still be re-shipped." }
+        redirect_to manage_project_path(@project), flash: { alert: "Shipping is locked now that the game has ended. Only projects created before shipping locked, or rejected after, can still be re-shipped." }
         return
       end
     end
@@ -216,6 +216,10 @@ class ProjectsController < ApplicationController
   end
 
   private
+
+  def created_before_lock?
+    @project.created_at < SHIPPING_LOCKED_AT
+  end
 
   def rejected_after_lock?
     @project.aasm_state == "rejected" &&

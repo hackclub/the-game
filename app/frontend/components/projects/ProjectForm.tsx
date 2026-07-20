@@ -279,8 +279,7 @@ export default function ProjectForm({
     : project
       ? isShippingLockedForProject(project)
       : isShippingLocked();
-  const hasRejectionException =
-    !isAdmin && isShippingLocked() && !shippingLocked;
+  const hasLockException = !isAdmin && isShippingLocked() && !shippingLocked;
   const rejectedAwaitingReship = project?.needs_reship_allowance ?? false;
   const shipsGloballyDisabled =
     !props.user.ships_enabled &&
@@ -720,12 +719,12 @@ export default function ProjectForm({
                       {SHIPPING_LOCK_MESSAGE}
                     </p>
                   )}
-                {hasRejectionException &&
+                {hasLockException &&
                   project.reported_seconds > project.approved_seconds && (
                     <p className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
                       Shipping is locked now that the game has ended, but you
-                      can re-ship this project because it was rejected after
-                      shipping locked.
+                      can re-ship this project because it was created before
+                      shipping locked, or rejected after.
                     </p>
                   )}
                 {!shippingLocked &&
