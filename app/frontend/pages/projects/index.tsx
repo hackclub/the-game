@@ -15,8 +15,10 @@ import type { Project } from "@/interfaces/project";
 export default function Index({ projects }: { projects: Project[] }) {
   const { props } = usePage<SharedProps>();
   const isAdmin = props.user.is_admin;
+  // Debt-role users are exempt from ship stops so they can pay off their debt.
   const allLocked =
     !isAdmin &&
+    !props.user.is_debt &&
     isShippingLocked() &&
     projects.every((p) => isShippingLockedForProject(p));
 

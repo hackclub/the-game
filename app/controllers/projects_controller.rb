@@ -123,14 +123,16 @@ class ProjectsController < ApplicationController
 
   # Shipping locked for good when the game ended on July 6th, 2026. Projects
   # created before the lock may still be re-shipped, as may projects rejected
-  # after the lock, so their authors can address the rejection.
+  # after the lock, so their authors can address the rejection. Users with the
+  # debt role are exempt from ship stops entirely, so they can keep shipping
+  # to pay off their debt.
   SHIPPING_LOCKED_AT = Time.parse("2026-07-06 00:00:00 UTC").freeze
 
   def ship
     authorize @project
 
     if Time.current >= SHIPPING_LOCKED_AT
-      unless created_before_lock? || rejected_after_lock? || current_user.admin?
+      unless created_before_lock? || rejected_after_lock? || current_user.admin? || current_user.debt?
         track_event("project_ship_failed", {
           project_id: @project.id,
           reason: "shipping_locked"
@@ -140,7 +142,9 @@ class ProjectsController < ApplicationController
       end
     end
 
-    unless current_user.admin?
+    # Debt-role users skip the reship-allowance gate and the platform-wide
+    # shipping toggle - they can always ship/reship to pay off their debt.
+    unless current_user.admin? || current_user.debt?
       if @project.needs_reship_allowance?
         track_event("project_ship_failed", {
           project_id: @project.id,
@@ -150,7 +154,7 @@ class ProjectsController < ApplicationController
         return
       end
 
-      if !@project.reship_allowed? && !current_user.debt? && !PlatformSetting.instance.shipping_enabled?
+      if !@project.reship_allowed? && !PlatformSetting.instance.shipping_enabled?
         track_event("project_ship_failed", {
           project_id: @project.id,
           reason: "shipping_disabled"

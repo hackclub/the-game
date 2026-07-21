@@ -274,13 +274,18 @@ export default function ProjectForm({
   const disabled = project?.aasm_state === "submitted";
   const idvVerified = props.user.verification_status === "verified";
   const isAdmin = props.user.is_admin;
-  const shippingLocked = isAdmin
-    ? false
-    : project
-      ? isShippingLockedForProject(project)
-      : isShippingLocked();
-  const hasLockException = !isAdmin && isShippingLocked() && !shippingLocked;
-  const rejectedAwaitingReship = project?.needs_reship_allowance ?? false;
+  // Debt-role users are exempt from ship stops so they can pay off their debt.
+  const isDebtExempt = !isAdmin && props.user.is_debt;
+  const shippingLocked =
+    isAdmin || isDebtExempt
+      ? false
+      : project
+        ? isShippingLockedForProject(project)
+        : isShippingLocked();
+  const hasLockException =
+    !isAdmin && !isDebtExempt && isShippingLocked() && !shippingLocked;
+  const rejectedAwaitingReship =
+    !isDebtExempt && (project?.needs_reship_allowance ?? false);
   const shipsGloballyDisabled =
     !props.user.ships_enabled &&
     !props.user.is_debt &&
@@ -725,6 +730,14 @@ export default function ProjectForm({
                       Shipping is locked now that the game has ended, but you
                       can re-ship this project because it was created before
                       shipping locked, or rejected after.
+                    </p>
+                  )}
+                {isDebtExempt &&
+                  isShippingLocked() &&
+                  project.reported_seconds > project.approved_seconds && (
+                    <p className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                      Shipping is locked now that the game has ended, but you
+                      can still ship this project to pay off your debt.
                     </p>
                   )}
                 {!shippingLocked &&
