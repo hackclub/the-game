@@ -1,6 +1,7 @@
 class ProjectsController < ApplicationController
   skip_after_action :verify_authorized, only: [ :index, :new, :create, :display ]
   before_action :set_project, only: [ :show, :update, :destroy, :ship, :check_repo, :allow_reship ]
+  before_action :require_creation_allowed, only: [ :new, :create ]
 
   def index
     projects = current_user.projects.map { |project| project.display_hash }
@@ -121,48 +122,12 @@ class ProjectsController < ApplicationController
     end
   end
 
-  # Shipping locked for good when the game ended on July 6th, 2026. Projects
-  # created before the lock may still be re-shipped, as may projects rejected
-  # after the lock, so their authors can address the rejection. Users with the
-  # debt role are exempt from ship stops entirely, so they can keep shipping
-  # to pay off their debt.
-  SHIPPING_LOCKED_AT = Time.parse("2026-07-06 00:00:00 UTC").freeze
-
+  # Shipping and re-shipping are open to everyone, with no locks or reviewer
+  # allowances. Since the game ended on July 6th, 2026, the only restriction
+  # is on creating new projects: that's reserved for users with the debt role
+  # (so they can keep working to pay off their debt) and admins.
   def ship
     authorize @project
-
-    if Time.current >= SHIPPING_LOCKED_AT
-      unless created_before_lock? || rejected_after_lock? || current_user.admin? || current_user.debt?
-        track_event("project_ship_failed", {
-          project_id: @project.id,
-          reason: "shipping_locked"
-        })
-        redirect_to manage_project_path(@project), flash: { alert: "Shipping is locked now that the game has ended. Only projects created before shipping locked, or rejected after, can still be re-shipped." }
-        return
-      end
-    end
-
-    # Debt-role users skip the reship-allowance gate and the platform-wide
-    # shipping toggle - they can always ship/reship to pay off their debt.
-    unless current_user.admin? || current_user.debt?
-      if @project.needs_reship_allowance?
-        track_event("project_ship_failed", {
-          project_id: @project.id,
-          reason: "reship_not_allowed"
-        })
-        redirect_to manage_project_path(@project), flash: { alert: "This project was rejected. A reviewer needs to allow it to be reshipped before you can resubmit it." }
-        return
-      end
-
-      if !@project.reship_allowed? && !PlatformSetting.instance.shipping_enabled?
-        track_event("project_ship_failed", {
-          project_id: @project.id,
-          reason: "shipping_disabled"
-        })
-        redirect_to manage_project_path(@project), flash: { alert: "Shipping is currently closed platform-wide. Please check back later." }
-        return
-      end
-    end
 
     unless current_user.admin?
       unless current_user.idv_verified?
@@ -221,14 +186,13 @@ class ProjectsController < ApplicationController
 
   private
 
-  def created_before_lock?
-    @project.created_at < SHIPPING_LOCKED_AT
-  end
+  def require_creation_allowed
+    return if current_user.admin? || current_user.debt?
 
-  def rejected_after_lock?
-    @project.aasm_state == "rejected" &&
-      @project.rejected_at.present? &&
-      @project.rejected_at >= SHIPPING_LOCKED_AT
+    track_event("project_creation_blocked", {
+      projects_count: current_user.projects.count
+    })
+    redirect_to projects_path, flash: { alert: "The game has ended, so new projects can no longer be created. You can still ship or re-ship your existing projects." }
   end
 
   def project_params

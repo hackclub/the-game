@@ -4,11 +4,6 @@ import type { Project } from "@/interfaces/project";
 import type { ProjectTag } from "@/interfaces/project_tag";
 import type { SharedProps } from "@/types";
 import formatTime from "@/utils/formatTime";
-import {
-  isShippingLocked,
-  isShippingLockedForProject,
-  SHIPPING_LOCK_MESSAGE,
-} from "@/utils/shippingLock";
 import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import arrowIcon from "@/assets/icons/arrow.svg";
 import clsx from "clsx";
@@ -274,24 +269,6 @@ export default function ProjectForm({
   const disabled = project?.aasm_state === "submitted";
   const idvVerified = props.user.verification_status === "verified";
   const isAdmin = props.user.is_admin;
-  // Debt-role users are exempt from ship stops so they can pay off their debt.
-  const isDebtExempt = !isAdmin && props.user.is_debt;
-  const shippingLocked =
-    isAdmin || isDebtExempt
-      ? false
-      : project
-        ? isShippingLockedForProject(project)
-        : isShippingLocked();
-  const hasLockException =
-    !isAdmin && !isDebtExempt && isShippingLocked() && !shippingLocked;
-  const rejectedAwaitingReship =
-    !isDebtExempt && (project?.needs_reship_allowance ?? false);
-  const shipsGloballyDisabled =
-    !props.user.ships_enabled &&
-    !props.user.is_debt &&
-    !project?.reship_allowed;
-  const shipStopped =
-    !isAdmin && (rejectedAwaitingReship || shipsGloballyDisabled);
   const [showShipChecklist, setShowShipChecklist] = useState(false);
   const [repoChecking, setRepoChecking] = useState(false);
   const [repoAccessible, setRepoAccessible] = useState<boolean | null>(null);
@@ -673,23 +650,12 @@ export default function ProjectForm({
                   {project.reported_seconds > project.approved_seconds && (
                     <button
                       className={clsx(
-                        "group flex h-[59px] w-full items-center justify-center gap-3 text-xl font-bold transition-colors",
-                        shippingLocked || shipStopped
-                          ? "cursor-not-allowed bg-gray-300 text-gray-500"
-                          : "cursor-pointer bg-[#fecb0d] text-black hover:bg-[#e5b80b] disabled:cursor-not-allowed disabled:opacity-50",
+                        "group flex h-[59px] w-full cursor-pointer items-center justify-center gap-3 bg-[#fecb0d] text-xl font-bold text-black transition-colors",
+                        "hover:bg-[#e5b80b] disabled:cursor-not-allowed disabled:opacity-50",
                       )}
                       type="button"
-                      onClick={
-                        shippingLocked || shipStopped
-                          ? undefined
-                          : openShipChecklist
-                      }
-                      disabled={
-                        processing ||
-                        (!isAdmin && !idvVerified) ||
-                        shippingLocked ||
-                        shipStopped
-                      }
+                      onClick={openShipChecklist}
+                      disabled={processing || (!isAdmin && !idvVerified)}
                     >
                       {!isAdmin && !idvVerified
                         ? "Verify to ship"
@@ -718,45 +684,6 @@ export default function ProjectForm({
                     Delete
                   </button>
                 </div>
-                {shippingLocked &&
-                  project.reported_seconds > project.approved_seconds && (
-                    <p className="rounded-lg border border-gray-300 bg-gray-100 px-4 py-3 text-sm text-gray-700">
-                      {SHIPPING_LOCK_MESSAGE}
-                    </p>
-                  )}
-                {hasLockException &&
-                  project.reported_seconds > project.approved_seconds && (
-                    <p className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                      Shipping is locked now that the game has ended, but you
-                      can re-ship this project because it was created before
-                      shipping locked, or rejected after.
-                    </p>
-                  )}
-                {isDebtExempt &&
-                  isShippingLocked() &&
-                  project.reported_seconds > project.approved_seconds && (
-                    <p className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                      Shipping is locked now that the game has ended, but you
-                      can still ship this project to pay off your debt.
-                    </p>
-                  )}
-                {!shippingLocked &&
-                  rejectedAwaitingReship &&
-                  project.reported_seconds > project.approved_seconds && (
-                    <p className="rounded-lg border-2 border-red-300 bg-red-50 px-4 py-3 text-base font-semibold text-red-800">
-                      This project was rejected. A reviewer needs to allow it to
-                      be reshipped before you can resubmit it.
-                    </p>
-                  )}
-                {!shippingLocked &&
-                  !rejectedAwaitingReship &&
-                  shipsGloballyDisabled &&
-                  project.reported_seconds > project.approved_seconds && (
-                    <p className="rounded-lg border-2 border-red-300 bg-red-50 px-4 py-3 text-base font-semibold text-red-800">
-                      Shipping is currently closed platform-wide. Please check
-                      back later.
-                    </p>
-                  )}
               </div>
             )}
           </>
