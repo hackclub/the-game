@@ -138,9 +138,8 @@ export default function AdminPage() {
                 {platform_setting.shipping_enabled ? "Open" : "Closed"}
               </span>
               <span className="text-xs text-gray-500">
-                {platform_setting.shipping_enabled
-                  ? "Projects can be submitted/shipped platform-wide (subject to per-project and per-user gates)."
-                  : "Submissions are closed platform-wide. Only admins, users with the debt role, and projects with an explicit reship allowance can ship."}
+                Legacy setting - shipping/re-shipping is always open to
+                everyone; this toggle no longer gates anything.
               </span>
             </div>
             <div className="flex shrink-0 gap-2">
