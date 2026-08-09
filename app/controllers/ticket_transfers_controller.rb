@@ -12,6 +12,9 @@ class TicketTransfersController < ApplicationController
     flash[:notice] = "Requested to transfer #{pluralize(transfer_params[:amount], "ticket")} to #{to_user.username}"
 
     redirect_back_or_to admin_user_path(params[:user_id])
+  rescue ActiveRecord::RecordInvalid => e
+    flash[:alert] = e.record.errors.full_messages.to_sentence
+    redirect_back_or_to admin_user_path(params[:user_id])
   end
 
   def destroy
