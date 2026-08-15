@@ -28,12 +28,14 @@ const PERMISSIONS = [
   "is_reviewer",
   "is_fulfiller",
   "is_debt",
+  "is_shop_approved",
 ] as const;
 const PERMISSION_LABELS: Record<string, string> = {
   is_admin: "Admin",
   is_reviewer: "Reviewer",
   is_fulfiller: "Fulfiller",
   is_debt: "Debt",
+  is_shop_approved: "Shop approved",
 };
 
 export default function UserPage() {
@@ -46,13 +48,15 @@ export default function UserPage() {
     is_reviewer: props.page_user.is_reviewer,
     is_fulfiller: props.page_user.is_fulfiller,
     is_debt: props.page_user.is_debt,
+    is_shop_approved: props.page_user.is_shop_approved,
   });
 
   const permissionsChanged =
     permissions.is_admin !== props.page_user.is_admin ||
     permissions.is_reviewer !== props.page_user.is_reviewer ||
     permissions.is_fulfiller !== props.page_user.is_fulfiller ||
-    permissions.is_debt !== props.page_user.is_debt;
+    permissions.is_debt !== props.page_user.is_debt ||
+    permissions.is_shop_approved !== props.page_user.is_shop_approved;
 
   function updatePermissions() {
     router.patch(`/admin/users/${props.page_user.id}/permissions`, {
@@ -60,6 +64,15 @@ export default function UserPage() {
       is_reviewer: String(permissions.is_reviewer),
       is_fulfiller: String(permissions.is_fulfiller),
       is_debt: String(permissions.is_debt),
+      is_shop_approved: String(permissions.is_shop_approved),
+    });
+  }
+
+  const [note, setNote] = useState(props.page_user.internal_notes ?? "");
+
+  function saveNote() {
+    router.patch(`/admin/users/${props.page_user.id}/note`, {
+      internal_notes: note,
     });
   }
 
@@ -126,6 +139,24 @@ export default function UserPage() {
                 disabled={!permissionsChanged}
               >
                 Save permissions
+              </button>
+            </div>
+          )}
+          {props.custom && props.user.is_admin && (
+            <div className="flex flex-col gap-2">
+              <p className="text-base font-bold">Admin notes</p>
+              <textarea
+                className="min-h-[80px] w-full max-w-md rounded-md border p-2 text-base"
+                placeholder="Leave a note for other admins (e.g. debt repayment status)..."
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+              />
+              <button
+                className="w-fit cursor-pointer rounded-md bg-black px-3 py-1 text-sm text-white hover:bg-gray-800 disabled:opacity-50"
+                onClick={saveNote}
+                disabled={note === (props.page_user.internal_notes ?? "")}
+              >
+                Save note
               </button>
             </div>
           )}

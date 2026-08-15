@@ -4,14 +4,17 @@ import PageHeading from "@/components/layout/PageHeading";
 import ProjectList from "@/components/projects/ProjectList";
 import { usePage } from "@inertiajs/react";
 import type { SharedProps } from "@/types";
+import { shippingLocked } from "@/utils/shippingLock";
 
 import type { Project } from "@/interfaces/project";
 
 export default function Index({ projects }: { projects: Project[] }) {
   const { props } = usePage<SharedProps>();
   // Since the game ended, only debt-role users (working off their debt) and
-  // admins can create new projects. Shipping existing ones is open to all.
+  // admins can create new projects. Shipping is separately gated by the
+  // admin-controlled platform-wide shipping mode.
   const canCreate = props.user.is_admin || props.user.is_debt;
+  const shipLocked = shippingLocked(props.user);
 
   return (
     <Layout>
@@ -22,12 +25,12 @@ export default function Index({ projects }: { projects: Project[] }) {
       <div className="mt-8 flex flex-col gap-8 pl-8">
         <IdvVerificationAlert />
 
-        {!canCreate && (
+        {(!canCreate || shipLocked) && (
           <div className="rounded-xl border border-gray-300 bg-gray-100 p-6 text-gray-800">
             <span className="text-xl font-bold">The game has ended</span>
             <p className="mt-1 text-lg">
-              New projects can no longer be created, but you can still ship or
-              re-ship your existing projects below.
+              {!canCreate && "New projects can no longer be created. "}
+              {shipLocked && "Shipping is currently locked."}
             </p>
           </div>
         )}

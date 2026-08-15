@@ -25,6 +25,7 @@ export interface PrivateUser {
   is_reviewer: boolean;
   is_fulfiller: boolean;
   is_debt: boolean;
+  is_shop_approved: boolean;
   username: string;
   ysws_verified: boolean;
   account_id: string;
@@ -37,13 +38,14 @@ export interface PrivateUser {
   unread_notification_count: number;
   unread_project_notification_count: number;
   referral_program_active: boolean;
-  ships_enabled: boolean;
+  shipping_mode: "all" | "debt_only" | "none";
 
   ticket_adjustments: TicketAdjustment[];
   incoming_ticket_transfers: TicketTransfer[];
   outgoing_ticket_transfers: TicketTransfer[];
   wizard: boolean;
   can_overspend: boolean;
+  internal_notes?: string | null;
 }
 
 export interface ReviewerUser {

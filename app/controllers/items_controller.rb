@@ -31,6 +31,11 @@ class ItemsController < ApplicationController
   end
 
   def claim_referral_item
+    unless shop_unlocked_for?(current_user)
+      redirect_to shop_index_path, alert: "The shop is locked. Ask an admin to approve your account to buy items."
+      return
+    end
+
     program = ReferralProgram.instance
     referral = Referral.find_by(referred_user_id: current_user.id)
 
@@ -55,6 +60,17 @@ class ItemsController < ApplicationController
   end
 
   def buy
+    unless shop_unlocked_for?(current_user)
+      track_event("item_purchase_failed", {
+        item_id: @item.id,
+        item_name: @item.name,
+        reason: "shop_locked"
+      })
+      flash[:alert] = "The shop is locked. Ask an admin to approve your account to buy items."
+      redirect_to shop_index_path
+      return
+    end
+
     quantity = [ params.fetch(:quantity, 1).to_i, 1 ].max
     purchase = Item::Purchase.create(user: current_user, item: @item, quantity: quantity, note: params[:note])
 
@@ -197,6 +213,10 @@ class ItemsController < ApplicationController
   end
 
   private
+
+  def shop_unlocked_for?(user)
+    user.admin? || user.shop_approved?
+  end
 
   def set_item
     @item = Item.find(params[:id])

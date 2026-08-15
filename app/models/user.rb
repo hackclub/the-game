@@ -23,6 +23,7 @@
 #  is_debt                :boolean          default(FALSE), not null
 #  is_fulfiller           :boolean          default(FALSE), not null
 #  is_reviewer            :boolean          default(FALSE), not null
+#  is_shop_approved       :boolean          default(FALSE), not null
 #  last_active            :datetime
 #  last_name              :string
 #  onboarding_completed   :boolean          default(FALSE), not null
@@ -122,6 +123,12 @@ class User < ApplicationRecord
     is_debt
   end
 
+  # Bypasses the platform-wide shop lock only - an independent flag that
+  # doesn't interact with the other roles.
+  def shop_approved?
+    is_shop_approved
+  end
+
   before_create :set_referral_share_code
 
   after_save_commit :link_hackatime, if: -> { slack_id_previously_changed? && hackatime_id.nil? }
@@ -159,10 +166,11 @@ class User < ApplicationRecord
     end
   end
 
-  def display_hash(private: false, review: false, lightweight: false)
+  def display_hash(private: false, review: false, lightweight: false, admin: false)
     if private
-      hash = self.as_json.slice("id", "first_name", "last_name", "github_username", "address_street", "address_locality", "address_region", "address_country", "address_postal", "phone_number", "birthday", "avatar", "email", "username", "ysws_verified", "verification_status", "account_id", "hackatime_id", "slack_id", "onboarding_completed", "is_admin", "is_reviewer", "is_fulfiller", "is_debt")
+      hash = self.as_json.slice("id", "first_name", "last_name", "github_username", "address_street", "address_locality", "address_region", "address_country", "address_postal", "phone_number", "birthday", "avatar", "email", "username", "ysws_verified", "verification_status", "account_id", "hackatime_id", "slack_id", "onboarding_completed", "is_admin", "is_reviewer", "is_fulfiller", "is_debt", "is_shop_approved")
       hash["project_count"] = projects.size
+      hash["internal_notes"] = self.internal_notes if admin
       if lightweight
         hash["balance"] = 0
         hash["total_reported_seconds"] = 0

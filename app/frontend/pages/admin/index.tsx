@@ -3,10 +3,18 @@ import { Link, usePage, router } from "@inertiajs/react";
 import type { PrivateUser } from "@/interfaces/user";
 import UnshippedHackatimeExportCard from "@/components/admin/UnshippedHackatimeExportCard";
 
+type ShippingMode = "all" | "debt_only" | "none";
+
 interface PlatformSetting {
   id: number;
-  shipping_enabled: boolean;
+  shipping_mode: ShippingMode;
 }
+
+const SHIPPING_MODE_OPTIONS: { value: ShippingMode; label: string }[] = [
+  { value: "all", label: "Everyone" },
+  { value: "debt_only", label: "Debt-role only" },
+  { value: "none", label: "Nobody" },
+];
 
 interface QuickStats {
   total_users: number;
@@ -88,9 +96,9 @@ export default function AdminPage() {
 
   const isAdmin = user.is_admin;
 
-  function setShippingEnabled(enabled: boolean) {
+  function setShippingMode(mode: ShippingMode) {
     router.patch("/admin/platform_setting", {
-      shipping_enabled: String(enabled),
+      shipping_mode: mode,
     });
   }
 
@@ -127,36 +135,36 @@ export default function AdminPage() {
         {isAdmin && platform_setting && (
           <div
             className={`mb-6 flex items-center justify-between rounded-md border px-4 py-3 ${
-              platform_setting.shipping_enabled
+              platform_setting.shipping_mode === "all"
                 ? "border-gray-200 bg-white"
                 : "border-red-300 bg-red-50"
             }`}
           >
             <div className="flex flex-col">
               <span className="text-sm font-semibold text-gray-900">
-                Project submissions:{" "}
-                {platform_setting.shipping_enabled ? "Open" : "Closed"}
+                Who can ship:{" "}
+                {
+                  SHIPPING_MODE_OPTIONS.find(
+                    (o) => o.value === platform_setting.shipping_mode,
+                  )?.label
+                }
               </span>
               <span className="text-xs text-gray-500">
-                Legacy setting - shipping/re-shipping is always open to
-                everyone; this toggle no longer gates anything.
+                Controls who can ship or re-ship projects. Admins can always
+                ship regardless of this setting.
               </span>
             </div>
             <div className="flex shrink-0 gap-2">
-              <button
-                onClick={() => setShippingEnabled(false)}
-                disabled={!platform_setting.shipping_enabled}
-                className="cursor-pointer rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                Close Submissions
-              </button>
-              <button
-                onClick={() => setShippingEnabled(true)}
-                disabled={platform_setting.shipping_enabled}
-                className="cursor-pointer rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                Open Submissions
-              </button>
+              {SHIPPING_MODE_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => setShippingMode(option.value)}
+                  disabled={platform_setting.shipping_mode === option.value}
+                  className="cursor-pointer rounded-md bg-gray-900 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-gray-700 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-500"
+                >
+                  {option.label}
+                </button>
+              ))}
             </div>
           </div>
         )}

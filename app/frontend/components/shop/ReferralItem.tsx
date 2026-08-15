@@ -5,6 +5,7 @@ import type { SharedProps } from "@/types";
 export default function ReferralItem({ item }: { item: Item }) {
   const { props } = usePage<SharedProps>();
   const idvVerified = props.user.verification_status === "verified";
+  const shopLocked = !props.user.is_admin && !props.user.is_shop_approved;
 
   return (
     <div className="rounded-2xl border-2 border-[#fecb0d] bg-[#fef9e7] p-6">
@@ -32,7 +33,15 @@ export default function ReferralItem({ item }: { item: Item }) {
             You were referred — claim this item for free!
           </p>
         </div>
-        {idvVerified ? (
+        {shopLocked ? (
+          <button
+            type="button"
+            disabled
+            className="shrink-0 cursor-not-allowed rounded-xl border-2 border-black bg-[#d9d9d9] px-6 py-3 text-lg font-bold text-black/50"
+          >
+            Shop locked
+          </button>
+        ) : idvVerified ? (
           <Link
             href={`/shop/${item.id}/claim_referral_item`}
             method="post"

@@ -4,6 +4,7 @@ import type { Project } from "@/interfaces/project";
 import type { ProjectTag } from "@/interfaces/project_tag";
 import type { SharedProps } from "@/types";
 import formatTime from "@/utils/formatTime";
+import { shippingLocked } from "@/utils/shippingLock";
 import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import arrowIcon from "@/assets/icons/arrow.svg";
 import clsx from "clsx";
@@ -269,6 +270,7 @@ export default function ProjectForm({
   const disabled = project?.aasm_state === "submitted";
   const idvVerified = props.user.verification_status === "verified";
   const isAdmin = props.user.is_admin;
+  const shipLocked = shippingLocked(props.user);
   const [showShipChecklist, setShowShipChecklist] = useState(false);
   const [repoChecking, setRepoChecking] = useState(false);
   const [repoAccessible, setRepoAccessible] = useState<boolean | null>(null);
@@ -655,14 +657,18 @@ export default function ProjectForm({
                       )}
                       type="button"
                       onClick={openShipChecklist}
-                      disabled={processing || (!isAdmin && !idvVerified)}
+                      disabled={
+                        processing || shipLocked || (!isAdmin && !idvVerified)
+                      }
                     >
-                      {!isAdmin && !idvVerified
-                        ? "Verify to ship"
-                        : project.aasm_state === "approved" ||
-                            project.aasm_state === "rejected"
-                          ? "Re-ship"
-                          : "Ship"}
+                      {shipLocked
+                        ? "Shipping locked"
+                        : !isAdmin && !idvVerified
+                          ? "Verify to ship"
+                          : project.aasm_state === "approved" ||
+                              project.aasm_state === "rejected"
+                            ? "Re-ship"
+                            : "Ship"}
                     </button>
                   )}
                   <PreShipChecklist

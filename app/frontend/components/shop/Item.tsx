@@ -27,6 +27,7 @@ export default function Item({
   const totalCost = unitPrice * quantity;
   const canAfford = props.user.balance >= totalCost;
   const idvVerified = props.user.verification_status === "verified";
+  const shopLocked = !props.user.is_admin && !props.user.is_shop_approved;
   const maxQuantity = Math.max(
     1,
     Math.min(
@@ -152,7 +153,15 @@ export default function Item({
                   </button>
                 </div>
               )}
-              {!idvVerified ? (
+              {shopLocked ? (
+                <button
+                  type="button"
+                  disabled
+                  className="smoothing-black mt-4 block w-full cursor-not-allowed bg-[#d9d9d9] px-5 py-3 text-center text-xl font-bold tracking-tight text-black/50"
+                >
+                  Shop locked
+                </button>
+              ) : !idvVerified ? (
                 <button
                   type="button"
                   disabled

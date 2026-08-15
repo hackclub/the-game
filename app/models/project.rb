@@ -207,7 +207,7 @@ class Project < ApplicationRecord
   # Stays true once granted (even if shipping later reopens) so the "cleared"
   # state remains visible until the project moves out of the approved state.
   def approved_reship_gate_active?
-    approved? && (!PlatformSetting.instance.shipping_enabled? || reship_allowed?)
+    approved? && (PlatformSetting.instance.shipping_mode != "all" || reship_allowed?)
   end
 
   def allow_reship!(user)

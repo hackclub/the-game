@@ -122,14 +122,23 @@ class ProjectsController < ApplicationController
     end
   end
 
-  # Shipping and re-shipping are open to everyone, with no locks or reviewer
-  # allowances. Since the game ended on July 6th, 2026, the only restriction
-  # is on creating new projects: that's reserved for users with the debt role
-  # (so they can keep working to pay off their debt) and admins.
+  # Shipping is gated by the platform-wide shipping mode (admin-controlled):
+  # open to everyone, restricted to debt-role users (so they can keep working
+  # to pay off their debt), or closed to everyone. Admins always bypass it.
+  # Creating new projects has its own, separate debt-role-only restriction.
   def ship
     authorize @project
 
     unless current_user.admin?
+      unless PlatformSetting.instance.shipping_allowed_for?(current_user)
+        track_event("project_ship_failed", {
+          project_id: @project.id,
+          reason: "shipping_locked"
+        })
+        redirect_to manage_project_path(@project), flash: { alert: "Shipping is currently locked." }
+        return
+      end
+
       unless current_user.idv_verified?
         track_event("project_ship_failed", {
           project_id: @project.id,

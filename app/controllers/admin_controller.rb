@@ -267,13 +267,20 @@ class AdminController < ApplicationController
       is_admin: params[:is_admin] == "true",
       is_reviewer: params[:is_reviewer] == "true",
       is_fulfiller: params[:is_fulfiller] == "true",
-      is_debt: params[:is_debt] == "true"
+      is_debt: params[:is_debt] == "true",
+      is_shop_approved: params[:is_shop_approved] == "true"
     )
     redirect_to admin_user_path(user), notice: "Permissions updated"
   end
 
+  def update_user_note
+    user = User.find(params[:id])
+    user.update!(internal_notes: params[:internal_notes])
+    redirect_to admin_user_path(user), notice: "Note updated"
+  end
+
   def update_platform_setting
-    PlatformSetting.instance.update!(shipping_enabled: params[:shipping_enabled] == "true")
+    PlatformSetting.instance.update!(shipping_mode: params[:shipping_mode])
     redirect_to admin_path, notice: "Shipping setting updated"
   end
 
