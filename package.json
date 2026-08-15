@@ -18,7 +18,7 @@
     "@vitejs/plugin-react": "^6.0.1",
     "ag-grid-react": "^35.0.1",
     "clsx": "^2.1.1",
-    "posthog-js": "^1.360.1",
+    "posthog-js": "^1.405.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "recharts": "^3.7.0",
