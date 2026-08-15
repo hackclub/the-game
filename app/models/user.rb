@@ -182,7 +182,7 @@ class User < ApplicationRecord
         hash["total_in_review_seconds"] = self.total_in_review_seconds
         hash["total_approved_seconds"] = self.total_approved_seconds
       end
-      hash["ticket_adjustments"] = self.ticket_adjustments.order(created_at: :desc).map(&:display_hash)
+      hash["ticket_adjustments"] = self.ticket_adjustments.order(created_at: :desc).map { |a| a.display_hash(admin: admin) }
       hash["incoming_ticket_transfers"] = self.incoming_ticket_transfers.order(created_at: :desc).map(&:display_hash)
       hash["outgoing_ticket_transfers"] = self.outgoing_ticket_transfers.order(created_at: :desc).map(&:display_hash)
       hash["wizard"] = self.wizard?

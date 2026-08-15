@@ -261,6 +261,11 @@ export default function UserPage() {
                     )}
                   </div>
                   <p>{adjustment.reason}</p>
+                  {adjustment.created_by && (
+                    <p className="text-sm text-gray-500">
+                      By {adjustment.created_by.username}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>

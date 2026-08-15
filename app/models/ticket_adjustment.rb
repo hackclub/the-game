@@ -22,8 +22,15 @@ class TicketAdjustment < ApplicationRecord
 
   after_create_commit :create_notification
 
-  def display_hash
-    self.as_json.slice("id", "amount", "reason", "created_at")
+  def display_hash(admin: false)
+    hash = self.as_json.slice("id", "amount", "reason", "created_at")
+
+    if admin
+      creator = User.find_by(id: versions.first&.whodunnit)
+      hash["created_by"] = creator ? { id: creator.id, username: creator.username, avatar: creator.avatar } : nil
+    end
+
+    hash
   end
 
   private
