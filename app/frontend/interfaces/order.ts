@@ -13,4 +13,5 @@ export interface Order {
   pending_at: string;
   note?: string;
   admin_note?: string;
+  fulfilled_by?: { id: number; username: string; avatar: string } | null;
 }

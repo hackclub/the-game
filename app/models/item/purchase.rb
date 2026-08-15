@@ -90,6 +90,12 @@ class Item
       if admin
         hash["admin_note"] = self.admin_note
         hash["user_note"] = self.user_note
+
+        if fulfilled_at.present?
+          fulfiller_id = versions.reverse_each.find { |v| v.changeset["aasm_state"]&.last == "fulfilled" }&.whodunnit
+          fulfiller = User.find_by(id: fulfiller_id)
+          hash["fulfilled_by"] = fulfiller ? { id: fulfiller.id, username: fulfiller.username, avatar: fulfiller.avatar } : nil
+        end
       end
 
       hash

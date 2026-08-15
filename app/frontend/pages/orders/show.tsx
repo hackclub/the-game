@@ -199,6 +199,7 @@ export default function ShowOrder({ order, order_user, item }: Props) {
                 {order.fulfilled_at && (
                   <p className="text-sm text-gray-500">
                     Fulfilled {relativeDate(order.fulfilled_at)}
+                    {order.fulfilled_by && ` by ${order.fulfilled_by.username}`}
                   </p>
                 )}
                 {order.hold_at && (
