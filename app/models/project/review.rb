@@ -23,8 +23,6 @@
 #
 class Project
   class Review < ApplicationRecord
-    include ActionView::Helpers::DateHelper
-
     acts_as_paranoid
 
     belongs_to :author, class_name: "User"
@@ -99,7 +97,11 @@ class Project
     end
 
     def approved_words
-      approved_seconds.present? ? distance_of_time_in_words(approved_seconds) : nil
+      return nil unless approved_seconds.present?
+
+      hours = (approved_seconds / 3600.0).round(2)
+      formatted = hours % 1 == 0 ? hours.to_i.to_s : hours.to_s
+      "#{formatted} #{"hour".pluralize(hours)}"
     end
 
     private
