@@ -22,8 +22,9 @@ class StaticPagesController < ApplicationController
     boughtInvite = invite_item&.purchases&.where(user: current_user)&.exists? || false
     goals = Goal.ordered.includes(:item).map(&:display_hash)
     daysUntilEnd = [ (Date.new(2026, 7, 6) - Date.current).to_i, 0 ].max
+    goldenTicketProjects = Project.high_quality.order(created_at: :desc).limit(12).map { |p| p.display_hash.merge(username: p.user&.username) }
 
-    render inertia: { totalProjectTime:, inProgressTime:, reviewTime:, projectCount: current_user.projects.count, announcements: announcements, boughtInvite:, goals:, daysUntilEnd: }
+    render inertia: { totalProjectTime:, inProgressTime:, reviewTime:, projectCount: current_user.projects.count, announcements: announcements, boughtInvite:, goals:, daysUntilEnd:, goldenTicketProjects: }
   end
 
   def index
