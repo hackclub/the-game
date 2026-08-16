@@ -10,6 +10,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 
 interface Props {
   users: PrivateUser[];
+  slack_ids: string[];
   q: string;
   permission: string;
   negative_balance: boolean;
@@ -19,6 +20,7 @@ interface Props {
 
 export default function Users({
   users,
+  slack_ids,
   q,
   permission,
   negative_balance,
@@ -303,6 +305,20 @@ export default function Users({
           </select>
         </div>
       </div>
+
+      {slack_ids.length > 0 && (
+        <div className="mt-6">
+          <label className="text-sm font-medium">
+            Slack IDs ({slack_ids.length}, all matching filters):
+          </label>
+          <textarea
+            readOnly
+            className="mt-1 h-32 w-full rounded border px-2 py-1 font-mono text-sm"
+            value={slack_ids.join(", ")}
+            onFocus={(e) => e.target.select()}
+          />
+        </div>
+      )}
     </Layout>
   );
 }

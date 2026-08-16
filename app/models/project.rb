@@ -255,10 +255,12 @@ class Project < ApplicationRecord
   end
 
   def github_username
-    if repo_link.present?
-      uri = URI.parse(repo_link)
-      uri.path.split("/").second
-    end
+    return nil unless repo_link.present?
+
+    uri = URI.parse(repo_link.strip)
+    uri.path.split("/").second
+  rescue URI::InvalidURIError
+    nil
   end
 
   def unread_notifications

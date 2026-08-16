@@ -76,37 +76,7 @@ class AdminController < ApplicationController
   end
 
   def users
-    filtered_users = User.all
-
-    if params[:q].present?
-      q = params[:q].strip
-      slack_id_pattern = /\A(?:https:\/\/[a-z0-9.]+\.slack\.com\/team\/)?(U[A-Z0-9]{8,})\z/
-      if q.match?(/\A\d+\z/)
-        filtered_users = filtered_users.where(id: q)
-      elsif (match = q.match(slack_id_pattern))
-        filtered_users = filtered_users.where(slack_id: match[1])
-      else
-        filtered_users = filtered_users.search_by_name(q)
-      end
-    end
-
-    if params[:permission].present?
-      case params[:permission]
-      when "admin"
-        filtered_users = filtered_users.where(is_admin: true)
-      when "reviewer"
-        filtered_users = filtered_users.where(is_reviewer: true)
-      when "fulfiller"
-        filtered_users = filtered_users.where(is_fulfiller: true)
-      when "debt"
-        filtered_users = filtered_users.where(is_debt: true)
-      end
-    end
-
-    if params[:negative_balance] == "true"
-      negative_ids = User.batch_balances(filtered_users.pluck(:id)).select { |_, balance| balance < 0 }.keys
-      filtered_users = filtered_users.where(id: negative_ids)
-    end
+    filtered_users = filtered_users_scope
 
     per = [ (params[:per_page] || 10).to_i, 100 ].min
     paginated_users = filtered_users.order(created_at: :desc).page(params[:page]).per(per)
@@ -114,6 +84,7 @@ class AdminController < ApplicationController
 
     render inertia: "admin/users", props: {
       users: paginated_users.includes(:projects).map { |user| user.display_hash(private: true, lightweight: true).merge("balance" => balances[user.id]) },
+      slack_ids: filtered_users.where.not(slack_id: nil).pluck(:slack_id),
       permission: params[:permission],
       negative_balance: params[:negative_balance] == "true",
       q: params[:q],
@@ -453,5 +424,43 @@ class AdminController < ApplicationController
     end
 
     send_data csv, filename: "#{item.name.parameterize}-grants.csv", type: "text/csv", disposition: "attachment"
+  end
+
+  private
+
+  def filtered_users_scope
+    filtered_users = User.all
+
+    if params[:q].present?
+      q = params[:q].strip
+      slack_id_pattern = /\A(?:https:\/\/[a-z0-9.]+\.slack\.com\/team\/)?(U[A-Z0-9]{8,})\z/
+      if q.match?(/\A\d+\z/)
+        filtered_users = filtered_users.where(id: q)
+      elsif (match = q.match(slack_id_pattern))
+        filtered_users = filtered_users.where(slack_id: match[1])
+      else
+        filtered_users = filtered_users.search_by_name(q)
+      end
+    end
+
+    if params[:permission].present?
+      case params[:permission]
+      when "admin"
+        filtered_users = filtered_users.where(is_admin: true)
+      when "reviewer"
+        filtered_users = filtered_users.where(is_reviewer: true)
+      when "fulfiller"
+        filtered_users = filtered_users.where(is_fulfiller: true)
+      when "debt"
+        filtered_users = filtered_users.where(is_debt: true)
+      end
+    end
+
+    if params[:negative_balance] == "true"
+      negative_ids = User.batch_balances(filtered_users.pluck(:id)).select { |_, balance| balance < 0 }.keys
+      filtered_users = filtered_users.where(id: negative_ids)
+    end
+
+    filtered_users
   end
 end
