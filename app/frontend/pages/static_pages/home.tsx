@@ -45,7 +45,8 @@ export default function Home() {
 
   const visibleGoldenTicketProjects = Array.from(
     { length: Math.min(ROTATION_SIZE, goldenTicketProjects.length) },
-    (_, i) => goldenTicketProjects[(rotationStart + i) % goldenTicketProjects.length],
+    (_, i) =>
+      goldenTicketProjects[(rotationStart + i) % goldenTicketProjects.length],
   );
 
   if (!props.user?.onboarding_completed && !props.user?.hackatime_id) {

@@ -211,7 +211,8 @@ export default function ShowOrder({ order, order_user, item }: Props) {
 
               {order_user.balance < 0 && (
                 <p className="rounded-md border-2 border-red-400 bg-red-100 p-3 font-bold text-red-800">
-                  ⚠ This user has a negative ticket balance ({order_user.balance}
+                  ⚠ This user has a negative ticket balance (
+                  {order_user.balance}
                   ). Do not fulfill until their balance is sorted out.
                 </p>
               )}

@@ -38,7 +38,9 @@ function QualifyBar({
             <>
               <br />
               You haven't shipped{" "}
-              <span className="font-bold">{formatTime(inProgressTime)}</span>{" "}
+              <span className="font-bold">
+                {formatTime(inProgressTime)}
+              </span>{" "}
               yet.
             </>
           )}
@@ -46,8 +48,8 @@ function QualifyBar({
             <>
               <br />
               You have{" "}
-              <span className="font-bold">{formatTime(reviewTime)}</span>{" "}
-              under review.
+              <span className="font-bold">{formatTime(reviewTime)}</span> under
+              review.
             </>
           )}
         </p>
