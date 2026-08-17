@@ -14,6 +14,27 @@ interface PageProps {
   [key: string]: unknown;
 }
 
+// Renders `[label](url)` spans in flash text as real links, leaving the rest as plain text.
+function renderWithLinks(text: string) {
+  const parts = text.split(/(\[[^\]]+\]\([^)]+\))/g);
+  return parts.map((part, i) => {
+    const match = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+    if (!match) return part;
+    const [, label, url] = match;
+    return (
+      <a
+        key={i}
+        href={url}
+        className="underline"
+        target="_blank"
+        rel="noreferrer"
+      >
+        {label}
+      </a>
+    );
+  });
+}
+
 function SidebarLink({
   name,
   link,
@@ -166,7 +187,9 @@ export default function Sidebar() {
               <h1 className="smoothing-black text-2xl font-bold">
                 {key === "alert" ? "Oops..." : "Nice!"}
               </h1>
-              <p className="smoothing-black">{message as string}</p>
+              <p className="smoothing-black">
+                {renderWithLinks(message as string)}
+              </p>
             </div>
           ))}
 

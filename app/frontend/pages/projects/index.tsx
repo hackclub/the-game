@@ -27,9 +27,10 @@ export default function Index({ projects }: { projects: Project[] }) {
 
         {(!canCreate || shipLocked) && (
           <div className="rounded-xl border border-gray-300 bg-gray-100 p-6 text-gray-800">
-            <span className="text-xl font-bold">The game has ended</span>
+            <span className="text-xl font-bold">The game has ended:</span>
             <p className="mt-1 text-lg">
-              {!canCreate && "New projects can no longer be created. "}
+              {!canCreate &&
+                "New projects can no longer be created. Thanks so much for participating! "}
               {shipLocked && "Shipping is currently locked."}
             </p>
           </div>

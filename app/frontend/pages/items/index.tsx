@@ -99,10 +99,18 @@ export default function Shop({
 
         {shopLocked && (
           <div className="rounded-xl border border-gray-300 bg-gray-100 p-6 text-gray-800">
-            <span className="text-xl font-bold">The shop is locked</span>
+            <span className="text-xl font-bold">The shop is locked:</span>
             <p className="mt-1 text-lg">
-              Only approved accounts can buy items right now. Ask an admin to
-              approve your account.
+              Only approved accounts can buy items right now. Ask in{" "}
+              <a
+                href="https://hackclub.enterprise.slack.com/archives/C0A9XULS1SL"
+                className="underline"
+                target="_blank"
+                rel="noreferrer"
+              >
+                #hctg-help
+              </a>{" "}
+              on Slack instead.
             </p>
           </div>
         )}

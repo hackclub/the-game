@@ -68,12 +68,8 @@ export default function Home() {
           </div>
 
           <p className="smoothing-black text-2xl tracking-[-0.01em]">
-            The game is over, but you can still create projects! We're adding
-            new shop items every day until we end{" "}
-            <span className="font-bold">
-              in {props.daysUntilEnd} day{props.daysUntilEnd === 1 ? "" : "s"}
-            </span>
-            !
+            The game is over, and our online portion is now over! Thanks so
+            much for paticipating :)
           </p>
         </div>
 

@@ -32,7 +32,7 @@ class ItemsController < ApplicationController
 
   def claim_referral_item
     unless shop_unlocked_for?(current_user)
-      redirect_to shop_index_path, alert: "The shop is locked. Ask an admin to approve your account to buy items."
+      redirect_to shop_index_path, alert: "The shop is locked: ask in [#hctg-help](https://hackclub.enterprise.slack.com/archives/C0A9XULS1SL) on Slack instead."
       return
     end
 
@@ -66,7 +66,7 @@ class ItemsController < ApplicationController
         item_name: @item.name,
         reason: "shop_locked"
       })
-      flash[:alert] = "The shop is locked. Ask an admin to approve your account to buy items."
+      flash[:alert] = "The shop is locked: ask in [#hctg-help](https://hackclub.enterprise.slack.com/archives/C0A9XULS1SL) on Slack instead."
       redirect_to shop_index_path
       return
     end
