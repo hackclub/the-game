@@ -31,6 +31,13 @@ class ItemsController < ApplicationController
   end
 
   def claim_referral_item
+    platform_setting = PlatformSetting.instance
+
+    unless platform_setting.shop_purchases_allowed_for?(current_user)
+      redirect_to shop_index_path, alert: shop_closed_message(platform_setting)
+      return
+    end
+
     unless shop_unlocked_for?(current_user)
       redirect_to shop_index_path, alert: "The shop is locked: ask in [#hctg-help](https://hackclub.enterprise.slack.com/archives/C0A9XULS1SL) on Slack instead."
       return
@@ -60,6 +67,19 @@ class ItemsController < ApplicationController
   end
 
   def buy
+    platform_setting = PlatformSetting.instance
+
+    unless platform_setting.shop_purchases_allowed_for?(current_user)
+      track_event("item_purchase_failed", {
+        item_id: @item.id,
+        item_name: @item.name,
+        reason: "shop_mode_#{platform_setting.shop_mode}"
+      })
+      flash[:alert] = shop_closed_message(platform_setting)
+      redirect_to shop_index_path
+      return
+    end
+
     unless shop_unlocked_for?(current_user)
       track_event("item_purchase_failed", {
         item_id: @item.id,
@@ -216,6 +236,15 @@ class ItemsController < ApplicationController
 
   def shop_unlocked_for?(user)
     user.admin? || user.shop_approved?
+  end
+
+  # Only called when shop_purchases_allowed_for? is false, i.e. shop_mode is "debt_only" or "none".
+  def shop_closed_message(platform_setting)
+    if platform_setting.shop_mode == "debt_only"
+      "Only debt-role accounts can currently buy from the shop."
+    else
+      "The shop is now closed. Thank you so much for participating in HCTG!"
+    end
   end
 
   def set_item

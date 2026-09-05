@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_15_000002) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_05_194354) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
   enable_extension "pg_catalog.plpgsql"
@@ -207,6 +207,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_15_000002) do
     t.datetime "created_at", null: false
     t.string "shipping_mode", default: "debt_only", null: false
     t.datetime "updated_at", null: false
+    t.string "shop_mode", default: "all", null: false
   end
 
   create_table "project_pending_approvals", force: :cascade do |t|

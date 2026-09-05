@@ -251,8 +251,15 @@ class AdminController < ApplicationController
   end
 
   def update_platform_setting
-    PlatformSetting.instance.update!(shipping_mode: params[:shipping_mode])
-    redirect_to admin_path, notice: "Shipping setting updated"
+    if params[:shipping_mode].present?
+      PlatformSetting.instance.update!(shipping_mode: params[:shipping_mode])
+      redirect_to admin_path, notice: "Shipping setting updated"
+    elsif params[:shop_mode].present?
+      PlatformSetting.instance.update!(shop_mode: params[:shop_mode])
+      redirect_to admin_path, notice: "Shop setting updated"
+    else
+      redirect_to admin_path, alert: "No setting provided"
+    end
   end
 
   def user_hackatime_projects

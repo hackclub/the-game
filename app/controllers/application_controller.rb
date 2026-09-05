@@ -30,6 +30,7 @@ class ApplicationController < ActionController::Base
       user_hash["unread_project_notification_count"] = current_user.notifications.unread.where(notifiable_type: "Project::Review").count
       user_hash["referral_program_active"] = ReferralProgram.instance.active?
       user_hash["shipping_mode"] = PlatformSetting.instance.shipping_mode
+      user_hash["shop_mode"] = PlatformSetting.instance.shop_mode
       { user: user_hash }
     else
       {}

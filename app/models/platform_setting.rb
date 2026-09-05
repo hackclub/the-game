@@ -6,11 +6,14 @@
 #  shipping_mode :string           default("debt_only"), not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
+#  shop_mode     :string           default("all"), not null
 #
 class PlatformSetting < ApplicationRecord
   SHIPPING_MODES = %w[all debt_only none].freeze
+  SHOP_MODES = %w[all debt_only none].freeze
 
   validates :shipping_mode, inclusion: { in: SHIPPING_MODES }
+  validates :shop_mode, inclusion: { in: SHOP_MODES }
 
   def self.instance
     first_or_create!(shipping_mode: "debt_only")
@@ -26,7 +29,17 @@ class PlatformSetting < ApplicationRecord
     end
   end
 
+  def shop_purchases_allowed_for?(user)
+    return true if user.admin?
+
+    case shop_mode
+    when "all" then true
+    when "debt_only" then user.debt?
+    else false
+    end
+  end
+
   def display_hash
-    as_json.slice("id", "shipping_mode")
+    as_json.slice("id", "shipping_mode", "shop_mode")
   end
 end

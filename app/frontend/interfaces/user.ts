@@ -39,6 +39,7 @@ export interface PrivateUser {
   unread_project_notification_count: number;
   referral_program_active: boolean;
   shipping_mode: "all" | "debt_only" | "none";
+  shop_mode: "all" | "debt_only" | "none";
 
   ticket_adjustments: TicketAdjustment[];
   incoming_ticket_transfers: TicketTransfer[];

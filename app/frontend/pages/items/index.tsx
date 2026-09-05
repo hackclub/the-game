@@ -7,6 +7,7 @@ import ItemComponent from "@/components/shop/Item";
 import ReferralItem from "@/components/shop/ReferralItem";
 import type { Item } from "@/interfaces/item";
 import type { SharedProps } from "@/types";
+import { shopPurchasesLocked } from "@/utils/shopLock";
 
 const OTHER = "__other__";
 
@@ -30,6 +31,8 @@ export default function Shop({
 }) {
   const { props } = usePage<SharedProps>();
   const shopLocked = !props.user.is_admin && !props.user.is_shop_approved;
+  const shopClosed = props.user.shop_mode === "none" && !props.user.is_admin;
+  const purchasesLocked = shopPurchasesLocked(props.user);
   const [selected, setSelected] = useState<string | null>(null);
 
   // Group items by category, preserving the server's sort order within groups.
@@ -97,22 +100,44 @@ export default function Shop({
       <div className="mt-8 flex flex-col gap-8 pl-8">
         <IdvVerificationAlert />
 
-        {shopLocked && (
+        {shopClosed ? (
           <div className="rounded-xl border border-gray-300 bg-gray-100 p-6 text-gray-800">
-            <span className="text-xl font-bold">The shop is locked:</span>
+            <span className="text-xl font-bold">The shop is now closed.</span>
             <p className="mt-1 text-lg">
-              Only approved accounts can buy items right now. Ask in{" "}
-              <a
-                href="https://hackclub.enterprise.slack.com/archives/C0A9XULS1SL"
-                className="underline"
-                target="_blank"
-                rel="noreferrer"
-              >
-                #hctg-help
-              </a>{" "}
-              on Slack instead.
+              Thank you so much for participating in HCTG!
             </p>
           </div>
+        ) : (
+          <>
+            {shopLocked && (
+              <div className="rounded-xl border border-gray-300 bg-gray-100 p-6 text-gray-800">
+                <span className="text-xl font-bold">The shop is locked:</span>
+                <p className="mt-1 text-lg">
+                  Only approved accounts can buy items right now. Ask in{" "}
+                  <a
+                    href="https://hackclub.enterprise.slack.com/archives/C0A9XULS1SL"
+                    className="underline"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    #hctg-help
+                  </a>{" "}
+                  on Slack instead.
+                </p>
+              </div>
+            )}
+
+            {!shopLocked && purchasesLocked && (
+              <div className="rounded-xl border border-gray-300 bg-gray-100 p-6 text-gray-800">
+                <span className="text-xl font-bold">
+                  Shop purchases are restricted:
+                </span>
+                <p className="mt-1 text-lg">
+                  Only debt-role accounts can currently buy from the shop.
+                </p>
+              </div>
+            )}
+          </>
         )}
 
         {referred_item && <ReferralItem item={referred_item} />}

@@ -4,16 +4,24 @@ import type { PrivateUser } from "@/interfaces/user";
 import UnshippedHackatimeExportCard from "@/components/admin/UnshippedHackatimeExportCard";
 
 type ShippingMode = "all" | "debt_only" | "none";
+type ShopMode = "all" | "debt_only" | "none";
 
 interface PlatformSetting {
   id: number;
   shipping_mode: ShippingMode;
+  shop_mode: ShopMode;
 }
 
 const SHIPPING_MODE_OPTIONS: { value: ShippingMode; label: string }[] = [
   { value: "all", label: "Everyone" },
   { value: "debt_only", label: "Debt-role only" },
   { value: "none", label: "Nobody" },
+];
+
+const SHOP_MODE_OPTIONS: { value: ShopMode; label: string }[] = [
+  { value: "all", label: "Everyone" },
+  { value: "debt_only", label: "Debt-role only" },
+  { value: "none", label: "Nobody (closed)" },
 ];
 
 interface QuickStats {
@@ -102,6 +110,12 @@ export default function AdminPage() {
     });
   }
 
+  function setShopMode(mode: ShopMode) {
+    router.patch("/admin/platform_setting", {
+      shop_mode: mode,
+    });
+  }
+
   return (
     <Layout>
       <div className="mx-auto max-w-5xl px-8">
@@ -160,6 +174,44 @@ export default function AdminPage() {
                   key={option.value}
                   onClick={() => setShippingMode(option.value)}
                   disabled={platform_setting.shipping_mode === option.value}
+                  className="cursor-pointer rounded-md bg-gray-900 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-gray-700 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-500"
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {isAdmin && platform_setting && (
+          <div
+            className={`mb-6 flex items-center justify-between rounded-md border px-4 py-3 ${
+              platform_setting.shop_mode === "all"
+                ? "border-gray-200 bg-white"
+                : "border-red-300 bg-red-50"
+            }`}
+          >
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold text-gray-900">
+                Who can buy from the shop:{" "}
+                {
+                  SHOP_MODE_OPTIONS.find(
+                    (o) => o.value === platform_setting.shop_mode,
+                  )?.label
+                }
+              </span>
+              <span className="text-xs text-gray-500">
+                Controls who can purchase shop items. Admins can always buy
+                regardless of this setting. "Nobody" shows a shop-closed
+                thank-you message and blocks purchases.
+              </span>
+            </div>
+            <div className="flex shrink-0 gap-2">
+              {SHOP_MODE_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => setShopMode(option.value)}
+                  disabled={platform_setting.shop_mode === option.value}
                   className="cursor-pointer rounded-md bg-gray-900 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-gray-700 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-500"
                 >
                   {option.label}
